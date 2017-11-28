@@ -1,0 +1,60 @@
+{
+    "env": {
+        "browser": true,
+        "es6": true,
+        "node": true
+    },
+    "extends": "eslint:recommended",
+    "parserOptions": {
+        "sourceType": "module"
+    },
+    "rules": {
+        "camelcase": 2, // 驼峰命名
+        "indent": [2, 4, { "SwitchCase": 1 }], // 缩进
+        "linebreak-style": [2, "windows"], // 换行符
+        "quotes": [2, "double"], // 引号类型
+        "semi": [2, "always"], // 分号
+        "comma-dangle": [2, "never"], // 对象最后一行的逗号
+        "space-infix-ops": [2, { "int32Hint": false }], // 操作符间的空格
+        "space-unary-ops": [2, { "words": true, "nonwords": false }], // 一元操作符空格
+        "key-spacing": [2, { "beforeColon": false, "afterColon": true }], // 键值冒号空格
+        "keyword-spacing": [ // 关键词空格
+            2,
+            {
+                "overrides": {
+                    "if": { "after": false },
+                    "for": { "after": false },
+                    "switch": { "after": false },
+                    "else": { "after": false },
+                    "while": { "after": false }
+                }
+            }
+        ],
+        "comma-spacing": [2, { "before": false, "after": true }],  // 逗号前后空格
+        "func-call-spacing": [2, "never"], // 调用函数时的空格
+        "array-bracket-spacing": [2, "never"], // 数组空格
+        "object-curly-spacing": [2, "always"], // 对象空格
+        "arrow-spacing": 2, // 箭头函数空格
+        "space-in-parens": [2, "never"], // 圆括号内的空格
+        "space-before-blocks": [2, "never"], // 代码块前的空格
+        "no-trailing-spaces": 1, // 禁止行尾多余的空格
+        "no-console": 1, // 禁止console
+        "no-alert": 1 // 禁止alert
+    },
+    "globals": {
+        "fs": true,
+        "SQL": true,
+        "getPath": true,
+        "system": true,
+        "path": true,
+        "http": true,
+        "Vue": true,
+        "Vuex": true,
+        "VueI18n": true,
+        "request": true
+    },
+    "parser": "babel-eslint",
+    "plugins": [
+        "html"
+    ]
+}

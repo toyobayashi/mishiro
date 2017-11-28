@@ -1,0 +1,44 @@
+{
+  "name": "mishiro",
+  "version": "0.1.0",
+  "description": "CGSS desktop application",
+  "main": "main.js",
+  "scripts": {
+    "start": "electron . --enable-logging",
+    "dev": "webpack -w",
+    "pkgWin32": "electron-packager . mishiro --platform=win32 --arch=ia32 --icon=./public/favicon.ico --out=./dist --overwrite --app-version=0.0.1 --ignore=\"(node_modules|data|download|dist|src|docs|.gitignore|LICENSE|README.md|webpack.config.js|.babelrc|.eslintrc.json)\"",
+    "pkgWin64": "electron-packager . mishiro --platform=win32 --arch=x64 --icon=./public/favicon.ico --out=./dist --overwrite --app-version=0.0.1 --ignore=\"(node_modules|data|download|dist|src|docs|.gitignore|LICENSE|README.md|webpack.config.js|.babelrc|.eslintrc.json)\""
+  },
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/toyobayashi/mishiro"
+  },
+  "keywords": [
+    "CGSS"
+  ],
+  "author": "Toyobayashi <https://github.com/toyobayashi/>",
+  "license": "ISC",
+  "devDependencies": {
+    "babel-eslint": "^8.0.2",
+    "css-loader": "^0.28.7",
+    "electron": "^1.7.9",
+    "electron-packager": "^9.1.0",
+    "eslint": "^4.7.2",
+    "eslint-plugin-html": "^3.2.2",
+    "eslint-plugin-import": "^2.7.0",
+    "extract-text-webpack-plugin": "^3.0.0",
+    "file-loader": "^0.11.2",
+    "style-loader": "^0.18.2",
+    "url-loader": "^0.5.9",
+    "vue-loader": "^13.0.5",
+    "vue-template-compiler": "^2.5.8",
+    "webpack": "^3.6.0"
+  },
+  "dependencies": {
+    "request": "^2.83.0",
+    "sql.js": "^0.4.0",
+    "vue": "^2.5.8",
+    "vue-i18n": "^7.3.2",
+    "vuex": "^3.0.1"
+  }
+}
