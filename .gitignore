@@ -3,4 +3,7 @@ node_modules/
 download/
 data/
 dist/
+public/mishiro.min.js
+public/mishiro.min.css
 public/img/
+src/css/theme.css
