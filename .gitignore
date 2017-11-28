@@ -1,0 +1,6 @@
+bin/
+node_modules/
+download/
+data/
+dist/
+public/img/
