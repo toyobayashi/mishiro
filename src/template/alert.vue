@@ -32,6 +32,7 @@ export default {
     },
     methods: {
         close(){
+            this.playSe(this.cancelSe);
             this.visible = false;
         },
         afterLeave(){

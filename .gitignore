@@ -6,4 +6,5 @@ dist/
 public/mishiro.min.js
 public/mishiro.min.css
 public/img/
+public/asset/font/
 src/css/theme.css

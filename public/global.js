@@ -7,6 +7,7 @@ const path = require("path");
 const Vue = require("vue/dist/vue.js");
 const VueI18n = require("vue-i18n");
 const Vuex = require("vuex");
+const { ipcRenderer } = require("electron");
 
 const APP_ROOT = path.join(__dirname, "..");
 const system = (cmd) => execSync(cmd, { cwd: APP_ROOT });

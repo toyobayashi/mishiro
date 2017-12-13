@@ -2,6 +2,8 @@ import progressBar from "../template/progressBar.vue";
 import check from "./check.js";
 import downloadManifest from "./downloadManifest.js";
 import downloadMaster from "./downloadMaster.js";
+import downloader from "./batchDownload.js";
+const dler = new downloader();
 
 export default {
     components: {
@@ -57,11 +59,11 @@ export default {
             console.log("[event] ready");
             this.event.$emit("ready");
         },
-        getResVer: async function(){
+        getResVer: async function(debugVersion){
             let resVer = await check((prog) => { // 检查资源版本，回调更新进度条
                 this.text = this.$t("update.check") + prog.current + " / " + prog.max;
                 this.loading = prog.loading;
-            });
+            }, debugVersion);
             return resVer;
         },
         getManifest: async function(resVer){
@@ -109,43 +111,43 @@ export default {
                 if(navigator.onLine
                 /* false */
                 ){ // 判断网络是否连接
-                    const resVer = await this.getResVer();
-                    // const resVer = 10032750;
+                    const resVer = await this.getResVer(/* "10033000" */);
                     this.$store.commit("updateResVer", resVer);
 
                     const manifestFile = await this.getManifest(resVer);
-                    const manifest = new SQL.Database(fs.readFileSync(manifestFile));
-                    this.$store.commit("updateManifest", manifest);
 
-                    const masterHash = manifest._exec("SELECT hash FROM manifests WHERE name = \"master.mdb\"")[0].hash;
-                    const masterFile = await this.getMaster(resVer, masterHash);
-                    const master = new SQL.Database(fs.readFileSync(masterFile));
-                    this.$store.commit("updateMaster", master);
-
-                    const eventData = master._exec("SELECT * FROM event_data");
-                    const eventAvailable = master._exec("SELECT * FROM event_available WHERE event_id='" + this.getEventId(eventData) + "'");
-                    const cardId = this.getEventCardId(eventAvailable);
-                    system("if not exist \"public\\img\\card\" md \"public\\img\\card\"");
-                    for(let i = 0; i < cardId.length; i++){
-                        if(!fs.existsSync(getPath(`./public/img/card/card_bg_${(Number(cardId[i]) + 1)}.png`))){
-                            this.text = "card_bg_" + (Number(cardId[i]) + 1) + ".png　";
+                    ipcRenderer.on("readManifest", async (event, manifests) => {
+                        this.$store.commit("updateManifest", manifests);
+                        const masterHash = manifests.filter(row => row.name === "master.mdb")[0].hash;
+                        const masterFile = await this.getMaster(resVer, masterHash);
+                        ipcRenderer.send("readMaster", fs.readFileSync(masterFile));
+                    });
+                    ipcRenderer.on("readMaster", (event, masterData) => {
+                        console.log(masterData);
+                        this.$store.commit("updateMaster", masterData);
+                        const eventId = this.getEventId(masterData.eventData);
+                        const eventAvailable = masterData.eventAvailable.filter(row => row.event_id == eventId);
+                        const cardId = this.getEventCardId(eventAvailable);
+                        system("if not exist \"public\\img\\card\" md \"public\\img\\card\"");
+                        const cardIdEvolution = [(Number(cardId[0]) + 1), (Number(cardId[1]) + 1)];
+                        const dltask = this.createCardBackgroundTask(cardIdEvolution);
+                        dler.batchDl(dltask, (name) => {
+                            this.text = name;
                             this.loading = 0;
-                            await this.dl(
-                                `https://hoshimoriuta.kirara.ca/spread/${(Number(cardId[i]) + 1)}.png`,
-                                getPath(`./public/img/card/card_bg_${(Number(cardId[i]) + 1)}.png`),
-                                (prog) => {
-                                    this.text = "card_bg_" + (Number(cardId[i]) + 1) + ".png　" + Math.ceil(prog.current / 1024) + "/" + Math.ceil(prog.max / 1024) + " KB";
-                                    this.loading = prog.loading;
-                                }
-                            );
-                        }
-                        if(i === 0){
-                            this.event.$emit("eventBgReady", Number(cardId[i]) + 1);
-                        }
-                    }
-                    setTimeout(() => {
-                        this.emitReady();
-                    }, 1000);
+                        }, (prog) => {
+                            this.text = prog.name + "　" + Math.ceil(prog.current / 1024) + "/" + Math.ceil(prog.max / 1024) + " KB";
+                            this.loading = prog.loading;
+                        }, (name) => {
+                            if(name === `bg_${(Number(cardId[0]) + 1)}.png`){
+                                this.event.$emit("eventBgReady", Number(cardId[0]) + 1);
+                            }
+                        }).then(() => {
+                            setTimeout(() => {
+                                this.emitReady();
+                            }, 1000);
+                        });
+                    });
+                    ipcRenderer.send("readManifest", fs.readFileSync(manifestFile));
                 }
                 else{ // 如果网络未连接则直接触发ready事件
                     this.emitReady();

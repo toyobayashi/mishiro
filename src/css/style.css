@@ -266,3 +266,22 @@ td, th{
 	background-image: url("../res/img/play.png");
 	background-position: 0 -114px;
 }
+
+.pull-left{
+    float: left;
+}
+.pull-right{
+    float: right;
+}
+.margin-right-20{
+    margin-right: 20px;
+}
+.margin-left-10{
+    margin-left: 10px;
+}
+.margin-top-10{
+    margin-top: 10px;
+}
+.margin-top-20{
+    margin-top: 20px;
+}

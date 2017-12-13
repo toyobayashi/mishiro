@@ -1,27 +1,28 @@
 <template>
 <div class="main-bar" id="mainBar">
     <ul>
-        <li v-for="block in blocks" :class="{ active: currentActive === block}" @click="navToggle(block)"></li>
+        <li v-for="block in blocks" :class="{ active: currentBlock === block}" @click="navToggle(block)"></li>
     </ul>
 </div>
 </template>
 
 <script>
 export default {
+    props: ["currentBlock"],
     data(){
         return {
-            currentActive: "home",
             blocks: ["home", "idol", "live", "gacha", "menu"]
         };
     },
     methods: {
         navToggle(block){
             if(block !== this.currentActive){
-                if(block === "idol" || block === "live" || block === "gacha" || block === "menu"){
+                if(block === "live" || block === "gacha" || block === "menu"){
                     this.event.$emit("alert", this.$t("home.errorTitle"), this.$t("home.hope"));
                 }
                 else{
                     this.currentActive = block;
+                    this.$emit("changeBlock", block);
                 }
                 this.playSe(this.enterSe);
             }

@@ -16,5 +16,12 @@ export default {
             se.currentTime = 0;
             se.play();
         };
+        Vue.prototype.createCardBackgroundTask = function(cardIdArr){
+            let task = [];
+            for(let i = 0; i < cardIdArr.length; i++){
+                task.push([`https://hoshimoriuta.kirara.ca/spread/${cardIdArr[i]}.png`, getPath(`./public/img/card/bg_${cardIdArr[i]}.png`)]);
+            }
+            return task;
+        };
     }
 };

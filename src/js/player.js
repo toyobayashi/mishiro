@@ -19,6 +19,16 @@ const bgmList = {
         start: 13.075,
         end: 100.575
     },
+    idol: {
+        src: "./asset/sound/bgm/bgm_idol_menu.mp3",
+        start: 0.990,
+        end: 80.900
+    },
+    gacha: {
+        src: "./asset/sound/bgm/bgm_gacha_menu.mp3",
+        start: 1.800,
+        end: 56.599
+    },
     anni: {
         hidden: true,
         src: "./asset/sound/bgm/bgm_title_anniversary2.mp3",
@@ -138,6 +148,19 @@ export default {
             this.event.$on("ready", () => {
                 this.playStudioBgm();
                 // this.pause();
+            });
+            this.event.$on("changeBgm", (block) => {
+                switch(block){
+                    case "home":
+                        this.playStudioBgm();
+                        break;
+                    case "idol":
+                        this.set(bgmList.idol);
+                        this.play();
+                        break;
+                    default:
+                        break;
+                }
             });
         });
     }

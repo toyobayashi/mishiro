@@ -27,12 +27,14 @@ function httpGetVersion(resVer, progressing){
     });
 }
 
-function check(progressing){
+function check(progressing, debugVersion){
     system("if not exist data md data");
     if(!fs.existsSync(getPath("./data/version"))){
-        fs.writeFileSync(getPath("./data/version"), "10032750");
+        fs.writeFileSync(getPath("./data/version"), "10032840");
     }
-
+    if(debugVersion){
+        return debugVersion;
+    }
     const versionFrom = Number(fs.readFileSync(getPath("./data/version")).toString());
 
     return new Promise((resolve) => {

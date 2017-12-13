@@ -20,6 +20,15 @@ export default {
                 this.$emit("tabClicked", item);
             }
         }
+    },
+    mounted(){
+        this.$nextTick(() => {
+            this.event.$on("smallTab", (key) => {
+                if(this.tab[key]){
+                    this.currentActive = this.tab[key];
+                }
+            });
+        });
     }
 };
 </script>

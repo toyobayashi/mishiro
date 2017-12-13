@@ -4,7 +4,7 @@
         <img :class="{
             yoko: bg,
             tate: !bg
-        }" :src="'./img/card/card_bg_' + backgroundId + '.png'" />
+        }" :src="'./img/card/bg_' + backgroundId + '.png'" />
     </div>
     <div v-else>
         <img src="../res/img/bg_anim_icon.png" id="symbol"/>
@@ -99,6 +99,12 @@ export default {
             });
             this.event.$on("eventBgReady", (cardId) => {
                 this.backgroundId = cardId;
+            });
+            this.event.$on("idolSelect", (cardId) => {
+                this.backgroundId = cardId;
+            });
+            this.event.$on("noBg", () => {
+                this.backgroundId = false;
             });
         });
     }
