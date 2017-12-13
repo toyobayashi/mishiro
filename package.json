@@ -1,13 +1,13 @@
 {
   "name": "mishiro",
-  "version": "0.1.0",
+  "version": "0.2.0",
   "description": "CGSS desktop application",
   "main": "main.js",
   "scripts": {
     "start": "electron . --enable-logging",
     "dev": "webpack -w",
-    "pkgWin32": "electron-packager . mishiro --platform=win32 --arch=ia32 --icon=./public/favicon.ico --out=./dist --overwrite --app-version=0.0.1 --ignore=\"(node_modules|data|download|dist|src|docs|.gitignore|LICENSE|README.md|webpack.config.js|.babelrc|.eslintrc.json)\"",
-    "pkgWin64": "electron-packager . mishiro --platform=win32 --arch=x64 --icon=./public/favicon.ico --out=./dist --overwrite --app-version=0.0.1 --ignore=\"(node_modules|data|download|dist|src|docs|.gitignore|LICENSE|README.md|webpack.config.js|.babelrc|.eslintrc.json)\""
+    "pkgWin32": "electron-packager . mishiro --platform=win32 --arch=ia32 --icon=./public/favicon.ico --out=./dist --overwrite --app-version=0.2.0 --ignore=\"(node_modules|data|download|dist|src|docs|public/img/card|.gitignore|LICENSE|README.md|webpack.config.js|.babelrc|.eslintrc.json)\"",
+    "pkgWin64": "electron-packager . mishiro --platform=win32 --arch=x64 --icon=./public/favicon.ico --out=./dist --overwrite --app-version=0.2.0 --ignore=\"(node_modules|data|download|dist|src|docs|public/img/card|.gitignore|LICENSE|README.md|webpack.config.js|.babelrc|.eslintrc.json)\""
   },
   "repository": {
     "type": "git",

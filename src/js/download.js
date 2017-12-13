@@ -1,16 +1,7 @@
-function dl(u, p, progressing){
-    let filename = "";
-    if(p.indexOf("/") !== -1){
-        const patharr = p.split("/");
-        filename = patharr[patharr.length - 1];
-    }
-    else if(p.indexOf("\\") !== -1){
-        const patharr = p.split("\\");
-        filename = patharr[patharr.length - 1];
-    }
-    else{
-        filename = p;
-    }
+import path2name from "./path2name.js";
+
+function dl(u, p, progressing, getReq){
+    let filename = path2name(p);
     return new Promise((resolve, reject) => {
         if(fs.existsSync(p)){
             resolve(p);
@@ -51,6 +42,10 @@ function dl(u, p, progressing){
             let current = 0, contentLength = 0;
 
             let req = request(options);
+            let rename = true;
+            if(getReq){
+                getReq(req);
+            }
             req.on("response", (response) => {
                 contentLength = Number(response.headers["content-length"]);
                 if(contentLength == size && !response.headers["content-range"]){
@@ -68,14 +63,21 @@ function dl(u, p, progressing){
                         on("data", (data) => {
                             current += data.length;
                             progressing({
+                                name: filename,
                                 current: size + current,
                                 max: size + contentLength,
                                 loading: 100 * (size + current) / (size + contentLength)
                             });
                         })
                         .on("end", () => {
-                            system(`ren ${path.join(p)}.tmp ${filename}`);
+                            if(rename){
+                                system(`ren ${path.join(p)}.tmp ${filename}`);
+                            }
                             resolve(p);
+                        })
+                        .on("abort", () => {
+                            rename = false;
+                            resolve(false);
                         })
                         .on("error", (e) => {
                             reject(e);

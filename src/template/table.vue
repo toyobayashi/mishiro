@@ -1,5 +1,5 @@
 <template>
-<table v-if="data" class="cgss-table">
+<table v-if="data.length" class="cgss-table">
     <thead>
         <tr>
             <th><input type="checkbox" v-model="selectAll" /></th>
@@ -49,9 +49,14 @@ export default {
     },
     mounted(){
         this.$nextTick(() => {
-            this.event.$on("completeTask", (row) => {
+            this.event.$on("completeTask", (name) => {
                 for(let i = 0; i < this.selected.length; i++){
-                    if(this.selected[i].name === row.name){
+                    if(this.selected[i].name === name ||
+                    this.selected[i].name === "b/" + name ||
+                    this.selected[i].name === "c/" + name ||
+                    this.selected[i].name === "l/" + name ||
+                    this.selected[i].name === "r/" + name ||
+                    this.selected[i].name === "v/" + name){
                         document.getElementById(this.selected[i].hash).setAttribute("disabled", true);
                         this.selected.splice(i, 1);
                         break;

@@ -8,12 +8,13 @@
     </transition>
     <background></background>
     <div id="mainBlock" v-show="show">
-        <home></home>
+        <home v-show="currentBlock === 'home'"></home>
+        <idol v-show="currentBlock === 'idol'"></idol>
         <hide-button @toggle="showBackground"></hide-button>
         <version></version>
         <player></player>
         <small-tab :tab="i18nTabs" :default="_i18n._vm.locale" id="i18nTab" @tabClicked="changeLanguage"></small-tab>
-        <nav-bar></nav-bar>
+        <nav-bar :current-block="currentBlock" @changeBlock="changeBlock"></nav-bar>
     </div>
     <alert></alert>
 </div>
@@ -29,6 +30,7 @@ import hideButton from "./hideButton.vue";
 import navBar from "./navBar.vue";
 import version from "./version.vue";
 import home from "./home.vue";
+import idol from "./idol.vue";
 import alert from "./alert.vue";
 export default {
     components: {
@@ -41,6 +43,7 @@ export default {
         navBar,
         version,
         home,
+        idol,
         alert
     },
     data(){
@@ -48,6 +51,7 @@ export default {
             isEntered: false,
             isReady: false,
             show: true,
+            currentBlock: "home",
             i18nTabs: {
                 zh: "i18n.chinese",
                 ja: "i18n.japanese"
@@ -80,8 +84,12 @@ export default {
         afterEnter(){
             console.log("[event] enter");
             this.event.$emit("enter");
+        },
+        changeBlock(block){
+            this.currentBlock = block;
+            this.event.$emit("changeBgm", block);
         }
-    },
+    }/* ,
     mounted(){
         this.$nextTick(() => {
             this.event.$on("enter", () => {
@@ -91,7 +99,7 @@ export default {
                 
             });
         });
-    }
+    } */
 };
 </script>
 
