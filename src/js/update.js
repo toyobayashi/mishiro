@@ -111,7 +111,10 @@ export default {
                 if(navigator.onLine
                 /* false */
                 ){ // 判断网络是否连接
-                    const resVer = await this.getResVer(/* "10033000" */);
+                    system("if not exist \"public\\asset\\sound\" md \"public\\asset\\sound\"");
+                    system("if not exist \"public\\asset\\sound\\bgm\" md \"public\\asset\\sound\\bgm\"");
+                    system("if not exist \"public\\asset\\sound\\live\" md \"public\\asset\\sound\\live\"");
+                    const resVer = await this.getResVer("10033100");
                     this.$store.commit("updateResVer", resVer);
 
                     const manifestFile = await this.getManifest(resVer);

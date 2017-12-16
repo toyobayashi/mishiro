@@ -2,9 +2,9 @@
 <div class="bgm-select-bar clearfix">
     <button v-on:click.stop="selectBgm()">
         <span>
-            <!-- <marquee scrollAmount="2" direction="left"> -->
-            {{playing.src.slice(playing.src.lastIndexOf('/') + 1)}}
-            <!-- </marquee> -->
+            <marquee scrollAmount="2" direction="left">
+                {{playing.src.slice(playing.src.lastIndexOf('/') + 1)}}
+            </marquee>
         </span>
     </button>
     <button v-on:click.stop="pauseButton()" id="pauseBtn">

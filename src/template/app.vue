@@ -10,6 +10,9 @@
     <div id="mainBlock" v-show="show">
         <home v-show="currentBlock === 'home'"></home>
         <idol v-show="currentBlock === 'idol'"></idol>
+        <live v-show="currentBlock === 'live'"></live>
+        <gacha v-show="currentBlock === 'gacha'"></gacha>
+        <menyuu v-show="currentBlock === 'menu'"></menyuu>
         <hide-button @toggle="showBackground"></hide-button>
         <version></version>
         <player></player>
@@ -31,6 +34,9 @@ import navBar from "./navBar.vue";
 import version from "./version.vue";
 import home from "./home.vue";
 import idol from "./idol.vue";
+import live from "./live.vue";
+import gacha from "./gacha.vue";
+import menu from "./menu.vue";
 import alert from "./alert.vue";
 export default {
     components: {
@@ -44,6 +50,9 @@ export default {
         version,
         home,
         idol,
+        live,
+        gacha,
+        menyuu: menu,
         alert
     },
     data(){
@@ -51,7 +60,7 @@ export default {
             isEntered: false,
             isReady: false,
             show: true,
-            currentBlock: "home",
+            currentBlock: "live",
             i18nTabs: {
                 zh: "i18n.chinese",
                 ja: "i18n.japanese"

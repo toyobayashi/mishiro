@@ -1,7 +1,7 @@
 <template>
 <div class="main-block-style">
     <div class="clearfix">
-        <input type="text" class="db-query manifest-query" v-model="queryString"/>
+        <input type="text" class="db-query manifest-query" v-model="queryString" :placeholder="$t('home.input')"/>
         <button class="cgss-btn-lg cgss-btn-lg-star pull-right margin-left-10" @click="opendir">{{$t("home.opendir")}}</button>
         <button ref="stopBtn" class="cgss-btn cgss-btn-default pull-right margin-left-10" @click="stopDownload">{{$t("home.stop")}}</button>
         <button ref="downloadBtn" class="cgss-btn cgss-btn-star pull-right margin-left-10" @click="downloadSelectedItem">{{$t("home.download")}}</button>
@@ -11,7 +11,7 @@
         <cgss-table :data="data" @change="tableChange"
         :is-disabled="isDisabled"></cgss-table>
     </div>
-    <task :total-loading="total" :current-loading="current" :text="text"></task>
+    <task :total-loading="total" :current-loading="current" :text="text" class="margin-top-20"></task>
 </div>
 </template>
 

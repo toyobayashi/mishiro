@@ -140,7 +140,9 @@ export default {
                 }
 
                 this.event.$emit("smallTab", "before");
-                this.changeBackground(card);
+                if(navigator.onLine){
+                    this.changeBackground(card);
+                }
             }
         },
         async changeBackground(card){
@@ -172,11 +174,15 @@ export default {
             switch(practice){
                 case "idol.before":
                     this.information = this.activeCard;
-                    this.changeBackground(this.activeCard);
+                    if(navigator.onLine){
+                        this.changeBackground(this.activeCard);
+                    }
                     break;
                 case "idol.after":
                     this.information = this.activeCardPlus;
-                    this.changeBackground(this.activeCardPlus);
+                    if(navigator.onLine){
+                        this.changeBackground(this.activeCardPlus);
+                    }
                     break;
                 default:
                     break;

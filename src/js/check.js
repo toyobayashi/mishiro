@@ -30,7 +30,7 @@ function httpGetVersion(resVer, progressing){
 function check(progressing, debugVersion){
     system("if not exist data md data");
     if(!fs.existsSync(getPath("./data/version"))){
-        fs.writeFileSync(getPath("./data/version"), "10032840");
+        fs.writeFileSync(getPath("./data/version"), "10033100");
     }
     if(debugVersion){
         return debugVersion;
