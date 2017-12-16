@@ -1,5 +1,6 @@
 const electron = require("electron");
 const SQL = require("sql.js");
+const { exec, execSync } = require("child_process");
 const ipcMain = electron.ipcMain;
 // Module to control application life.
 const app = electron.app;
@@ -89,10 +90,10 @@ SQL.Database.prototype._exec = function (sql){
     }
 };
 
+let manifest = null;
 ipcMain.on("readManifest", (event, manifestFile) => {
-    const manifest = new SQL.Database(manifestFile);
+    manifest = new SQL.Database(manifestFile);
     const manifests = manifest._exec("SELECT name, hash FROM manifests");
-    manifest.close();
     event.sender.send("readManifest", manifests);
 });
 
@@ -106,6 +107,11 @@ ipcMain.on("readMaster", (event, masterFile) => {
     const textData = master._exec("SELECT * FROM text_data WHERE category='2';SELECT * FROM text_data WHERE category='4'");
     const skillData = master._exec("SELECT * FROM skill_data");
     const leaderSkillData = master._exec("SELECT * FROM leader_skill_data");
+    const musicData = master._exec("SELECT id, name FROM music_data");
+
+    const liveManifest = manifest._exec("SELECT name, hash FROM manifests WHERE name LIKE \"l/%\"");
+    const bgmManifest = manifest._exec("SELECT name, hash FROM manifests WHERE name LIKE \"b/%\"");
+    manifest.close();
     master.close();
 
     charaData.forEach((chara, i) => {
@@ -123,6 +129,51 @@ ipcMain.on("readMaster", (event, masterFile) => {
         cardData[i].skill = skillData.filter(row => row.id == card.skill_id)[0];
         cardData[i].leaderSkill = leaderSkillData.filter(row => row.id == card.leader_skill_id)[0];
     });
-    event.sender.send("readMaster", { cardData, eventData, eventAvailable });
+    bgmManifest.forEach((bgm, i) => {
+        let fileName = bgm.name.split("/")[1].split(".")[0] + ".mp3";
+        bgmManifest[i].fileName = fileName;
+    });
+    liveManifest.forEach((song, i) => {
+        let name = song.name.split("/")[1].split(".")[0];
+        let arr = name.split("_");
+        let fileName = "";
+        if(Number(arr[1]) < 1000){
+            fileName = name + ".mp3";
+        }
+        else{
+            if(arr.length > 2){
+                if(arr[2] === "another"){
+                    fileName = arr[1] + "_" + arr[2] + "-" + musicData.filter(row => row.id == arr[1])[0].name.replace(/\\n/g, "") + ".mp3";
+                }
+                else{
+                    fileName = arr[1] + "_" + arr[2] + "-" + musicData.filter(row => row.id == arr[1])[0].name.replace(/\\n/g, "") + "（" + charaData.filter(row => row.chara_id == arr[2])[0].name + "）.mp3";
+                }
+            }
+            else{
+                fileName = arr[1] + "-" + musicData.filter(row => row.id == arr[1])[0].name.replace(/\\n/g, "") + ".mp3";
+            }
+        }
+        liveManifest[i].fileName = fileName;
+    });
+    event.sender.send("readMaster", { cardData, eventData, eventAvailable, bgmManifest, liveManifest });
+});
+
+
+ipcMain.on("acb", (event, acbPath, url) => {
+    const name = acbPath.split("\\")[acbPath.split("\\").length - 1].split(".")[0];
+    exec(`bin\\CGSSAudio.exe ${acbPath}`, (err) => {
+        if(!err){
+            if(url.split("/")[url.split("/").length - 2] === "live"){
+                exec(`ren "public\\asset\\sound\\live\\${name}.mp3" "${url.split("/")[url.split("/").length - 1]}"`, (err) => {
+                    if(!err){
+                        event.sender.send("acb", acbPath, url);
+                    }
+                });
+            }
+            else{
+                event.sender.send("acb", acbPath, url);
+            }
+        }
+    });
 });
 

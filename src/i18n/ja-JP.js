@@ -17,7 +17,8 @@ export default {
         noNetwork: "ネットワーク接続していません。",
         noTask: "現在何もダウンロードしていません。",
         close: "閉じる",
-        stop: "中止"
+        stop: "中止",
+        input: "データベース検索"
     },
     event: {
         atapon: "アタポン",
@@ -62,6 +63,10 @@ export default {
         skill_explain: "特技詳細",
         leader_skill_name: "センター効果",
         leader_skill_explain: "センター効果詳細",
-        nashi: "無し",
+        nashi: "無し"
+    },
+    live: {
+        decoding: "　デコード中...",
+        input: "ライブ曲検索"
     }
 };

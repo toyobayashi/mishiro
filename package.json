@@ -1,13 +1,15 @@
 {
   "name": "mishiro",
-  "version": "0.2.0",
+  "productName": "mishiro",
+  "companyName": "Toyo",
+  "version": "0.3.0",
   "description": "CGSS desktop application",
   "main": "main.js",
   "scripts": {
     "start": "electron . --enable-logging",
     "dev": "webpack -w",
-    "pkgWin32": "electron-packager . mishiro --platform=win32 --arch=ia32 --icon=./public/favicon.ico --out=./dist --overwrite --app-version=0.2.0 --ignore=\"(node_modules|data|download|dist|src|docs|public/img/card|.gitignore|LICENSE|README.md|webpack.config.js|.babelrc|.eslintrc.json)\"",
-    "pkgWin64": "electron-packager . mishiro --platform=win32 --arch=x64 --icon=./public/favicon.ico --out=./dist --overwrite --app-version=0.2.0 --ignore=\"(node_modules|data|download|dist|src|docs|public/img/card|.gitignore|LICENSE|README.md|webpack.config.js|.babelrc|.eslintrc.json)\""
+    "pkgWin32": "electron-packager . mishiro --platform=win32 --arch=ia32 --icon=./public/favicon.ico --out=./dist --overwrite --app-version=0.3.0 --ignore=\"(node_modules|data|download|dist|src|docs|public/img/card|public/asset/sound/live|.gitignore|LICENSE|README.md|webpack.config.js|.babelrc|.eslintrc.json)\"",
+    "pkgWin64": "electron-packager . mishiro --platform=win32 --arch=x64 --icon=./public/favicon.ico --out=./dist --overwrite --app-version=0.3.0 --ignore=\"(node_modules|data|download|dist|src|docs|public/img/card|public/asset/sound/live|.gitignore|LICENSE|README.md|webpack.config.js|.babelrc|.eslintrc.json)\""
   },
   "repository": {
     "type": "git",
@@ -16,8 +18,11 @@
   "keywords": [
     "CGSS"
   ],
-  "author": "Toyobayashi <https://github.com/toyobayashi/>",
-  "license": "ISC",
+  "author": {
+    "name": "Toyobayashi",
+    "url": "https://github.com/toyobayashi"
+  },
+  "license": "MIT",
   "devDependencies": {
     "babel-eslint": "^8.0.2",
     "css-loader": "^0.28.7",

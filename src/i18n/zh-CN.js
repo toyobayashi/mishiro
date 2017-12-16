@@ -17,7 +17,8 @@ export default {
         noTask: "現在没有正在下載的任務。",
         noNetwork: "網絡未連接。",
         close: "関閉",
-        stop: "中止"
+        stop: "中止",
+        input: "捜索数据庫"
     },
     event: {
         atapon: "消耗道具型",
@@ -62,6 +63,10 @@ export default {
         skill_explain: "特技詳細",
         leader_skill_name: "領隊効果",
         leader_skill_explain: "領隊効果詳細",
-        nashi: "无",
+        nashi: "无"
+    },
+    live: {
+        decoding: "　解碼中...",
+        input: "捜索Live曲"
     }
 };

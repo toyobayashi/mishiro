@@ -7,4 +7,12 @@ public/mishiro.min.js
 public/mishiro.min.css
 public/img/
 public/asset/font/
+public/asset/sound/live/
+public/asset/sound/bgm/*.mp3
+!public/asset/sound/bgm/bgm_event_3017.mp3
+!public/asset/sound/bgm/bgm_studio_day.mp3
+!public/asset/sound/bgm/bgm_studio_night.mp3
+!public/asset/sound/bgm/bgm_studio_sunset.mp3
+!public/asset/sound/bgm/bgm_idol_menu.mp3
+!public/asset/sound/bgm/bgm_gacha_menu.mp3
 src/css/theme.css
