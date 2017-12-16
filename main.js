@@ -9,7 +9,7 @@ const BrowserWindow = electron.BrowserWindow;
 
 const path = require("path");
 const url = require("url");
-
+const APP_ROOT = path.join(__dirname, ".");
 // Keep a global reference of the window object, if you don't, the window will
 // be closed automatically when the JavaScript object is garbage collected.
 let mainWindow;
@@ -159,19 +159,24 @@ ipcMain.on("readMaster", (event, masterFile) => {
 });
 
 
-ipcMain.on("acb", (event, acbPath, url) => {
+ipcMain.on("acb", (event, acbPath, url = "") => {
     const name = acbPath.split("\\")[acbPath.split("\\").length - 1].split(".")[0];
-    exec(`bin\\CGSSAudio.exe ${acbPath}`, (err) => {
+    exec(`${APP_ROOT}\\bin\\CGSSAudio.exe ${acbPath}`, (err) => {
         if(!err){
-            if(url.split("/")[url.split("/").length - 2] === "live"){
-                exec(`ren "public\\asset\\sound\\live\\${name}.mp3" "${url.split("/")[url.split("/").length - 1]}"`, (err) => {
-                    if(!err){
-                        event.sender.send("acb", acbPath, url);
-                    }
-                });
+            if(url){
+                if(url.split("/")[url.split("/").length - 2] === "live"){
+                    exec(`ren "${APP_ROOT}\\public\\asset\\sound\\live\\${name}.mp3" "${url.split("/")[url.split("/").length - 1]}"`, (err) => {
+                        if(!err){
+                            event.sender.send("acb", acbPath, url);
+                        }
+                    });
+                }
+                else{
+                    event.sender.send("acb", acbPath, url);
+                }
             }
             else{
-                event.sender.send("acb", acbPath, url);
+                exec(`del /q /f ${acbPath}`);
             }
         }
     });

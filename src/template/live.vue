@@ -53,7 +53,7 @@
 }
 .live-middle{
     position: relative;
-    height: calc(100% - 240px);
+    height: calc(100% - 230px);
     width: 100%;
 }
 .live-bottom{

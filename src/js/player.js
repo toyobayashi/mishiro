@@ -28,6 +28,9 @@ const bgmList = {
         src: "./asset/sound/bgm/bgm_gacha_menu.mp3",
         start: 1.800,
         end: 56.599
+    },
+    caravan: {
+        src: "./asset/sound/bgm/bgm_event_typeA.mp3"
     }
 };
 
@@ -149,6 +152,9 @@ export default {
                         break;
                     }
                 }
+                if(this.playing.src === `./asset/sound/bgm/bgm_event_${this.$store.state.eventInfo.id}.mp3`){
+                    flag = true;
+                }
                 if(flag){
                     switch(block){
                         case "home":
@@ -159,6 +165,18 @@ export default {
                         case "idol":
                             if(this.playing.src !== bgmList.idol.src){
                                 this.play(bgmList.idol);
+                            }
+                            break;
+                        case "live":
+                            if(this.$store.state.eventInfo.type != 2){
+                                if(this.playing.src !== `./asset/sound/bgm/bgm_event_${this.$store.state.eventInfo.id}.mp3`){
+                                    this.event.$emit("liveSelect", { src: `./asset/sound/bgm/bgm_event_${this.$store.state.eventInfo.id}.mp3` });
+                                }
+                            }
+                            else{
+                                if(this.playing.src !== bgmList.caravan.src){
+                                    this.play(bgmList.caravan);
+                                }
                             }
                             break;
                         default:

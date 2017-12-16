@@ -15,4 +15,5 @@ public/asset/sound/bgm/*.mp3
 !public/asset/sound/bgm/bgm_studio_sunset.mp3
 !public/asset/sound/bgm/bgm_idol_menu.mp3
 !public/asset/sound/bgm/bgm_gacha_menu.mp3
+!public/asset/sound/bgm/bgm_event_typeA.mp3
 src/css/theme.css

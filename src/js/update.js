@@ -125,12 +125,26 @@ export default {
                         const masterFile = await this.getMaster(resVer, masterHash);
                         ipcRenderer.send("readMaster", fs.readFileSync(masterFile));
                     });
-                    ipcRenderer.on("readMaster", (event, masterData) => {
+                    ipcRenderer.on("readMaster", async (event, masterData) => {
                         console.log(masterData);
                         this.$store.commit("updateMaster", masterData);
                         const eventId = this.getEventId(masterData.eventData);
                         const eventAvailable = masterData.eventAvailable.filter(row => row.event_id == eventId);
                         const cardId = this.getEventCardId(eventAvailable);
+                        if(this.$store.state.eventInfo.type != 2 && !fs.existsSync(getPath(`./public/asset/sound/bgm/bgm_event_${this.$store.state.eventInfo.id}.mp3`))){
+                            const eventBgmHash = this.$store.state.manifest.filter(row => row.name === `b/bgm_event_${this.$store.state.eventInfo.id}.acb`)[0].hash;
+                            await this.dl(
+                                `http://storage.game.starlight-stage.jp/dl/resources/High/Sound/Common/b/${eventBgmHash}`,
+                                getPath(`./public/asset/sound/bgm/bgm_event_${this.$store.state.eventInfo.id}.acb`),
+                                (prog) => {
+                                    this.text = prog.name + "　" + Math.ceil(prog.current / 1024) + "/" + Math.ceil(prog.max / 1024) + " KB";
+                                    this.loading = prog.loading;
+                                }
+                            );
+                            this.text = "";
+                            this.loading = 0;
+                            ipcRenderer.send("acb", getPath(`./public/asset/sound/bgm/bgm_event_${this.$store.state.eventInfo.id}.acb`));
+                        }
                         system("if not exist \"public\\img\\card\" md \"public\\img\\card\"");
                         const cardIdEvolution = [(Number(cardId[0]) + 1), (Number(cardId[1]) + 1)];
                         const dltask = this.createCardBackgroundTask(cardIdEvolution);
