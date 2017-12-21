@@ -1,5 +1,4 @@
-// var fs = require("fs");
-
+import fs from "fs";
 //Binary Reader for Uint8Array
 /* class BinaryReader */
 var BinaryReader = function(array){
@@ -48,7 +47,7 @@ lz4.prototype.decompress = function(){
     var token = 0;
     var sqSize = 0;
     var matchSize = 0;
-    var litPos = 0;
+    // var litPos = 0;
     var offset = 0;
     var retCurPos = 0;
     var endPos = 0;

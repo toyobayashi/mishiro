@@ -1,4 +1,10 @@
 import task from "../template/task.vue";
+import Downloader from "./downloader.js";
+import fs from "fs";
+import { exec } from "child_process";
+import { ipcRenderer, shell } from "electron";
+import getPath from "./getPath.js";
+const dler = new Downloader();
 
 export default {
     components: {
@@ -13,7 +19,6 @@ export default {
             activeAudio: {},
             duration: 100,
             currentTime: 0,
-            req: null,
             allLive: true,
             liveQueryList: []
         };
@@ -43,34 +48,25 @@ export default {
         async selectAudio(audio){
             if(this.activeAudio.hash !== audio.hash){
                 this.playSe(this.enterSe);
-
-
-                if(this.req){
-                    this.total = 0;
-                    this.current = 0;
-                    this.text = "";
-                    this.req.abort();
-                    this.req = null;
-                }
+                dler.stop();
+                this.total = 0;
+                this.current = 0;
+                this.text = "";
 
                 if(audio.name.split("/")[0] === "b"){
                     if(!fs.existsSync(getPath(`./public/asset/sound/bgm/${audio.fileName}`))){
                         if(navigator.onLine){
                             this.activeAudio = audio;
-                            let result = await this.dl(
-                                `http://storage.game.starlight-stage.jp/dl/resources/High/Sound/Common/${audio.name.split("/")[0]}/${audio.hash}`,
+                            let result = await dler.download(
+                                this.getBgmUrl(audio.hash),
                                 getPath(`./public/asset/sound/bgm/${audio.name.split("/")[1]}`),
                                 (prog) => {
                                     this.text = prog.name;
                                     this.current = prog.loading;
                                     this.total = prog.loading;
-                                },
-                                (req) => {
-                                    this.req = req;
                                 }
                             );
                             if(result){
-                                this.req = null;
                                 this.total = 99.99;
                                 this.current = 99.99;
                                 this.text += this.$t("live.decoding");
@@ -91,20 +87,16 @@ export default {
                     if(!fs.existsSync(getPath(`./public/asset/sound/live/${audio.fileName}`))){
                         if(navigator.onLine){
                             this.activeAudio = audio;
-                            let result = await this.dl(
-                                `http://storage.game.starlight-stage.jp/dl/resources/High/Sound/Common/${audio.name.split("/")[0]}/${audio.hash}`,
+                            let result = await dler.download(
+                                this.getLiveUrl(audio.hash),
                                 getPath(`./public/asset/sound/live/${audio.name.split("/")[1]}`),
                                 (prog) => {
                                     this.text = prog.name;
                                     this.current = prog.loading;
                                     this.total = prog.loading;
-                                },
-                                (req) => {
-                                    this.req = req;
                                 }
                             );
                             if(result){
-                                this.req = null;
                                 this.total = 99.99;
                                 this.current = 99.99;
                                 this.text += this.$t("live.decoding");
@@ -126,6 +118,7 @@ export default {
             this.playSe(this.enterSe);
             if(this.queryString){
                 this.allLive = false;
+                this.liveQueryList = [];
                 const re = new RegExp(this.queryString);
                 for(let i = 0; i < this.liveManifest.length; i++){
                     if(re.test(this.liveManifest[i].fileName)){
@@ -140,7 +133,7 @@ export default {
         },
         opendir(){
             this.playSe(this.enterSe);
-            exec("explorer " + getPath("./public/asset/sound"));
+            shell.openExternal(getPath("./public/asset/sound"));
         },
         stopDownload(){
             this.playSe(this.cancelSe);

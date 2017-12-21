@@ -1,17 +1,12 @@
 <template>
 <div v-show="show" class="modal">
     <transition name="scale" @after-leave="afterLeave">
-        <div style="width: 600px;" v-show="visible">
+        <div style="width: 600px;" v-show="visible" ref="dialogWindow">
             <div class="modal-header">
-                <!-- <button type="button" class="close" data-dismiss="modal" aria-label="Close"><span aria-hidden="true">&times;</span></button> -->
                 <span class="title-dot"></span><span class="title-dot"></span><span class="title-dot"></span>
-                <h4 class="modal-title" id="calError1">
-                    {{title}}
-                </h4>
+                <h4 class="modal-title" id="calError1">{{title}}</h4>
             </div>
-            <div class="modal-body">
-                {{body}}
-            </div>
+            <div class="modal-body" ref="alertBody" v-html="body"></div>
             <div class="modal-footer">
                 <button type="button" class="cgss-btn cgss-btn-default" @click="close">{{$t("home.close")}}</button>
             </div>
@@ -39,11 +34,20 @@ export default {
             this.show = false;
             this.title = "";
             this.body = "";
+            this.$refs.dialogWindow.style.width = "600px";
         }
     },
     mounted(){
         this.$nextTick(() => {
-            this.event.$on("alert", (title, body) => {
+            let alertBody = this.$refs.alertBody;
+            alertBody.style.maxHeight = window.innerHeight - 267 + "px";
+            window.addEventListener("resize", () => {
+                alertBody.style.maxHeight = window.innerHeight - 267 + "px";
+            }, false);
+            this.event.$on("alert", (title, body, width) => {
+                if(width){
+                    this.$refs.dialogWindow.style.width = width + "px";
+                }
                 this.title = title;
                 this.body = body;
                 this.show = true;
@@ -93,6 +97,7 @@ export default {
     padding: 15px;
     background-color: rgba(0,0,0,.87);
     color: #fff;
+    overflow: auto;
 }
 .modal-footer {
     padding: 15px;

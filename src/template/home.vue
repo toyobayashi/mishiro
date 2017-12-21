@@ -11,11 +11,12 @@
         <cgss-table :data="data" @change="tableChange"
         :is-disabled="isDisabled"></cgss-table>
     </div>
-    <task :total-loading="total" :current-loading="current" :text="text" class="margin-top-20"></task>
+    <task :total-loading="total" :current-loading="current" :text="text" class="margin-top-20" :color="'event'"></task>
 </div>
 </template>
 
-<script src="../js/home.js"></script>
+<script src="../js/home.js">
+</script>
 
 <style>
 .db-query{

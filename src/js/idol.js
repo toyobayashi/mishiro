@@ -1,7 +1,10 @@
 import progressBar from "../template/progressBar.vue";
 import smallTab from "../template/smallTab.vue";
-/* import downloader from "./batchDownload.js";
-const dler = new downloader(); */
+import Downloader from "./downloader.js";
+import getPath from "./getPath.js";
+import fs from "fs";
+import { shell } from "electron";
+const dler = new Downloader();
 
 export default {
     components: {
@@ -19,8 +22,7 @@ export default {
             practice: {
                 before: "idol.before",
                 after: "idol.after"
-            },
-            req: null
+            }
         };
     },
     computed: {
@@ -129,6 +131,7 @@ export default {
         },
         selectedIdol(card){
             if(this.activeCard.id != card.id){
+                dler.stop();
                 this.playSe(this.enterSe);
                 this.activeCard = card;
                 this.information = card;
@@ -146,10 +149,7 @@ export default {
             }
         },
         async changeBackground(card){
-            if(this.req){
-                this.req.abort();
-                this.req = null;
-            }
+
             this.imgProgress = 0;
 
             if(Number(card.rarity) > 4){
@@ -163,14 +163,15 @@ export default {
                 this.event.$emit("noBg");
             }
         },
-        async downloadCard(id){
-            return await this.dl(`https://hoshimoriuta.kirara.ca/spread/${id}.png`, getPath(`./public/img/card/bg_${id}.png`), (prog) => {
-                this.imgProgress = prog.loading;
-            }, (req) => {
-                this.req = req;
-            });
+        async downloadCard(id, progressing){
+            return await dler.download(
+                `https://hoshimoriuta.kirara.ca/spread/${id}.png`,
+                getPath(`./public/img/card/bg_${id}.png`),
+                (progressing ? progressing : (prog => { this.imgProgress = prog.loading; }))
+            );
         },
         toggle(practice){
+            dler.stop();
             switch(practice){
                 case "idol.before":
                     this.information = this.activeCard;
@@ -190,8 +191,10 @@ export default {
         },
         opendir(){
             this.playSe(this.enterSe);
-            system("if not exist \"public\\img\\card\" md \"public\\img\\card\"");
-            exec("explorer " + getPath("./public/img/card"));
+            if(!fs.existsSync(getPath("./public/img/card"))){
+                fs.mkdirSync(getPath("./public/img/card"));
+            }
+            shell.openExternal(getPath("./public/img/card"));
         }
     },
     filters: {

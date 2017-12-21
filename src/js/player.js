@@ -48,7 +48,9 @@ export default {
         };
     },
     computed: {
-
+        eventInfo(){
+            return this.$store.state.master.eventData;
+        }
     },
     methods: {
         initSrc(){
@@ -152,7 +154,7 @@ export default {
                         break;
                     }
                 }
-                if(this.playing.src === `./asset/sound/bgm/bgm_event_${this.$store.state.eventInfo.id}.mp3`){
+                if(this.playing.src === `./asset/sound/bgm/bgm_event_${this.eventInfo.id}.mp3`){
                     flag = true;
                 }
                 if(flag){
@@ -168,9 +170,9 @@ export default {
                             }
                             break;
                         case "live":
-                            if(this.$store.state.eventInfo.type != 2){
-                                if(this.playing.src !== `./asset/sound/bgm/bgm_event_${this.$store.state.eventInfo.id}.mp3`){
-                                    this.event.$emit("liveSelect", { src: `./asset/sound/bgm/bgm_event_${this.$store.state.eventInfo.id}.mp3` });
+                            if(this.eventInfo.type != 2){
+                                if(this.playing.src !== `./asset/sound/bgm/bgm_event_${this.eventInfo.id}.mp3`){
+                                    this.event.$emit("liveSelect", { src: `./asset/sound/bgm/bgm_event_${this.eventInfo.id}.mp3` });
                                 }
                             }
                             else{
@@ -179,10 +181,20 @@ export default {
                                 }
                             }
                             break;
+                        case "gacha":
+                            if(this.playing.src !== bgmList.gacha.src){
+                                this.play(bgmList.gacha);
+                            }
+                            break;
+                        case "menu":
+                            if(this.playing.src !== bgmList.day.src && this.playing.src !== bgmList.sunset.src && this.playing.src !== bgmList.night.src){
+                                this.playStudioBgm();
+                            }
+                            break;
                         default:
                             break;
                     }
-                } 
+                }
             });
             this.event.$on("liveSelect", (bgm) => {
                 let flag = false;

@@ -68,5 +68,43 @@ export default {
     live: {
         decoding: "　解碼中...",
         input: "捜索Live曲"
+    },
+    gacha: {
+        ikkai: "単抽",
+        jukkai: "十連",
+        history: "歴史記録",
+        information: "転蛋詳細",
+        clear: "清除",
+        ko: "个",
+        name: "名称",
+        id: "編号",
+        discription: "説明",
+        startDate: "開始時間",
+        endDate: "結束時間",
+        cost: "消耗星鑽",
+        r: "R",
+        sr: "SR",
+        ssr: "SSR",
+        get: "已獲得"
+    },
+    menu: {
+        option: "選項",
+        about: "関於",
+        save: "保存",
+        relaunch: "重新啓動",
+        resVer: "資源版本",
+        gacha: "転蛋ID",
+        event: "活動ID",
+        background: "背景",
+        license: "許可証",
+        lang: "語言",
+        eventPlacehoder: "参照BGM文件名: ",
+        backPlacehoder: "偶像卡片ID",
+        var: "声明",
+        varCon: "通過本軟件成功提取出来的資源版権帰BANDAI NAMCO Entertainment Inc.所有，請勿用於商業用途，如有因此引発的任何法律問題，一切与本軟件作者無関，後果自負。",
+        appname: "応用名",
+        appver: "版本",
+        description: "説明",
+        descCon: "用於下載CGSS (IDOLMASTER CINDERELLA GIRLS STARLIGHT STAGE) 音楽和図片資源的卓面応用。"
     }
 };

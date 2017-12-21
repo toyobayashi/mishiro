@@ -19,6 +19,11 @@
         <small-tab :tab="i18nTabs" :default="_i18n._vm.locale" id="i18nTab" @tabClicked="changeLanguage"></small-tab>
         <nav-bar :current-block="currentBlock" @changeBlock="changeBlock"></nav-bar>
     </div>
+    <about></about>
+    <gacha-information></gacha-information>
+    <gacha-history></gacha-history>
+    <gacha-card></gacha-card>
+    <setting></setting>
     <alert></alert>
 </div>
 </template>
@@ -38,6 +43,11 @@ import live from "./live.vue";
 import gacha from "./gacha.vue";
 import menu from "./menu.vue";
 import alert from "./alert.vue";
+import gachaHistory from "./gachaHistory.vue";
+import gachaCard from "./gachaCard.vue";
+import gachaInformation from "./gachaInformation.vue";
+import about from "./about.vue";
+import setting from "./setting.vue";
 export default {
     components: {
         entry,
@@ -53,14 +63,19 @@ export default {
         live,
         gacha,
         menyuu: menu,
-        alert
+        alert,
+        gachaHistory,
+        gachaCard,
+        gachaInformation,
+        about,
+        setting
     },
     data(){
         return {
             isEntered: false,
             isReady: false,
             show: true,
-            currentBlock: "live",
+            currentBlock: "home",
             i18nTabs: {
                 zh: "i18n.chinese",
                 ja: "i18n.japanese"
@@ -91,24 +106,14 @@ export default {
             }, 0);
         },
         afterEnter(){
-            console.log("[event] enter");
+            // console.log("[event] enter");
             this.event.$emit("enter");
         },
         changeBlock(block){
             this.currentBlock = block;
             this.event.$emit("changeBgm", block);
         }
-    }/* ,
-    mounted(){
-        this.$nextTick(() => {
-            this.event.$on("enter", () => {
-                
-            });
-            this.event.$on("ready", () => {
-                
-            });
-        });
-    } */
+    }
 };
 </script>
 

@@ -12,7 +12,7 @@
     </div>
     <div class="black-bg idol-info margin-top-10">
         <div class="clearfix">
-            <progress-bar class="cgss-progress-load pull-left" :percent="imgProgress"></progress-bar>
+            <progress-bar class="cgss-progress-stamina pull-left" :percent="imgProgress"></progress-bar>
             <small-tab class="pull-right" :tab="practice" :default="'after'" @tabClicked="toggle"></small-tab>
         </div>
         <table class="table-bordered" border="1"
@@ -104,7 +104,8 @@
 </div>
 </template>
 
-<script src="../js/idol.js"></script>
+<script src="../js/idol.js">
+</script>
 
 <style>
 .cute>tr>td:nth-last-child(1), .cute>tr>td:nth-last-child(2){
@@ -144,7 +145,7 @@
 .idol-info{
     height: calc(100% - 93px);
 }
-.idol-info>div>.cgss-progress-load{
+.idol-info>div>.cgss-progress-stamina{
     width: calc(100% - 200px);
 }
 .idol-info>div>.pull-right{

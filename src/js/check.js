@@ -1,10 +1,14 @@
+import request from "request";
+import fs from "fs";
+import getPath from "./getPath.js";
+import configurer from "./config.js";
+
 let current = 0, max = 20;
 
 function httpGetVersion(resVer, progressing){
     const option = {
-        protocol: "http:",
-        hostname: "storage.game.starlight-stage.jp",
-        path: "/dl/" + resVer + "/manifests/all_dbmanifest",
+        method: "GET",
+        url: `http://storage.game.starlight-stage.jp/dl/${resVer}/manifests/all_dbmanifest`,
         headers: {
             "User-Agent": "Dalvik/2.1.0 (Linux; U; Android 7.0; Nexus 42 Build/XYZZ1Y)",
             "X-Unity-Version": "5.1.2f1",
@@ -12,30 +16,37 @@ function httpGetVersion(resVer, progressing){
         }
     };
     return new Promise((resolve) => {
-        http.get(option, (res) => {
-            current++;
-            progressing({ current, max, loading: 100 * current / max });
-            if(res.statusCode === 200){
-                resolve({ version: resVer, isExisting: true });
-            }
-            else{
+        request(option, (err, res) => {
+            if(err){
                 resolve({ version: resVer, isExisting: false });
             }
-        }).on("error", function(){
-            resolve({ version: resVer, isExisting: false });
+            else{
+                current++;
+                progressing({ current, max, loading: 100 * current / max });
+                if(res.statusCode === 200){
+                    resolve({ version: resVer, isExisting: true });
+                }
+                else{
+                    resolve({ version: resVer, isExisting: false });
+                }
+            }
         });
     });
 }
 
-function check(progressing, debugVersion){
-    system("if not exist data md data");
-    if(!fs.existsSync(getPath("./data/version"))){
-        fs.writeFileSync(getPath("./data/version"), "10033100");
+function check(progressing){
+    if(!fs.existsSync(getPath("./data"))){
+        fs.mkdirSync(getPath("./data"));
     }
-    if(debugVersion){
-        return debugVersion;
+    let config = configurer.getConfig();
+    if(config.resVer){
+        return config.resVer;
     }
-    const versionFrom = Number(fs.readFileSync(getPath("./data/version")).toString());
+    if(!config.latestResVer){
+        configurer.configure("latestResVer", 10033300);
+    }
+
+    let versionFrom = configurer.getConfig().latestResVer;
 
     return new Promise((resolve) => {
         let resVer = versionFrom;
@@ -62,7 +73,8 @@ function check(progressing, debugVersion){
                     }
                 }
                 if(!isContinue){
-                    fs.writeFileSync(getPath("./data/version"), resVer);
+                    // fs.writeFileSync(getPath("./data/version"), resVer);
+                    configurer.configure("latestResVer", resVer);
                     resolve(resVer);
                 }
             });

@@ -1,8 +1,8 @@
 <template>
 <div class="task flex-center">
     <p style="height:30px;">{{text}}</p>
-    <progress-bar class="cgss-progress-load" :percent="currentLoading"></progress-bar>
-    <progress-bar class="cgss-progress-load margin-top-10" :percent="totalLoading" v-show="!single"></progress-bar>
+    <progress-bar :class="'cgss-progress-' + (color ? color : 'load')" :percent="currentLoading"></progress-bar>
+    <progress-bar :class="'cgss-progress-' + (color ? color : 'load')" class="margin-top-10" :percent="totalLoading" v-show="!single"></progress-bar>
     <p>{{$t("update.tip")}}</p>
 </div>
 </template>
@@ -16,13 +16,6 @@
     background-color: #aaa;
     height: 150px;
 }
-.flex-center{
-    display: flex;
-    flex-direction: column;
-    justify-content: center;
-    align-items: center;
-}
-
 </style>
 
 <script>
@@ -31,7 +24,7 @@ export default {
     components: {
         progressBar
     },
-    props: ["currentLoading", "totalLoading", "text", "single"],
+    props: ["currentLoading", "totalLoading", "text", "single", "color"],
     data(){
         return {
 
