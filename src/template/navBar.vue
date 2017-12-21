@@ -17,12 +17,7 @@ export default {
     methods: {
         navToggle(block){
             if(block !== this.currentBlock){
-                if(block === "gacha" || block === "menu"){
-                    this.event.$emit("alert", this.$t("home.errorTitle"), this.$t("home.hope"));
-                }
-                else{
-                    this.$emit("changeBlock", block);
-                }
+                this.$emit("changeBlock", block);
                 this.playSe(this.enterSe);
             }
         }

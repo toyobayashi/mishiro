@@ -1,31 +1,28 @@
 ﻿const webpack = require("webpack");
 const ExtractTextPlugin = require("extract-text-webpack-plugin");
+const UglifyJSPlugin = require("uglifyjs-webpack-plugin");
 const path = require("path");
 
-const option = {
+let renderer = {
     target: "electron-renderer",
-    // 入口文件
-    entry: "./src/index.js",
-    // 出口文件
+    entry: "./src/renderer.js",
     output: {
         path: path.resolve(__dirname, "public"),
         filename: "mishiro.min.js"
     },
     node: {
-        fs: "empty"
+        __dirname: false
     },
-    // 加载器
     module: {
         rules: [{
             test: /\.css$/,
             exclude: /node_modules/,
-            // loader: 'style-loader!css-loader'
             use: ExtractTextPlugin.extract({
                 fallback: "style-loader",
                 use: [{
                     loader: "css-loader",
                     options: {
-                        minimize: true //css压缩
+                        minimize: true
                     }
                 }]
             })
@@ -52,22 +49,13 @@ const option = {
             loader: "file-loader?name=./asset/sound/[name].[ext]?[hash]"
         }]
     },
-    // 处理别名
-    resolve: {
-        alias: {
-            "vue": "vue/dist/vue.js"
-        }
+    externals: {
+        "vue": "require(\"vue/dist/vue.js\")",
+        "vue-i18n": "require(\"vue-i18n\")",
+        "vuex": "require(\"vuex\")",
+        "request": "require(\"request\")"
     },
-    // 插件
     plugins: [
-        /* new webpack.optimize.UglifyJsPlugin({
-            compress: {
-                warnings: false
-            },
-            output: {
-                comments: false
-            }
-        }), */
         new ExtractTextPlugin("./mishiro.min.css"),
         new webpack.LoaderOptionsPlugin({
             minimize: true
@@ -75,4 +63,37 @@ const option = {
     ]
 };
 
-module.exports = option;
+let main = {
+    target: "electron-main",
+    entry: "./src/main.js",
+    output: {
+        path: path.resolve(__dirname, "."),
+        filename: "main.min.js"
+    },
+    node: {
+        __dirname: false
+    },
+    externals: {
+        "sql.js": "require(\"sql.js\")"
+    },
+    plugins: []
+};
+
+
+if(process.env.NODE_ENV == "production"){
+    const uglifyjs = new UglifyJSPlugin({
+        uglifyOptions: {
+            ecma: 8,
+            output: {
+                comments: false,
+                beautify: false
+            },
+            warnings: false
+        }
+    });
+    renderer.externals["vue"] = "require(\"vue/dist/vue.min.js\")";
+    renderer.plugins.push(uglifyjs);
+    main.plugins.push(uglifyjs);
+}
+
+module.exports = [renderer, main];

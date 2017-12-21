@@ -38,9 +38,9 @@ export default {
     mounted(){
         this.$nextTick(() => {
             this.bg = (window.innerWidth / window.innerHeight >= 1280 / 824);
-            window.onresize = (() => {
+            window.addEventListener("resize", () => {
                 this.bg = (window.innerWidth / window.innerHeight >= 1280 / 824);
-            });
+            }, false);
         });
     }
 };

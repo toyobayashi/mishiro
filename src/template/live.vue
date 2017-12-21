@@ -24,7 +24,7 @@
     </div>
     
     <div class="margin-top-20 clearfix live-bottom">
-        <task :total-loading="total" :current-loading="current" :text="text" :single="true" class="absolute-left"></task>
+        <task :total-loading="total" :current-loading="current" :text="text" :single="true" class="absolute-left" :color="'live'"></task>
         <div class="gray-bg absolute-right flex-center timebar">
             <p>{{Math.floor(currentTime) | time}} / {{Math.floor(duration) | time}}</p>
             <input type="range" ref="playProg" :max="duration" min="0" :value="currentTime" @input="oninput()">
@@ -33,7 +33,8 @@
 </div>
 </template>
 
-<script src="../js/live.js"></script>
+<script src="../js/live.js">
+</script>
 
 <style>
 .timebar{

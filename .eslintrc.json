@@ -23,6 +23,8 @@
             {
                 "overrides": {
                     "if": { "after": false },
+                    "try": { "after": false },
+                    "catch": { "after": false },
                     "for": { "after": false },
                     "switch": { "after": false },
                     "else": { "after": false },
@@ -39,19 +41,9 @@
         "space-before-blocks": [2, "never"], // 代码块前的空格
         "no-trailing-spaces": 1, // 禁止行尾多余的空格
         "no-console": 1, // 禁止console
-        "no-alert": 1 // 禁止alert
-    },
-    "globals": {
-        "fs": true,
-        "SQL": true,
-        "getPath": true,
-        "system": true,
-        "path": true,
-        "http": true,
-        "Vue": true,
-        "Vuex": true,
-        "VueI18n": true,
-        "request": true
+        "no-alert": 1, // 禁止alert
+        "no-irregular-whitespace": 0,
+        "no-constant-condition": 0
     },
     "parser": "babel-eslint",
     "plugins": [

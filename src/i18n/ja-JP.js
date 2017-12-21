@@ -68,5 +68,43 @@ export default {
     live: {
         decoding: "　デコード中...",
         input: "ライブ曲検索"
+    },
+    gacha: {
+        ikkai: "1回引く",
+        jukkai: "10回引く",
+        history: "ログ",
+        information: "ガチャ詳細",
+        clear: "クリア",
+        ko: "個",
+        name: "ガチャ名",
+        id: "ガチャID",
+        discription: "説明",
+        startDate: "開始日時",
+        endDate: "終了日時",
+        cost: "ｽﾀｰｼﾞｭｴﾙ",
+        r: "レア",
+        sr: "Sレア",
+        ssr: "SSレア",
+        get: "獲得済み"
+    },
+    menu: {
+        option: "オプション",
+        about: "アバウト",
+        save: "セーブ",
+        relaunch: "再起動",
+        resVer: "バージョン",
+        gacha: "ガチャID",
+        event: "イベントID",
+        background: "背景",
+        license: "ライセンス",
+        lang: "言語",
+        eventPlacehoder: "BGMファイル名: ",
+        backPlacehoder: "アイドルカードID",
+        var: "声明",
+        varCon: "本ソフトで獲得できたCGSSに関する全てのリソース及び内容の著作権はBANDAI NAMCO Entertainment Inc.に属します。商用は禁止です。もしそれによって何かの法律問題でも起こした際、本ソフトの作者と一切関係なく、責任は負いかねます。",
+        appname: "アプリ名",
+        appver: "バージョン",
+        description: "説明",
+        descCon: "CGSS (アイドルマスターシンデレラガールズスターライトステージ) のリソースのダウンロードできるデスクトップアプリです。"
     }
 };

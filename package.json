@@ -2,14 +2,15 @@
   "name": "mishiro",
   "productName": "mishiro",
   "companyName": "Toyo",
-  "version": "0.3.0",
-  "description": "CGSS desktop application",
-  "main": "main.js",
+  "version": "1.0.0",
+  "description": "A desktop application that can be used for getting the resource of CGSS (IDOL MASTER CINDERELLA GIRLS STARLIGHT STAGE).",
+  "main": "main.min.js",
   "scripts": {
     "start": "electron . --enable-logging",
     "dev": "webpack -w",
-    "pkgWin32": "electron-packager . mishiro --platform=win32 --arch=ia32 --icon=./public/favicon.ico --out=./dist --overwrite --app-version=0.3.0 --ignore=\"(node_modules|data|download|dist|src|docs|public/img/card|public/asset/sound/live|.gitignore|LICENSE|README.md|webpack.config.js|.babelrc|.eslintrc.json)\"",
-    "pkgWin64": "electron-packager . mishiro --platform=win32 --arch=x64 --icon=./public/favicon.ico --out=./dist --overwrite --app-version=0.3.0 --ignore=\"(node_modules|data|download|dist|src|docs|public/img/card|public/asset/sound/live|.gitignore|LICENSE|README.md|webpack.config.js|.babelrc|.eslintrc.json)\""
+    "test": "set NODE_ENV=production&&webpack",
+    "proWin32": "set NODE_ENV=production&&webpack&&electron-packager . mishiro --platform=win32 --arch=ia32 --icon=./public/favicon.ico --out=./dist --overwrite --app-version=1.0.0 --win32metadata.FileDescription=\"CGSS Desktop Application\" --ignore=\"(node_modules|data|download|dist|src|docs|public/img/card|public/asset/sound/live|.gitignore|README.md|webpack.config.js|.babelrc|.eslintrc.json|config.json)\"",
+    "proWin64": "set NODE_ENV=production&&webpack&&electron-packager . mishiro --platform=win32 --arch=x64 --icon=./public/favicon.ico --out=./dist --overwrite --app-version=1.0.0 --win32metadata.FileDescription=\"CGSS Desktop Application\" --ignore=\"(node_modules|data|download|dist|src|docs|public/img/card|public/asset/sound/live|.gitignore|README.md|webpack.config.js|.babelrc|.eslintrc.json|config.json)\""
   },
   "repository": {
     "type": "git",
@@ -34,6 +35,7 @@
     "extract-text-webpack-plugin": "^3.0.0",
     "file-loader": "^0.11.2",
     "style-loader": "^0.18.2",
+    "uglifyjs-webpack-plugin": "^1.1.4",
     "url-loader": "^0.5.9",
     "vue-loader": "^13.0.5",
     "vue-template-compiler": "^2.5.8",

@@ -12,7 +12,7 @@
     src: url("../res/asset/font/FOT-RodinNTLGPro-B.otf"); 
 }
 body{
-	overflow-y: auto;
+	overflow: hidden;
 	font-size: 15px;
 	user-select: none;
 	cursor: default;
@@ -284,4 +284,16 @@ td, th{
 }
 .margin-top-20{
     margin-top: 20px;
+}
+.flex-center{
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    align-items: center;
+}
+.flex-left-middle{
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    align-items: flex-start;
 }

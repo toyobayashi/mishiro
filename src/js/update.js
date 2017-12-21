@@ -1,9 +1,17 @@
+import fs from "fs";
+import path from "path";
 import progressBar from "../template/progressBar.vue";
 import check from "./check.js";
 import downloadManifest from "./downloadManifest.js";
 import downloadMaster from "./downloadMaster.js";
-import downloader from "./batchDownload.js";
-const dler = new downloader();
+import Downloader from "./downloader.js";
+import { ipcRenderer } from "electron";
+import getPath from "./getPath.js";
+import toName from "./path2name.js";
+import idol from "./idol.js";
+import player from "./player.js";
+const bgmList = player.data().bgmList;
+const downloader = new Downloader();
 
 export default {
     components: {
@@ -17,37 +25,6 @@ export default {
         };
     },
     methods: {
-        getEventId(eventData){
-            const time = new Date();
-            let happening = false;
-
-            let noEventTime = Infinity, noEventIndex = -1;
-
-            for(let i = eventData.length - 1; i >= 0; i--){
-                let st = new Date(eventData[i]["event_start"]);
-                let rt = new Date(eventData[i]["result_end"]);
-                rt = rt.getTime() - 60 * 60 * 1000;
-                st = st.getTime() - 60 * 60 * 1000;
-
-                const dt = Math.abs(time.getTime() - rt);
-                if(dt <= noEventTime){
-                    noEventTime = dt;
-                    noEventIndex = i;
-                }
-
-                rt = new Date(rt);
-                st = new Date(st);
-                if(time.getTime() < rt.getTime() && time.getTime() >= st.getTime()){
-                    happening = true;
-                    this.$store.commit("updateEventInfo", eventData[i]);
-                    return eventData[i].id;
-                }
-            }
-            if(!happening){
-                this.$store.commit("updateEventInfo", eventData[noEventIndex]);
-                return eventData[noEventIndex].id;
-            }
-        },
         getEventCardId(eventAvailable){
             eventAvailable.sort(function (a, b){
                 return a.recommend_order - b.recommend_order;
@@ -56,14 +33,14 @@ export default {
         },
         emitReady(){
             this.$emit("ready");
-            console.log("[event] ready");
+            // console.log("[event] ready");
             this.event.$emit("ready");
         },
-        getResVer: async function(debugVersion){
+        getResVer: async function(){
             let resVer = await check((prog) => { // 检查资源版本，回调更新进度条
                 this.text = this.$t("update.check") + prog.current + " / " + prog.max;
                 this.loading = prog.loading;
-            }, debugVersion);
+            });
             return resVer;
         },
         getManifest: async function(resVer){
@@ -81,7 +58,7 @@ export default {
                     this.loading = prog.loading;
                 });
                 manifestFile = this.lz4dec(manifestLz4File, "db");
-                system(`del /q /f .\\data\\manifest_${resVer}`);
+                fs.unlinkSync(getPath(`./data/manifest_${resVer}`));
             }
             return manifestFile;
         },
@@ -100,9 +77,14 @@ export default {
                     this.loading = prog.loading;
                 });
                 masterFile = this.lz4dec(masterLz4File, "db");
-                system(`del /q /f .\\data\\master_${resVer}`);
+                fs.unlinkSync(getPath(`./data/master_${resVer}`));
             }
             return masterFile;
+        }
+    },
+    computed: {
+        eventInfo(){
+            return this.$store.state.master.eventData;
         }
     },
     mounted(){
@@ -111,10 +93,13 @@ export default {
                 if(navigator.onLine
                 /* false */
                 ){ // 判断网络是否连接
-                    system("if not exist \"public\\asset\\sound\" md \"public\\asset\\sound\"");
-                    system("if not exist \"public\\asset\\sound\\bgm\" md \"public\\asset\\sound\\bgm\"");
-                    system("if not exist \"public\\asset\\sound\\live\" md \"public\\asset\\sound\\live\"");
-                    const resVer = await this.getResVer("10033100");
+                    if(!fs.existsSync(getPath("./public/asset/sound/bgm"))){
+                        fs.mkdirSync(getPath("./public/asset/sound/bgm"));
+                    }
+                    if(!fs.existsSync(getPath("./public/asset/sound/live"))){
+                        fs.mkdirSync(getPath("./public/asset/sound/live"));
+                    }
+                    const resVer = await this.getResVer();
                     this.$store.commit("updateResVer", resVer);
 
                     const manifestFile = await this.getManifest(resVer);
@@ -126,38 +111,74 @@ export default {
                         ipcRenderer.send("readMaster", fs.readFileSync(masterFile));
                     });
                     ipcRenderer.on("readMaster", async (event, masterData) => {
-                        console.log(masterData);
+                        // console.log(masterData);
                         this.$store.commit("updateMaster", masterData);
-                        const eventId = this.getEventId(masterData.eventData);
-                        const eventAvailable = masterData.eventAvailable.filter(row => row.event_id == eventId);
-                        const cardId = this.getEventCardId(eventAvailable);
-                        if(this.$store.state.eventInfo.type != 2 && !fs.existsSync(getPath(`./public/asset/sound/bgm/bgm_event_${this.$store.state.eventInfo.id}.mp3`))){
-                            const eventBgmHash = this.$store.state.manifest.filter(row => row.name === `b/bgm_event_${this.$store.state.eventInfo.id}.acb`)[0].hash;
-                            await this.dl(
-                                `http://storage.game.starlight-stage.jp/dl/resources/High/Sound/Common/b/${eventBgmHash}`,
-                                getPath(`./public/asset/sound/bgm/bgm_event_${this.$store.state.eventInfo.id}.acb`),
+
+                        for(let k in bgmList){
+                            if(!fs.existsSync(path.join(getPath("./public"), bgmList[k].src))){
+                                let acbName = `b/${toName(bgmList[k].src).split(".")[0]}.acb`;
+                                let hash = this.$store.state.manifest.filter(row => row.name === acbName)[0].hash;
+                                await downloader.download(
+                                    this.getBgmUrl(hash),
+                                    getPath(`./public/asset/sound/bgm/${toName(bgmList[k].src).split(".")[0]}.acb`),
+                                    (prog) => {
+                                        this.text = prog.name + "　" + Math.ceil(prog.current / 1024) + "/" + Math.ceil(prog.max / 1024) + " KB";
+                                        this.loading = prog.loading;
+                                    }
+                                );
+                                ipcRenderer.send("acb", getPath(`./public/asset/sound/bgm/${toName(bgmList[k].src).split(".")[0]}.acb`));
+                            }
+                        }
+                        if(this.eventInfo.type != 2 && !fs.existsSync(getPath(`./public/asset/sound/bgm/bgm_event_${this.eventInfo.id}.mp3`))){
+                            const eventBgmHash = this.$store.state.manifest.filter(row => row.name === `b/bgm_event_${this.eventInfo.id}.acb`)[0].hash;
+                            await downloader.download(
+                                this.getBgmUrl(eventBgmHash),
+                                getPath(`./public/asset/sound/bgm/bgm_event_${this.eventInfo.id}.acb`),
                                 (prog) => {
                                     this.text = prog.name + "　" + Math.ceil(prog.current / 1024) + "/" + Math.ceil(prog.max / 1024) + " KB";
                                     this.loading = prog.loading;
                                 }
                             );
-                            this.text = "";
-                            this.loading = 0;
-                            ipcRenderer.send("acb", getPath(`./public/asset/sound/bgm/bgm_event_${this.$store.state.eventInfo.id}.acb`));
+                            ipcRenderer.send("acb", getPath(`./public/asset/sound/bgm/bgm_event_${this.eventInfo.id}.acb`));
                         }
-                        system("if not exist \"public\\img\\card\" md \"public\\img\\card\"");
-                        const cardIdEvolution = [(Number(cardId[0]) + 1), (Number(cardId[1]) + 1)];
-                        const dltask = this.createCardBackgroundTask(cardIdEvolution);
-                        dler.batchDl(dltask, (name) => {
-                            this.text = name;
-                            this.loading = 0;
-                        }, (prog) => {
-                            this.text = prog.name + "　" + Math.ceil(prog.current / 1024) + "/" + Math.ceil(prog.max / 1024) + " KB";
-                            this.loading = prog.loading;
-                        }, (name) => {
-                            if(name === `bg_${(Number(cardId[0]) + 1)}.png`){
+                        if(!fs.existsSync(getPath("./public/img/card"))){
+                            fs.mkdirSync(getPath("./public/img/card"));
+                        }
+                        let config = this.configurer.getConfig();
+                        if(config.background){
+                            let result = await idol.methods.downloadCard(config.background, (prog) => {
+                                this.text = prog.name;
+                                this.loading = prog.loading;
+                            });
+                            if(result){
+                                this.event.$emit("eventBgReady", config.background);
+                            }
+                        }
+                        else{
+                            const eventAvailable = masterData.eventAvailable;
+                            const cardId = this.getEventCardId(eventAvailable);
+                            // const cardIdEvolution = [(Number(cardId[0]) + 1), (Number(cardId[1]) + 1)];
+                            let result = await idol.methods.downloadCard(Number(cardId[0]) + 1, (prog) => {
+                                this.text = prog.name;
+                                this.loading = prog.loading;
+                            });
+                            if(result){
                                 this.event.$emit("eventBgReady", Number(cardId[0]) + 1);
                             }
+                        }
+
+                        if(!fs.existsSync(getPath("./public/img/icon"))){
+                            fs.mkdirSync(getPath("./public/img/icon"));
+                        }
+                        let iconId = [];
+                        for(let index = 0; index < masterData.gachaAvailable.length; index++){
+                            iconId.push(masterData.gachaAvailable[index].reward_id);
+                        }
+                        const iconTask = this.createCardIconTask(iconId);
+                        await downloader.batchDl(iconTask, (name) => {
+                            this.text = name + "　" + downloader.index + "/" + iconTask.length;
+                        }, (prog) => {
+                            this.loading = 100 * downloader.index / iconTask.length + prog.loading / iconTask.length;
                         }).then(() => {
                             setTimeout(() => {
                                 this.emitReady();

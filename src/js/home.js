@@ -1,7 +1,10 @@
 import cgssTable from "../template/table.vue";
 import task from "../template/task.vue";
-import downloader from "./batchDownload.js";
-const dler = new downloader();
+import Downloader from "./downloader.js";
+import fs from "fs";
+import getPath from "./getPath.js";
+import { shell } from "electron";
+const dler = new Downloader();
 export default {
     components: {
         cgssTable,
@@ -28,8 +31,10 @@ export default {
     methods: {
         opendir(){
             this.playSe(this.enterSe);
-            system("if not exist download md download");
-            exec("explorer " + getPath("./download"));
+            if(!fs.existsSync(getPath("./download"))){
+                fs.mkdirSync(getPath("./download"));
+            }
+            shell.openExternal(getPath("./download"));
         },
         query(){
             if(this.queryString === ""){
@@ -50,7 +55,9 @@ export default {
         },
         async downloadSelectedItem(){
             this.playSe(this.enterSe);
-            system("if not exist download md download");
+            if(!fs.existsSync(getPath("./download"))){
+                fs.mkdirSync(getPath("./download"));
+            }
             if(!navigator.onLine){
                 this.event.$emit("alert", this.$t("home.errorTitle"), this.$t("home.noNetwork"));
                 return;
@@ -63,16 +70,16 @@ export default {
                 let taskArr = [];
                 for(let i = 0; i < task.length; i++){
                     if(task[i].name.split(".")[1] === "acb"){
-                        taskArr.push([`http://storage.game.starlight-stage.jp/dl/resources/High/Sound/Common/${task[i].name.split("/")[0]}/${task[i].hash}`, getPath(`./download/${task[i].name.split("/")[1]}`), "acb"]);
+                        taskArr.push([this.getAcbUrl(task[i].name.split("/")[0], task[i].hash), getPath(`./download/${task[i].name.split("/")[1]}`), "acb"]);
                     }
                     else if(task[i].name.split(".")[1] === "unity3d"){
-                        taskArr.push([`http://storage.game.starlight-stage.jp/dl/resources/High/AssetBundles/Android/${task[i].hash}`, getPath(`./download/${task[i].name.split(".")[0]}`), "unity3d"]);
+                        taskArr.push([this.getUnityUrl(task[i].hash), getPath(`./download/${task[i].name.split(".")[0]}`), "unity3d"]);
                     }
                     else if(task[i].name.split(".")[1] === "bdb"){
-                        taskArr.push([`http://storage.game.starlight-stage.jp/dl/resources/Generic/${task[i].hash}`, getPath(`./download/${task[i].name.split(".")[0]}`), "bdb"]);
+                        taskArr.push([this.getDbUrl(task[i].hash), getPath(`./download/${task[i].name.split(".")[0]}`), "bdb"]);
                     }
                     else if(task[i].name.split(".")[1] === "mdb"){
-                        taskArr.push([`http://storage.game.starlight-stage.jp/dl/resources/Generic/${task[i].hash}`, getPath(`./download/${task[i].name.split(".")[0]}`), "mdb"]);
+                        taskArr.push([this.getDbUrl(task[i].hash), getPath(`./download/${task[i].name.split(".")[0]}`), "mdb"]);
                     }
                 }
                 let completed = 0;
@@ -96,10 +103,10 @@ export default {
                                 else if(suffix === "mdb"){
                                     this.lz4dec(filepath, "mdb");
                                 }
-                                system(`del /q /f .\\download\\${name.split(".")[0]}`);
+                                fs.unlinkSync(getPath(`./download/${name.split(".")[0]}`));
                             }
                             else{
-                                system(`del /q /f .\\download\\${name}`);
+                                fs.unlinkSync(getPath(`./download/${name}`));
                             }
                         });
                         this.event.$emit("completeTask", name + "." + suffix);
