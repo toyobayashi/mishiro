@@ -18,7 +18,8 @@ export default {
         noNetwork: "網絡未連接。",
         close: "関閉",
         stop: "中止",
-        input: "捜索数据庫"
+        input: "捜索数据庫",
+        resVer: "資源版本"
     },
     event: {
         atapon: "消耗道具型",

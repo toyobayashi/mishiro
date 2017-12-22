@@ -1,5 +1,5 @@
 <template>
-<div class="version white-bg">Version: {{resVer}}</div>
+<div class="version white-bg">{{$t("home.resVer")}}: {{resVer}}</div>
 </template>
 <script>
 export default {

@@ -13,6 +13,7 @@ export default {
     },
     data(){
         return {
+            // tabDefault: "after",
             queryString: "",
             searchResult: [],
             activeCard: {},
@@ -239,15 +240,32 @@ export default {
     mounted(){
         this.$nextTick(() => {
             this.event.$on("eventBgReady", (id) => {
-                for(let i = 0; i < this.cardData.length; i++){
-                    if(this.cardData[i].id == id - 1){
-                        this.activeCard = this.cardData[i];
-                        continue;
+                if(id % 2 === 0){
+                    this.event.$emit("smallTab", "after");
+                    for(let i = 0; i < this.cardData.length; i++){
+                        if(this.cardData[i].id == id - 1){
+                            this.activeCard = this.cardData[i];
+                            continue;
+                        }
+                        if(this.cardData[i].id == id){
+                            this.activeCardPlus = this.cardData[i];
+                            this.information = this.cardData[i];
+                            break;
+                        }
                     }
-                    if(this.cardData[i].id == id){
-                        this.activeCardPlus = this.cardData[i];
-                        this.information = this.cardData[i];
-                        break;
+                }
+                else{
+                    this.event.$emit("smallTab", "before");
+                    for(let i = 0; i < this.cardData.length; i++){
+                        if(this.cardData[i].id == id){
+                            this.activeCard = this.cardData[i];
+                            this.information = this.cardData[i];
+                            continue;
+                        }
+                        if(this.cardData[i].id == id + 1){
+                            this.activeCardPlus = this.cardData[i];
+                            break;
+                        }
                     }
                 }
             });

@@ -18,7 +18,8 @@ export default {
         noTask: "現在何もダウンロードしていません。",
         close: "閉じる",
         stop: "中止",
-        input: "データベース検索"
+        input: "データベース検索",
+        resVer: "リソースバージョン"
     },
     event: {
         atapon: "アタポン",

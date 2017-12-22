@@ -134,12 +134,6 @@ export default {
         opendir(){
             this.playSe(this.enterSe);
             shell.openExternal(getPath("./public/asset/sound"));
-        },
-        stopDownload(){
-            this.playSe(this.cancelSe);
-        },
-        downloadAll(){
-            this.playSe(this.enterSe);
         }
     },
     filters: {
