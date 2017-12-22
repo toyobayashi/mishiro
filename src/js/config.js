@@ -9,7 +9,6 @@ class Configurer{
             return JSON.parse(fs.readFileSync(this.configFile));
         }
         else{
-            // fs.writeFileSync(this.configFile, JSON.stringify({ "latestResVer": 10033300, "language": "zh" }, null, "  "));
             return {};
         }
     }
