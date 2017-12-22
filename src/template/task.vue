@@ -24,11 +24,6 @@ export default {
     components: {
         progressBar
     },
-    props: ["currentLoading", "totalLoading", "text", "single", "color"],
-    data(){
-        return {
-
-        };
-    }
+    props: ["currentLoading", "totalLoading", "text", "single", "color"]
 };
 </script>
