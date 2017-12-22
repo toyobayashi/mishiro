@@ -43,7 +43,7 @@ function check(progressing){
         return config.resVer;
     }
     if(!config.latestResVer){
-        configurer.configure("latestResVer", 10033300);
+        configurer.configure("latestResVer", 10033400);
     }
 
     let versionFrom = configurer.getConfig().latestResVer;
