@@ -15,18 +15,6 @@ let renderer = {
     },
     module: {
         rules: [{
-            test: /\.css$/,
-            exclude: /node_modules/,
-            use: ExtractTextPlugin.extract({
-                fallback: "style-loader",
-                use: [{
-                    loader: "css-loader",
-                    options: {
-                        minimize: true
-                    }
-                }]
-            })
-        }, {
             test: /\.vue$/,
             exclude: /node_modules/,
             loader: "vue-loader",
@@ -43,10 +31,6 @@ let renderer = {
             test: /\.(png|jpg|gif)$/,
             exclude: /node_modules/,
             loader: "url-loader?limit=8192&name=./img/[name].[ext]?[hash]"
-        }, {
-            test: /\.mp3$/,
-            exclude: /node_modules/,
-            loader: "file-loader?name=./asset/sound/[name].[ext]?[hash]"
         }]
     },
     externals: {
