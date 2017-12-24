@@ -99,6 +99,11 @@ export default {
         background: "背景",
         license: "許可証",
         lang: "語言",
+        update: "更新",
+        noUpdate: "当前版本已経是最新版本。",
+        release: "獲得最新版本",
+        version: "最新版本",
+        commit: "最新提交",
         eventPlacehoder: "参照BGM文件名: ",
         backPlacehoder: "偶像卡片ID",
         var: "声明",
@@ -106,6 +111,6 @@ export default {
         appname: "応用名",
         appver: "版本",
         description: "説明",
-        descCon: "用於下載CGSS (IDOLMASTER CINDERELLA GIRLS STARLIGHT STAGE) 音楽和図片資源的卓面応用。"
+        descCon: "用於提取CGSS (IDOLMASTER CINDERELLA GIRLS STARLIGHT STAGE) 音楽和図片資源的Windows卓面応用。"
     }
 };

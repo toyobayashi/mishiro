@@ -19,7 +19,6 @@
                   v-bind:class="{ theme: bgm.src === src }"></span>
         </li>
     </ul>
-    <!-- <audio id="bgm" preload="auto" v-bind:src="src" type="audio/mpeg"></audio> -->
 </div>
 </template>
 

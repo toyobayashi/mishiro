@@ -11,8 +11,8 @@
         <div class="flex-center margin-top-20">
             <div class="clearfix">
                 <button class="cgss-btn-lg cgss-btn-lg-star pull-right margin-left-20" @click="showVar">{{$t("menu.var")}}</button>
-                <button class="cgss-btn-lg cgss-btn-lg-star pull-right margin-left-20" @click="showRepo">Github</button>
-                <button class="cgss-btn-lg cgss-btn-lg-ok pull-right" @click="relaunch">{{$t("menu.relaunch")}}</button>
+                <button class="cgss-btn-lg cgss-btn-lg-star pull-right margin-left-20" @click="relaunch">{{$t("menu.relaunch")}}</button>
+                <button class="cgss-btn-lg cgss-btn-lg-ok pull-right" @click="update">{{$t("menu.update")}}</button>
             </div>
         </div>
     </div>

@@ -99,6 +99,11 @@ export default {
         background: "背景",
         license: "ライセンス",
         lang: "言語",
+        update: "更新",
+        noUpdate: "今は最新バージョンです。",
+        release: "最新版を",
+        version: "最新バージョン",
+        commit: "最新コミット",
         eventPlacehoder: "BGMファイル名: ",
         backPlacehoder: "アイドルカードID",
         var: "声明",
@@ -106,6 +111,6 @@ export default {
         appname: "アプリ名",
         appver: "バージョン",
         description: "説明",
-        descCon: "CGSS (アイドルマスターシンデレラガールズスターライトステージ) のリソースのダウンロードできるデスクトップアプリです。"
+        descCon: "CGSS (アイドルマスターシンデレラガールズスターライトステージ) のリソースのダウンロードできるWindowsデスクトップアプリです。"
     }
 };

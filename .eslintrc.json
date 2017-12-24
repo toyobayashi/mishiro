@@ -1,5 +1,6 @@
 {
     "env": {
+        "browser": true,
         "es6": true,
         "node": true
     },
@@ -17,7 +18,7 @@
         "space-infix-ops": [2, { "int32Hint": false }],
         "space-unary-ops": [2, { "words": true, "nonwords": false }],
         "key-spacing": [2, { "beforeColon": false, "afterColon": true }],
-        "keyword-spacing": [
+        "keyword-spacing": [2, 
             {
                 "overrides": {
                     "if": { "after": false },

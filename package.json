@@ -2,21 +2,24 @@
   "name": "mishiro",
   "productName": "mishiro",
   "companyName": "Toyo",
-  "version": "1.0.0",
+  "version": "1.0.1",
   "description": "A desktop application that can be used for getting the resource of CGSS (IDOL MASTER CINDERELLA GIRLS STARLIGHT STAGE).",
   "main": "main.min.js",
   "scripts": {
     "start": "electron . --enable-logging",
     "dev": "webpack -w",
     "test": "set NODE_ENV=production&&webpack",
-    "proWin32": "set NODE_ENV=production&&webpack&&electron-packager . mishiro --platform=win32 --arch=ia32 --icon=./src/res/icon/mishiro.ico --out=./dist --overwrite --app-version=1.0.0 --win32metadata.FileDescription=\"CGSS Desktop Application\" --ignore=\"(node_modules|data|download|dist|src|docs|public/img/card|public/asset/sound/live|.gitignore|README.md|webpack.config.js|.babelrc|.eslintrc.json|config.json)\"",
-    "proWin64": "set NODE_ENV=production&&webpack&&electron-packager . mishiro --platform=win32 --arch=x64 --icon=./src/res/icon/mishiro.ico --out=./dist --overwrite --app-version=1.0.0 --win32metadata.FileDescription=\"CGSS Desktop Application\" --ignore=\"(node_modules|data|download|dist|src|docs|public/img/card|public/asset/sound/live|.gitignore|README.md|webpack.config.js|.babelrc|.eslintrc.json|config.json)\""
+    "proWin32": "set NODE_ENV=production&&webpack&&electron-packager . mishiro --platform=win32 --arch=ia32 --icon=./src/res/icon/mishiro.ico --out=./dist --overwrite --app-version=1.0.1 --win32metadata.FileDescription=\"CGSS Desktop Application\" --ignore=\"(node_modules|data|download|dist|src|docs|public/img/card|public/asset/sound/live|.gitignore|README.md|webpack.config.js|.babelrc|.eslintrc.json|config.json)\"",
+    "proWin64": "set NODE_ENV=production&&webpack&&electron-packager . mishiro --platform=win32 --arch=x64 --icon=./src/res/icon/mishiro.ico --out=./dist --overwrite --app-version=1.0.1 --win32metadata.FileDescription=\"CGSS Desktop Application\" --ignore=\"(node_modules|data|download|dist|src|docs|public/img/card|public/asset/sound/live|.gitignore|README.md|webpack.config.js|.babelrc|.eslintrc.json|config.json)\""
   },
   "repository": {
     "type": "git",
     "url": "https://github.com/toyobayashi/mishiro"
   },
-  "keywords": [ "CGSS", "mishiro" ],
+  "keywords": [
+    "CGSS",
+    "mishiro"
+  ],
   "author": {
     "name": "Toyobayashi",
     "url": "https://github.com/toyobayashi"
@@ -25,7 +28,7 @@
   "devDependencies": {
     "babel-eslint": "^8.0.3",
     "css-loader": "^0.28.7",
-    "electron": "^1.7.9",
+    "electron": "^1.7.10",
     "electron-packager": "^9.1.0",
     "eslint": "^4.7.2",
     "eslint-plugin-html": "^3.2.2",
@@ -39,6 +42,7 @@
     "webpack": "^3.6.0"
   },
   "dependencies": {
+    "cheerio": "^1.0.0-rc.2",
     "request": "^2.83.0",
     "sql.js": "^0.4.0",
     "vue": "^2.5.8",

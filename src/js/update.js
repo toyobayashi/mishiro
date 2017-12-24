@@ -182,7 +182,7 @@ export default {
                         }).then(() => {
                             setTimeout(() => {
                                 this.emitReady();
-                            }, 1000);
+                            }, 346);
                         });
                     });
                     ipcRenderer.send("readManifest", fs.readFileSync(manifestFile));

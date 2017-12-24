@@ -37,7 +37,8 @@ let renderer = {
         "vue": "require(\"vue/dist/vue.js\")",
         "vue-i18n": "require(\"vue-i18n\")",
         "vuex": "require(\"vuex\")",
-        "request": "require(\"request\")"
+        "request": "require(\"request\")",
+        "cheerio": "require(\"cheerio\")"
     },
     plugins: [
         new ExtractTextPlugin("./mishiro.min.css"),

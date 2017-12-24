@@ -45,8 +45,6 @@
     height: calc(100% - 138px);
     left: 70px;
     top: 70px;
-    /* padding: 75px 70px 68px 70px; 
-    max-height: calc(100% - 68px);*/
     overflow: hidden;
 }
 .db-query-result{

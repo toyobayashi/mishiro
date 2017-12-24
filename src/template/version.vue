@@ -3,11 +3,6 @@
 </template>
 <script>
 export default {
-    data(){
-        return {
-            // resVer: this.resVer
-        };
-    },
     computed: {
         resVer(){
             return this.$store.state.resVer;

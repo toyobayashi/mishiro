@@ -26,7 +26,8 @@
 </div>
 </template>
 
-<script src="../js/gacha.js"></script>
+<script src="../js/gacha.js">
+</script>
 
 <style>
 .white{
@@ -38,11 +39,6 @@
 #gachaResult {
     margin: 20px auto;
     padding: 0 25px;
-    /* position: absolute;
-    left: 50%;
-    top: 50%;
-    margin-left: -415px;
-    margin-top: -156px; */
     width: 830px;
     height: 312px;
     color: #000;

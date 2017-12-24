@@ -82,7 +82,6 @@
                 <td>{{information.charaData ? information.charaData.hometown : ""}}</td>
             </tr>
             <tr>
-                <!-- <td>{{$t("idol.skill_explain")}}</td> -->
                 <td colspan="2">{{information.skill ? information.skill.explain : ""}}</td>
                 <td>{{$t("idol.constellation")}}</td>
                 <td>{{information.charaData ? information.charaData.seiza : ""}}</td>
@@ -94,7 +93,6 @@
                 <td>{{information.charaData ? information.charaData.voice : ""}}</td>
             </tr>
             <tr>
-                <!-- <td>{{$t("idol.leader_skill_explain")}}</td> -->
                 <td colspan="2">{{information.leaderSkill ? information.leaderSkill.explain : ""}}</td>
                 <td>{{$t("idol.favorite")}}</td>
                 <td>{{information.charaData ? information.charaData.favorite : ""}}</td>

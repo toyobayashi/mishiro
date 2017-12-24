@@ -19,6 +19,7 @@
         <small-tab :tab="i18nTabs" :default="_i18n._vm.locale" id="i18nTab" @tabClicked="changeLanguage"></small-tab>
         <nav-bar :current-block="currentBlock" @changeBlock="changeBlock"></nav-bar>
     </div>
+    <version-check></version-check>
     <about></about>
     <gacha-information></gacha-information>
     <gacha-history></gacha-history>
@@ -48,6 +49,7 @@ import gachaCard from "./gachaCard.vue";
 import gachaInformation from "./gachaInformation.vue";
 import about from "./about.vue";
 import setting from "./setting.vue";
+import versionCheck from "./versionCheck.vue";
 export default {
     components: {
         entry,
@@ -68,6 +70,7 @@ export default {
         gachaCard,
         gachaInformation,
         about,
+        versionCheck,
         setting
     },
     data(){

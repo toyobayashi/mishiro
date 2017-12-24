@@ -41,7 +41,7 @@
     bottom: 40px;
     right: 40px;
 }
-
 </style>
 
-<script src="../js/update.js"></script>
+<script src="../js/update.js">
+</script>

@@ -10,7 +10,6 @@
 </template>
 
 <script>
-
 export default {
     data(){
         return {
@@ -25,12 +24,7 @@ export default {
                 this.isTouched = true;
                 this.playSe(new Audio("./asset/sound/se/se_title_start.mp3"));
                 setTimeout(() => {
-                    // this.startOut = true;
                     this.$emit("enter");
-                    /* setTimeout(() => {
-                        console.log("[event] enter");
-                        this.event.$emit("enter");
-                    }, 300); */
                 }, 1000);
             }
         }
