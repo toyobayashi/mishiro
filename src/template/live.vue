@@ -118,14 +118,10 @@ input[type=range]::-webkit-slider-runnable-track {
     border-radius: 4px;
     cursor: pointer;
 }
-/*已达进度*/
- 
+/*
 input[type=range]::-webkit-fill-lower {
     background-color: #85b200;
 }
- 
-/*未达进度*/
- 
 input[type=range]::-webkit-fill-upper {
     background-color: #aaa;
 }
@@ -135,5 +131,5 @@ input[type=range]::-webkit-ticks-before {
 }
 input[type=range]::-webkit-ticks-after {
     display: none;
-}
+}*/
 </style>

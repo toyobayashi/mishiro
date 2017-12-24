@@ -1,4 +1,6 @@
-import { shell, remote } from "electron";
+import { remote } from "electron";
+import cheerio from "cheerio";
+import request from "request";
 export default {
     data(){
         return {
@@ -47,9 +49,37 @@ OTHER DEALINGS IN THE SOFTWARE.</p>`, 800);
             this.playSe(this.enterSe);
             this.event.$emit("alert", this.$t("menu.var"), this.$t("menu.varCon"));
         },
-        showRepo(){
+        update(){
             this.playSe(this.enterSe);
-            shell.openExternal("https://github.com/toyobayashi/mishiro");
+            const gitRoot = "https://github.com";
+            request.get(`${gitRoot}/toyobayashi/mishiro/releases`, (err, res, body) => {
+                if(!err){
+                    let $ = cheerio.load(body);
+                    const title = $(".release.label-latest .release-title > a").text();
+                    const version = title.substr(title.indexOf(" v") + 2);
+                    const commitUrl = gitRoot + $(".release.label-latest .tag-references a[href*=\"commit\"]").attr("href");
+                    const commit = commitUrl.split("/")[commitUrl.split("/").length - 1];
+
+                    const zipPath = $(".release.label-latest .release-body a[href$=\".zip\"][href*=\"releases/download\"]").attr("href");
+                    const zipUrl = zipPath ? gitRoot + zipPath : null;
+
+                    const exePath = $(".release.label-latest .release-body a[href$=\".exe\"]").attr("href");
+                    const exeUrl = exePath ? gitRoot + exePath : null;
+
+                    const description = $(".release.label-latest .release-body .markdown-body").html();
+                    const versionData = { version, commit, description, commitUrl, zipUrl, exeUrl };
+                    console.log(versionData);
+                    if(remote.app.getVersion() < version){
+                        this.event.$emit("versionCheck", versionData);
+                    }
+                    else{
+                        this.event.$emit("alert", this.$t("menu.update"), this.$t("menu.noUpdate"));
+                    }
+                }
+                else{
+                    throw new Error(err);
+                }
+            });
         },
         relaunch(){
             this.playSe(this.enterSe);
