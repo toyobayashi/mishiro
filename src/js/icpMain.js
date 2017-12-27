@@ -7,7 +7,7 @@ import { configurer } from "./config.js";
 let config = configurer.getConfig();
 let fix = {};
 if(!config.latestVersion){
-    fix.latestResVer = 10033400;
+    fix.latestResVer = 10033600;
 }
 if(config.language !== "zh" && config.language !== "ja"){
     fix.language = "zh";

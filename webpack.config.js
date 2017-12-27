@@ -33,17 +33,13 @@ let renderer = {
             loader: "url-loader?limit=8192&name=./img/[name].[ext]?[hash]"
         }]
     },
-    externals: {
-        "vue": "require(\"vue/dist/vue.js\")",
-        "vue-i18n": "require(\"vue-i18n\")",
-        "vuex": "require(\"vuex\")",
-        "request": "require(\"request\")",
-        "cheerio": "require(\"cheerio\")"
-    },
     plugins: [
         new ExtractTextPlugin("./mishiro.min.css"),
         new webpack.LoaderOptionsPlugin({
             minimize: true
+        }),
+        new webpack.DllReferencePlugin({
+            manifest: require("./manifest.json")
         })
     ]
 };
@@ -59,7 +55,7 @@ let main = {
         __dirname: false
     },
     externals: {
-        "sql.js": "require(\"sql.js\")"
+        "sql.js": "require(__dirname + \"\\\\public\\\\sql.js\")"
     },
     plugins: []
 };
@@ -76,7 +72,6 @@ if(process.env.NODE_ENV == "production"){
             warnings: false
         }
     });
-    renderer.externals["vue"] = "require(\"vue/dist/vue.min.js\")";
     renderer.plugins.push(uglifyjs);
     main.plugins.push(uglifyjs);
 }
