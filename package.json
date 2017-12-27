@@ -2,15 +2,16 @@
   "name": "mishiro",
   "productName": "mishiro",
   "companyName": "Toyo",
-  "version": "1.0.1",
+  "version": "1.0.2",
   "description": "A desktop application that can be used for getting the resource of CGSS (IDOL MASTER CINDERELLA GIRLS STARLIGHT STAGE).",
   "main": "main.min.js",
   "scripts": {
     "start": "electron . --enable-logging",
+    "dll": "webpack --config webpack.dll.config.js",
     "dev": "webpack -w",
-    "test": "set NODE_ENV=production&&webpack",
-    "proWin32": "set NODE_ENV=production&&webpack&&electron-packager . mishiro --platform=win32 --arch=ia32 --icon=./src/res/icon/mishiro.ico --out=./dist --overwrite --app-version=1.0.1 --win32metadata.FileDescription=\"CGSS Desktop Application\" --ignore=\"(node_modules|data|download|dist|src|docs|public/img/card|public/asset/sound/live|.gitignore|README.md|webpack.config.js|.babelrc|.eslintrc.json|config.json)\"",
-    "proWin64": "set NODE_ENV=production&&webpack&&electron-packager . mishiro --platform=win32 --arch=x64 --icon=./src/res/icon/mishiro.ico --out=./dist --overwrite --app-version=1.0.1 --win32metadata.FileDescription=\"CGSS Desktop Application\" --ignore=\"(node_modules|data|download|dist|src|docs|public/img/card|public/asset/sound/live|.gitignore|README.md|webpack.config.js|.babelrc|.eslintrc.json|config.json)\""
+    "pro": "set NODE_ENV=production&&webpack",
+    "proWin32": "set NODE_ENV=production&&webpack&&electron-packager . mishiro --platform=win32 --arch=ia32 --icon=./src/res/icon/mishiro.ico --out=./dist --overwrite --app-version=1.0.2 --win32metadata.FileDescription=\"CGSS Desktop Application\" --ignore=\"(node_modules|data|download|dist|src|docs|public/img/card|public/asset/sound/live|.gitignore|README.md|webpack|.eslintrc.json|config.json|manifest.json)\"",
+    "proWin64": "set NODE_ENV=production&&webpack&&electron-packager . mishiro --platform=win32 --arch=x64 --icon=./src/res/icon/mishiro.ico --out=./dist --overwrite --app-version=1.0.2 --win32metadata.FileDescription=\"CGSS Desktop Application\" --ignore=\"(node_modules|data|download|dist|src|docs|public/img/card|public/asset/sound/live|.gitignore|README.md|webpack|.eslintrc.json|config.json|manifest.json)\""
   },
   "repository": {
     "type": "git",
@@ -27,6 +28,7 @@
   "license": "MIT",
   "devDependencies": {
     "babel-eslint": "^8.0.3",
+    "cheerio": "^1.0.0-rc.2",
     "css-loader": "^0.28.7",
     "electron": "^1.7.10",
     "electron-packager": "^9.1.0",
@@ -35,18 +37,15 @@
     "eslint-plugin-import": "^2.7.0",
     "extract-text-webpack-plugin": "^3.0.0",
     "file-loader": "^0.11.2",
+    "request": "^2.83.0",
     "uglifyjs-webpack-plugin": "^1.1.4",
     "url-loader": "^0.5.9",
+    "vue": "^2.5.13",
+    "vue-i18n": "^7.3.3",
     "vue-loader": "^13.0.5",
-    "vue-template-compiler": "^2.5.8",
+    "vue-template-compiler": "^2.5.13",
+    "vuex": "^3.0.1",
     "webpack": "^3.6.0"
   },
-  "dependencies": {
-    "cheerio": "^1.0.0-rc.2",
-    "request": "^2.83.0",
-    "sql.js": "^0.4.0",
-    "vue": "^2.5.8",
-    "vue-i18n": "^7.3.2",
-    "vuex": "^3.0.1"
-  }
+  "dependencies": {}
 }

@@ -3,6 +3,7 @@ node_modules/
 download/
 data/
 dist/
+public/dll.js
 public/mishiro.min.js
 public/mishiro.min.css
 public/img/
@@ -19,4 +20,5 @@ public/asset/sound/bgm/*.mp3
 src/css/theme.css
 main.min.js
 config.json
+manifest.json
 src/js/defaultSe.js
