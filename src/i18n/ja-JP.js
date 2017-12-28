@@ -64,7 +64,10 @@ export default {
         skill_explain: "特技詳細",
         leader_skill_name: "センター効果",
         leader_skill_explain: "センター効果詳細",
-        nashi: "無し"
+        nashi: "無し",
+        limited: "限定",
+        event: "イベント",
+        gacha: "ガシャ"
     },
     live: {
         decoding: "　デコード中...",

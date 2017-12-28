@@ -33,6 +33,11 @@ let renderer = {
             loader: "url-loader?limit=8192&name=./img/[name].[ext]?[hash]"
         }]
     },
+    resolve: {
+        alias: {
+            "vue": "vue/dist/vue.js"
+        }
+    },
     plugins: [
         new ExtractTextPlugin("./mishiro.min.css"),
         new webpack.LoaderOptionsPlugin({
@@ -60,8 +65,7 @@ let main = {
     plugins: []
 };
 
-
-if(process.env.NODE_ENV == "production"){
+if(process.env.NODE_ENV === "production"){
     const uglifyjs = new UglifyJSPlugin({
         uglifyOptions: {
             ecma: 8,
@@ -72,6 +76,7 @@ if(process.env.NODE_ENV == "production"){
             warnings: false
         }
     });
+    renderer.resolve.alias["vue"] = "vue/dist/vue.min.js";
     renderer.plugins.push(uglifyjs);
     main.plugins.push(uglifyjs);
 }

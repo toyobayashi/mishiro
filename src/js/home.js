@@ -128,5 +128,14 @@ export default {
                 this.event.$emit("alert", this.$t("home.errorTitle"), this.$t("home.noEmptyDownload"));
             }
         }
+    },
+    mounted(){
+        this.$nextTick(() => {
+            this.event.$on("enterKey", (block) => {
+                if(block === "home"){
+                    this.query();
+                }
+            });
+        });
     }
 };

@@ -64,7 +64,10 @@ export default {
         skill_explain: "特技詳細",
         leader_skill_name: "領隊効果",
         leader_skill_explain: "領隊効果詳細",
-        nashi: "无"
+        nashi: "无",
+        limited: "限定",
+        event: "活動",
+        gacha: "転蛋"
     },
     live: {
         decoding: "　解碼中...",

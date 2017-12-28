@@ -66,7 +66,7 @@ OTHER DEALINGS IN THE SOFTWARE.</p>`, 800);
                     const exePath = $(".release.label-latest .release-body a[href$=\".exe\"]").attr("href");
                     const exeUrl = exePath ? gitRoot + exePath : null;
 
-                    const description = $(".release.label-latest .release-body .markdown-body").html();
+                    const description = $(".release.label-latest .release-body .markdown-body").html().replace(/\n/g, "").trim();
                     const versionData = { version, commit, description, commitUrl, zipUrl, exeUrl };
                     console.log(versionData);
                     if(remote.app.getVersion() < version){
