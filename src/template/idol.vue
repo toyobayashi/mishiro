@@ -97,6 +97,10 @@
                 <td>{{$t("idol.favorite")}}</td>
                 <td>{{information.charaData ? information.charaData.favorite : ""}}</td>
             </tr>
+            <tr v-if="activeCard.limited">
+                <td>{{$t("idol.limited")}}</td>
+                <td colspan="3"><p v-for="limit in activeCard.limited">{{"(" + (limit.id > 9999 ? $t("idol.gacha") + limit.id : $t("idol.event") + limit.id) + ") " + limit.name + ": " + limit.startDate + " ～ " + limit.endDate}}</p></td>
+            </tr>
         </table>
     </div>
 </div>

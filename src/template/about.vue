@@ -72,6 +72,9 @@ export default {
                 this.show = true;
                 this.visible = true;
             });
+            this.event.$on("escKey", () => {
+                this.close();
+            });
         });
     }
 };

@@ -269,6 +269,11 @@ export default {
                     }
                 }
             });
+            this.event.$on("enterKey", (block) => {
+                if(block === "idol"){
+                    this.query();
+                }
+            });
         });
     }
 };

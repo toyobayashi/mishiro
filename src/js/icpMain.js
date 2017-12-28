@@ -1,13 +1,14 @@
 import { ipcMain } from "electron";
-import SQL from "./sqlExec.js";
 import { exec } from "child_process";
+import fs from "fs";
+import SQL from "./sqlExec.js";
 import { getPath } from "./getPath.js";
 import { configurer } from "./config.js";
 
 let config = configurer.getConfig();
 let fix = {};
-if(!config.latestVersion){
-    fix.latestResVer = 10033600;
+if(!config.latestResVer){
+    fix.latestResVer = 10033710;
 }
 if(config.language !== "zh" && config.language !== "ja"){
     fix.language = "zh";
@@ -34,6 +35,7 @@ ipcMain.on("readManifest", (event, manifestFile) => {
 
 ipcMain.on("readMaster", (event, masterFile) => {
     const master = new SQL.Database(masterFile);
+    const gachaAll = master._exec("SELECT * FROM gacha_data");
     const eventAll = master._exec("SELECT * FROM event_data");
     const eventNow = master._exec("SELECT * FROM event_data WHERE event_start = (SELECT MAX(event_start) FROM (SELECT * FROM event_data WHERE event_start < DATETIME(CURRENT_TIMESTAMP, 'localtime')))")[0];
     const eventData = config.event ? master._exec(`SELECT * FROM event_data WHERE id="${config.event}"`)[0] : eventNow;
@@ -52,8 +54,29 @@ ipcMain.on("readMaster", (event, masterFile) => {
 
     let liveManifest = manifest._exec("SELECT name, hash FROM manifests WHERE name LIKE \"l/%\"");
     let bgmManifest = manifest._exec("SELECT name, hash FROM manifests WHERE name LIKE \"b/%\"");
+
+    let gachaLimited = master._exec("SELECT gacha_id, reward_id FROM gacha_available WHERE limited_flag = 1 ORDER BY reward_id");
+    let eventLimited = master._exec("SELECT event_id, reward_id FROM event_available ORDER BY reward_id");
     manifest.close();
     master.close();
+
+    let gachaLimitedCard = {};
+    gachaLimited.forEach((card) => {
+        if(!gachaLimitedCard[card["reward_id"]]){
+            gachaLimitedCard[card["reward_id"]] = [];
+        }
+        let gacha = gachaAll.filter(gacha => gacha.id == card["gacha_id"])[0];
+        gachaLimitedCard[card["reward_id"]].push({ name: gacha.name, id: gacha.id, startDate: gacha.start_date.split(" ")[0], endDate: gacha.end_date.split(" ")[0] });
+    });
+
+    let eventLimitedCard = {};
+    eventLimited.forEach((card) => {
+        if(!eventLimitedCard[card["reward_id"]]){
+            eventLimitedCard[card["reward_id"]] = [];
+        }
+        let event = eventAll.filter(event => event.id == card["event_id"])[0];
+        eventLimitedCard[card["reward_id"]].push({ name: event.name, id: event.id, startDate: event.event_start.split(" ")[0], endDate: event.event_end.split(" ")[0] });
+    });
 
     charaData.forEach((chara, i) => {
         let hometown = textData[0].filter(row => row.index == chara.home_town)[0],
@@ -65,10 +88,19 @@ ipcMain.on("readMaster", (event, masterFile) => {
             charaData[i].seiza = seiza.text;
         }
     });
+
+    let gachaLimitedCardId = Object.keys(gachaLimitedCard).map(id => Number(id));
+    let eventLimitedCardId = Object.keys(eventLimitedCard).map(id => Number(id));
     cardData.forEach((card, i) => {
         cardData[i].charaData = charaData.filter(row => row.chara_id == card.chara_id)[0];
         cardData[i].skill = skillData.filter(row => row.id == card.skill_id)[0];
         cardData[i].leaderSkill = leaderSkillData.filter(row => row.id == card.leader_skill_id)[0];
+        if(eventLimitedCardId.indexOf(cardData[i].id) !== -1){
+            cardData[i].limited = eventLimitedCard[cardData[i].id];
+        }
+        if(gachaLimitedCardId.indexOf(cardData[i].id) !== -1){
+            cardData[i].limited = gachaLimitedCard[cardData[i].id];
+        }
     });
     bgmManifest.forEach((bgm, i) => {
         let fileName = bgm.name.split("/")[1].split(".")[0] + ".mp3";
@@ -98,20 +130,23 @@ ipcMain.on("readMaster", (event, masterFile) => {
     });
 
     let R = 0, SR = 0, SSR = 0, fes = false;
-    gachaAvailable.forEach(function (v, i){
+    let SSR_UP = 0, SR_UP = 0;
+    gachaAvailable.forEach(function(v, i){
         gachaAvailable[i].rarity = getRarity(v.reward_id, cardData);
-        switch(gachaAvailable[i].rarity){
-            case 3:
-                R++;
-                break;
-            case 5:
-                SR++;
-                break;
-            case 7:
-                SSR++;
-                break;
-            default:
-                break;
+        if(gachaAvailable[i].rarity == 3){
+            R++;
+        }
+        else if(gachaAvailable[i].rarity == 5){
+            SR++;
+            if(gachaAvailable[i].up_value == 1){
+                SR_UP++;
+            }
+        }
+        else if(gachaAvailable[i].rarity == 7){
+            SSR++;
+            if(gachaAvailable[i].up_value == 1){
+                SSR_UP++;
+            }
         }
     });
 
@@ -121,24 +156,67 @@ ipcMain.on("readMaster", (event, masterFile) => {
     if(gachaAvailable[0]["relative_odds"] === 0){
         let R_ODDS = 850000, SR_ODDS = 120000, SSR_ODDS = 30000;
         let R_ODDS_SR = 0, SR_ODDS_SR = 970000, SSR_ODDS_SR = 30000;
+        let SR_UP_ODDS = 0, SSR_UP_ODDS = 0, SR_UP_ODDS_SR = 0;
 
-        if(fes){
-            R_ODDS = 820000, SR_ODDS = 120000, SSR_ODDS = 60000;
-            R_ODDS_SR = 0, SR_ODDS_SR = 940000, SSR_ODDS_SR = 60000;
+        if(SSR_UP > 0 && SR_UP > 0){
+            if(SSR_UP === 1){
+                SSR_UP_ODDS = 7500;
+            }
+            else if(SSR_UP === 2){
+                SSR_UP_ODDS = 8000;
+            }
+            SR_UP_ODDS = 24000;
+            SR_UP_ODDS_SR = 200000;
         }
 
-        gachaAvailable.forEach(function (v, i){
+        if(fes){
+            R_ODDS = 820000; SR_ODDS = 120000; SSR_ODDS = 60000;
+            R_ODDS_SR = 0; SR_ODDS_SR = 940000; SSR_ODDS_SR = 60000;
+            SSR_UP_ODDS = 15000;
+        }
+
+        gachaAvailable.forEach(function(v, i){
             if(v.rarity == 3){
                 gachaAvailable[i]["relative_odds"] = Math.round(R_ODDS / R);
                 gachaAvailable[i]["relative_sr_odds"] = Math.round(R_ODDS_SR / R);
             }
             else if(v.rarity == 5){
-                gachaAvailable[i]["relative_odds"] = Math.round(SR_ODDS / SR);
-                gachaAvailable[i]["relative_sr_odds"] = Math.round(SR_ODDS_SR / SR);
+                if(v.up_value == 1){
+                    gachaAvailable[i]["relative_odds"] = Math.round(SR_UP_ODDS / SR_UP);
+                    gachaAvailable[i]["relative_sr_odds"] = Math.round(SR_UP_ODDS_SR / SR_UP);
+                }
+                else{
+                    gachaAvailable[i]["relative_odds"] = Math.round((SR_ODDS - SR_UP_ODDS) / (SR - SR_UP));
+                    gachaAvailable[i]["relative_sr_odds"] = Math.round((SR_ODDS_SR - SR_UP_ODDS_SR) / (SR - SR_UP));
+                }
             }
             else if(v.rarity == 7){
-                gachaAvailable[i]["relative_odds"] = Math.round(SSR_ODDS / SSR);
-                gachaAvailable[i]["relative_sr_odds"] = Math.round(SSR_ODDS_SR / SSR);
+                if(fes){
+                    if(v.up_value == 1){
+                        if(v.recommend_order == 1){
+                            gachaAvailable[i]["relative_odds"] = SSR_UP_ODDS / 2;
+                            gachaAvailable[i]["relative_sr_odds"] = SSR_UP_ODDS / 2;
+                        }
+                        else{
+                            gachaAvailable[i]["relative_odds"] = Math.round((SSR_UP_ODDS / 2) / (SSR_UP - 1));
+                            gachaAvailable[i]["relative_sr_odds"] = Math.round((SSR_UP_ODDS / 2) / (SSR_UP - 1));
+                        }
+                    }
+                    else{
+                        gachaAvailable[i]["relative_odds"] = Math.round((SSR_ODDS - SSR_UP_ODDS) / (SSR - SSR_UP));
+                        gachaAvailable[i]["relative_sr_odds"] = Math.round((SSR_ODDS_SR - SSR_UP_ODDS) / (SSR - SSR_UP));
+                    }
+                }
+                else{
+                    if(v.up_value == 1){
+                        gachaAvailable[i]["relative_odds"] = Math.round(SSR_UP_ODDS / SSR_UP);
+                        gachaAvailable[i]["relative_sr_odds"] = Math.round(SSR_UP_ODDS / SSR_UP);
+                    }
+                    else{
+                        gachaAvailable[i]["relative_odds"] = Math.round((SSR_ODDS - SSR_UP_ODDS) / (SSR - SSR_UP));
+                        gachaAvailable[i]["relative_sr_odds"] = Math.round((SSR_ODDS_SR - SSR_UP_ODDS) / (SSR - SSR_UP));
+                    }
+                }
             }
         });
     }
@@ -153,18 +231,15 @@ ipcMain.on("acb", (event, acbPath, url = "") => {
         if(!err){
             if(url){
                 if(url.split("/")[url.split("/").length - 2] === "live"){
-                    exec(`ren "${getPath()}\\public\\asset\\sound\\live\\${name}.mp3" "${url.split("/")[url.split("/").length - 1]}"`, (err) => {
-                        if(!err){
-                            event.sender.send("acb", acbPath, url);
-                        }
-                    });
+                    fs.renameSync(getPath(`./public/asset/sound/live/${name}.mp3`), getPath(`./public/asset/sound/live/${url.split("/")[url.split("/").length - 1]}`));
+                    event.sender.send("acb", acbPath, url);
                 }
                 else{
                     event.sender.send("acb", acbPath, url);
                 }
             }
             else{
-                exec(`del /q /f ${acbPath}`);
+                fs.unlinkSync(acbPath);
             }
         }
     });

@@ -116,6 +116,22 @@ export default {
             this.currentBlock = block;
             this.event.$emit("changeBgm", block);
         }
+    },
+    mounted(){
+        this.$nextTick(() => {
+            document.addEventListener("keyup", (e) => {
+                switch(e.keyCode){
+                    case 13:
+                        this.event.$emit("enterKey", this.currentBlock);
+                        break;
+                    case 27:
+                        this.event.$emit("escKey");
+                        break;
+                    default:
+                        break;
+                }
+            }, false);
+        });
     }
 };
 </script>

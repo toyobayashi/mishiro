@@ -30,19 +30,19 @@
                         <td width="18%">{{$t("gacha.r")}}</td>
                         <td width="32%">{{gachaData.count ? gachaData.count.R : 0}} ({{(gachaData.count ? gachaData.count.fes : false) ? "82.00%" : "85.00%"}})</td>
                         <td width="18%">{{$t("gacha.get")}}</td>
-                        <td width="32%">{{info.r}}</td>
+                        <td width="32%">{{info.r}} ({{(100 * info.r / info.total).toFixed(2)}}%)</td>
                     </tr>
                     <tr>
                         <td>{{$t("gacha.sr")}}</td>
                         <td>{{gachaData.count ? gachaData.count.SR : 0}}  (12.00%)</td>
                         <td>{{$t("gacha.get")}}</td>
-                        <td>{{info.sr}}</td>
+                        <td>{{info.sr}} ({{(100 * info.sr / info.total).toFixed(2)}}%)</td>
                     </tr>
                     <tr>
                         <td>{{$t("gacha.ssr")}}</td>
                         <td>{{gachaData.count ? gachaData.count.SSR : 0}} ({{(gachaData.count ? gachaData.count.fes : false) ? "6.00%" : "3.00%"}})</td>
                         <td>{{$t("gacha.get")}}</td>
-                        <td>{{info.ssr}}</td>
+                        <td>{{info.ssr}} ({{(100 * info.ssr / info.total).toFixed(2)}}%)</td>
                     </tr>
                     <tr>
                         <td colspan="1">{{$t("gacha.cost")}}</td>
@@ -87,6 +87,9 @@ export default {
                 this.info = info;
                 this.show = true;
                 this.visible = true;
+            });
+            this.event.$on("escKey", () => {
+                this.close();
             });
         });
     }

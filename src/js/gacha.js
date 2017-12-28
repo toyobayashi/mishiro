@@ -163,6 +163,7 @@ export default {
                 r: this.r,
                 sr: this.sr,
                 ssr: this.ssr,
+                total: this.r + this.sr + this.ssr,
                 costStarJewel: this.costStarJewel
             });
         },

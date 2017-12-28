@@ -5,9 +5,9 @@ const UglifyJSPlugin = require("uglifyjs-webpack-plugin");
 const renderer = {
     target: "electron-renderer",
     entry: {
-        vendor: ["cheerio",
+        vendor: [
+            "cheerio",
             "request",
-            "vue",
             "vue-i18n",
             "vuex"
         ]
@@ -38,5 +38,12 @@ const renderer = {
         })
     ]
 };
+
+if(process.env.NODE_ENV == "production"){
+    renderer.entry.vendor.push("vue/dist/vue.min.js");
+}
+else{
+    renderer.entry.vendor.push("vue/dist/vue.js");
+}
 
 module.exports = renderer;

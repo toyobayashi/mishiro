@@ -1,8 +1,7 @@
+import { ipcRenderer, shell } from "electron";
+import fs from "fs";
 import task from "../template/task.vue";
 import Downloader from "./downloader.js";
-import fs from "fs";
-import { exec } from "child_process";
-import { ipcRenderer, shell } from "electron";
 import getPath from "./getPath.js";
 const dler = new Downloader();
 
@@ -165,11 +164,16 @@ export default {
                     this.activeAudio = this.liveManifest.filter(bgm => bgm.fileName === fileName)[0];
                 }
             });
+            this.event.$on("enterKey", (block) => {
+                if(block === "live"){
+                    this.query();
+                }
+            });
             ipcRenderer.on("acb", (event, acbPath, url) => {
                 this.total = 0;
                 this.current = 0;
                 this.text = "";
-                exec(`del /q /f ${acbPath}`);
+                fs.unlinkSync(acbPath);
                 this.event.$emit("liveSelect", { src: url });
             });
         });

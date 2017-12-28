@@ -42,9 +42,9 @@ function check(progressing){
     if(config.resVer){
         return config.resVer;
     }
-    if(!config.latestResVer){
+    /* if(!config.latestResVer){
         configurer.configure("latestResVer", 10033600);
-    }
+    } */
 
     let versionFrom = configurer.getConfig().latestResVer;
 
