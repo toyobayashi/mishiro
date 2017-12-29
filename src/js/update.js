@@ -68,7 +68,6 @@ export default {
             this.text = this.$t("update.master");
 
             let masterFile = "";
-            console.log(resVer);
             if(fs.existsSync(getPath(`./data/master_${resVer}.db`))){
                 this.loading = 100;
                 masterFile = getPath(`./data/master_${resVer}.db`);
