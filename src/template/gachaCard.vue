@@ -9,7 +9,7 @@
                 </h4>
                 <small-tab class="pull-right" :tab="practice" :default="'be'" @tabClicked="toggle"></small-tab>
             </div>
-            <div class="modal-body flex-center" id="gachaCardBody">
+            <div class="modal-body" id="gachaCardBody" ref="gachaCardBody">
                 <table class="table-bordered" border="1"
                 :class="{
                     cute: information.charaData ? information.charaData.type === 1 : false,
@@ -153,6 +153,11 @@ export default {
     },
     mounted(){
         this.$nextTick(() => {
+            let gachaCardBody = this.$refs.gachaCardBody;
+            gachaCardBody.style.maxHeight = window.innerHeight - 267 + "px";
+            window.addEventListener("resize", () => {
+                gachaCardBody.style.maxHeight = window.innerHeight - 267 + "px";
+            }, false);
             this.event.$on("showCard", (card) => {
                 const cardPlus = this.cardData.filter(c => c.id == card.evolution_id)[0];
                 this.event.$emit("smallTab", "be");

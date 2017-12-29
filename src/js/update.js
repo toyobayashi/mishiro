@@ -10,6 +10,7 @@ import getPath from "./getPath.js";
 import toName from "./path2name.js";
 import idol from "./idol.js";
 import player from "./player.js";
+import configurer from "./config.js";
 const bgmList = player.data().bgmList;
 const downloader = new Downloader();
 
@@ -67,6 +68,7 @@ export default {
             this.text = this.$t("update.master");
 
             let masterFile = "";
+            console.log(resVer);
             if(fs.existsSync(getPath(`./data/master_${resVer}.db`))){
                 this.loading = 100;
                 masterFile = getPath(`./data/master_${resVer}.db`);
@@ -90,105 +92,111 @@ export default {
     mounted(){
         this.$nextTick(() => {
             this.event.$on("enter", async () => { // 已从入口进入
-                if(navigator.onLine
-                /* false */
-                ){ // 判断网络是否连接
-                    if(!fs.existsSync(getPath("./public/asset/sound/bgm"))){
-                        fs.mkdirSync(getPath("./public/asset/sound/bgm"));
-                    }
-                    if(!fs.existsSync(getPath("./public/asset/sound/live"))){
-                        fs.mkdirSync(getPath("./public/asset/sound/live"));
-                    }
-                    const resVer = await this.getResVer();
-                    this.$store.commit("updateResVer", resVer);
+                if(!fs.existsSync(getPath("./public/asset/sound/bgm"))){
+                    fs.mkdirSync(getPath("./public/asset/sound/bgm"));
+                }
+                if(!fs.existsSync(getPath("./public/asset/sound/live"))){
+                    fs.mkdirSync(getPath("./public/asset/sound/live"));
+                }
+                ipcRenderer.on("readManifest", async (event, manifests, resVer) => {
+                    this.$store.commit("updateManifest", manifests);
+                    const masterHash = manifests.filter(row => row.name === "master.mdb")[0].hash;
+                    const masterFile = await this.getMaster(resVer, masterHash);
+                    ipcRenderer.send("readMaster", fs.readFileSync(masterFile));
+                });
+                ipcRenderer.on("readMaster", async (event, masterData) => {
+                    // console.log(masterData);
+                    this.$store.commit("updateMaster", masterData);
 
-                    const manifestFile = await this.getManifest(resVer);
-
-                    ipcRenderer.on("readManifest", async (event, manifests) => {
-                        this.$store.commit("updateManifest", manifests);
-                        const masterHash = manifests.filter(row => row.name === "master.mdb")[0].hash;
-                        const masterFile = await this.getMaster(resVer, masterHash);
-                        ipcRenderer.send("readMaster", fs.readFileSync(masterFile));
-                    });
-                    ipcRenderer.on("readMaster", async (event, masterData) => {
-                        // console.log(masterData);
-                        this.$store.commit("updateMaster", masterData);
-
-                        for(let k in bgmList){
-                            if(!fs.existsSync(path.join(getPath("./public"), bgmList[k].src))){
-                                let acbName = `b/${toName(bgmList[k].src).split(".")[0]}.acb`;
-                                let hash = this.$store.state.manifest.filter(row => row.name === acbName)[0].hash;
-                                await downloader.download(
-                                    this.getBgmUrl(hash),
-                                    getPath(`./public/asset/sound/bgm/${toName(bgmList[k].src).split(".")[0]}.acb`),
-                                    (prog) => {
-                                        this.text = prog.name + "　" + Math.ceil(prog.current / 1024) + "/" + Math.ceil(prog.max / 1024) + " KB";
-                                        this.loading = prog.loading;
-                                    }
-                                );
-                                ipcRenderer.send("acb", getPath(`./public/asset/sound/bgm/${toName(bgmList[k].src).split(".")[0]}.acb`));
-                            }
-                        }
-                        if(this.eventInfo.type != 2 && !fs.existsSync(getPath(`./public/asset/sound/bgm/bgm_event_${this.eventInfo.id}.mp3`))){
-                            const eventBgmHash = this.$store.state.manifest.filter(row => row.name === `b/bgm_event_${this.eventInfo.id}.acb`)[0].hash;
+                    for(let k in bgmList){
+                        if(!fs.existsSync(path.join(getPath("./public"), bgmList[k].src))){
+                            let acbName = `b/${toName(bgmList[k].src).split(".")[0]}.acb`;
+                            let hash = this.$store.state.manifest.filter(row => row.name === acbName)[0].hash;
                             await downloader.download(
-                                this.getBgmUrl(eventBgmHash),
-                                getPath(`./public/asset/sound/bgm/bgm_event_${this.eventInfo.id}.acb`),
+                                this.getBgmUrl(hash),
+                                getPath(`./public/asset/sound/bgm/${toName(bgmList[k].src).split(".")[0]}.acb`),
                                 (prog) => {
                                     this.text = prog.name + "　" + Math.ceil(prog.current / 1024) + "/" + Math.ceil(prog.max / 1024) + " KB";
                                     this.loading = prog.loading;
                                 }
                             );
-                            ipcRenderer.send("acb", getPath(`./public/asset/sound/bgm/bgm_event_${this.eventInfo.id}.acb`));
+                            ipcRenderer.send("acb", getPath(`./public/asset/sound/bgm/${toName(bgmList[k].src).split(".")[0]}.acb`));
                         }
-                        if(!fs.existsSync(getPath("./public/img/card"))){
-                            fs.mkdirSync(getPath("./public/img/card"));
-                        }
-                        let config = this.configurer.getConfig();
-                        if(config.background){
-                            let result = await idol.methods.downloadCard(config.background, (prog) => {
-                                this.text = prog.name;
+                    }
+                    if(this.eventInfo.type != 2 && !fs.existsSync(getPath(`./public/asset/sound/bgm/bgm_event_${this.eventInfo.id}.mp3`))){
+                        const eventBgmHash = this.$store.state.manifest.filter(row => row.name === `b/bgm_event_${this.eventInfo.id}.acb`)[0].hash;
+                        await downloader.download(
+                            this.getBgmUrl(eventBgmHash),
+                            getPath(`./public/asset/sound/bgm/bgm_event_${this.eventInfo.id}.acb`),
+                            (prog) => {
+                                this.text = prog.name + "　" + Math.ceil(prog.current / 1024) + "/" + Math.ceil(prog.max / 1024) + " KB";
                                 this.loading = prog.loading;
-                            });
-                            if(result){
-                                this.event.$emit("eventBgReady", config.background);
                             }
-                        }
-                        else{
-                            const eventAvailable = masterData.eventAvailable;
-                            const cardId = this.getEventCardId(eventAvailable);
-                            // const cardIdEvolution = [(Number(cardId[0]) + 1), (Number(cardId[1]) + 1)];
-                            let result = await idol.methods.downloadCard(Number(cardId[0]) + 1, (prog) => {
-                                this.text = prog.name;
-                                this.loading = prog.loading;
-                            });
-                            if(result){
-                                this.event.$emit("eventBgReady", Number(cardId[0]) + 1);
-                            }
-                        }
-
-                        if(!fs.existsSync(getPath("./public/img/icon"))){
-                            fs.mkdirSync(getPath("./public/img/icon"));
-                        }
-                        let iconId = [];
-                        for(let index = 0; index < masterData.gachaAvailable.length; index++){
-                            iconId.push(masterData.gachaAvailable[index].reward_id);
-                        }
-                        const iconTask = this.createCardIconTask(iconId);
-                        await downloader.batchDl(iconTask, (name) => {
-                            this.text = name + "　" + downloader.index + "/" + iconTask.length;
-                        }, (prog) => {
-                            this.loading = 100 * downloader.index / iconTask.length + prog.loading / iconTask.length;
-                        }).then(() => {
-                            setTimeout(() => {
-                                this.emitReady();
-                            }, 346);
+                        );
+                        ipcRenderer.send("acb", getPath(`./public/asset/sound/bgm/bgm_event_${this.eventInfo.id}.acb`));
+                    }
+                    if(!fs.existsSync(getPath("./public/img/card"))){
+                        fs.mkdirSync(getPath("./public/img/card"));
+                    }
+                    let config = this.configurer.getConfig();
+                    if(config.background){
+                        let result = await idol.methods.downloadCard(config.background, (prog) => {
+                            this.text = prog.name;
+                            this.loading = prog.loading;
                         });
+                        if(result){
+                            this.event.$emit("eventBgReady", config.background);
+                        }
+                    }
+                    else{
+                        const eventAvailable = masterData.eventAvailable;
+                        const cardId = this.getEventCardId(eventAvailable);
+                        // const cardIdEvolution = [(Number(cardId[0]) + 1), (Number(cardId[1]) + 1)];
+                        let result = await idol.methods.downloadCard(Number(cardId[0]) + 1, (prog) => {
+                            this.text = prog.name;
+                            this.loading = prog.loading;
+                        });
+                        if(result){
+                            this.event.$emit("eventBgReady", Number(cardId[0]) + 1);
+                        }
+                    }
+
+                    if(!fs.existsSync(getPath("./public/img/icon"))){
+                        fs.mkdirSync(getPath("./public/img/icon"));
+                    }
+                    let iconId = [];
+                    for(let index = 0; index < masterData.gachaAvailable.length; index++){
+                        iconId.push(masterData.gachaAvailable[index].reward_id);
+                    }
+                    const iconTask = this.createCardIconTask(iconId);
+                    await downloader.batchDl(iconTask, (name) => {
+                        this.text = name + "　" + downloader.index + "/" + iconTask.length;
+                    }, (prog) => {
+                        this.loading = 100 * downloader.index / iconTask.length + prog.loading / iconTask.length;
+                    }).then(() => {
+                        setTimeout(() => {
+                            this.emitReady();
+                        }, 346);
                     });
-                    ipcRenderer.send("readManifest", fs.readFileSync(manifestFile));
+                });
+                if(navigator.onLine
+                /* false */
+                ){ // 判断网络是否连接
+                    const resVer = await this.getResVer();
+                    this.$store.commit("updateResVer", resVer);
+                    const manifestFile = await this.getManifest(resVer);
+                    ipcRenderer.send("readManifest", fs.readFileSync(manifestFile), resVer);
                 }
                 else{ // 如果网络未连接则直接触发ready事件
-                    this.emitReady();
+                    let resVer = configurer.getConfig().latestResVer;
+                    this.$store.commit("updateResVer", resVer);
+                    if(fs.existsSync(getPath(`./data/manifest_${resVer}.db`)) && fs.existsSync(getPath(`./data/master_${resVer}.db`))){
+                        let manifestFile = getPath(`./data/manifest_${resVer}.db`);
+                        ipcRenderer.send("readManifest", fs.readFileSync(manifestFile), resVer);
+                    }
+                    else{
+                        this.event.$emit("alert", this.$t("home.errorTitle"), this.$t("home.noNetwork"));
+                    }
                 }
             });
         });
