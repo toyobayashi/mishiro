@@ -29,6 +29,14 @@ export default {
         },
         srOddsArray(){
             return this.countAttr(this.sortBySr, "relative_sr_odds");
+        },
+        maxOdds(){
+            let l = this.oddsArray.length;
+            return this.oddsArray[l - 1].maxOddsValue;
+        },
+        srMaxOdds(){
+            let l = this.srOddsArray.length;
+            return this.srOddsArray[l - 1].maxOddsValue;
         }
     },
     methods: {
@@ -122,15 +130,18 @@ export default {
             }
             this.gachaResult.push(card);
         },
-        createRandomNumber(){
-            return parseInt(Math.random() * 1000000) + 1;
+        random(){
+            return parseInt(Math.random() * this.maxOdds) + 1;
+        },
+        randomSr(){
+            return parseInt(Math.random() * this.srMaxOdds) + 1;
         },
         ikkaiHiku(){
             this.playSe(this.enterSe);
             this.gachaResult = [];
             this.costStarJewel += 250;
             setTimeout(() => {
-                this.getCard(this.getId(this.createRandomNumber()));
+                this.getCard(this.getId(this.random()));
             }, 50);
         },
         jukkaiHiku(){
@@ -139,9 +150,9 @@ export default {
             this.costStarJewel += 2500;
             setTimeout(() => {
                 for(var i = 0; i < 9; i++){
-                    this.getCard(this.getId(this.createRandomNumber()));
+                    this.getCard(this.getId(this.random()));
                 }
-                this.getCard(this.getSrId(this.createRandomNumber()));
+                this.getCard(this.getSrId(this.randomSr()));
             }, 50);
         },
         clear(){
