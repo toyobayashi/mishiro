@@ -27,10 +27,10 @@ function getRarity(id, cardData){
     }
 }
 
-ipcMain.on("readManifest", (event, manifestFile) => {
+ipcMain.on("readManifest", (event, manifestFile, resVer) => {
     manifest = new SQL.Database(manifestFile);
     const manifests = manifest._exec("SELECT name, hash FROM manifests");
-    event.sender.send("readManifest", manifests);
+    event.sender.send("readManifest", manifests, resVer);
 });
 
 ipcMain.on("readMaster", (event, masterFile) => {
@@ -48,7 +48,8 @@ ipcMain.on("readMaster", (event, masterFile) => {
     const leaderSkillData = master._exec("SELECT * FROM leader_skill_data");
     const musicData = master._exec("SELECT id, name FROM music_data");
 
-    let gachaNow = master._exec("SELECT * FROM gacha_data WHERE start_date = (SELECT MAX(start_date) FROM gacha_data WHERE id LIKE '3%') AND id LIKE '3%'")[0];
+    let gachaNowArray = master._exec("SELECT * FROM gacha_data WHERE start_date = (SELECT MAX(start_date) FROM gacha_data WHERE id LIKE '3%') AND id LIKE '3%'");
+    let gachaNow = gachaNowArray[gachaNowArray.length - 1];
     let gachaData = config.gacha ? master._exec(`SELECT * FROM gacha_data WHERE id="${config.gacha}"`)[0] : gachaNow;
     let gachaAvailable = master._exec(`SELECT * FROM gacha_available WHERE gacha_id LIKE '${gachaData.id}'`);
 

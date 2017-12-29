@@ -31,4 +31,11 @@
     height: calc(100% - 150px);
     margin-bottom: 30px;
 }
+.spinner{
+    width: 48px;
+    height: 48px;
+    position: absolute;
+    bottom: 40px;
+    right: 40px;
+}
 </style>

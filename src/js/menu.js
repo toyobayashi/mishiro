@@ -2,11 +2,6 @@ import { remote } from "electron";
 import cheerio from "cheerio";
 import request from "request";
 export default {
-    data(){
-        return {
-
-        };
-    },
     methods: {
         showOption(){
             this.playSe(this.enterSe);
@@ -51,8 +46,14 @@ OTHER DEALINGS IN THE SOFTWARE.</p>`, 800);
         },
         update(){
             this.playSe(this.enterSe);
+            if(!navigator.onLine){
+                this.event.$emit("alert", this.$t("home.errorTitle"), this.$t("home.noNetwork"));
+                return;
+            }
+            this.$emit("checking");
             const gitRoot = "https://github.com";
             request.get(`${gitRoot}/toyobayashi/mishiro/releases`, (err, res, body) => {
+                this.$emit("checked");
                 if(!err){
                     let $ = cheerio.load(body);
                     const title = $(".release.label-latest .release-title > a").text();

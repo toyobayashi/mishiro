@@ -12,7 +12,7 @@
         <idol v-show="currentBlock === 'idol'"></idol>
         <live v-show="currentBlock === 'live'"></live>
         <gacha v-show="currentBlock === 'gacha'"></gacha>
-        <menyuu v-show="currentBlock === 'menu'"></menyuu>
+        <menyuu v-show="currentBlock === 'menu'" @checking="checking = true" @checked="checking = false"></menyuu>
         <hide-button @toggle="showBackground"></hide-button>
         <version></version>
         <player></player>
@@ -26,6 +26,7 @@
     <gacha-card></gacha-card>
     <setting></setting>
     <alert></alert>
+    <img v-show="checking" src="../res/img/spinner.gif" class="spinner" />
 </div>
 </template>
 
@@ -79,6 +80,7 @@ export default {
             isReady: false,
             show: true,
             currentBlock: "home",
+            checking: false,
             i18nTabs: {
                 zh: "i18n.chinese",
                 ja: "i18n.japanese"

@@ -34,13 +34,6 @@
     height: 20%;
     background-color: #aaa;
 }
-.spinner{
-    width: 48px;
-    height: 48px;
-    position: absolute;
-    bottom: 40px;
-    right: 40px;
-}
 </style>
 
 <script src="../js/update.js">
