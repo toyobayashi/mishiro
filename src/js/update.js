@@ -7,12 +7,12 @@ import downloadMaster from "./downloadMaster.js";
 import Downloader from "./downloader.js";
 import { ipcRenderer } from "electron";
 import getPath from "./getPath.js";
-import toName from "./path2name.js";
 import idol from "./idol.js";
 import player from "./player.js";
 import configurer from "./config.js";
 const bgmList = player.data().bgmList;
 const downloader = new Downloader();
+const toName = p => path.parse(p).name;
 
 export default {
     components: {
@@ -109,17 +109,17 @@ export default {
 
                     for(let k in bgmList){
                         if(!fs.existsSync(path.join(getPath("./public"), bgmList[k].src))){
-                            let acbName = `b/${toName(bgmList[k].src).split(".")[0]}.acb`;
+                            let acbName = `b/${toName(bgmList[k].src)}.acb`;
                             let hash = this.$store.state.manifest.filter(row => row.name === acbName)[0].hash;
                             await downloader.download(
                                 this.getBgmUrl(hash),
-                                getPath(`./public/asset/sound/bgm/${toName(bgmList[k].src).split(".")[0]}.acb`),
+                                getPath(`./public/asset/sound/bgm/${toName(bgmList[k].src)}.acb`),
                                 (prog) => {
                                     this.text = prog.name + "　" + Math.ceil(prog.current / 1024) + "/" + Math.ceil(prog.max / 1024) + " KB";
                                     this.loading = prog.loading;
                                 }
                             );
-                            ipcRenderer.send("acb", getPath(`./public/asset/sound/bgm/${toName(bgmList[k].src).split(".")[0]}.acb`));
+                            ipcRenderer.send("acb", getPath(`./public/asset/sound/bgm/${toName(bgmList[k].src)}.acb`));
                         }
                     }
                     if(this.eventInfo.type != 2 && !fs.existsSync(getPath(`./public/asset/sound/bgm/bgm_event_${this.eventInfo.id}.mp3`))){

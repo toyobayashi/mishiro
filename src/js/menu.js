@@ -17,7 +17,7 @@ export default {
             this.event.$emit("alert", this.$t("menu.license"), `
 <h3>The MIT License</h3><br/>
 
-<p>Copyright (c) 2017 Toyobayashi <356608639@qq.com></p><br/>
+<p>Copyright (c) 2017 Toyobayashi &ltlifenglin314@outlook.com&gt</p><br/>
 
 <p>Permission is hereby granted, free of charge, to any
 person obtaining a copy of this software and associated
@@ -38,7 +38,7 @@ NONINFRINGEMENT. IN NO EVENT SHALL THE AUTHORS OR COPYRIGHT
 HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER LIABILITY,
 WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING
 FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR
-OTHER DEALINGS IN THE SOFTWARE.</p>`, 800);
+OTHER DEALINGS IN THE SOFTWARE.</p>`, 900);
         },
         showVar(){
             this.playSe(this.enterSe);

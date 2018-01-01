@@ -1,130 +1,128 @@
 import fs from "fs";
 //Binary Reader for Uint8Array
 /* class BinaryReader */
-var BinaryReader = function(array){
-    this.ary = array;
-    this.curPos = 0;
-};
-BinaryReader.prototype.readByte = function(){
-    this.curPos++;
-    return this.ary[this.curPos - 1];
-};
-BinaryReader.prototype.readShortLE = function(){
-    this.curPos += 2;
-    return this.ary[this.curPos - 2] + (this.ary[this.curPos - 1] << 8);
-};
-BinaryReader.prototype.readIntLE = function(){
-    this.curPos += 4;
-    return this.ary[this.curPos - 4] + (this.ary[this.curPos - 3] << 8) + (this.ary[this.curPos - 2] << 16) + (this.ary[this.curPos - 1] << 24);
-};
-BinaryReader.prototype.copyBytes = function(dst, offset, size){
-    dst.set(this.ary.slice(this.curPos, this.curPos + size), offset);
-    this.curPos += size;
-};
-BinaryReader.prototype.seekAbs = function(pos){
-    this.curPos = pos;
-};
-BinaryReader.prototype.seekRel = function(diff){
-    this.curPos += diff;
-};
-BinaryReader.prototype.getPos = function(){
-    return this.curPos;
-};
-
+class BinaryReader{
+    constructor(array){
+        this.ary = array;
+        this.curPos = 0;
+    }
+    readByte(){
+        this.curPos++;
+        return this.ary[this.curPos - 1];
+    }
+    readShortLE(){
+        this.curPos += 2;
+        return this.ary[this.curPos - 2] + (this.ary[this.curPos - 1] << 8);
+    }
+    readIntLE(){
+        this.curPos += 4;
+        return this.ary[this.curPos - 4] + (this.ary[this.curPos - 3] << 8) + (this.ary[this.curPos - 2] << 16) + (this.ary[this.curPos - 1] << 24);
+    }
+    copyBytes(dst, offset, size){
+        dst.set(this.ary.slice(this.curPos, this.curPos + size), offset);
+        this.curPos += size;
+    }
+    seekAbs(pos){
+        this.curPos = pos;
+    }
+    seekRel(diff){
+        this.curPos += diff;
+    }
+    getPos(){
+        return this.curPos;
+    }
+}
 
 //Unity LZ4 Decompressor for Uint8Array
-/* class lz4 */
-var lz4 = function(array){
-    this.reader = new BinaryReader(array);
-};
-/* public: */
-lz4.prototype.decompress = function(){
-    var r = this.reader;
-    var retArray;
-    var dataSize = 0;
-    var decompressedSize = 0;
+class Lz4{
+    constructor(array){
+        this.reader = new BinaryReader(array);
+    }
+    decompress(){
+        let r = this.reader;
+        let retArray;
+        let dataSize = 0;
+        let decompressedSize = 0;
 
-    var token = 0;
-    var sqSize = 0;
-    var matchSize = 0;
-    // var litPos = 0;
-    var offset = 0;
-    var retCurPos = 0;
-    var endPos = 0;
+        let token = 0;
+        let sqSize = 0;
+        let matchSize = 0;
+        // let litPos = 0;
+        let offset = 0;
+        let retCurPos = 0;
+        let endPos = 0;
 
-    r.seekAbs(4);
-    decompressedSize = r.readIntLE();
-    dataSize = r.readIntLE();
-    endPos = dataSize + 16;
-    retArray = new Uint8Array(decompressedSize);
+        r.seekAbs(4);
+        decompressedSize = r.readIntLE();
+        dataSize = r.readIntLE();
+        endPos = dataSize + 16;
+        retArray = new Uint8Array(decompressedSize);
 
-    r.seekAbs(16);
+        r.seekAbs(16);
 
-    //Start reading sequences
-    while(1){
-        //read the LiteralSize and the MatchSize
-        token = r.readByte();
-        sqSize = token >> 4;
-        matchSize = (token & 0x0F) + 4;
-        if(sqSize == 15)
-            sqSize += this.readAdditionalSize(r);
+        //Start reading sequences
+        while(1){
+            //read the LiteralSize and the MatchSize
+            token = r.readByte();
+            sqSize = token >> 4;
+            matchSize = (token & 0x0F) + 4;
+            if(sqSize == 15)
+                sqSize += this.readAdditionalSize(r);
 
-        //copy the literal
-        r.copyBytes(retArray, retCurPos, sqSize);
-        retCurPos += sqSize;
+            //copy the literal
+            r.copyBytes(retArray, retCurPos, sqSize);
+            retCurPos += sqSize;
 
-        if(r.getPos() >= endPos - 1)
-            break;
+            if(r.getPos() >= endPos - 1)
+                break;
 
-        //read the offset
-        offset = r.readShortLE();
+            //read the offset
+            offset = r.readShortLE();
 
-        //read the additional MatchSize
-        if(matchSize == 19)
-            matchSize += this.readAdditionalSize(r);
+            //read the additional MatchSize
+            if(matchSize == 19)
+                matchSize += this.readAdditionalSize(r);
 
-        //copy the match properly
-        if(matchSize > offset){
-            var matchPos = retCurPos - offset;
-            while(1){
-                retArray.copyWithin(retCurPos, matchPos, matchPos + offset);
-                retCurPos += offset;
-                matchSize -= offset;
-                if(matchSize < offset)
-                    break;
+            //copy the match properly
+            if(matchSize > offset){
+                let matchPos = retCurPos - offset;
+                while(1){
+                    retArray.copyWithin(retCurPos, matchPos, matchPos + offset);
+                    retCurPos += offset;
+                    matchSize -= offset;
+                    if(matchSize < offset)
+                        break;
+                }
             }
+            retArray.copyWithin(retCurPos, retCurPos - offset, retCurPos - offset + matchSize);
+            retCurPos += matchSize;
         }
-        retArray.copyWithin(retCurPos, retCurPos - offset, retCurPos - offset + matchSize);
-        retCurPos += matchSize;
+
+        return retArray;
     }
 
-
-    return retArray;
-};
-
-/* private: */
-//read Additional Bytes of size
-lz4.prototype.readAdditionalSize = function(reader){
-    var size = reader.readByte();
-    if(size == 255)
-        return size + this.readAdditionalSize(reader);
-    else
-        return size;
-};
+    readAdditionalSize(reader){
+        let size = reader.readByte();
+        if(size == 255)
+            return size + this.readAdditionalSize(reader);
+        else
+            return size;
+    }
+}
 
 function toArrayBuffer(buffer){
-    var ab = new ArrayBuffer(buffer.length);
-    var view = new Uint8Array(ab);
-    for(var i = 0; i < buffer.length; ++i){
+    let ab = new ArrayBuffer(buffer.length);
+    let view = new Uint8Array(ab);
+    for(let i = 0; i < buffer.length; ++i){
         view[i] = buffer[i];
     }
     return view;
 }
 
 function toBuffer(ab){
-    var buf = new Buffer(ab.byteLength);
-    var view = new Uint8Array(ab);
-    for(var i = 0; i < buf.length; ++i){
+    let buf = new Buffer(ab.byteLength);
+    let view = new Uint8Array(ab);
+    for(let i = 0; i < buf.length; ++i){
         buf[i] = view[i];
     }
     return buf;
@@ -132,10 +130,10 @@ function toBuffer(ab){
 
 function lz4dec(input, output){
     output = output || "unity3d";
-    var buff = new Buffer(fs.readFileSync(input));
-    var fbuf = new Uint8Array(toArrayBuffer(buff));
-    var dec = new lz4(fbuf);
-    var raw = dec.decompress();
+    let buff = new Buffer(fs.readFileSync(input));
+    let fbuf = new Uint8Array(toArrayBuffer(buff));
+    let dec = new Lz4(fbuf);
+    let raw = dec.decompress();
     fs.writeFileSync(input + "." + output, toBuffer(raw));
     return input + "." + output;
 }

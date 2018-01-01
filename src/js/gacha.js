@@ -137,6 +137,7 @@ export default {
             return parseInt(Math.random() * this.srMaxOdds) + 1;
         },
         ikkaiHiku(){
+            console.log(this.oddsArray);
             this.playSe(this.enterSe);
             this.gachaResult = [];
             this.costStarJewel += 250;
