@@ -8,7 +8,7 @@ import { configurer } from "./config.js";
 let config = configurer.getConfig();
 let fix = {};
 if(!config.latestResVer){
-    fix.latestResVer = 10033710;
+    fix.latestResVer = 10034000;
 }
 if(config.language !== "zh" && config.language !== "ja"){
     fix.language = "zh";
@@ -131,7 +131,7 @@ ipcMain.on("readMaster", (event, masterFile) => {
     });
 
     let R = 0, SR = 0, SSR = 0, fes = false;
-    let SSR_UP = 0, SR_UP = 0;
+    let SSR_UP = 0, SR_UP = 0, REC = 0;
     gachaAvailable.forEach(function(v, i){
         gachaAvailable[i].rarity = getRarity(v.reward_id, cardData);
         if(gachaAvailable[i].rarity == 3){
@@ -147,6 +147,9 @@ ipcMain.on("readMaster", (event, masterFile) => {
             SSR++;
             if(gachaAvailable[i].up_value == 1){
                 SSR_UP++;
+            }
+            if(gachaAvailable[i].recommend_order > 0){
+                REC++;
             }
         }
     });
@@ -173,7 +176,17 @@ ipcMain.on("readMaster", (event, masterFile) => {
         if(fes){
             R_ODDS = 820000; SR_ODDS = 120000; SSR_ODDS = 60000;
             R_ODDS_SR = 0; SR_ODDS_SR = 940000; SSR_ODDS_SR = 60000;
-            SSR_UP_ODDS = 15000;
+            switch(REC){
+                case 1:
+                    SSR_UP_ODDS = 15000;
+                    break;
+                case 2:
+                    SSR_UP_ODDS = 17500;
+                    break;
+                default:
+                    SSR_UP_ODDS = 15000;
+                    break;
+            }
         }
 
         gachaAvailable.forEach(function(v, i){
@@ -194,13 +207,13 @@ ipcMain.on("readMaster", (event, masterFile) => {
             else if(v.rarity == 7){
                 if(fes){
                     if(v.up_value == 1){
-                        if(v.recommend_order == 1){
-                            gachaAvailable[i]["relative_odds"] = SSR_UP_ODDS / 2;
-                            gachaAvailable[i]["relative_sr_odds"] = SSR_UP_ODDS / 2;
+                        if(v.recommend_order > 0){
+                            gachaAvailable[i]["relative_odds"] = (SSR_UP_ODDS - 7500) / REC;
+                            gachaAvailable[i]["relative_sr_odds"] = (SSR_UP_ODDS - 7500) / REC;
                         }
                         else{
-                            gachaAvailable[i]["relative_odds"] = Math.round((SSR_UP_ODDS / 2) / (SSR_UP - 1));
-                            gachaAvailable[i]["relative_sr_odds"] = Math.round((SSR_UP_ODDS / 2) / (SSR_UP - 1));
+                            gachaAvailable[i]["relative_odds"] = Math.round(7500 / (SSR_UP - REC));
+                            gachaAvailable[i]["relative_sr_odds"] = Math.round(7500 / (SSR_UP - REC));
                         }
                     }
                     else{
