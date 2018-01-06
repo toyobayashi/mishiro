@@ -128,6 +128,12 @@ export default {
             }
         };
     },
+    props: {
+        "master": {
+            type: Object,
+            require: true
+        }
+    },
     filters: vmIdol.filters,
     computed: vmIdol.computed,
     methods: {

@@ -22,22 +22,18 @@ export default {
             liveQueryList: []
         };
     },
+    props: {
+        "master": {
+            type: Object,
+            require: true
+        }
+    },
     computed: {
         liveManifest(){
-            if(this.$store.state.master){
-                return this.$store.state.master.liveManifest;
-            }
-            else{
-                return [];
-            }
+            return this.master.liveManifest ? this.master.liveManifest : [];
         },
         bgmManifest(){
-            if(this.$store.state.master){
-                return this.$store.state.master.bgmManifest;
-            }
-            else{
-                return [];
-            }
+            return this.master.bgmManifest ? this.master.bgmManifest : [];
         }
     },
     methods: {

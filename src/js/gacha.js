@@ -11,12 +11,18 @@ export default {
             costStarJewel: 0
         };
     },
+    props: {
+        "master": {
+            type: Object,
+            require: true
+        }
+    },
     computed: {
         gachaAvailable(){
-            return this.$store.state.master.gachaAvailable;
+            return this.master.gachaAvailable;
         },
         cardData(){
-            return this.$store.state.master.cardData;
+            return this.master.cardData;
         },
         sortByCommon(){
             return this.sortJsonArray(this.gachaAvailable, "relative_odds", false);

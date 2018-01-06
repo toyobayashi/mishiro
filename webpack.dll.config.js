@@ -8,8 +8,7 @@ const renderer = {
         vendor: [
             "cheerio",
             "request",
-            "vue-i18n",
-            "vuex"
+            "vue-i18n"
         ]
     },
     node: {

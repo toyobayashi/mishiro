@@ -22,8 +22,16 @@ export default {
         return {
             loading: 0,
             isReady: false,
-            text: this.$t("update.check")
+            text: this.$t("update.check"),
+            appData: {
+                resVer: "Unknown",
+                manifest: [],
+                master: {}
+            }
         };
+    },
+    props: {
+        "value": Object
     },
     methods: {
         getEventCardId(eventAvailable){
@@ -83,11 +91,6 @@ export default {
             return masterFile;
         }
     },
-    computed: {
-        eventInfo(){
-            return this.$store.state.master.eventData;
-        }
-    },
     mounted(){
         this.$nextTick(() => {
             this.event.$on("enter", async () => { // 已从入口进入
@@ -98,19 +101,21 @@ export default {
                     fs.mkdirSync(getPath("./public/asset/sound/live"));
                 }
                 ipcRenderer.on("readManifest", async (event, manifests, resVer) => {
-                    this.$store.commit("updateManifest", manifests);
+                    this.appData.manifest = manifests;
+                    this.$emit("input", this.appData);
                     const masterHash = manifests.filter(row => row.name === "master.mdb")[0].hash;
                     const masterFile = await this.getMaster(resVer, masterHash);
                     ipcRenderer.send("readMaster", fs.readFileSync(masterFile));
                 });
                 ipcRenderer.on("readMaster", async (event, masterData) => {
                     // console.log(masterData);
-                    this.$store.commit("updateMaster", masterData);
-
+                    // this.$store.commit("updateMaster", masterData);
+                    this.appData.master = masterData;
+                    this.$emit("input", this.appData);
                     for(let k in bgmList){
                         if(!fs.existsSync(path.join(getPath("./public"), bgmList[k].src))){
                             let acbName = `b/${toName(bgmList[k].src)}.acb`;
-                            let hash = this.$store.state.manifest.filter(row => row.name === acbName)[0].hash;
+                            let hash = this.appData.manifest.filter(row => row.name === acbName)[0].hash;
                             await downloader.download(
                                 this.getBgmUrl(hash),
                                 getPath(`./public/asset/sound/bgm/${toName(bgmList[k].src)}.acb`),
@@ -122,24 +127,24 @@ export default {
                             ipcRenderer.send("acb", getPath(`./public/asset/sound/bgm/${toName(bgmList[k].src)}.acb`));
                         }
                     }
-                    if(this.eventInfo.type != 2 && !fs.existsSync(getPath(`./public/asset/sound/bgm/bgm_event_${this.eventInfo.id}.mp3`))){
-                        const eventBgmHash = this.$store.state.manifest.filter(row => row.name === `b/bgm_event_${this.eventInfo.id}.acb`)[0].hash;
+                    if(masterData.eventData.type != 2 && !fs.existsSync(getPath(`./public/asset/sound/bgm/bgm_event_${masterData.eventData.id}.mp3`))){
+                        const eventBgmHash = this.appData.manifest.filter(row => row.name === `b/bgm_event_${masterData.eventData.id}.acb`)[0].hash;
                         await downloader.download(
                             this.getBgmUrl(eventBgmHash),
-                            getPath(`./public/asset/sound/bgm/bgm_event_${this.eventInfo.id}.acb`),
+                            getPath(`./public/asset/sound/bgm/bgm_event_${masterData.eventData.id}.acb`),
                             (prog) => {
                                 this.text = prog.name + "　" + Math.ceil(prog.current / 1024) + "/" + Math.ceil(prog.max / 1024) + " KB";
                                 this.loading = prog.loading;
                             }
                         );
-                        ipcRenderer.send("acb", getPath(`./public/asset/sound/bgm/bgm_event_${this.eventInfo.id}.acb`));
+                        ipcRenderer.send("acb", getPath(`./public/asset/sound/bgm/bgm_event_${masterData.eventData.id}.acb`));
                     }
                     if(!fs.existsSync(getPath("./public/img/card"))){
                         fs.mkdirSync(getPath("./public/img/card"));
                     }
                     let config = this.configurer.getConfig();
                     if(config.background){
-                        let result = await idol.methods.downloadCard(config.background, (prog) => {
+                        let result = await idol.methods.downloadCard.call(this, config.background, (prog) => {
                             this.text = prog.name;
                             this.loading = prog.loading;
                         });
@@ -151,7 +156,7 @@ export default {
                         const eventAvailable = masterData.eventAvailable;
                         const cardId = this.getEventCardId(eventAvailable);
                         // const cardIdEvolution = [(Number(cardId[0]) + 1), (Number(cardId[1]) + 1)];
-                        let result = await idol.methods.downloadCard(Number(cardId[0]) + 1, (prog) => {
+                        let result = await idol.methods.downloadCard.call(this, Number(cardId[0]) + 1, (prog) => {
                             this.text = prog.name;
                             this.loading = prog.loading;
                         });
@@ -182,13 +187,15 @@ export default {
                 /* false */
                 ){ // 判断网络是否连接
                     const resVer = await this.getResVer();
-                    this.$store.commit("updateResVer", resVer);
+                    this.appData.resVer = Number(resVer);
+                    this.$emit("input", this.appData);
                     const manifestFile = await this.getManifest(resVer);
                     ipcRenderer.send("readManifest", fs.readFileSync(manifestFile), resVer);
                 }
                 else{ // 如果网络未连接则直接触发ready事件
                     let resVer = configurer.getConfig().latestResVer;
-                    this.$store.commit("updateResVer", resVer);
+                    this.appData.resVer = Number(resVer);
+                    this.$emit("input", this.appData);
                     if(fs.existsSync(getPath(`./data/manifest_${resVer}.db`)) && fs.existsSync(getPath(`./data/master_${resVer}.db`))){
                         let manifestFile = getPath(`./data/manifest_${resVer}.db`);
                         ipcRenderer.send("readManifest", fs.readFileSync(manifestFile), resVer);

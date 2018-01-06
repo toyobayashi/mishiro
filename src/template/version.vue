@@ -3,9 +3,10 @@
 </template>
 <script>
 export default {
-    computed: {
-        resVer(){
-            return this.$store.state.resVer;
+    props: {
+        "resVer": {
+            type: [Number, String],
+            required: true
         }
     }
 };

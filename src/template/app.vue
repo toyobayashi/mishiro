@@ -4,27 +4,27 @@
         <entry v-if="!isEntered" @enter="isEntered = !isEntered"></entry>
     </transition>
     <transition name="fade">
-        <update v-if="!isReady" @ready="isReady = !isReady"></update>
+        <update v-if="!isReady" @ready="isReady = !isReady" v-model="appData"></update>
     </transition>
     <background></background>
     <div id="mainBlock" v-show="show">
-        <home v-show="currentBlock === 'home'"></home>
-        <idol v-show="currentBlock === 'idol'"></idol>
-        <live v-show="currentBlock === 'live'"></live>
-        <gacha v-show="currentBlock === 'gacha'"></gacha>
+        <home v-show="currentBlock === 'home'" :manifest="appData.manifest"></home>
+        <idol v-show="currentBlock === 'idol'" :master="appData.master"></idol>
+        <live v-show="currentBlock === 'live'" :master="appData.master"></live>
+        <gacha v-show="currentBlock === 'gacha'" :master="appData.master"></gacha>
         <menyuu v-show="currentBlock === 'menu'" @checking="checking = true" @checked="checking = false"></menyuu>
         <hide-button @toggle="showBackground"></hide-button>
-        <version></version>
-        <player></player>
+        <version :resVer="appData.resVer"></version>
+        <player :master="appData.master"></player>
         <small-tab :tab="i18nTabs" :default="_i18n._vm.locale" id="i18nTab" @tabClicked="changeLanguage"></small-tab>
         <nav-bar :current-block="currentBlock" @changeBlock="changeBlock"></nav-bar>
     </div>
     <version-check></version-check>
     <about></about>
-    <gacha-information></gacha-information>
+    <gacha-information :master="appData.master"></gacha-information>
     <gacha-history></gacha-history>
-    <gacha-card></gacha-card>
-    <setting></setting>
+    <gacha-card :master="appData.master"></gacha-card>
+    <setting :master="appData.master"></setting>
     <alert></alert>
     <img v-show="checking" src="../res/img/spinner.gif" class="spinner" />
 </div>
@@ -84,6 +84,11 @@ export default {
             i18nTabs: {
                 zh: "i18n.chinese",
                 ja: "i18n.japanese"
+            },
+            appData: {
+                resVer: "Unknown",
+                manifest: [],
+                master: {}
             }
         };
     },

@@ -2,13 +2,15 @@ import lz4dec from "./lz4.js";
 import getPath from "./getPath.js";
 import configurer from "./config.js";
 
-const getBgmUrl = hash => `http://storage.game.starlight-stage.jp/dl/resources/High/Sound/Common/b/${hash}`;
-const getLiveUrl = hash => `http://storage.game.starlight-stage.jp/dl/resources/High/Sound/Common/l/${hash}`;
-const getAcbUrl = (bORl, hash) => `http://storage.game.starlight-stage.jp/dl/resources/High/Sound/Common/${bORl}/${hash}`;
-const getUnityUrl = hash => `http://storage.game.starlight-stage.jp/dl/resources/High/AssetBundles/Android/${hash}`;
-const getDbUrl = hash => `http://storage.game.starlight-stage.jp/dl/resources/Generic/${hash}`;
-const getCardUrl = id => `https://hoshimoriuta.kirara.ca/spread/${id}.png`;
-const getIconUrl = id => `https://hoshimoriuta.kirara.ca/icon_card/${id}.png`;
+const gameHostBase = "http://storage.game.starlight-stage.jp/dl/resources";
+const imgHostBase = "https://truecolor.kirara.ca";
+const getBgmUrl = hash => `${gameHostBase}/High/Sound/Common/b/${hash}`;
+const getLiveUrl = hash => `${gameHostBase}/High/Sound/Common/l/${hash}`;
+const getAcbUrl = (bORl, hash) => `${gameHostBase}/High/Sound/Common/${bORl}/${hash}`;
+const getUnityUrl = hash => `${gameHostBase}/High/AssetBundles/Android/${hash}`;
+const getDbUrl = hash => `${gameHostBase}/Generic/${hash}`;
+const getCardUrl = id => `${imgHostBase}/spread/${id}.png`;
+const getIconUrl = id => `${imgHostBase}/icon_card/${id}.png`;
 
 export default {
     install(Vue){

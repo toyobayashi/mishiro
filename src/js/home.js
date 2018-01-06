@@ -23,9 +23,10 @@ export default {
             }
         };
     },
-    computed: {
-        manifest(){
-            return this.$store.state.manifest;
+    props: {
+        "manifest": {
+            type: Array,
+            require: true
         }
     },
     methods: {
