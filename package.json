@@ -2,7 +2,7 @@
   "name": "mishiro",
   "productName": "mishiro",
   "companyName": "Toyo",
-  "version": "1.1.2",
+  "version": "1.1.3",
   "description": "A desktop application that can be used for getting the resource of CGSS (IDOL MASTER CINDERELLA GIRLS STARLIGHT STAGE).",
   "main": "main.min.js",
   "scripts": {
@@ -11,8 +11,8 @@
     "dll": "webpack --config webpack.dll.config.js",
     "dev": "webpack --config webpack.dll.config.js&&webpack -w",
     "prod": "set NODE_ENV=production&&webpack --config webpack.dll.config.js&&webpack",
-    "pkg32": "npm run prod&&electron-packager . mishiro --platform=win32 --arch=ia32 --icon=./src/res/icon/mishiro.ico --out=./dist --overwrite --app-version=1.1.2 --win32metadata.FileDescription=\"CGSS Desktop Application\" --ignore=\"(node_modules|data|download|dist|src|docs|public/img/card|public/asset/sound/live|.gitignore|README.md|webpack|.eslintrc.json|config.json|manifest.json)\"",
-    "pkg64": "npm run prod&&electron-packager . mishiro --platform=win32 --arch=x64 --icon=./src/res/icon/mishiro.ico --out=./dist --overwrite --app-version=1.1.2 --win32metadata.FileDescription=\"CGSS Desktop Application\" --ignore=\"(node_modules|data|download|dist|src|docs|public/img/card|public/asset/sound/live|.gitignore|README.md|webpack|.eslintrc.json|config.json|manifest.json)\""
+    "pkg32": "npm run prod&&electron-packager . mishiro --platform=win32 --arch=ia32 --icon=./src/res/icon/mishiro.ico --out=./dist --overwrite --app-version=1.1.3 --win32metadata.FileDescription=\"CGSS Desktop Application\" --ignore=\"(node_modules|data|download|dist|src|docs|public/img/card|public/asset/sound/live|.gitignore|README.md|webpack|.eslintrc.json|config.json|manifest.json)\"",
+    "pkg64": "npm run prod&&electron-packager . mishiro --platform=win32 --arch=x64 --icon=./src/res/icon/mishiro.ico --out=./dist --overwrite --app-version=1.1.3 --win32metadata.FileDescription=\"CGSS Desktop Application\" --ignore=\"(node_modules|data|download|dist|src|docs|public/img/card|public/asset/sound/live|.gitignore|README.md|webpack|.eslintrc.json|config.json|manifest.json)\""
   },
   "repository": {
     "type": "git",
@@ -49,7 +49,6 @@
     "vue-i18n": "^7.3.3",
     "vue-loader": "^13.0.5",
     "vue-template-compiler": "^2.5.13",
-    "vuex": "^3.0.1",
     "webpack": "^3.6.0"
   },
   "dependencies": {}

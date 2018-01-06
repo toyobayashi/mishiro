@@ -60,15 +60,21 @@ export default {
             backgroundId: ""
         };
     },
+    props: {
+        "master": {
+            type: Object,
+            require: true
+        }
+    },
     computed: {
         cardData(){
-            return this.$store.state.master ? this.$store.state.master.cardData : {};
+            return this.master.cardData ? this.master.cardData : {};
         },
         eventData(){
-            return this.$store.state.master ? this.$store.state.master.eventAll : {};
+            return this.master.eventAll ? this.master.eventAll : {};
         },
         gachaNow(){
-            return this.$store.state.master ? this.$store.state.master.gachaNow : {};
+            return this.master.gachaNow ? this.master.gachaNow : {};
         }
     },
     methods: {

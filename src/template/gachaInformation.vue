@@ -67,9 +67,15 @@ export default {
             info: {}
         };
     },
+    props: {
+        "master": {
+            type: Object,
+            require: true
+        }
+    },
     computed: {
         gachaData(){
-            return this.$store.state.master ? this.$store.state.master.gachaData : {};
+            return this.master.gachaData ? this.master.gachaData : {};
         }
     },
     methods: {

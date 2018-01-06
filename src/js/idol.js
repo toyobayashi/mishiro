@@ -26,9 +26,15 @@ export default {
             }
         };
     },
+    props: {
+        "master": {
+            type: Object,
+            require: true
+        }
+    },
     computed: {
         cardData(){
-            return this.$store.state.master.cardData;
+            return this.master.cardData;
         },
         rarity(){
             switch(this.information.rarity){
@@ -166,7 +172,7 @@ export default {
         },
         async downloadCard(id, progressing){
             return await dler.download(
-                `https://hoshimoriuta.kirara.ca/spread/${id}.png`,
+                this.getCardUrl(id),
                 getPath(`./public/img/card/bg_${id}.png`),
                 (progressing ? progressing : (prog => { this.imgProgress = prog.loading; }))
             );

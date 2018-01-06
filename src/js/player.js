@@ -47,9 +47,15 @@ export default {
             // bgm: new Audio(this.initSrc())
         };
     },
+    props: {
+        "master": {
+            type: Object,
+            require: true
+        }
+    },
     computed: {
         eventInfo(){
-            return this.$store.state.master.eventData;
+            return this.master.eventData;
         }
     },
     methods: {
