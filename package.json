@@ -11,8 +11,8 @@
     "dll": "webpack --config webpack.dll.config.js",
     "dev": "webpack --config webpack.dll.config.js&&webpack -w",
     "prod": "set NODE_ENV=production&&webpack --config webpack.dll.config.js&&webpack",
-    "pkg32": "npm run prod&&electron-packager . mishiro --platform=win32 --arch=ia32 --icon=./src/res/icon/mishiro.ico --out=./dist --overwrite --app-version=1.1.3 --win32metadata.FileDescription=\"CGSS Desktop Application\" --ignore=\"(node_modules|data|download|dist|src|docs|public/img/card|public/asset/sound/live|.gitignore|README.md|webpack|.eslintrc.json|config.json|manifest.json)\"",
-    "pkg64": "npm run prod&&electron-packager . mishiro --platform=win32 --arch=x64 --icon=./src/res/icon/mishiro.ico --out=./dist --overwrite --app-version=1.1.3 --win32metadata.FileDescription=\"CGSS Desktop Application\" --ignore=\"(node_modules|data|download|dist|src|docs|public/img/card|public/asset/sound/live|.gitignore|README.md|webpack|.eslintrc.json|config.json|manifest.json)\""
+    "pkg32": "npm run prod&&electron-packager . %npm_package_name% --platform=win32 --arch=ia32 --icon=./src/res/icon/%npm_package_name%.ico --out=./dist --overwrite --app-version=%npm_package_version% --win32metadata.FileDescription=\"CGSS Desktop Application\" --ignore=\"(node_modules|data|download|dist|src|docs|public/img/card|public/asset/sound/live|.gitignore|README.md|webpack|.eslintrc.json|config.json|manifest.json)\"",
+    "pkg64": "npm run prod&&electron-packager . %npm_package_name% --platform=win32 --arch=x64 --icon=./src/res/icon/%npm_package_name%.ico --out=./dist --overwrite --app-version=%npm_package_version% --win32metadata.FileDescription=\"CGSS Desktop Application\" --ignore=\"(node_modules|data|download|dist|src|docs|public/img/card|public/asset/sound/live|.gitignore|README.md|webpack|.eslintrc.json|config.json|manifest.json)\""
   },
   "repository": {
     "type": "git",
