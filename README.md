@@ -31,3 +31,5 @@ Option / About.
 ![menu](https://github.com/toyobayashi/mishiro/raw/master/img/menu.png)  
 ![menu](https://github.com/toyobayashi/mishiro/raw/master/img/menu2.png)  
 
+## Copyright
+The copyright of CGSS and its related content is held by [BANDAI NAMCO Entertainment Inc.](https://bandainamcoent.co.jp/)  
