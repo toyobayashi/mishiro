@@ -28,6 +28,6 @@ Game gacha simulation. (the same gacha event and card odds)
 ## MENU
 Option / About.  
 
-![gacha](https://github.com/toyobayashi/mishiro/raw/master/img/gacha.png)  
-![gacha](https://github.com/toyobayashi/mishiro/raw/master/img/gacha2.png)  
+![menu](https://github.com/toyobayashi/mishiro/raw/master/img/menu.png)  
+![menu](https://github.com/toyobayashi/mishiro/raw/master/img/menu2.png)  
 
