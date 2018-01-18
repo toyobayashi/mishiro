@@ -3,18 +3,18 @@
 </template>
 <script>
 export default {
-    props: {
-        "resVer": {
-            type: [Number, String],
-            required: true
-        }
+  props: {
+    'resVer': {
+      type: [Number, String],
+      required: true
     }
-};
+  }
+}
 </script>
 <style>
 .version{
-    position: absolute;
-    top: 10px;
-    right: 100px;
+  position: absolute;
+  top: 10px;
+  right: 100px;
 }
 </style>
