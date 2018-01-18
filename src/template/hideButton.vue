@@ -4,28 +4,28 @@
 
 <script>
 export default {
-    methods: {
-        toggle(){
-            this.playSe(this.cancelSe);
-            this.$emit("toggle");
-        }
+  methods: {
+    toggle () {
+      this.playSe(this.cancelSe)
+      this.$emit('toggle')
     }
-};
+  }
+}
 </script>
 
 <style>
 .hideButton{
-    position:absolute;
-    top:5px;
-    right:5px;
-    width:65px;
-    height:65px;
-    background-image:url(../res/img/hide.png);
-    background-position:0 -65px;
-    cursor: pointer;
+  position:absolute;
+  top:5px;
+  right:5px;
+  width:65px;
+  height:65px;
+  background-image:url(../res/img/hide.png);
+  background-position:0 -65px;
+  cursor: pointer;
 }
 .hideButton:active{
-    background-position:0 0;
+  background-position:0 0;
 }
 </style>
 

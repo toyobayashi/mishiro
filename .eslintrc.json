@@ -1,51 +1,18 @@
 {
-    "env": {
-        "browser": true,
-        "es6": true,
-        "node": true
-    },
-    "extends": "eslint:recommended",
-    "parserOptions": {
-        "sourceType": "module"
-    },
-    "rules": {
-        "camelcase": 2,
-        "indent": [2, 4, { "SwitchCase": 1 }],
-        "linebreak-style": [2, "windows"],
-        "quotes": [2, "double"],
-        "semi": [2, "always"],
-        "comma-dangle": [2, "never"],
-        "space-infix-ops": [2, { "int32Hint": false }],
-        "space-unary-ops": [2, { "words": true, "nonwords": false }],
-        "key-spacing": [2, { "beforeColon": false, "afterColon": true }],
-        "keyword-spacing": [2, 
-            {
-                "overrides": {
-                    "if": { "after": false },
-                    "try": { "after": false },
-                    "catch": { "after": false },
-                    "for": { "after": false },
-                    "switch": { "after": false },
-                    "else": { "after": false },
-                    "while": { "after": false }
-                }
-            }
-        ],
-        "comma-spacing": [2, { "before": false, "after": true }],
-        "func-call-spacing": [2, "never"],
-        "array-bracket-spacing": [2, "never"],
-        "object-curly-spacing": [2, "always"],
-        "arrow-spacing": 2,
-        "space-in-parens": [2, "never"],
-        "space-before-blocks": [2, "never"],
-        "no-trailing-spaces": 1,
-        "no-console": 1,
-        "no-alert": 1,
-        "no-irregular-whitespace": 0,
-        "no-constant-condition": 0
-    },
-    "parser": "babel-eslint",
-    "plugins": [
-        "html"
-    ]
+  "env": {
+    "browser": true,
+    "es6": true,
+    "node": true
+  },
+  "extends": "standard",
+  "parserOptions": {
+    "sourceType": "module"
+  },
+  "rules": {
+    "eqeqeq": 0,
+    "no-irregular-whitespace": 0
+  },
+  "plugins": [
+    "html"
+  ]
 }
