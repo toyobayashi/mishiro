@@ -3,6 +3,7 @@ node_modules/
 download/
 data/
 dist/
+release/
 public/dll.js
 public/mishiro.min.js
 public/mishiro.min.css
