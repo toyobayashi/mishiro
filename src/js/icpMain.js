@@ -8,7 +8,7 @@ import { configurer } from './config.js'
 let config = configurer.getConfig()
 let fix = {}
 if (!config.latestResVer) {
-  fix.latestResVer = 10034500
+  fix.latestResVer = 10034600
 }
 if (config.language !== 'zh' && config.language !== 'ja') {
   fix.language = 'zh'
@@ -116,12 +116,12 @@ ipcMain.on('readMaster', (event, masterFile) => {
     } else {
       if (arr.length > 2) {
         if (arr[2] === 'another') {
-          fileName = arr[1] + '_' + arr[2] + '-' + musicData.filter(row => row.id == arr[1])[0].name.replace(/\\n/g, '') + '.mp3'
+          fileName = arr[1] + '_' + arr[2] + '-' + musicData.filter(row => row.id == arr[1])[0].name.replace(/\\n|\\|\/|<|>|\*|\?|:|"|\|/g, '') + '.mp3'
         } else {
-          fileName = arr[1] + '_' + arr[2] + '-' + musicData.filter(row => row.id == arr[1])[0].name.replace(/\\n/g, '') + '（' + charaData.filter(row => row.chara_id == arr[2])[0].name + '）.mp3'
+          fileName = arr[1] + '_' + arr[2] + '-' + musicData.filter(row => row.id == arr[1])[0].name.replace(/\\n|\\|\/|<|>|\*|\?|:|"|\|/g, '') + '（' + charaData.filter(row => row.chara_id == arr[2])[0].name + '）.mp3'
         }
       } else {
-        fileName = arr[1] + '-' + musicData.filter(row => row.id == arr[1])[0].name.replace(/\\n/g, '') + '.mp3'
+        fileName = arr[1] + '-' + musicData.filter(row => row.id == arr[1])[0].name.replace(/\\n|\\|\/|<|>|\*|\?|:|"|\|/g, '') + '.mp3'
       }
     }
     liveManifest[i].fileName = fileName
@@ -242,8 +242,11 @@ ipcMain.on('acb', (event, acbPath, url = '') => {
   exec(`${getPath()}\\bin\\CGSSAudio.exe ${acbPath}`, (err) => {
     if (!err) {
       if (url) {
-        if (url.split('/')[url.split('/').length - 2] === 'live') {
-          fs.renameSync(getPath(`./public/asset/sound/live/${name}.mp3`), getPath(`./public/asset/sound/live/${url.split('/')[url.split('/').length - 1]}`))
+        let urlArr = url.split('/')
+        if (urlArr[urlArr.length - 2] === 'live') {
+          let fileName = urlArr[urlArr.length - 1]
+          urlArr[urlArr.length - 1] = fileName
+          fs.renameSync(getPath(`./public/asset/sound/live/${name}.mp3`), getPath(`./public/asset/sound/live/${fileName}`))
           event.sender.send('acb', acbPath, url)
         } else {
           event.sender.send('acb', acbPath, url)
