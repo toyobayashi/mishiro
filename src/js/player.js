@@ -31,6 +31,11 @@ const bgmList = {
   },
   caravan: {
     src: './asset/sound/bgm/bgm_event_typeA.mp3'
+  },
+  rail: {
+    src: './asset/sound/bgm/bgm_event_rail.mp3',
+    start: 14.600,
+    end: 94.560
   }
 }
 
@@ -44,7 +49,6 @@ export default {
       bgmList,
       isShow: false,
       playing: bgmList.anni
-      // bgm: new Audio(this.initSrc())
     }
   },
   props: {
@@ -170,13 +174,17 @@ export default {
               }
               break
             case 'live':
-              if (this.eventInfo.type != 2) {
-                if (this.playing.src !== `./asset/sound/bgm/bgm_event_${this.eventInfo.id}.mp3`) {
-                  this.event.$emit('liveSelect', { src: `./asset/sound/bgm/bgm_event_${this.eventInfo.id}.mp3` })
-                }
-              } else {
+              if (this.eventInfo.type == 2) {
                 if (this.playing.src !== bgmList.caravan.src) {
                   this.play(bgmList.caravan)
+                }
+              } else if (this.eventInfo.type == 6) {
+                if (this.playing.src !== bgmList.rail.src) {
+                  this.play(bgmList.rail)
+                }
+              } else {
+                if (this.playing.src !== `./asset/sound/bgm/bgm_event_${this.eventInfo.id}.mp3`) {
+                  this.event.$emit('liveSelect', { src: `./asset/sound/bgm/bgm_event_${this.eventInfo.id}.mp3` })
                 }
               }
               break
