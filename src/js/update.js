@@ -125,7 +125,7 @@ export default {
               ipcRenderer.send('acb', getPath(`./public/asset/sound/bgm/${toName(bgmList[k].src)}.acb`))
             }
           }
-          if (masterData.eventData.type != 2 && !fs.existsSync(getPath(`./public/asset/sound/bgm/bgm_event_${masterData.eventData.id}.mp3`))) {
+          if (masterData.eventData.type != 2 && masterData.eventData.type != 6 && !fs.existsSync(getPath(`./public/asset/sound/bgm/bgm_event_${masterData.eventData.id}.mp3`))) {
             const eventBgmHash = this.appData.manifest.filter(row => row.name === `b/bgm_event_${masterData.eventData.id}.acb`)[0].hash
             await downloader.download(
               this.getBgmUrl(eventBgmHash),
