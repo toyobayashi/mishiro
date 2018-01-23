@@ -114,6 +114,11 @@ export default {
     appname: '応用名',
     appver: '版本',
     description: '説明',
-    descCon: '用於提取CGSS (IDOLMASTER CINDERELLA GIRLS STARLIGHT STAGE) 音楽和図片資源的Windows卓面応用。'
+    descCon: '用於提取CGSS (IDOLMASTER CINDERELLA GIRLS STARLIGHT STAGE) 音楽和図片資源的Windows卓面応用。',
+    exit: '結束程序',
+    calculator: '活動估分',
+    cacheClear: '清除緩存',
+    cacheClearSuccess: '清除緩存成功。',
+    noCache: '無需清除緩存。'
   }
 }

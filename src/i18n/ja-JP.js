@@ -114,6 +114,11 @@ export default {
     appname: 'アプリ名',
     appver: 'バージョン',
     description: '説明',
-    descCon: 'CGSS (アイドルマスターシンデレラガールズスターライトステージ) のリソースのダウンロードできるWindowsデスクトップアプリです。'
+    descCon: 'CGSS (アイドルマスターシンデレラガールズスターライトステージ) のリソースのダウンロードできるWindowsデスクトップアプリです。',
+    exit: 'アプリを終了',
+    calculator: 'ｲﾍﾞﾝﾄpt計算',
+    cacheClear: 'ｷｬｯｼｭクリア',
+    cacheClearSuccess: 'キャッシュをクリアしました。',
+    noCache: 'キャッシュクリアの必要がありません。'
   }
 }

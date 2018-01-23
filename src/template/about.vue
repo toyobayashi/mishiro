@@ -20,7 +20,7 @@
           </tr>
           <tr>
             <td>Electron</td>
-            <td>v1.7.10</td>
+            <td>v1.7.11</td>
           </tr>
           <tr>
             <td>Node</td>

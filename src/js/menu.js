@@ -1,7 +1,12 @@
 import { remote } from 'electron'
 import cheerio from 'cheerio'
 import request from 'request'
+import getPath from './getPath.js'
+import fs from 'fs'
 export default {
+  props: {
+    resVer: [String, Number]
+  },
   methods: {
     showOption () {
       this.playSe(this.enterSe)
@@ -84,6 +89,27 @@ OTHER DEALINGS IN THE SOFTWARE.</p>`, 900)
       this.playSe(this.enterSe)
       remote.app.relaunch({ args: ['.'] })
       remote.app.exit(0)
+    },
+    calculator () {
+      this.playSe(this.enterSe)
+    },
+    exit () {
+      remote.app.exit(0)
+      this.playSe(this.cancelSe)
+    },
+    cacheClear () {
+      this.playSe(this.enterSe)
+      const dataDir = getPath('./data')
+      const files = fs.readdirSync(dataDir)
+      const deleteItem = []
+      for (let i = 0; i < files.length; i++) {
+        if (!new RegExp(`${this.resVer}`).test(files[i])) deleteItem.push(getPath(`./data/${files[i]}`))
+      }
+      for (let i = 0; i < deleteItem.length; i++) {
+        fs.unlinkSync(deleteItem[i])
+      }
+      if (deleteItem.length) this.event.$emit('alert', this.$t('menu.cacheClear'), this.$t('menu.cacheClearSuccess'))
+      else this.event.$emit('alert', this.$t('menu.cacheClear'), this.$t('menu.noCache'))
     }
   }
 }

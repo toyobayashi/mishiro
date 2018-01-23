@@ -12,7 +12,7 @@
     <idol v-show="currentBlock === 'idol'" :master="appData.master"></idol>
     <live v-show="currentBlock === 'live'" :master="appData.master"></live>
     <gacha v-show="currentBlock === 'gacha'" :master="appData.master"></gacha>
-    <menyuu v-show="currentBlock === 'menu'" @checking="checking = true" @checked="checking = false"></menyuu>
+    <menyuu v-show="currentBlock === 'menu'" @checking="checking = true" @checked="checking = false" :resVer="appData.resVer"></menyuu>
     <hide-button @toggle="showBackground"></hide-button>
     <version :resVer="appData.resVer"></version>
     <player :master="appData.master"></player>
