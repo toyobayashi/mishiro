@@ -1,5 +1,5 @@
-import cgssTable from '../template/table.vue'
-import task from '../template/task.vue'
+import cgssTable from '../template/component/table.vue'
+import task from '../template/component/task.vue'
 import Downloader from './downloader.js'
 import fs from 'fs'
 import getPath from './getPath.js'

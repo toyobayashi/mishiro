@@ -1,6 +1,6 @@
 import fs from 'fs'
 import path from 'path'
-import progressBar from '../template/progressBar.vue'
+import progressBar from '../template/component/progressBar.vue'
 import check from './check.js'
 import downloadManifest from './downloadManifest.js'
 import downloadMaster from './downloadMaster.js'

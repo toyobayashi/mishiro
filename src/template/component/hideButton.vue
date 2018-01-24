@@ -13,14 +13,14 @@ export default {
 }
 </script>
 
-<style>
+<style scoped>
 .hideButton{
   position:absolute;
   top:5px;
   right:5px;
   width:65px;
   height:65px;
-  background-image:url(../res/img/hide.png);
+  background-image:url(../../res/img/hide.png);
   background-position:0 -65px;
   cursor: pointer;
 }

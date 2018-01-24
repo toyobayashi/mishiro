@@ -47,7 +47,7 @@ export default {
 }
 .cgss-tab-sm>li{
   display: block;
-  background-image: url("../res/img/tabSm.png");
+  background-image: url("../../res/img/tabSm.png");
   text-decoration:none;
   text-align: center;
   height: 32px;
