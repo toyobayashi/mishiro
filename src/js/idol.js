@@ -1,5 +1,5 @@
-import progressBar from '../template/progressBar.vue'
-import smallTab from '../template/smallTab.vue'
+import progressBar from '../template/component/progressBar.vue'
+import smallTab from '../template/component/smallTab.vue'
 import Downloader from './downloader.js'
 import getPath from './getPath.js'
 import fs from 'fs'

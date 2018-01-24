@@ -1,6 +1,6 @@
 import { ipcRenderer, shell } from 'electron'
 import fs from 'fs'
-import task from '../template/task.vue'
+import task from '../template/component/task.vue'
 import Downloader from './downloader.js'
 import getPath from './getPath.js'
 const dler = new Downloader()

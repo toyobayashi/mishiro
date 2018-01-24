@@ -31,26 +31,29 @@
 </template>
 
 <script>
-import entry from './entry.vue'
-import player from './player.vue'
-import update from './update.vue'
-import background from './background.vue'
-import smallTab from './smallTab.vue'
-import hideButton from './hideButton.vue'
-import navBar from './navBar.vue'
-import version from './version.vue'
-import home from './home.vue'
-import idol from './idol.vue'
-import live from './live.vue'
-import gacha from './gacha.vue'
-import menu from './menu.vue'
-import alert from './alert.vue'
-import gachaHistory from './gachaHistory.vue'
-import gachaCard from './gachaCard.vue'
-import gachaInformation from './gachaInformation.vue'
-import about from './about.vue'
-import setting from './setting.vue'
-import versionCheck from './versionCheck.vue'
+import entry from './view/entry.vue'
+import update from './view/update.vue'
+import home from './view/home.vue'
+import idol from './view/idol.vue'
+import live from './view/live.vue'
+import gacha from './view/gacha.vue'
+import menu from './view/menu.vue'
+
+import player from './component/player.vue'
+import background from './component/background.vue'
+import smallTab from './component/smallTab.vue'
+import hideButton from './component/hideButton.vue'
+import navBar from './component/navBar.vue'
+import version from './component/version.vue'
+
+import alert from './modal/alert.vue'
+import gachaHistory from './modal/gachaHistory.vue'
+import gachaCard from './modal/gachaCard.vue'
+import gachaInformation from './modal/gachaInformation.vue'
+import about from './modal/about.vue'
+import setting from './modal/setting.vue'
+import versionCheck from './modal/versionCheck.vue'
+
 export default {
   components: {
     entry,
