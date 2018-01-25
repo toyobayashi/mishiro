@@ -51,6 +51,6 @@ $ npm run prod
 ```batch
 $ npm start
 ```
-Note: ```/bin```Binaries could be found in releases ```/resources/app/bin```
+Note: ```/bin```Binaries could be downloaded [here](https://github.com/toyobayashi/mishiro/releases/download/v1.1.5/extract-this-to-root-first-if-you-want-to-build-from-source.zip). Extract it to source root.
 ## Copyright
 The copyright of CGSS and its related content is held by [BANDAI NAMCO Entertainment Inc.](https://bandainamcoent.co.jp/)  
