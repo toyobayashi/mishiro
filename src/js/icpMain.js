@@ -5,10 +5,13 @@ import SQL from './sqlExec.js'
 import { getPath } from './getPath.js'
 import { configurer } from './config.js'
 
+const timeOffset = (9 - (-(new Date().getTimezoneOffset() / 60))) * 60 * 60 * 1000
+const now = new Date().getTime()
+
 let config = configurer.getConfig()
 let fix = {}
 if (!config.latestResVer) {
-  fix.latestResVer = 10034700
+  fix.latestResVer = 10034800
 }
 if (config.language !== 'zh' && config.language !== 'ja') {
   fix.language = 'zh'
@@ -37,7 +40,23 @@ ipcMain.on('readMaster', (event, masterFile) => {
   const master = new SQL.Database(masterFile)
   const gachaAll = master._exec('SELECT * FROM gacha_data')
   const eventAll = master._exec('SELECT * FROM event_data')
-  const eventNow = master._exec("SELECT * FROM event_data WHERE event_start = (SELECT MAX(event_start) FROM (SELECT * FROM event_data WHERE event_start < DATETIME(CURRENT_TIMESTAMP, 'localtime')))")[0]
+  /**
+   * event finding, return event data object
+   */
+  let eventNow = null
+  eventAll.sort((a, b) => new Date(b.event_start).getTime() - new Date(a.event_start).getTime())
+  for (let i = 0; i < eventAll.length; i++) {
+    const e = eventAll[i]
+    const start = new Date(e.event_start).getTime() - timeOffset
+    const end = new Date(e.result_end).getTime() - timeOffset
+    if (now >= start && now <= end) {
+      eventNow = e
+      break
+    }
+  }
+  if (!eventNow) eventNow = now > new Date(eventAll[0].result_end).getTime() ? eventAll[0] : eventAll[1]
+  // const eventNow = master._exec("SELECT * FROM event_data WHERE event_start = (SELECT MAX(event_start) FROM (SELECT * FROM event_data WHERE event_start < DATETIME(CURRENT_TIMESTAMP, 'localtime')))")[0]
+
   const eventData = config.event ? master._exec(`SELECT * FROM event_data WHERE id="${config.event}"`)[0] : eventNow
   const eventAvailable = master._exec(`SELECT * FROM event_available WHERE event_id = "${eventData.id}"`)
 
@@ -48,7 +67,19 @@ ipcMain.on('readMaster', (event, masterFile) => {
   const leaderSkillData = master._exec('SELECT * FROM leader_skill_data')
   const musicData = master._exec('SELECT id, name FROM music_data')
 
-  let gachaNowArray = master._exec("SELECT * FROM gacha_data WHERE start_date = (SELECT MAX(start_date) FROM gacha_data WHERE id LIKE '3%') AND id LIKE '3%'")
+  /**
+   * gacha finding, return gacha Array
+   */
+  let gachaNowArray = []
+  gachaAll.forEach((gacha, i) => {
+    if (gacha.id > 30000 && gacha.id < 40000) {
+      const start = new Date(gacha.start_date).getTime() - timeOffset
+      const end = new Date(gacha.end_date).getTime() - timeOffset
+      if (now >= start && now <= end) gachaNowArray.push(gacha)
+    }
+  })
+  gachaNowArray.sort((a, b) => a.id - b.id)
+  // let gachaNowArray = master._exec("SELECT * FROM gacha_data WHERE start_date = (SELECT MAX(start_date) FROM gacha_data WHERE id LIKE '3%') AND id LIKE '3%'")
   let gachaNow = gachaNowArray[gachaNowArray.length - 1]
   let gachaData = config.gacha ? master._exec(`SELECT * FROM gacha_data WHERE id="${config.gacha}"`)[0] : gachaNow
   let gachaAvailable = master._exec(`SELECT * FROM gacha_available WHERE gacha_id LIKE '${gachaData.id}'`)
