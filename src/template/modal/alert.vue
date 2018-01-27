@@ -90,10 +90,13 @@ export default {
 }
 .modal-footer {
   padding: 15px;
-  text-align: center;
   border-top: 1px solid #000;
   background: linear-gradient(180deg, #f0f0f0, #d0d0d0);
   height: 103px;
   border-radius: 0 0 10px 10px;
+  /* text-align: center; */
+  display: flex;
+  justify-content: center;
+  align-content: center;
 }
 </style>

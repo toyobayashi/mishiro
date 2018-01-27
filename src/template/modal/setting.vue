@@ -10,9 +10,9 @@
         <form>
           <div>
             <label>{{$t("menu.lang")}}</label>
-            <div class="pull-right option-input clearfix">
-              <input type="radio" value="zh" id="razh" v-model="lang" name="lang" class="pull-left" /><label for="razh" class="pull-left lable-top"></label><span class="pull-left">{{$t("i18n.chinese")}}</span>
-              <input type="radio" value="ja" id="raja" v-model="lang" name="lang" class="pull-left" /><label for="raja" class="pull-left lable-top margin-left-50"></label><span class="pull-left">{{$t("i18n.japanese")}}</span>
+            <div class="pull-right option-input clearfix" style="display:flex;justify-content:space-around">
+              <radio :text="$t('i18n.chinese')" value="zh" v-model="lang" lable-id="razh"></radio>
+              <radio :text="$t('i18n.japanese')" value="ja" v-model="lang" lable-id="raja"></radio>
             </div>
           </div>
           <div class="margin-top-10">
@@ -33,11 +33,9 @@
           </div>
         </form>
       </div>
-      <div class="modal-footer flex-center">
-        <div class="clearfix">
-          <button type="button" class="cgss-btn cgss-btn-default pull-right margin-left-50" @click="close">{{$t("home.close")}}</button>
-          <button type="button" class="cgss-btn cgss-btn-ok pull-right" @click="save">{{$t("menu.save")}}</button>
-        </div>
+      <div class="modal-footer">
+        <button type="button" class="cgss-btn cgss-btn-ok" @click="save">{{$t("menu.save")}}</button>
+        <button type="button" class="cgss-btn cgss-btn-default margin-left-50" @click="close">{{$t("home.close")}}</button>
       </div>
     </div>
   </transition>
@@ -46,8 +44,12 @@
 
 <script>
 import modalMixin from '../../js/modalMixin.js'
+import radio from '../component/radio.vue'
 export default {
   mixins: [modalMixin],
+  components: {
+    radio
+  },
   data () {
     return {
       lang: '',
@@ -176,47 +178,11 @@ export default {
 </script>
 
 <style>
-.lable-top {
-  top: 5px;
-}
 .option-input {
   margin: 0;
   width: 70%;
 }
 .margin-left-50 {
   margin-left: 50px;
-}
-input[type="radio"] {
-  display: none !important;
-}
-input[type="radio"] + label {
-  box-sizing: border-box;
-  width: 30px;
-  height: 30px;
-  background: #f0f0f0;
-  border: 2px solid #000000;
-  border-radius: 50%;
-  display: inline-block;
-  padding: 4px;
-  position: relative;
-}
-input[type="radio"] + label:after {
-  content: " ";
-  display: block;
-  width: 100%;
-  height: 100%;
-  border-radius: 50%;
-  background: -webkit-linear-gradient(270deg, #a0a0a0, #c8c8c8, #f0f0f0);
-}
-input[type="radio"]:active + label:after {
-  background: -webkit-linear-gradient(270deg, #909090, #c8c8c8, #f0f0f0);
-}
-input[type="radio"]:checked + label:after {
-  background: -webkit-radial-gradient(
-    25% 25%,
-    closest-corner,
-    #f0f0f0,
-    #c01080
-  );
 }
 </style>

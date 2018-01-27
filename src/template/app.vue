@@ -19,6 +19,7 @@
     <small-tab :tab="i18nTabs" :default="_i18n._vm.locale" id="i18nTab" @tabClicked="changeLanguage"></small-tab>
     <nav-bar :current-block="currentBlock" @changeBlock="changeBlock"></nav-bar>
   </div>
+  <calculator></calculator>
   <version-check></version-check>
   <about></about>
   <gacha-information :master="appData.master"></gacha-information>
@@ -53,6 +54,7 @@ import gachaInformation from './modal/gachaInformation.vue'
 import about from './modal/about.vue'
 import setting from './modal/setting.vue'
 import versionCheck from './modal/versionCheck.vue'
+import calculator from './modal/calculator.vue'
 
 export default {
   components: {
@@ -75,7 +77,8 @@ export default {
     gachaInformation,
     about,
     versionCheck,
-    setting
+    setting,
+    calculator
   },
   data () {
     return {

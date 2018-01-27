@@ -22,11 +22,9 @@
           </tr>
         </table>
       </div>
-      <div class="modal-footer flex-center">
-        <div class="clearfix">
-          <button type="button" class="cgss-btn cgss-btn-default pull-right margin-left-50" @click="close">{{$t("home.close")}}</button>
-          <button type="button" class="cgss-btn-lg cgss-btn-lg-ok pull-right" @click="showRepo">{{$t("menu.release")}}</button>
-        </div>
+      <div class="modal-footer">
+        <button type="button" class="cgss-btn-lg cgss-btn-lg-ok" @click="showRepo">{{$t("menu.release")}}</button>
+        <button type="button" class="cgss-btn cgss-btn-default margin-left-50" @click="close">{{$t("home.close")}}</button>
       </div>
     </div>
   </transition>
