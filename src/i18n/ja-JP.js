@@ -26,7 +26,10 @@ export default {
     caravan: 'キャラバン',
     medley: 'グルーブ',
     party: 'パーティー',
-    tour: 'パレード'
+    tour: 'パレード',
+    calculate: '算出',
+    startCount: 'カウント開始',
+    stopCount: 'カウント中止'
   },
   update: {
     tip: '※通信環境の良い所で実行してください',

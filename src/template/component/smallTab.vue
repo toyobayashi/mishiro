@@ -1,12 +1,30 @@
 <template>
 <ul class="cgss-tab-sm clearfix">
-  <li v-for="item in tab" @click="liClick(item)" :class="{ active: currentActive === item }">{{$t(item)}}</li>
+  <li v-for="item in tab" @click="liClick(item)" :style="{ fontSize: fontSize + 'px' }" :class="{ active: currentActive === item }">{{noTranslation ? item : $t(item)}}</li>
 </ul>
 </template>
 
 <script>
 export default {
-  props: ['tab', 'default'],
+  props: {
+    tab: {
+      type: Object,
+      required: true,
+      default: {}
+    },
+    default: {
+      type: String,
+      required: true
+    },
+    noTranslation: {
+      type: Boolean,
+      default: false
+    },
+    fontSize: {
+      type: Number,
+      default: 18
+    }
+  },
   data () {
     return {
       currentActive: this.tab[this.default]
@@ -36,16 +54,11 @@ export default {
 <style>
 .cgss-tab-sm{
   display: block;
-}
-.cgss-tab-sm{
   list-style: none;
 }
 .cgss-tab-sm>li{
   float: left;
-  /* display: inline-block; */
   cursor: pointer;
-}
-.cgss-tab-sm>li{
   display: block;
   background-image: url("../../res/img/tabSm.png");
   text-decoration:none;
@@ -54,7 +67,7 @@ export default {
   line-height: 32px;
   color: #323232;
   font-family: "CGSS-B";
-  font-size: 18px;
+  /* font-size: 18px; */
 }
 .cgss-tab-sm>li:first-child{
   width: 96px;

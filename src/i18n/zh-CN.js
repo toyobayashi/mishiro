@@ -26,7 +26,10 @@ export default {
     caravan: '灰姑娘篷車',
     medley: '組曲串焼型',
     party: '五人組隊型',
-    tour: '全国巡回型'
+    tour: '全国巡回型',
+    calculate: '計算',
+    startCount: '開始計時',
+    stopCount: '停止計時'
   },
   update: {
     tip: '※請在網絡良好的環境下進行',

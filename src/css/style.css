@@ -242,7 +242,7 @@ td, th{
 .cgss-btn-sm-default:active{
   background-position: -88px 0;
 }
-.cgss-btn-round{
+/* .cgss-btn-round{
   cursor: pointer;
   width: 56px;
   height: 56px;
@@ -265,7 +265,7 @@ td, th{
   background-color: rgba(255,255,255,0);
   background-image: url("../res/img/play.png");
   background-position: 0 -114px;
-}
+} */
 
 .pull-left{
   float: left;

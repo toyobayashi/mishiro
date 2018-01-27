@@ -92,6 +92,7 @@ OTHER DEALINGS IN THE SOFTWARE.</p>`, 900)
     },
     calculator () {
       this.playSe(this.enterSe)
+      this.event.$emit('openCal')
     },
     exit () {
       remote.app.exit(0)
