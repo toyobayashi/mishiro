@@ -6,7 +6,7 @@
     </ul>
   </div>
   <div>
-    <input type="text" class="db-query idol-query" v-model="queryString" :placeholder="$t('idol.input')" />
+    <input-text class="idol-query" v-model="queryString" :placeholder="$t('idol.input')" />
     <button class="cgss-btn-lg cgss-btn-lg-star pull-right margin-left-10" @click="opendir">{{$t("home.opendir")}}</button>
     <button class="cgss-btn cgss-btn-ok pull-right margin-left-10" @click="query">{{$t("home.search")}}</button>
   </div>
@@ -154,6 +154,7 @@
   top: -5px;
 }
 .idol-query{
+  margin: 12px 0;
   width: calc(100% - 690px);
 }
 .idol-result{

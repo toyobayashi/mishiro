@@ -89,6 +89,8 @@ ipcMain.on('readMaster', (event, masterFile) => {
 
   let gachaLimited = master._exec('SELECT gacha_id, reward_id FROM gacha_available WHERE limited_flag = 1 ORDER BY reward_id')
   let eventLimited = master._exec('SELECT event_id, reward_id FROM event_available ORDER BY reward_id')
+
+  const userLevel = master._exec('SELECT level, stamina, total_exp FROM user_level')
   manifest.close()
   master.close()
 
@@ -265,7 +267,13 @@ ipcMain.on('readMaster', (event, masterFile) => {
   }
   gachaData.count = { R, SR, SSR, fes }
 
-  event.sender.send('readMaster', { eventAll, cardData, eventData, eventAvailable, bgmManifest, liveManifest, gachaData, gachaAvailable, gachaNow })
+  userLevel.sort((a, b) => a.level - b.level)
+  userLevel.forEach((level, i) => {
+    if (i !== userLevel.length - 1) level.exp = userLevel[i + 1].total_exp - level.total_exp
+    else level.exp = Infinity
+  })
+
+  event.sender.send('readMaster', { eventAll, eventNow, cardData, eventData, eventAvailable, bgmManifest, liveManifest, gachaData, gachaAvailable, gachaNow, userLevel, timeOffset })
 })
 
 ipcMain.on('acb', (event, acbPath, url = '') => {

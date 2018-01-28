@@ -3,7 +3,7 @@
   <thead>
     <tr>
       <th class="flex-center"><input type="checkbox" id="checkAll" v-model="selectAll" /><label for="checkAll"></label></th>
-      <th v-if="data[0]" v-for="(item, key) in data[0]">{{key}}</th>
+      <th v-for="(item, key) in data[0]">{{key}}</th>
     </tr>
   </thead>
   <tbody>

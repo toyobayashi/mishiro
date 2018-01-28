@@ -1,5 +1,6 @@
 import cgssTable from '../template/component/table.vue'
 import task from '../template/component/task.vue'
+import inputText from '../template/component/inputText.vue'
 import Downloader from './downloader.js'
 import fs from 'fs'
 import getPath from './getPath.js'
@@ -8,7 +9,8 @@ const dler = new Downloader()
 export default {
   components: {
     cgssTable,
-    task
+    task,
+    inputText
   },
   data () {
     return {
