@@ -1,13 +1,15 @@
 import { ipcRenderer, shell } from 'electron'
 import fs from 'fs'
 import task from '../template/component/task.vue'
+import inputText from '../template/component/inputText.vue'
 import Downloader from './downloader.js'
 import getPath from './getPath.js'
 const dler = new Downloader()
 
 export default {
   components: {
-    task
+    task,
+    inputText
   },
   data () {
     return {

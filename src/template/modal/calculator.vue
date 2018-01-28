@@ -8,40 +8,92 @@
         <small-tab class="pull-right" :tab="eventType" :default="'atapon'" @tabClicked="toggle" :no-translation="true" :font-size="16"></small-tab>
       </div>
       <div class="modal-body" :style="{ maxHeight: bodyMaxHeight }">
+        <!-- Progress bar -->
         <div class="event-progress">
           <div class="progress-wrap">
             <p>
-              <span>Time. 05:00</span>
-              <span>Exp. 6666</span>
-              <span>PLv. 66</span>
+              <span>{{staminaTimeLeft}}</span>
+              <span>PLv. {{publicStatus.plv}}</span>
             </p>
-            <progress-bar class="cgss-progress-stamina" :percent="33"></progress-bar>
+            <progress-bar class="cgss-progress-stamina" :percent="staminaPercent"></progress-bar>
           </div>
           <div class="progress-wrap">
-            <p>Time Left: 00:00:00</p>
-            <progress-bar class="cgss-progress-event" :percent="66"></progress-bar>
+            <p>{{$t('event.timeLeft')}}{{eventTimeLeft > 0 ? timeFormate(eventTimeLeft) : timeFormate(0)}}</p>
+            <progress-bar class="cgss-progress-event" :percent="eventTimePercent"></progress-bar>
           </div>
         </div>
+        <!-- Progress bar end -->
+
+        <!-- Player status -->
         <div class="event-progress">
           <div class="progress-wrap">
-            <div class="arg-row" v-for="playerStatus in atapon">
-              <label>{{playerStatus.text}}</label>
-              <input v-if="playerStatus.type === 'text'" type="text" v-model="playerStatus.model" class="db-query event-input">
-              <div class="radio-group" v-if="playerStatus.type === 'radio'">
-                <radio
-                  v-for="radio in playerStatus.option"
-                  :text="radio.text"
-                  :lable-id="radio.id"
-                  :key="radio.id"
-                  v-model="playerStatus.model"
-                  :value="radio.value"></radio>
+            <div class="arg-row">
+              <label>{{$t('event.plv')}}</label>
+              <div class="event-input">
+                <input-text
+                  v-model="publicStatus.plv"
+                  :height="30"
+                  :width="90"
+                  style="text-align:right"
+                  :limit="[1, 300]"
+                  :disabled="isCounting"
+                  @focus.native="$event.target.select()">
+                </input-text> / 300
+              </div>
+            </div>
+            <div class="arg-row">
+              <label>{{$t('event.stamina')}}</label>
+              <div class="event-input">
+                <input-text
+                  v-model="publicStatus.stamina"
+                  :height="30" :width="90"
+                  style="text-align:right"
+                  :limit="[0, maxStamina]"
+                  :disabled="isCounting"
+                  @focus.native="$event.target.select()">
+                </input-text> / {{maxStamina}}
+              </div>
+            </div>
+            <div class="arg-row">
+              <label>{{$t('event.exp')}}</label>
+              <div class="event-input">
+                <input-text
+                  v-model="publicStatus.exp"
+                  :height="30"
+                  :width="90"
+                  style="text-align:right"
+                  :limit="[0, maxExp]"
+                  @focus.native="$event.target.select()">
+                </input-text> / {{maxExp}}
+              </div>
+            </div>
+            <div v-for="(tab, type) in eventType" v-show="currentEventTab === tab">
+              <div class="arg-row" v-for="(playerStatus, name) in privateStatus[type].input">
+                <label>{{$t(`event.${name}`)}}</label>
+                <input-text v-if="playerStatus.type === 'text'" v-model="playerStatus.model" :height="30" class="event-input"></input-text>
+                <div class="radio-group" v-if="playerStatus.type === 'radio'">
+                  <radio
+                    style="margin-left:10px"
+                    v-for="radio in playerStatus.option"
+                    :text="radio.text"
+                    :lable-id="radio.id"
+                    :key="radio.id"
+                    v-model="playerStatus.model"
+                    :value="radio.value"></radio>
+                </div>
               </div>
             </div>
           </div>
           <div class="progress-wrap">
-            <div>Working in progress...</div>
+            <div v-for="(tab, type) in eventType" v-show="currentEventTab === tab" class="result-for-div">
+              <div class="arg-row" v-for="(result, key) in privateStatus[type].output">
+                <span>{{$t(`event.${key}`)}}</span>
+                <span class="cal-result">{{result}}</span>
+              </div>
+            </div>
           </div>
         </div>
+        <!-- Player status end -->
       </div>
       <div class="modal-footer">
         <button type="button" class="cgss-btn cgss-btn-ok" @click="calculate()">{{$t("event.calculate")}}</button>
@@ -62,87 +114,7 @@
 </div>
 </template>
 
-<script>
-import modalMixin from '../../js/modalMixin.js'
-import progressBar from '../component/progressBar.vue'
-import smallTab from '../component/smallTab.vue'
-import radio from '../component/radio.vue'
-export default {
-  mixins: [modalMixin],
-  components: {
-    progressBar,
-    smallTab,
-    radio
-  },
-  data () {
-    return {
-      modalWidth: '900px',
-      isCounting: false,
-      eventType: {
-        atapon: 'ATAPON',
-        medley: 'MEDLEY',
-        caravan: 'CARAVAN',
-        tour: 'TOUR'
-      },
-      atapon: {
-        plv: {
-          type: 'text',
-          text: 'PLV',
-          model: 0
-        },
-        stamina: {
-          type: 'text',
-          text: 'STAMINA',
-          model: 0
-        },
-        exp: {
-          type: 'text',
-          text: 'EXP',
-          model: 0
-        },
-        // ...
-        commonTimes: {
-          type: 'radio',
-          text: 'COMMONTIMES',
-          model: '1',
-          option: [{
-            id: 'ct1',
-            text: '1 times',
-            value: '1'
-          }, {
-            id: 'ct2',
-            text: '2 times',
-            value: '2'
-          }]
-        }
-      }
-    }
-  },
-  methods: {
-    toggle (eventType) {
-      console.log(eventType)
-    },
-    stopCount () {
-      this.playSe(this.enterSe)
-      this.isCounting = false
-    },
-    startCount () {
-      this.playSe(this.enterSe)
-      this.isCounting = true
-    },
-    calculate () {
-      this.playSe(this.enterSe)
-    }
-  },
-  mounted () {
-    this.$nextTick(() => {
-      this.event.$on('openCal', () => {
-        this.show = true
-        this.visible = true
-      })
-    })
-  }
-}
+<script src="../../js/calculator.js">
 </script>
 
 <style scoped>
@@ -160,18 +132,25 @@ export default {
   justify-content: space-between;
   flex-direction: row-reverse;
 }
+.result-for-div > div:nth-child(1), .progress-wrap > div:nth-child(1) {
+  margin-top: 5px;
+}
 .arg-row {
   display: flex;
   align-items: center;
   justify-content: space-between;
 }
 .event-input {
-  margin: 0;
-  height: 30px;
+  width: 290px;
 }
 .radio-group {
   display: flex;
   align-items: center;
   justify-content: space-between;
+  flex-wrap: wrap;
+  width: 300px;
+}
+.cal-result {
+  width: 200px;
 }
 </style>

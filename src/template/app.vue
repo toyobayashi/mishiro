@@ -19,7 +19,7 @@
     <small-tab :tab="i18nTabs" :default="_i18n._vm.locale" id="i18nTab" @tabClicked="changeLanguage"></small-tab>
     <nav-bar :current-block="currentBlock" @changeBlock="changeBlock"></nav-bar>
   </div>
-  <calculator></calculator>
+  <calculator :master="appData.master" :time="time"></calculator>
   <version-check></version-check>
   <about></about>
   <gacha-information :master="appData.master"></gacha-information>
@@ -95,7 +95,8 @@ export default {
         resVer: 'Unknown',
         manifest: [],
         master: {}
-      }
+      },
+      time: new Date().getTime()
     }
   },
   methods: {
@@ -132,6 +133,9 @@ export default {
   },
   mounted () {
     this.$nextTick(() => {
+      setInterval(() => {
+        this.time = new Date().getTime()
+      }, 1000)
       document.addEventListener('keyup', (e) => {
         switch (e.keyCode) {
           case 13:

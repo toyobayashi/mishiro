@@ -66,7 +66,7 @@ input[type="radio"]:checked + label:after {
     25% 25%,
     closest-corner,
     #f0f0f0,
-    #c01080
+    #d030a0
   );
 }
 </style>

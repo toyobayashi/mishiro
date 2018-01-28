@@ -1,5 +1,6 @@
 import progressBar from '../template/component/progressBar.vue'
 import smallTab from '../template/component/smallTab.vue'
+import inputText from '../template/component/inputText.vue'
 import Downloader from './downloader.js'
 import getPath from './getPath.js'
 import fs from 'fs'
@@ -9,7 +10,8 @@ const dler = new Downloader()
 export default {
   components: {
     progressBar,
-    smallTab
+    smallTab,
+    inputText
   },
   data () {
     return {

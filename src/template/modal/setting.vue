@@ -17,19 +17,19 @@
           </div>
           <div class="margin-top-10">
             <label>{{$t("menu.resVer")}}</label>
-            <input class="db-query pull-right option-input" :placeholder="`10012760 ≤ ${$t('menu.resVer')} ≤ ${latestResVer}`" v-model="resVer" />
+            <input-text class="pull-right option-input" :placeholder="`10012760 ≤ ${$t('menu.resVer')} ≤ ${latestResVer}`" v-model="resVer" />
           </div>
           <div class="margin-top-10">
             <label>{{$t("menu.gacha")}}</label>
-            <input class="db-query pull-right option-input" :placeholder="`30001 ≤ ${$t('menu.gacha')} ≤ ${gachaNow.id}`" v-model="gachaId" />
+            <input-text class="pull-right option-input" :placeholder="`30001 ≤ ${$t('menu.gacha')} ≤ ${gachaNow.id}`" v-model="gachaId" />
           </div>
           <div class="margin-top-10">
             <label>{{$t("menu.event")}}</label>
-            <input class="db-query pull-right option-input" :placeholder="$t('menu.eventPlacehoder') + 'bgm_event_ID'" v-model="eventId" />
+            <input-text class="pull-right option-input" :placeholder="$t('menu.eventPlacehoder') + 'bgm_event_ID'" v-model="eventId" />
           </div>
           <div class="margin-top-10">
             <label>{{$t("menu.background")}}</label>
-            <input class="db-query pull-right option-input" :placeholder="$t('menu.backPlacehoder')" v-model="backgroundId" />
+            <input-text class="pull-right option-input" :placeholder="$t('menu.backPlacehoder')" v-model="backgroundId" />
           </div>
         </form>
       </div>
@@ -45,10 +45,12 @@
 <script>
 import modalMixin from '../../js/modalMixin.js'
 import radio from '../component/radio.vue'
+import inputText from '../component/inputText.vue'
 export default {
   mixins: [modalMixin],
   components: {
-    radio
+    radio,
+    inputText
   },
   data () {
     return {
