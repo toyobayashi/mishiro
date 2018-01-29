@@ -1,20 +1,27 @@
 <template>
 <ul class="cgss-tab-sm clearfix">
-  <li v-for="item in tab" @click="liClick(item)" :style="{ fontSize: fontSize + 'px' }" :class="{ active: currentActive === item }">{{noTranslation ? item : $t(item)}}</li>
+  <li
+    v-for="item in tab"
+    @click="liClick(item)"
+    :style="{ fontSize: fontSize + 'px' }"
+    :class="{ active: item === value }">{{noTranslation ? item : $t(item)}}</li>
 </ul>
 </template>
 
 <script>
 export default {
+  model: {
+    prop: 'value',
+    event: 'tabClicked'
+  },
   props: {
     tab: {
       type: Object,
       required: true,
       default: {}
     },
-    default: {
-      type: String,
-      required: true
+    value: {
+      type: String
     },
     noTranslation: {
       type: Boolean,
@@ -27,26 +34,16 @@ export default {
   },
   data () {
     return {
-      currentActive: this.tab[this.default]
+      currentActive: this.value
     }
   },
   methods: {
     liClick (item) {
-      if (item !== this.currentActive) {
+      if (item !== this.value) {
         this.playSe(this.enterSe)
-        this.currentActive = item
         this.$emit('tabClicked', item)
       }
     }
-  },
-  mounted () {
-    this.$nextTick(() => {
-      this.event.$on('smallTab', (key) => {
-        if (this.tab[key]) {
-          this.currentActive = this.tab[key]
-        }
-      })
-    })
   }
 }
 </script>
