@@ -5,7 +5,7 @@
       <div class="modal-header">
         <title-dot v-once></title-dot>
         <h4 class="modal-title">{{$t('menu.calculator')}}</h4>
-        <small-tab class="pull-right" :tab="eventType" :default="'atapon'" @tabClicked="toggle" :no-translation="true" :font-size="16"></small-tab>
+        <small-tab class="pull-right" :tab="eventType" v-model="currentEventTab" @tabClicked="toggle" :no-translation="true" :font-size="16"></small-tab>
       </div>
       <div class="modal-body" :style="{ maxHeight: bodyMaxHeight }">
         <!-- Progress bar -->
@@ -18,7 +18,10 @@
             <progress-bar class="cgss-progress-stamina" :percent="staminaPercent"></progress-bar>
           </div>
           <div class="progress-wrap">
-            <p>{{$t('event.timeLeft')}}{{eventTimeLeft > 0 ? timeFormate(eventTimeLeft) : timeFormate(0)}}</p>
+            <p>
+              <span><!-- {{$t('event.timeLeft')}} -->{{eventTimeLeft > 0 ? timeFormate(eventTimeLeft) : timeFormate(0)}}</span>
+              <span>{{eventData ? eventData.name : ''}}</span>
+            </p>
             <progress-bar class="cgss-progress-event" :percent="eventTimePercent"></progress-bar>
           </div>
         </div>
@@ -107,6 +110,7 @@
           v-show="!isCounting"
           class="cgss-btn-lg cgss-btn-lg-ok margin-left-50"
           @click="startCount">{{$t("event.startCount")}}</button>
+        <button type="button" class="cgss-btn cgss-btn-default margin-left-50" @click="clear()">{{$t("gacha.clear")}}</button>
         <button type="button" class="cgss-btn cgss-btn-default margin-left-50" @click="close">{{$t("home.close")}}</button>
       </div>
     </div>

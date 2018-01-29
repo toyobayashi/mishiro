@@ -63,7 +63,7 @@ export default {
     areaStamina: '地区体力',
     liveOption: 'Live選項',
     requireAudience: '需要観客人数',
-    timeLeft: '距離活動結束還有　'
+    timeLeft: '剰余時間　'
   },
   update: {
     tip: '※請在網絡良好的環境下進行',

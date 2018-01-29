@@ -15,13 +15,13 @@ export default {
   },
   data () {
     return {
-      // tabDefault: "after",
       queryString: '',
       searchResult: [],
       activeCard: {},
       activeCardPlus: {},
       information: {},
       imgProgress: 0,
+      currentPractice: 'idol.after',
       practice: {
         before: 'idol.before',
         after: 'idol.after'
@@ -144,7 +144,7 @@ export default {
           }
         }
 
-        this.event.$emit('smallTab', 'before')
+        this.currentPractice = 'idol.before'
         if (navigator.onLine) {
           this.changeBackground(card)
         }
@@ -239,7 +239,7 @@ export default {
     this.$nextTick(() => {
       this.event.$on('eventBgReady', (id) => {
         if (id % 2 === 0) {
-          this.event.$emit('smallTab', 'after')
+          this.currentPractice = 'idol.after'
           for (let i = 0; i < this.cardData.length; i++) {
             if (this.cardData[i].id == id - 1) {
               this.activeCard = this.cardData[i]
@@ -252,7 +252,7 @@ export default {
             }
           }
         } else {
-          this.event.$emit('smallTab', 'before')
+          this.currentPractice = 'idol.before'
           for (let i = 0; i < this.cardData.length; i++) {
             if (this.cardData[i].id == id) {
               this.activeCard = this.cardData[i]

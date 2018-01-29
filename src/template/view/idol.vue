@@ -13,7 +13,7 @@
   <div class="black-bg idol-info margin-top-10">
     <div class="clearfix">
       <progress-bar class="cgss-progress-stamina pull-left" :percent="imgProgress"></progress-bar>
-      <small-tab class="pull-right" :tab="practice" :default="'after'" @tabClicked="toggle"></small-tab>
+      <small-tab class="pull-right" :tab="practice" v-model="currentPractice" @tabClicked="toggle"></small-tab>
     </div>
     <table class="table-bordered" border="1" :class="{
       cute: information.charaData ? information.charaData.type === 1 : false,

@@ -63,7 +63,7 @@ export default {
     areaStamina: 'ｴﾘｱｽﾀﾐﾅ',
     liveOption: 'ﾗｲﾌﾞｵﾌﾟｼｮﾝ',
     requireAudience: '必要観客人数',
-    timeLeft: 'イベント終了まであと　'
+    timeLeft: '残り時間　'
   },
   update: {
     tip: '※通信環境の良い所で実行してください',

@@ -22,19 +22,19 @@ export default {
     }
   },
   computed: {
-    eventNow () {
-      return this.master.eventNow/*  ? this.master.eventNow : {} */
+    eventData () {
+      return this.master.eventData/*  ? this.master.eventData : {} */
     },
     userLevel () {
       return this.master.userLevel
     },
     eventTimeTotal () {
-      if (!this.eventNow) return 1
-      return new Date(this.eventNow.event_end).getTime() - new Date(this.eventNow.event_start).getTime()
+      if (!this.eventData) return 1
+      return new Date(this.eventData.event_end).getTime() - new Date(this.eventData.event_start).getTime()
     },
     eventTimeGone () {
-      if (!this.eventNow) return 0
-      return this.time - (new Date(this.eventNow.event_start).getTime() - this.master.timeOffset)
+      if (!this.eventData) return 0
+      return this.time - (new Date(this.eventData.event_start).getTime() - this.master.timeOffset)
     },
     eventTimeLeft () {
       return this.eventTimeTotal - this.eventTimeGone
@@ -59,19 +59,26 @@ export default {
       return '00:00'
     }
   },
+  watch: {
+    eventData (v) {
+      console.log(v.type)
+      if (v.type === 6) this.currentEventTab = 'ATAPON'
+      else this.currentEventTab = this.eventType[v.type]
+    }
+  },
   data () {
     return {
       modalWidth: '900px',
       isCounting: false, // 是否正在进行体力计时
       currentEventTab: 'ATAPON', // 当前活动计算板块
       stamina: 0, // 已恢复的stamina，以秒记
-      staminaSpeed: 1, // 恢复速度，以秒记
+      staminaSpeed: 300, // 恢复速度，以秒记
       staminaTimer: 0, // 计时器开关
       eventType: {
-        atapon: 'ATAPON',
-        caravan: 'CARAVAN',
-        medley: 'MEDLEY',
-        tour: 'TOUR'
+        '1': 'ATAPON',
+        '2': 'CARAVAN',
+        '3': 'MEDLEY',
+        '5': 'TOUR'
       },
       publicStatus: {
         plv: '1',
@@ -79,7 +86,7 @@ export default {
         exp: '0'
       },
       privateStatus: {
-        atapon: {
+        '1': {
           input: {
             itemNumber: {
               type: 'text',
@@ -196,7 +203,7 @@ export default {
             extraStamina: 0
           }
         },
-        caravan: {
+        '2': {
           input: {
             currentMedal: {
               type: 'text',
@@ -243,7 +250,7 @@ export default {
             extraStamina: 0
           }
         },
-        medley: {
+        '3': {
           input: {
             currentPt: {
               type: 'text',
@@ -288,29 +295,29 @@ export default {
               type: 'radio',
               model: '144 239 343 461 461',
               option: [
-                {
+                /* {
                   id: 'mhl0',
-                  text: '0-20',
+                  text: '0',
                   value: '119 192 279 379 379'
-                },
+                }, */
                 {
                   id: 'mhl20',
-                  text: '20-30',
+                  text: '20',
                   value: '127 208 301 407 407'
                 },
                 {
                   id: 'mhl30',
-                  text: '30-40',
+                  text: '30',
                   value: '134 221 320 432 432'
                 },
                 {
                   id: 'mhl40',
-                  text: '40-50',
+                  text: '40',
                   value: '140 233 335 451 451'
                 },
                 {
                   id: 'mhl50',
-                  text: '50-∞',
+                  text: '50',
                   value: '144 239 343 461 461'
                 }
               ]
@@ -325,7 +332,7 @@ export default {
             extraStamina: 0
           }
         },
-        tour: {
+        '5': {
           input: {
             currentAudience: {
               type: 'text',
@@ -431,7 +438,7 @@ export default {
       this.currentEventTab = eventType
     },
     stopCount () {
-      this.playSe(this.enterSe)
+      this.playSe(this.cancelSe)
       this.isCounting = false
       clearInterval(this.staminaTimer)
       this.stamina = 0
@@ -454,6 +461,11 @@ export default {
     },
     calculate () {
       this.playSe(this.enterSe)
+      this.event.$emit('alert', this.$t('home.errorTitle'), this.$t('home.hope'))
+    },
+    clear () {
+      this.playSe(this.cancelSe)
+      this.event.$emit('alert', this.$t('home.errorTitle'), this.$t('home.hope'))
     },
     timeFormate (t) {
       let day = Math.floor(t / 1000 / 60 / 60 / 24)

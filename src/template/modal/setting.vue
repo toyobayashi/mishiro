@@ -58,7 +58,11 @@ export default {
       resVer: '',
       gachaId: '',
       eventId: '',
-      backgroundId: ''
+      backgroundId: '',
+      language: {
+        zh: 'i18n.chinese',
+        ja: 'i18n.japanese'
+      }
     }
   },
   props: {
@@ -69,6 +73,9 @@ export default {
     latestResVer: {
       type: [String, Number],
       require: true
+    },
+    value: {
+      type: String
     }
   },
   computed: {
@@ -150,7 +157,7 @@ export default {
         backgroundId = this.backgroundId
       }
 
-      this.event.$emit('smallTab', this.lang)
+      this.$emit('input', this.language[this.lang])
       this._i18n._vm.locale = this.lang
       this.configurer.configure({
         language: this.lang,

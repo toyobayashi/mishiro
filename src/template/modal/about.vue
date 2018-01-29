@@ -18,11 +18,11 @@
           </tr>
           <tr>
             <td>Electron</td>
-            <td>v1.7.11</td>
+            <td>{{process.versions.electron}}</td>
           </tr>
           <tr>
             <td>Node</td>
-            <td>v7.9.0</td>
+            <td>{{process.versions.node}}</td>
           </tr>
           <tr>
             <td>{{$t("menu.description")}}</td>
@@ -46,7 +46,8 @@ export default {
   mixins: [modalMixin],
   data () {
     return {
-      remote
+      remote,
+      process
     }
   },
   methods: {

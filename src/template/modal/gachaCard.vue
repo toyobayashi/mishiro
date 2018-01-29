@@ -5,7 +5,7 @@
       <div class="modal-header">
         <title-dot v-once></title-dot>
         <h4 class="modal-title">{{information.name ? information.name : ""}}</h4>
-        <small-tab class="pull-right" :tab="practice" :default="'be'" @tabClicked="toggle"></small-tab>
+        <small-tab class="pull-right" :tab="practice" v-model="currentPractice" @tabClicked="toggle"></small-tab>
       </div>
       <div class="modal-body" :style="{ maxHeight: bodyMaxHeight }">
         <table class="table-bordered" border="1" :class="{
@@ -122,6 +122,7 @@ export default {
       card: {},
       cardPlus: {},
       information: {},
+      currentPractice: 'idol.before',
       practice: {
         be: 'idol.before',
         af: 'idol.after'
@@ -154,7 +155,7 @@ export default {
     this.$nextTick(() => {
       this.event.$on('showCard', (card) => {
         const cardPlus = this.cardData.filter(c => c.id == card.evolution_id)[0]
-        this.event.$emit('smallTab', 'be')
+        this.currentPractice = 'idol.before'
         this.information = card
         this.card = card
         this.cardPlus = cardPlus

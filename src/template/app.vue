@@ -16,7 +16,7 @@
     <hide-button @toggle="showBackground"></hide-button>
     <version :resVer="appData.resVer"></version>
     <player :master="appData.master"></player>
-    <small-tab :tab="i18nTabs" :default="_i18n._vm.locale" id="i18nTab" @tabClicked="changeLanguage"></small-tab>
+    <small-tab :tab="i18nTabs" v-model="currentLanguage" id="i18nTab" @tabClicked="changeLanguage"></small-tab>
     <nav-bar :current-block="currentBlock" @changeBlock="changeBlock"></nav-bar>
   </div>
   <calculator :master="appData.master" :time="time"></calculator>
@@ -25,7 +25,7 @@
   <gacha-information :master="appData.master"></gacha-information>
   <gacha-history></gacha-history>
   <gacha-card :master="appData.master"></gacha-card>
-  <setting :master="appData.master" :latestResVer="appData.resVer"></setting>
+  <setting :master="appData.master" :latestResVer="appData.resVer" v-model="currentLanguage"></setting>
   <alert></alert>
   <img v-show="checking" src="../res/img/spinner.gif" class="spinner" />
 </div>
@@ -87,6 +87,7 @@ export default {
       show: true,
       currentBlock: 'home',
       checking: false,
+      currentLanguage: 'i18n.chinese',
       i18nTabs: {
         zh: 'i18n.chinese',
         ja: 'i18n.japanese'

@@ -170,13 +170,14 @@ export default {
             iconId.push(masterData.gachaAvailable[index].reward_id)
           }
           const iconTask = this.createCardIconTask(iconId)
-          let failedList = await downloader.batchDl(iconTask, (name) => {
+          /* let failedList =  */
+          await downloader.batchDl(iconTask, (name) => {
             this.text = name + '　' + downloader.index + '/' + iconTask.length
             this.loading = 100 * downloader.index / iconTask.length
           }, (prog) => {
             this.loading = 100 * downloader.index / iconTask.length + prog.loading / iconTask.length
           })
-          console.log(failedList)
+          // console.log(failedList)
           setTimeout(() => {
             this.emitReady()
           }, 346)
