@@ -53,6 +53,9 @@ export default {
     stopDownload () {
       this.playSe(this.cancelSe)
       this.$refs.downloadBtn.removeAttribute('disabled')
+      this.total = 0
+      this.current = 0
+      this.text = ''
       dler.stop(() => this.event.$emit('alert', this.$t('home.errorTitle'), this.$t('home.noTask')))
     },
     async downloadSelectedItem () {
@@ -81,7 +84,7 @@ export default {
           }
         }
         let completed = 0
-        await dler.batchDl(taskArr, (name) => {
+        let failedList = await dler.batchDl(taskArr, (name) => {
           this.current = 0
           this.text = name
         }, (prog) => {
@@ -118,6 +121,7 @@ export default {
         })
         this.total = 0
         this.$refs.downloadBtn.removeAttribute('disabled')
+        this.event.$emit('alert', this.$t('home.download'), `Failed: ${failedList.length}`)
       } else {
         this.event.$emit('alert', this.$t('home.errorTitle'), this.$t('home.noEmptyDownload'))
       }
