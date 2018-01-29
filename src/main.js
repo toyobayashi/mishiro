@@ -1,7 +1,7 @@
 import { app, BrowserWindow } from 'electron'
 import url from 'url'
 import { getPath } from './js/getPath.js'
-import config from './js/icpMain.js'
+import config from './js/ipcMain.js'
 
 console.log(config)
 

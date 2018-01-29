@@ -25,6 +25,7 @@ class Downloader {
         if (size > 0) {
           options = {
             url: u,
+            timeout: 5000,
             headers: {
               'User-Agent': 'Dalvik/2.1.0 (Linux; U; Android 7.0; Nexus 42 Build/XYZZ1Y)',
               'X-Unity-Version': '5.1.2f1',
@@ -36,6 +37,7 @@ class Downloader {
         } else {
           options = {
             url: u,
+            timeout: 5000,
             headers: {
               'User-Agent': 'Dalvik/2.1.0 (Linux; U; Android 7.0; Nexus 42 Build/XYZZ1Y)',
               'X-Unity-Version': '5.1.2f1',
@@ -87,13 +89,14 @@ class Downloader {
               })
               .on('abort', () => {
                 rename = false
-                resolve(false)
-              })
-              .on('error', (e) => {
-                reject(e)
+                console.log('abort: ' + u)
+                reject(p)
               })
             req.pipe(ws)
           }
+        }).on('error', (e) => {
+          console.log(u, e)
+          reject(p)
         })
       }
     })
@@ -102,51 +105,40 @@ class Downloader {
   async batchDl (taskArr, start, progressing, complete, stop) {
     this.taskArr = taskArr
     this.index = 0
-    let isContinue = true
+    let errorList = []
+
     for (this.index = 0; this.index < this.taskArr.length; this.index++) {
       let url = this.taskArr[this.index][0]
       let filepath = this.taskArr[this.index][1]
       let data = this.taskArr[this.index][2]
-
+      let isContinue = true
       if (!fs.existsSync(filepath)) {
-        if (start) {
-          start(this.toName(filepath), filepath, data)
-        }
+        if (start) start(this.toName(filepath), filepath, data)
         try {
-          isContinue = await this.download(url, filepath, progressing)
+          await this.download(url, filepath, progressing)
         } catch (e) {
+          errorList.push(e)
           isContinue = false
-          throw new Error('Download failed.')
         }
       }
       if (isContinue) {
-        if (complete) {
-          complete(this.toName(filepath), filepath, data)
-        }
+        if (complete) complete(this.toName(filepath), filepath, data)
       } else {
-        if (stop) {
-          stop(this.toName(filepath), filepath, data)
-        }
+        if (stop) stop(this.toName(filepath), filepath, data)
       }
     }
     this.taskArr = []
     this.index = -1
-    return isContinue
+    return errorList
   }
 
   stop (failed) {
     if (this.taskArr.length) {
       this.taskArr = []
-      if (this.req) {
-        this.req.abort()
-      }
+      if (this.req) this.req.abort()
     } else {
-      if (this.req) {
-        this.req.abort()
-      }
-      if (failed) {
-        failed()
-      }
+      if (this.req) this.req.abort()
+      if (failed) failed()
     }
   }
 
