@@ -36,5 +36,5 @@
 }
 </style>
 
-<script src="../../js/update.js">
+<script src="../../js/renderer/update.js">
 </script>

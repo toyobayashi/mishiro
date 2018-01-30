@@ -33,7 +33,7 @@
 </div>
 </template>
 
-<script src="../../js/live.js">
+<script src="../../js/renderer/live.js">
 </script>
 
 <style>

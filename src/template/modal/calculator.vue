@@ -118,7 +118,7 @@
 </div>
 </template>
 
-<script src="../../js/calculator.js">
+<script src="../../js/renderer/calculator.js">
 </script>
 
 <style scoped>

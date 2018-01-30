@@ -3,8 +3,8 @@ import VueI18n from 'vue-i18n'
 import app from './template/app.vue'
 import zh from './i18n/zh-CN.js'
 import ja from './i18n/ja-JP.js'
-import vueGlobal from './js/globalProperty.js'
-import configurer from './js/config.js'
+import vueGlobal from './js/renderer/globalProperty.js'
+import configurer from './js/common/config.js'
 let config = configurer.getConfig()
 Vue.use(VueI18n)
 Vue.use(vueGlobal)

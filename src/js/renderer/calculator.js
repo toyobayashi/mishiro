@@ -1,8 +1,8 @@
 import modalMixin from './modalMixin.js'
-import progressBar from '../template/component/progressBar.vue'
-import smallTab from '../template/component/smallTab.vue'
-import radio from '../template/component/radio.vue'
-import inputText from '../template/component/inputText.vue'
+import progressBar from '../../template/component/progressBar.vue'
+import smallTab from '../../template/component/smallTab.vue'
+import radio from '../../template/component/radio.vue'
+import inputText from '../../template/component/inputText.vue'
 export default {
   mixins: [modalMixin],
   components: {
@@ -61,7 +61,6 @@ export default {
   },
   watch: {
     eventData (v) {
-      console.log(v.type)
       if (v.type === 6) this.currentEventTab = 'ATAPON'
       else this.currentEventTab = this.eventType[v.type]
     }

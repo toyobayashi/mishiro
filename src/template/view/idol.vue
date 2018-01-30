@@ -105,7 +105,7 @@
 </div>
 </template>
 
-<script src="../../js/idol.js">
+<script src="../../js/renderer/idol.js">
 </script>
 
 <style>

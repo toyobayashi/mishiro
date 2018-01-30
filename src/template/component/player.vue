@@ -20,7 +20,7 @@
 </div>
 </template>
 
-<script src="../../js/player.js">
+<script src="../../js/renderer/player.js">
 </script>
 
 <style>

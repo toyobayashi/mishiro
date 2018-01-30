@@ -14,7 +14,7 @@
 </div>
 </template>
 
-<script src="../../js/menu.js">
+<script src="../../js/renderer/menu.js">
 </script>
 
 <style>
