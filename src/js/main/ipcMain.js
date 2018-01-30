@@ -11,7 +11,7 @@ const now = new Date().getTime()
 let config = configurer.getConfig()
 let fix = {}
 if (!config.latestResVer) {
-  fix.latestResVer = 10034900
+  fix.latestResVer = 10035000
 }
 if (config.language !== 'zh' && config.language !== 'ja') {
   fix.language = 'zh'
