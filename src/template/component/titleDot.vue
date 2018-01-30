@@ -6,10 +6,6 @@
 </span>
 </template>
 
-<script>
-export default {}
-</script>
-
 <style scoped>
 .title-dot {
   display: inline-block;

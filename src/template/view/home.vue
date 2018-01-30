@@ -15,7 +15,7 @@
 </div>
 </template>
 
-<script src="../../js/home.js">
+<script src="../../js/renderer/home.js">
 </script>
 
 <style>

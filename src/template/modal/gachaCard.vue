@@ -110,8 +110,8 @@
 
 <script>
 import smallTab from '../component/smallTab.vue'
-import vmIdol from '../../js/idol.js'
-import modalMixin from '../../js/modalMixin.js'
+import vmIdol from '../../js/renderer/idol.js'
+import modalMixin from '../../js/renderer/modalMixin.js'
 export default {
   mixins: [modalMixin],
   components: {

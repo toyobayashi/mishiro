@@ -19,8 +19,6 @@ public/asset/sound/bgm/*.mp3
 !public/asset/sound/bgm/bgm_gacha_menu.mp3
 !public/asset/sound/bgm/bgm_event_typeA.mp3
 !public/asset/sound/bgm/bgm_event_rail.mp3
-src/css/theme.css
 main.min.js
 config.json
 manifest.json
-src/js/defaultSe.js

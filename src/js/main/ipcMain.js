@@ -2,8 +2,8 @@ import { ipcMain } from 'electron'
 import { exec } from 'child_process'
 import fs from 'fs'
 import SQL from './sqlExec.js'
-import { getPath } from './getPath.js'
-import { configurer } from './config.js'
+import { getPath } from '../common/getPath.js'
+import { configurer } from '../common/config.js'
 
 const timeOffset = (9 - (-(new Date().getTimezoneOffset() / 60))) * 60 * 60 * 1000
 const now = new Date().getTime()

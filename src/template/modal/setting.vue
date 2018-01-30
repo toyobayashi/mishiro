@@ -43,7 +43,7 @@
 </template>
 
 <script>
-import modalMixin from '../../js/modalMixin.js'
+import modalMixin from '../../js/renderer/modalMixin.js'
 import radio from '../component/radio.vue'
 import inputText from '../component/inputText.vue'
 export default {
