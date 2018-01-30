@@ -1,4 +1,4 @@
-const sourceCount = require('./src/js/sourceCount.js')
+const sourceCount = require('./src/js/util/sourceCount.js')
 
 sourceCount({
   js: [
