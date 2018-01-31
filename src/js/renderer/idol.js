@@ -133,7 +133,6 @@ export default {
     },
     selectedIdol (card) {
       if (this.activeCard.id != card.id) {
-        dler.stop()
         this.playSe(this.enterSe)
         this.activeCard = card
         this.information = card
@@ -155,6 +154,7 @@ export default {
 
       if (Number(card.rarity) > 4) {
         if (!fs.existsSync(getPath(`./public/img/card/bg_${card.id}.png`))) {
+          dler.stop()
           let result = await this.downloadCard(card.id)
           this.imgProgress = 0
           if (result) {
@@ -181,7 +181,6 @@ export default {
       return downloadResult
     },
     toggle (practice) {
-      dler.stop()
       switch (practice) {
         case 'idol.before':
           this.information = this.activeCard
