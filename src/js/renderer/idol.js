@@ -154,9 +154,13 @@ export default {
       this.imgProgress = 0
 
       if (Number(card.rarity) > 4) {
-        let result = await this.downloadCard(card.id)
-        this.imgProgress = 0
-        if (result) {
+        if (!fs.existsSync(getPath(`./public/img/card/bg_${card.id}.png`))) {
+          let result = await this.downloadCard(card.id)
+          this.imgProgress = 0
+          if (result) {
+            this.event.$emit('idolSelect', card.id)
+          }
+        } else {
           this.event.$emit('idolSelect', card.id)
         }
       } else {
@@ -164,11 +168,16 @@ export default {
       }
     },
     async downloadCard (id, progressing) {
-      let downloadResult = await dler.download(
-        this.getCardUrl(id),
-        getPath(`./public/img/card/bg_${id}.png`),
-        (progressing || (prog => { this.imgProgress = prog.loading }))
-      )
+      let downloadResult = false
+      try {
+        downloadResult = await dler.download(
+          this.getCardUrl(id),
+          getPath(`./public/img/card/bg_${id}.png`),
+          (progressing || (prog => { this.imgProgress = prog.loading }))
+        )
+      } catch (errorPath) {
+        this.event.$emit('alert', this.$t('home.errorTitle'), this.$t('home.downloadFailed') + '<br/>' + errorPath)
+      }
       return downloadResult
     },
     toggle (practice) {

@@ -26,6 +26,7 @@ export default {
   mixins: [modalMixin],
   data () {
     return {
+      modalWidth: '700px',
       list: []
     }
   },

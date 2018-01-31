@@ -54,15 +54,20 @@ export default {
           if (!fs.existsSync(getPath(`./public/asset/sound/bgm/${audio.fileName}`))) {
             if (navigator.onLine) {
               this.activeAudio = audio
-              let result = await dler.download(
-                this.getBgmUrl(audio.hash),
-                getPath(`./public/asset/sound/bgm/${audio.name.split('/')[1]}`),
-                (prog) => {
-                  this.text = prog.name
-                  this.current = prog.loading
-                  this.total = prog.loading
-                }
-              )
+              let result = false
+              try {
+                result = await dler.download(
+                  this.getBgmUrl(audio.hash),
+                  getPath(`./public/asset/sound/bgm/${audio.name.split('/')[1]}`),
+                  (prog) => {
+                    this.text = prog.name
+                    this.current = prog.loading
+                    this.total = prog.loading
+                  }
+                )
+              } catch (errorPath) {
+                this.event.$emit('alert', this.$t('home.errorTitle'), this.$t('home.downloadFailed') + '<br/>' + errorPath)
+              }
               if (result) {
                 this.total = 99.99
                 this.current = 99.99
@@ -80,15 +85,20 @@ export default {
           if (!fs.existsSync(getPath(`./public/asset/sound/live/${audio.fileName}`))) {
             if (navigator.onLine) {
               this.activeAudio = audio
-              let result = await dler.download(
-                this.getLiveUrl(audio.hash),
-                getPath(`./public/asset/sound/live/${audio.name.split('/')[1]}`),
-                (prog) => {
-                  this.text = prog.name
-                  this.current = prog.loading
-                  this.total = prog.loading
-                }
-              )
+              let result = false
+              try {
+                result = await dler.download(
+                  this.getLiveUrl(audio.hash),
+                  getPath(`./public/asset/sound/live/${audio.name.split('/')[1]}`),
+                  (prog) => {
+                    this.text = prog.name
+                    this.current = prog.loading
+                    this.total = prog.loading
+                  }
+                )
+              } catch (errorPath) {
+                this.event.$emit('alert', this.$t('home.errorTitle'), this.$t('home.downloadFailed') + '<br/>' + errorPath)
+              }
               if (result) {
                 this.total = 99.99
                 this.current = 99.99
