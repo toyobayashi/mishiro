@@ -5,6 +5,8 @@ import radio from '../../template/component/radio.vue'
 import inputText from '../../template/component/inputText.vue'
 import privateStatus from './calculatorData.js'
 import ataponCal from './calculatorAtapon.js'
+import medleyCal from './calculatorMedley.js'
+import tourCal from './calculatorTour.js'
 
 export default {
   mixins: [modalMixin],
@@ -121,6 +123,10 @@ export default {
       this.playSe(this.enterSe)
       if (this.currentEventTab === 'ATAPON') {
         ataponCal.call(this)
+      } else if (this.currentEventTab === 'TOUR') {
+        tourCal.call(this)
+      } else if (this.currentEventTab === 'MEDLEY') {
+        medleyCal.call(this)
       } else {
         this.event.$emit('alert', this.$t('home.errorTitle'), this.$t('home.hope'))
       }
@@ -131,6 +137,16 @@ export default {
         // clearInterval(this.privateStatus['1'].timer)
         for (let key in this.privateStatus['1'].output) {
           if (key === 'gameTime') this.privateStatus['1'].output[key] = '00:00'
+          else this.privateStatus['1'].output[key] = 0
+        }
+      } else if (this.currentEventTab === 'TOUR') {
+        for (let key in this.privateStatus['5'].output) {
+          if (key === 'gameTime') this.privateStatus['5'].output[key] = '00:00'
+          else this.privateStatus['1'].output[key] = 0
+        }
+      } else if (this.currentEventTab === 'MEDLEY') {
+        for (let key in this.privateStatus['3'].output) {
+          if (key === 'gameTime') this.privateStatus['3'].output[key] = '00:00'
           else this.privateStatus['1'].output[key] = 0
         }
       } else {
@@ -151,9 +167,22 @@ export default {
     getMaxStamina (plv) {
       return this.userLevel.filter((level) => level.level == plv)[0].stamina
     },
-    ptCount (times, use, levelUp, typeCode, loginStamina) {
-      let levelStamina = 0
+    getLevelUpTimes (liveTimes, expPerTime, currentExp) {
+      let levelUp = 0
+      let gotExp = liveTimes * expPerTime + Number(currentExp)
       let tempLevel = this.publicStatus.plv
+      console.log('gotExp = ' + (liveTimes * expPerTime))
+      while (gotExp >= this.getExp(tempLevel)) {
+        gotExp = gotExp - this.getExp(tempLevel)
+        tempLevel++
+        levelUp++
+      }
+      return levelUp
+    },
+    ptCount (times, use, levelUp, typeCode, loginStamina) {
+      console.log(times, use, levelUp, typeCode, loginStamina)
+      let levelStamina = 0
+      let tempLevel = Number(this.publicStatus.plv)
       let speed = this.staminaSpeed
       let currentStaminaSeconds = this.stamina
 
@@ -172,7 +201,7 @@ export default {
       }
 
       this.privateStatus[typeCode].output.requireStamina = stmn > 0 ? stmn : 0
-      this.privateStatus[typeCode].output.gameTime = this.timeFormate(seconds * 1000)
+      this.privateStatus[typeCode].output.gameTime = this.timeFormate(seconds > 0 ? seconds * 1000 : 0)
 
       let extraStamina = 0
       if (seconds > this.eventTimeLeft) {

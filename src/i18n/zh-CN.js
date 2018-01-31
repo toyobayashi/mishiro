@@ -44,7 +44,7 @@ export default {
     levelUp: '可昇級次数',
     requirePt: '需要pt',
     requireItem: '需要道具',
-    requireStamina: '需要体力',
+    requireStamina: '需要回復体力',
     commonLiveTimes: '通常曲次数',
     eventLiveTimes: '活動曲次数',
     gameTime: '需要時間',
@@ -64,7 +64,9 @@ export default {
     areaStamina: '地区体力',
     liveOption: 'Live選項',
     requireAudience: '需要観客人数',
-    timeLeft: '剰余時間　'
+    timeLeft: '剰余時間　',
+    bonusItem: '奨励道具',
+    bonusStamina: '奨励体力'
   },
   update: {
     tip: '※請在網絡良好的環境下進行',
