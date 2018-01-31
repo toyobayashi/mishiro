@@ -103,7 +103,7 @@ export default {
           this.$emit('input', this.appData)
           const masterHash = manifests.filter(row => row.name === 'master.mdb')[0].hash
           const masterFile = await this.getMaster(resVer, masterHash)
-          ipcRenderer.send('readMaster', fs.readFileSync(masterFile))
+          ipcRenderer.send('readMaster', masterFile)
         })
         ipcRenderer.on('readMaster', async (event, masterData) => {
           // console.log(masterData);
@@ -189,14 +189,14 @@ export default {
           this.appData.resVer = Number(resVer)
           this.$emit('input', this.appData)
           const manifestFile = await this.getManifest(resVer)
-          ipcRenderer.send('readManifest', fs.readFileSync(manifestFile), resVer)
+          ipcRenderer.send('readManifest', manifestFile, resVer)
         } else { // 如果网络未连接则直接触发ready事件
           let resVer = configurer.getConfig().latestResVer
           this.appData.resVer = Number(resVer)
           this.$emit('input', this.appData)
           if (fs.existsSync(getPath(`./data/manifest_${resVer}.db`)) && fs.existsSync(getPath(`./data/master_${resVer}.db`))) {
             let manifestFile = getPath(`./data/manifest_${resVer}.db`)
-            ipcRenderer.send('readManifest', fs.readFileSync(manifestFile), resVer)
+            ipcRenderer.send('readManifest', manifestFile, resVer)
           } else {
             this.event.$emit('alert', this.$t('home.errorTitle'), this.$t('home.noNetwork'))
           }
