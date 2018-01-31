@@ -4,15 +4,18 @@ export default {
     input: {
       itemNumber: {
         type: 'text',
-        model: ''
+        limit: [0, Infinity],
+        model: '0'
       },
       currentPt: {
         type: 'text',
-        model: ''
+        limit: [0, Infinity],
+        model: '0'
       },
       targetPt: {
         type: 'text',
-        model: ''
+        limit: [0, Infinity],
+        model: '0'
       },
       commonTimes: {
         type: 'radio',
@@ -111,6 +114,7 @@ export default {
       requirePt: 0,
       commonLiveTimes: 0,
       eventLiveTimes: 0,
+      bonusItem: 0,
       requireItem: 0,
       requireStamina: 0,
       gameTime: '00:00',
@@ -122,14 +126,17 @@ export default {
     input: {
       currentMedal: {
         type: 'text',
-        model: ''
+        limit: [0, Infinity],
+        model: '0'
       },
       targetMedal: {
         type: 'text',
-        model: ''
+        limit: [0, Infinity],
+        model: '0'
       },
       starRank: {
         type: 'text',
+        limit: [1, 20],
         model: '15'
       },
       commonDifficulty: {
@@ -160,6 +167,7 @@ export default {
       averageMedal: 0,
       requireMedal: 0,
       commonLiveTimes: 0,
+      bonusStamina: 0,
       requireStamina: 0,
       gameTime: '00:00',
       extraStamina: 0
@@ -170,11 +178,13 @@ export default {
     input: {
       currentPt: {
         type: 'text',
-        model: ''
+        limit: [0, Infinity],
+        model: '0'
       },
       targetPt: {
         type: 'text',
-        model: ''
+        limit: [0, Infinity],
+        model: '0'
       },
       eventDifficulty: {
         type: 'radio',
@@ -243,6 +253,7 @@ export default {
       levelUp: 0,
       requirePt: 0,
       eventLiveTimes: 0,
+      bonusStamina: 0,
       requireStamina: 0,
       gameTime: '00:00',
       extraStamina: 0
@@ -253,11 +264,13 @@ export default {
     input: {
       currentAudience: {
         type: 'text',
-        model: ''
+        limit: [0, Infinity],
+        model: '0'
       },
       targetAudience: {
         type: 'text',
-        model: ''
+        limit: [0, Infinity],
+        model: '0'
       },
       areaStamina: {
         type: 'radio',
@@ -341,6 +354,7 @@ export default {
       levelUp: 0,
       requireAudience: 0,
       eventLiveTimes: 0,
+      bonusStamina: 0,
       requireStamina: 0,
       gameTime: '00:00',
       extraStamina: 0

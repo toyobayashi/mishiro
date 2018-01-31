@@ -12,7 +12,7 @@ export default function () {
   let eUse = Number(evtDi[0])
   let eGet = Number(evtDi[1])
 
-  let dateOffset = new Date(this.time + this.eventTimeLeft).getDate() - new Date().getDate()
+  let dateOffset = new Date(this.time + this.eventTimeLeft + this.master.timeOffset).getDate() - new Date(this.time + this.master.timeOffset).getDate()
   if (dateOffset < 0) dateOffset += new Date(new Date().getFullYear(), new Date().getMonth() + 1, 0).getDate()
   let loginItem = 300 * dateOffset
   // console.log('loginItem = ' + loginItem)
@@ -61,6 +61,7 @@ export default function () {
   this.privateStatus['1'].output.requireItem = reqItem > 0 ? reqItem : 0
   this.privateStatus['1'].output.commonLiveTimes = commonLiveTimes
   this.privateStatus['1'].output.eventLiveTimes = eventLiveTimes
+  this.privateStatus['1'].output.bonusItem = loginItem
 
   this.ptCount(commonLiveTimes, comDi[0] * cb, levelUp, '1')
   /* clearInterval(this.privateStatus['1'].timer)

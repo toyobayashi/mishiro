@@ -73,7 +73,7 @@
             <div v-for="(tab, type) in eventType" v-show="currentEventTab === tab">
               <div class="arg-row" v-for="(playerStatus, name) in privateStatus[type].input">
                 <label>{{$t(`event.${name}`)}}</label>
-                <input-text v-if="playerStatus.type === 'text'" v-model="playerStatus.model" :height="30" class="event-input"></input-text>
+                <input-text v-if="playerStatus.type === 'text'" v-model="playerStatus.model" :height="30" class="event-input" :limit="playerStatus.limit" @focus.native="$event.target.select()"></input-text>
                 <div class="radio-group" v-if="playerStatus.type === 'radio'">
                   <radio
                     style="margin-left:10px"
