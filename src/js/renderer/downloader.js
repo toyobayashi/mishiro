@@ -113,17 +113,18 @@ class Downloader {
       let filepath = this.taskArr[this.index][1]
       let data = this.taskArr[this.index][2]
       let isContinue = true
+      let noAborted = false
       if (!fs.existsSync(filepath)) {
         if (start) start(this.toName(filepath), filepath, data)
         try {
-          await this.download(url, filepath, progressing)
+          noAborted = await this.download(url, filepath, progressing)
         } catch (e) {
           errorList.push(e)
           isContinue = false
         }
       }
       if (isContinue) {
-        if (complete) complete(this.toName(filepath), filepath, data)
+        if (complete && noAborted) complete(this.toName(filepath), filepath, data)
       } else {
         if (stop) stop(this.toName(filepath), filepath, data)
       }

@@ -121,7 +121,7 @@ export default {
         })
         this.total = 0
         this.$refs.downloadBtn.removeAttribute('disabled')
-        this.event.$emit('alert', this.$t('home.download'), `Failed: ${failedList.length}`)
+        if (failedList.length) this.event.$emit('alert', this.$t('home.download'), `Failed: ${failedList.length}`)
       } else {
         this.event.$emit('alert', this.$t('home.errorTitle'), this.$t('home.noEmptyDownload'))
       }
