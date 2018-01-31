@@ -19,7 +19,8 @@ export default {
     close: '関閉',
     stop: '中止',
     input: '捜索数据庫',
-    resVer: '資源版本'
+    resVer: '資源版本',
+    downloadFailed: '下載失敗。請在網絡良好的環境下重試。'
   },
   event: {
     atapon: '消耗道具型',

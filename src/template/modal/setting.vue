@@ -90,7 +90,7 @@ export default {
     }
   },
   methods: {
-    save () {
+    async save () {
       this.playSe(this.enterSe)
       let resVer, gachaId, eventId, backgroundId
       if (this.resVer) {
@@ -159,7 +159,7 @@ export default {
 
       this.$emit('input', this.language[this.lang])
       this._i18n._vm.locale = this.lang
-      this.configurer.configure({
+      await this.configurer.configure({
         language: this.lang,
         resVer,
         gacha: gachaId,
@@ -171,8 +171,8 @@ export default {
   },
   mounted () {
     this.$nextTick(() => {
-      this.event.$on('option', () => {
-        let config = this.configurer.getConfig()
+      this.event.$on('option', async () => {
+        let config = await this.configurer.getConfig()
         this.lang = config.language ? config.language : ''
         this.resVer = config.resVer ? config.resVer : ''
         this.gachaId = config.gacha ? config.gacha : ''

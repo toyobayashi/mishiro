@@ -19,7 +19,8 @@ export default {
     close: '閉じる',
     stop: '中止',
     input: 'データベース検索',
-    resVer: 'リソースバージョン'
+    resVer: 'リソースバージョン',
+    downloadFailed: 'ダウンロードが失敗しました。通信環境の良いの所でもう一度お試しください。'
   },
   event: {
     atapon: 'アタポン',

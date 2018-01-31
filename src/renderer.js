@@ -5,20 +5,24 @@ import zh from './i18n/zh-CN.js'
 import ja from './i18n/ja-JP.js'
 import vueGlobal from './js/renderer/globalProperty.js'
 import configurer from './js/common/config.js'
-let config = configurer.getConfig()
+
 Vue.use(VueI18n)
-Vue.use(vueGlobal)
+Vue.use(vueGlobal);
 
-const i18n = new VueI18n({
-  locale: config.language ? config.language : 'zh',
-  messages: {
-    zh,
-    ja
-  }
-})
+(async function () {
+  let config = await configurer.getConfig()
 
-window.app = new Vue({
-  el: '#app',
-  i18n,
-  render: h => h(app)
-})
+  const i18n = new VueI18n({
+    locale: config.language ? config.language : 'zh',
+    messages: {
+      zh,
+      ja
+    }
+  })
+
+  window.app = new Vue({
+    el: '#app',
+    i18n,
+    render: h => h(app)
+  })
+})()

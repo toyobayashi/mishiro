@@ -1,6 +1,7 @@
 import { ipcMain } from 'electron'
 import { exec } from 'child_process'
 import fs from 'fs'
+import { read } from '../util/fsExtra.js'
 import SQL from './sqlExec.js'
 import getEventData from './getEventData.js'
 import getGachaData from './getGachaData.js'
@@ -13,24 +14,24 @@ import resolveUserLevel from './resolveUserLevel.js'
 import { getPath } from '../common/getPath.js'
 import { configurer } from '../common/config.js';
 
-(function () {
-  let config = configurer.getConfig()
+(async function () {
+  let config = await configurer.getConfig()
   let fix = {}
   if (!config.latestResVer) {
-    fix.latestResVer = 10035000
+    fix.latestResVer = 10035100
   }
   if (config.language !== 'zh' && config.language !== 'ja') {
     fix.language = 'zh'
   }
   if (Object.keys(fix).length) {
-    configurer.configure(fix)
+    await configurer.configure(fix)
   }
 })()
 
 let manifestData = {}
 
-ipcMain.on('readManifest', (event, manifestFile, resVer) => {
-  let manifest = new SQL.Database(fs.readFileSync(manifestFile))
+ipcMain.on('readManifest', async (event, manifestFile, resVer) => {
+  let manifest = new SQL.Database(await read(manifestFile))
   const manifests = manifest._exec('SELECT name, hash FROM manifests')
   manifestData.liveManifest = manifest._exec('SELECT name, hash FROM manifests WHERE name LIKE "l/%"')
   manifestData.bgmManifest = manifest._exec('SELECT name, hash FROM manifests WHERE name LIKE "b/%"')
@@ -41,12 +42,12 @@ ipcMain.on('readManifest', (event, manifestFile, resVer) => {
   event.sender.send('readManifest', manifests, resVer)
 })
 
-ipcMain.on('readMaster', (event, masterFile) => {
-  let config = configurer.getConfig()
+ipcMain.on('readMaster', async (event, masterFile) => {
+  let config = await configurer.getConfig()
   const timeOffset = (9 - (-(new Date().getTimezoneOffset() / 60))) * 60 * 60 * 1000
   const now = new Date().getTime()
 
-  let master = new SQL.Database(fs.readFileSync(masterFile))
+  let master = new SQL.Database(await read(masterFile))
   const gachaAll = master._exec('SELECT * FROM gacha_data')
   const eventAll = master._exec('SELECT * FROM event_data')
 
@@ -67,7 +68,7 @@ ipcMain.on('readMaster', (event, masterFile) => {
 
   let liveManifest = manifestData.liveManifest
   let bgmManifest = manifestData.bgmManifest
-  manifestData = void 0
+  manifestData = {}
 
   let gachaLimited = master._exec('SELECT gacha_id, reward_id FROM gacha_available WHERE limited_flag = 1 ORDER BY reward_id')
   let eventLimited = master._exec('SELECT event_id, reward_id FROM event_available ORDER BY reward_id')

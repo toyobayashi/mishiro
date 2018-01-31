@@ -33,11 +33,11 @@ function httpGetVersion (resVer, progressing) {
   })
 }
 
-function check (progressing) {
+async function check (progressing) {
   if (!fs.existsSync(getPath('./data'))) {
     fs.mkdirSync(getPath('./data'))
   }
-  let config = configurer.getConfig()
+  let config = await configurer.getConfig()
   if (config.resVer) {
     return config.resVer
   }
@@ -45,7 +45,7 @@ function check (progressing) {
         configurer.configure("latestResVer", 10033600);
     } */
 
-  let versionFrom = configurer.getConfig().latestResVer
+  let versionFrom = (await configurer.getConfig()).latestResVer
 
   return new Promise((resolve) => {
     let resVer = versionFrom
@@ -59,7 +59,7 @@ function check (progressing) {
       versionArr.forEach((v) => {
         promiseArr.push(httpGetVersion(v, progressing))
       })
-      Promise.all(promiseArr).then((arr) => {
+      Promise.all(promiseArr).then(async (arr) => {
         max += 20
         let temp = arr
         let isContinue = false
@@ -73,7 +73,7 @@ function check (progressing) {
         }
         if (!isContinue) {
           // fs.writeFileSync(getPath("./data/version"), resVer);
-          configurer.configure('latestResVer', resVer)
+          await configurer.configure('latestResVer', resVer)
           resolve(resVer)
         }
       })

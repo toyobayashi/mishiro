@@ -1,18 +1,20 @@
 import fs from 'fs'
+import { read, write } from '../util/fsExtra.js'
 import { getPath } from './getPath.js'
+
 class Configurer {
   constructor (filePath) {
     this.configFile = filePath
   }
-  getConfig () {
+  async getConfig () {
     if (fs.existsSync(this.configFile)) {
-      return JSON.parse(fs.readFileSync(this.configFile))
+      return JSON.parse(await read(this.configFile))
     } else {
       return {}
     }
   }
-  configure (key, value) {
-    let config = this.getConfig()
+  async configure (key, value) {
+    let config = await this.getConfig()
     if (typeof key === 'string') {
       config[key] = value
     } else if (typeof key === 'object') {
@@ -26,12 +28,14 @@ class Configurer {
         }
       }
     }
-    fs.writeFileSync(this.configFile, JSON.stringify(config, null, '  '))
+    await write(this.configFile, JSON.stringify(config, null, '  '))
+    return config
   }
-  remove (key) {
-    let config = this.getConfig()
+  async remove (key) {
+    let config = await this.getConfig()
     delete config[key]
-    fs.writeFileSync(this.configFile, JSON.stringify(config, null, '  '))
+    await write(this.configFile, JSON.stringify(config, null, '  '))
+    return config
   }
 }
 export let configurer = new Configurer(getPath('./config.json'))

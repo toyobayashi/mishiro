@@ -70,7 +70,7 @@ export default {
   },
   data () {
     return {
-      modalWidth: '900px',
+      modalWidth: '920px',
       isCounting: false, // 是否正在进行体力计时
       currentEventTab: 'ATAPON', // 当前活动计算板块
       stamina: 0, // 已恢复的stamina，以秒记

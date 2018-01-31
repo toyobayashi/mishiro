@@ -1,5 +1,6 @@
 import request from 'request'
 import fs from 'fs'
+import { read } from '../util/fsExtra.js'
 import path from 'path'
 class Downloader {
   constructor (taskArr = []) {
@@ -10,13 +11,13 @@ class Downloader {
 
   download (u, p, progressing) {
     let filename = this.toName(p)
-    return new Promise((resolve, reject) => {
+    return new Promise(async (resolve, reject) => {
       if (fs.existsSync(p)) {
         resolve(p)
       } else {
         let size = 0
         if (fs.existsSync(p + '.tmp')) {
-          const f = fs.readFileSync(p + '.tmp')
+          const f = await read(p + '.tmp')
           size = f.length
         }
 
@@ -62,13 +63,13 @@ class Downloader {
           }
           contentLength = Number(response.headers['content-length'])
           if (contentLength == size && !response.headers['content-range']) {
+            resolve(p)
             req.abort()
             progressing({
               current: size,
               max: size,
               loading: 100
             })
-            resolve(p)
           } else {
             let ws = fs.createWriteStream(p + '.tmp', { flags: 'a+' })
             req
@@ -90,7 +91,7 @@ class Downloader {
               .on('abort', () => {
                 rename = false
                 console.log('abort: ' + u)
-                reject(p)
+                resolve(false)
               })
             req.pipe(ws)
           }
