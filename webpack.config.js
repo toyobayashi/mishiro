@@ -35,7 +35,7 @@ let renderer = {
   },
   resolve: {
     alias: {
-      'vue': 'vue/dist/vue.js'
+      'vue$': 'vue/dist/vue.runtime.esm.js'
     }
   },
   plugins: [
@@ -60,7 +60,7 @@ let main = {
     __dirname: false
   },
   externals: {
-    'sql.js': 'require(__dirname + "\\\\public\\\\sql.js")'
+    'sql.js': 'require("./public/sql.js")'
   },
   plugins: []
 }
@@ -76,7 +76,7 @@ if (process.env.NODE_ENV === 'production') {
       warnings: false
     }
   })
-  renderer.resolve.alias['vue'] = 'vue/dist/vue.min.js'
+  renderer.resolve.alias['vue$'] = 'vue/dist/vue.runtime.min.js'
   renderer.plugins.push(uglifyjs)
   main.plugins.push(uglifyjs)
 }
