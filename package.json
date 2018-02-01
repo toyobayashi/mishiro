@@ -2,7 +2,7 @@
   "name": "mishiro",
   "productName": "mishiro",
   "companyName": "Toyo",
-  "version": "1.1.6",
+  "version": "1.2.0",
   "description": "mishiro",
   "main": "main.min.js",
   "scripts": {
@@ -11,7 +11,8 @@
     "dll": "webpack --config webpack.dll.config.js",
     "dev": "webpack --config webpack.dll.config.js&&webpack -w",
     "prod": "set NODE_ENV=production&&webpack --config webpack.dll.config.js&&webpack",
-    "pkg": "npm run prod&&node pack"
+    "pkg": "npm run prod&&node pack",
+    "count": "node count"
   },
   "repository": {
     "type": "git",

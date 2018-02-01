@@ -148,19 +148,19 @@ export default {
       } else if (this.currentEventTab === 'TOUR') {
         for (let key in this.privateStatus['5'].output) {
           if (key === 'gameTime') this.privateStatus['5'].output[key] = '00:00'
-          else this.privateStatus['1'].output[key] = 0
+          else this.privateStatus['5'].output[key] = 0
         }
       } else if (this.currentEventTab === 'MEDLEY') {
         for (let key in this.privateStatus['3'].output) {
           if (key === 'gameTime') this.privateStatus['3'].output[key] = '00:00'
-          else this.privateStatus['1'].output[key] = 0
+          else this.privateStatus['3'].output[key] = 0
         }
       } else if (this.currentEventTab === 'CARAVAN') {
-        for (let key in this.privateStatus['3'].output) {
-          if (key === 'gameTime') this.privateStatus['3'].output[key] = '00:00'
-          else if (key === 'extraRewardOdds') this.privateStatus['3'].output[key] = '0/0/0/0/0'
-          else if (key === 'cardRewardOdds') this.privateStatus['3'].output[key] = '0/0'
-          else this.privateStatus['1'].output[key] = 0
+        for (let key in this.privateStatus['2'].output) {
+          if (key === 'gameTime') this.privateStatus['2'].output[key] = '00:00'
+          else if (key === 'extraRewardOdds') this.privateStatus['2'].output[key] = '0/0/0/0/0'
+          else if (key === 'cardRewardOdds') this.privateStatus['2'].output[key] = '0.00/0.00'
+          else this.privateStatus['2'].output[key] = 0
         }
       } else {
         this.event.$emit('alert', this.$t('home.errorTitle'), this.$t('home.hope'))
