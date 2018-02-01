@@ -164,7 +164,7 @@ export default {
     output: {
       levelUp: 0,
       extraRewardOdds: '0/0/0/0/0',
-      cardRewardOdds: '0/0',
+      cardRewardOdds: '0.00/0.00',
       averageMedal: 0,
       requireMedal: 0,
       commonLiveTimes: 0,
