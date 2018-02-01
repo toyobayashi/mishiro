@@ -8,7 +8,7 @@
   </transition>
   <background></background>
   <div id="mainBlock" v-show="show">
-    <home v-show="currentBlock === 'home'" :manifest="appData.manifest"></home>
+    <home v-show="currentBlock === 'home'"></home>
     <idol v-show="currentBlock === 'idol'" :master="appData.master"></idol>
     <live v-show="currentBlock === 'live'" :master="appData.master"></live>
     <gacha v-show="currentBlock === 'gacha'" :master="appData.master"></gacha>
@@ -94,7 +94,6 @@ export default {
       },
       appData: {
         resVer: 'Unknown',
-        manifest: [],
         master: {}
       },
       time: new Date().getTime()

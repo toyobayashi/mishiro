@@ -4,7 +4,7 @@ import inputText from '../../template/component/inputText.vue'
 import Downloader from './downloader.js'
 import fs from 'fs'
 import getPath from '../common/getPath.js'
-import { shell } from 'electron'
+import { shell, ipcRenderer } from 'electron'
 const dler = new Downloader()
 export default {
   components: {
@@ -25,12 +25,6 @@ export default {
       }
     }
   },
-  props: {
-    'manifest': {
-      type: Array,
-      require: true
-    }
-  },
   methods: {
     opendir () {
       this.playSe(this.enterSe)
@@ -43,7 +37,7 @@ export default {
       if (this.queryString === '') {
         this.event.$emit('alert', this.$t('home.errorTitle'), this.$t('home.noEmptyString'))
       } else {
-        this.data = this.manifest.filter(row => new RegExp(this.queryString).test(row.name))
+        ipcRenderer.send('queryManifest', this.queryString)
       }
       this.playSe(this.enterSe)
     },
@@ -133,6 +127,9 @@ export default {
         if (block === 'home') {
           this.query()
         }
+      })
+      ipcRenderer.on('queryManifest', (event, manifestArr) => {
+        this.data = manifestArr
       })
     })
   }
