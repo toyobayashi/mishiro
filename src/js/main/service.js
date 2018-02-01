@@ -29,17 +29,35 @@ import { configurer } from '../common/config.js';
 })()
 
 let manifestData = {}
+global.manifests = []
+
+ipcMain.on('queryManifest', (event, queryString) => {
+  let manifestArr = []
+  for (let i = 0; i < global.manifests.length; i++) {
+    if (global.manifests[i].name.indexOf(queryString) !== -1) {
+      manifestArr.push(global.manifests[i])
+    }
+  }
+  event.sender.send('queryManifest', manifestArr)
+})
 
 ipcMain.on('readManifest', async (event, manifestFile, resVer) => {
   let manifest = new SQL.Database(await read(manifestFile))
-  const manifests = manifest._exec('SELECT name, hash FROM manifests')
+  global.manifests = manifest._exec('SELECT name, hash FROM manifests')
   manifestData.liveManifest = manifest._exec('SELECT name, hash FROM manifests WHERE name LIKE "l/%"')
   manifestData.bgmManifest = manifest._exec('SELECT name, hash FROM manifests WHERE name LIKE "b/%"')
   manifest.close()
   manifest = void 0
+  let masterHash = ''
+  for (let i = 0; i < global.manifests.length; i++) {
+    if (global.manifests[i].name === 'master.mdb') {
+      masterHash = global.manifests[i].hash
+    }
+  }
+  console.log(`manifest: ${global.manifests.length}`)
   console.log(`bgm: ${manifestData.bgmManifest.length}`)
   console.log(`live: ${manifestData.liveManifest.length}`)
-  event.sender.send('readManifest', manifests, resVer)
+  event.sender.send('readManifest', masterHash, resVer)
 })
 
 ipcMain.on('readMaster', async (event, masterFile) => {
