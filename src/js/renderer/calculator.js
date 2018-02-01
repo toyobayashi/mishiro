@@ -171,7 +171,7 @@ export default {
       let hour = Math.floor(t / 1000 / 60 / 60 % 24)
       let minute = Math.floor(t / 1000 / 60 % 60)
       let second = Math.floor(t / 1000 % 60)
-      return `${day ? day + '日' : ''}${hour ? (hour >= 10 ? hour + ':' : ('0' + hour + ':')) : ''}${minute >= 10 ? minute : '0' + minute}:${second >= 10 ? second : '0' + second}`
+      return `${day ? day + '日' : ''}${day ? (hour >= 10 ? hour + ':' : ('0' + hour + ':')) : (hour ? (hour >= 10 ? hour + ':' : ('0' + hour + ':')) : '')}${minute >= 10 ? minute : '0' + minute}:${second >= 10 ? second : '0' + second}`
     },
     getExp (plv) {
       if (plv >= 300) return Infinity
