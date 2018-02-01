@@ -1,5 +1,6 @@
 # mishiro
-CGSS windows desktop application. [Here to download release](https://github.com/toyobayashi/mishiro/releases)
+CGSS windows desktop application. [Here to download release](https://github.com/toyobayashi/mishiro/releases)  
+[这里是中文](https://github.com/toyobayashi/mishiro/blob/master/README_CN.md)
 
 ## Build
 Require __Node.js__ and __npm__.  
@@ -45,9 +46,10 @@ Game gacha simulation. (the same gacha event and card odds)
 ![gacha](https://github.com/toyobayashi/mishiro/raw/master/screenshot/gacha3.png)  
 
 ### MENU
-Option / About.  
+Option / About / Event Pt Calculator.  
 
 ![menu](https://github.com/toyobayashi/mishiro/raw/master/screenshot/menu2.png)  
+![menu](https://github.com/toyobayashi/mishiro/raw/master/screenshot/event1.png)
 
 ## Copyright
 The copyright of CGSS and its related content is held by [BANDAI NAMCO Entertainment Inc.](https://bandainamcoent.co.jp/)  
