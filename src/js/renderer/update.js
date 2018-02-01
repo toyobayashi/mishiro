@@ -106,14 +106,11 @@ export default {
         }
         ipcRenderer.on('readManifest', async (event, masterHash, resVer) => {
           this.$emit('input', this.appData)
-          // const masterHash = manifests.filter(row => row.name === 'master.mdb')[0].hash
-          console.log(masterHash)
           const masterFile = await this.getMaster(resVer, masterHash)
           if (masterFile) ipcRenderer.send('readMaster', masterFile)
         })
         ipcRenderer.on('readMaster', async (event, masterData) => {
           // console.log(masterData);
-          // this.$store.commit("updateMaster", masterData);
           const bgmList = player.data().bgmList
           const downloader = new Downloader()
           const toName = p => path.parse(p).name

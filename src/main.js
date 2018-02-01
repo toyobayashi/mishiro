@@ -1,4 +1,4 @@
-import { app, BrowserWindow } from 'electron'
+import { app, BrowserWindow, ipcMain } from 'electron'
 import url from 'url'
 import { getPath } from './js/common/getPath.js'
 import './js/main/service.js'
@@ -25,6 +25,10 @@ function createWindow () {
   mainWindow.on('closed', function () {
     mainWindow = null
   })
+
+  mainWindow.on('focus', () => {
+    mainWindow.flashFrame(false)
+  })
 }
 
 app.on('ready', createWindow)
@@ -39,4 +43,8 @@ app.on('activate', function () {
   if (mainWindow === null) {
     createWindow()
   }
+})
+
+ipcMain.on('flash', (event) => {
+  mainWindow.flashFrame(true)
 })

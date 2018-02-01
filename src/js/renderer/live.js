@@ -45,7 +45,7 @@ export default {
     async selectAudio (audio) {
       if (this.activeAudio.hash !== audio.hash) {
         this.playSe(this.enterSe)
-        dler.stop()
+        
         this.total = 0
         this.current = 0
         this.text = ''
@@ -53,6 +53,7 @@ export default {
         if (audio.name.split('/')[0] === 'b') {
           if (!fs.existsSync(getPath(`./public/asset/sound/bgm/${audio.fileName}`))) {
             if (navigator.onLine) {
+              dler.stop()
               this.activeAudio = audio
               let result = false
               try {
@@ -84,6 +85,7 @@ export default {
         } else if (audio.name.split('/')[0] === 'l') {
           if (!fs.existsSync(getPath(`./public/asset/sound/live/${audio.fileName}`))) {
             if (navigator.onLine) {
+              dler.stop()
               this.activeAudio = audio
               let result = false
               try {

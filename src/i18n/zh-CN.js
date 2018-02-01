@@ -20,7 +20,9 @@ export default {
     stop: '中止',
     input: '捜索数据庫',
     resVer: '資源版本',
-    downloadFailed: '下載失敗。請在網絡良好的環境下重試。'
+    downloadFailed: '下載失敗。請在網絡良好的環境下重試。',
+    msg: '消息',
+    stmnFull: '体力已回満。'
   },
   event: {
     atapon: '消耗道具型',
@@ -52,7 +54,7 @@ export default {
     currentMedal: '当前勲章数',
     targetMedal: '目標勲章数',
     starRank: '領隊星級',
-    extraRewardOdds: '0/1/2槽報酬概率',
+    extraRewardOdds: '0/1/2/3/4槽概率',
     averageMedal: '平均毎回勲章数',
     requireMedal: '需要勲章数',
     hakoyureLevel: '箱揺Lv',
@@ -66,7 +68,8 @@ export default {
     requireAudience: '需要観客人数',
     timeLeft: '剰余時間　',
     bonusItem: '奨励道具',
-    bonusStamina: '奨励体力'
+    bonusStamina: '奨励体力',
+    cardRewardOdds: '上位/下位估計'
   },
   update: {
     tip: '※請在網絡良好的環境下進行',

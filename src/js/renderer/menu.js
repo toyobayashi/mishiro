@@ -74,7 +74,7 @@ OTHER DEALINGS IN THE SOFTWARE.</p>`, 900)
 
           const description = $('.release.label-latest .release-body .markdown-body').html().replace(/\n/g, '').trim()
           const versionData = { version, commit, description, commitUrl, zipUrl, exeUrl }
-          console.log(versionData)
+          // console.log(versionData)
           if (remote.app.getVersion() < version) {
             this.event.$emit('versionCheck', versionData)
           } else {
