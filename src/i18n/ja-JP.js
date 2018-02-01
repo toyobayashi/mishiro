@@ -20,7 +20,9 @@ export default {
     stop: '中止',
     input: 'データベース検索',
     resVer: 'リソースバージョン',
-    downloadFailed: 'ダウンロードが失敗しました。通信環境の良いの所でもう一度お試しください。'
+    downloadFailed: 'ダウンロードが失敗しました。通信環境の良いの所でもう一度お試しください。',
+    msg: 'メッセージ',
+    stmnFull: 'スタミナが回復しました。'
   },
   event: {
     atapon: 'アタポン',
@@ -52,7 +54,7 @@ export default {
     currentMedal: '今のメダル数',
     targetMedal: '目標メダル数',
     starRank: 'スターランク',
-    extraRewardOdds: '0/1/2枠報酬確率',
+    extraRewardOdds: '0/1/2/3/4枠確率',
     averageMedal: '平均メダル数',
     requireMedal: '必要メダル数',
     hakoyureLevel: 'ハコユレLv',
@@ -66,7 +68,8 @@ export default {
     requireAudience: '必要観客人数',
     timeLeft: '残り時間　',
     bonusItem: 'ボーナスアイテム',
-    bonusStamina: 'ボーナススタミナ'
+    bonusStamina: 'ボーナススタミナ',
+    cardRewardOdds: '上位/下位ｱｲﾄﾞﾙ獲得数'
   },
   update: {
     tip: '※通信環境の良い所で実行してください',
