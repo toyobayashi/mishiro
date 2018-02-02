@@ -103,31 +103,10 @@ class Lz4 {
   }
 }
 
-function toArrayBuffer (buffer) {
-  let ab = new ArrayBuffer(buffer.length)
-  let view = new Uint8Array(ab)
-  for (let i = 0; i < buffer.length; ++i) {
-    view[i] = buffer[i]
-  }
-  return view
-}
-
-function toBuffer (ab) {
-  let buf = new Buffer(ab.byteLength)
-  let view = new Uint8Array(ab)
-  for (let i = 0; i < buf.length; ++i) {
-    buf[i] = view[i]
-  }
-  return buf
-}
-
-function lz4dec (input, output) {
-  output = output || 'unity3d'
-  let buff = new Buffer(fs.readFileSync(input))
-  let fbuf = new Uint8Array(toArrayBuffer(buff))
-  let dec = new Lz4(fbuf)
+function lz4dec (input, output = 'unity3d') {
+  let dec = new Lz4(fs.readFileSync(input))
   let raw = dec.decompress()
-  fs.writeFileSync(input + '.' + output, toBuffer(raw))
+  fs.writeFileSync(input + '.' + output, Buffer.from(raw.buffer))
   return input + '.' + output
 }
 
