@@ -82,21 +82,27 @@ class Downloader {
                   loading: 100 * (size + current) / (size + contentLength)
                 })
               })
-              .on('end', () => {
-                if (rename) {
-                  fs.renameSync(path.join(p) + '.tmp', path.join(p))
-                }
-                resolve(p)
-              })
               .on('abort', () => {
                 rename = false
                 console.log('abort: ' + u)
                 resolve(false)
               })
+              /* .on('end', () => {
+                if (rename) {
+                  fs.renameSync(path.join(p) + '.tmp', path.join(p))
+                }
+                resolve(p)
+              }) */
+            ws.on('close', () => {
+              if (rename) {
+                fs.renameSync(path.join(p) + '.tmp', path.join(p))
+              }
+              resolve(p)
+            })
             req.pipe(ws)
           }
         }).on('error', (e) => {
-          console.log(u, e)
+          console.log(e + '\nURL: ' + u)
           reject(p)
         })
       }
