@@ -12,7 +12,8 @@
     "dev": "webpack --config webpack.dll.config.js&&webpack -w",
     "prod": "set NODE_ENV=production&&webpack --config webpack.dll.config.js&&webpack",
     "pkg": "npm run prod&&node pack",
-    "count": "node count"
+    "count": "node count",
+    "reb:hca": "cd ./src/native/hca&&node-gyp rebuild --target=%npm_package_devDependencies_electron% --arch=ia32 --dist-url=https://atom.io/download/electron"
   },
   "repository": {
     "type": "git",

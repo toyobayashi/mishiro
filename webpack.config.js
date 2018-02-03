@@ -60,7 +60,8 @@ let main = {
     __dirname: false
   },
   externals: {
-    'sql.js': 'require("./public/sql.js")'
+    'sql.js': 'require("./public/sql.js")',
+    'hca': 'require("./hca.node")'
   },
   plugins: []
 }
