@@ -23,3 +23,4 @@ main.min.js
 config.json
 manifest.json
 .vscode/
+src/native/*/build/
