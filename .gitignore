@@ -22,3 +22,4 @@ public/asset/sound/bgm/*.mp3
 main.min.js
 config.json
 manifest.json
+.vscode/
