@@ -93,6 +93,13 @@ export default {
         this.event.$emit('alert', this.$t('home.errorTitle'), this.$t('home.downloadFailed') + '<br/>' + errorPath)
         return false
       }
+    },
+    sleep (ms) {
+      return new Promise(resolve => {
+        setTimeout(() => {
+          resolve()
+        }, ms)
+      })
     }
   },
   mounted () {
@@ -123,7 +130,7 @@ export default {
               let acbName = `b/${toName(bgmList[k].src)}.acb`
               let hash = bgmManifest.filter(row => row.name === acbName)[0].hash
               try {
-                await downloader.download(
+                let result = await downloader.download(
                   this.getBgmUrl(hash),
                   getPath(`./public/asset/sound/bgm/${toName(bgmList[k].src)}.acb`),
                   (prog) => {
@@ -131,7 +138,10 @@ export default {
                     this.loading = prog.loading
                   }
                 )
-                ipcRenderer.send('acb', getPath(`./public/asset/sound/bgm/${toName(bgmList[k].src)}.acb`))
+                if (result) {
+                  ipcRenderer.send('acb', getPath(`./public/asset/sound/bgm/${toName(bgmList[k].src)}.acb`))
+                  await this.sleep(5000)
+                }
               } catch (errorPath) {
                 this.event.$emit('alert', this.$t('home.errorTitle'), this.$t('home.downloadFailed') + '<br/>' + errorPath)
               }
@@ -140,7 +150,7 @@ export default {
           if (masterData.eventData.type != 2 && masterData.eventData.type != 6 && !fs.existsSync(getPath(`./public/asset/sound/bgm/bgm_event_${masterData.eventData.id}.mp3`))) {
             const eventBgmHash = bgmManifest.filter(row => row.name === `b/bgm_event_${masterData.eventData.id}.acb`)[0].hash
             try {
-              await downloader.download(
+              let result = await downloader.download(
                 this.getBgmUrl(eventBgmHash),
                 getPath(`./public/asset/sound/bgm/bgm_event_${masterData.eventData.id}.acb`),
                 (prog) => {
@@ -148,7 +158,9 @@ export default {
                   this.loading = prog.loading
                 }
               )
-              ipcRenderer.send('acb', getPath(`./public/asset/sound/bgm/bgm_event_${masterData.eventData.id}.acb`))
+              if (result) {
+                ipcRenderer.send('acb', getPath(`./public/asset/sound/bgm/bgm_event_${masterData.eventData.id}.acb`))
+              }
             } catch (errorPath) {
               this.event.$emit('alert', this.$t('home.errorTitle'), this.$t('home.downloadFailed') + '<br/>' + errorPath)
             }
