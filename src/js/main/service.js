@@ -2,8 +2,9 @@ import { ipcMain } from 'electron'
 // import { exec } from 'child_process'
 import fs from 'fs'
 import path from 'path'
-import { read } from '../util/fsExtra.js'
-import SQL from './sqlExec.js'
+/* import { read } from '../util/fsExtra.js'
+import SQL from './sqlExec.js' */
+import sqlite3 from './node-module-sqlite3.js'
 import getEventData from './getEventData.js'
 import getGachaData from './getGachaData.js'
 import getLimitedCard from './getLimitedCard.js'
@@ -30,36 +31,52 @@ import { configurer } from '../common/config.js';
   }
 })()
 
+sqlite3.Database.prototype._all = function (sql) {
+  return new Promise((resolve, reject) => {
+    this.all(sql, (err, rows) => {
+      if (err) reject(err)
+      else resolve(rows)
+    })
+  })
+}
+
 let manifestData = {}
-global.manifests = []
+let manifests = []
 
 ipcMain.on('queryManifest', (event, queryString) => {
   let manifestArr = []
-  for (let i = 0; i < global.manifests.length; i++) {
-    if (global.manifests[i].name.indexOf(queryString) !== -1) {
-      manifestArr.push(global.manifests[i])
+  for (let i = 0; i < manifests.length; i++) {
+    if (manifests[i].name.indexOf(queryString) !== -1) {
+      manifestArr.push(manifests[i])
     }
   }
   event.sender.send('queryManifest', manifestArr)
 })
 
-ipcMain.on('readManifest', async (event, manifestFile, resVer) => {
-  let manifest = new SQL.Database(await read(manifestFile))
-  global.manifests = manifest._exec('SELECT name, hash FROM manifests')
-  manifestData.liveManifest = manifest._exec('SELECT name, hash FROM manifests WHERE name LIKE "l/%"')
-  manifestData.bgmManifest = manifest._exec('SELECT name, hash FROM manifests WHERE name LIKE "b/%"')
-  manifest.close()
-  manifest = void 0
-  let masterHash = ''
-  for (let i = 0; i < global.manifests.length; i++) {
-    if (global.manifests[i].name === 'master.mdb') {
-      masterHash = global.manifests[i].hash
+ipcMain.on('readManifest', (event, manifestFile, resVer) => {
+  // let manifest = new SQL.Database(await read(manifestFile))
+  let manifest = new sqlite3.Database(manifestFile, sqlite3.OPEN_READONLY, async err => {
+    if (err) throw err
+    manifests = await manifest._all('SELECT name, hash FROM manifests')
+    manifestData.liveManifest = await manifest._all('SELECT name, hash FROM manifests WHERE name LIKE "l/%"')
+    manifestData.bgmManifest = await manifest._all('SELECT name, hash FROM manifests WHERE name LIKE "b/%"')
+
+    manifest.close(err => {
+      if (err) throw err
+      manifest = void 0
+    })
+
+    let masterHash = ''
+    for (let i = 0; i < manifests.length; i++) {
+      if (manifests[i].name === 'master.mdb') {
+        masterHash = manifests[i].hash
+      }
     }
-  }
-  console.log(`manifest: ${global.manifests.length}`)
-  console.log(`bgm: ${manifestData.bgmManifest.length}`)
-  console.log(`live: ${manifestData.liveManifest.length}`)
-  event.sender.send('readManifest', masterHash, resVer)
+    console.log(`manifest: ${manifests.length}`)
+    console.log(`bgm: ${manifestData.bgmManifest.length}`)
+    console.log(`live: ${manifestData.liveManifest.length}`)
+    event.sender.send('readManifest', masterHash, resVer)
+  })
 })
 
 ipcMain.on('readMaster', async (event, masterFile) => {
@@ -67,62 +84,66 @@ ipcMain.on('readMaster', async (event, masterFile) => {
   const timeOffset = (9 - (-(new Date().getTimezoneOffset() / 60))) * 60 * 60 * 1000
   const now = new Date().getTime()
 
-  let master = new SQL.Database(await read(masterFile))
-  const gachaAll = master._exec('SELECT * FROM gacha_data')
-  const eventAll = master._exec('SELECT * FROM event_data')
+  let master = new sqlite3.Database(masterFile, sqlite3.OPEN_READONLY, async err => {
+    if (err) throw err
+    const gachaAll = await master._all('SELECT * FROM gacha_data')
+    const eventAll = await master._all('SELECT * FROM event_data')
 
-  const eventData = getEventData(eventAll, config, now, timeOffset)
-  console.log(`eventID: ${eventData.id}`)
-  const eventAvailable = master._exec(`SELECT * FROM event_available WHERE event_id = "${eventData.id}"`)
+    const eventData = getEventData(eventAll, config, now, timeOffset)
+    console.log(`eventID: ${eventData.id}`)
+    const eventAvailable = await master._all(`SELECT * FROM event_available WHERE event_id = "${eventData.id}"`)
 
-  let cardData = master._exec('SELECT * FROM card_data')
-  let charaData = master._exec('SELECT * FROM chara_data')
-  const textData = master._exec("SELECT * FROM text_data WHERE category='2';SELECT * FROM text_data WHERE category='4'")
-  const skillData = master._exec('SELECT * FROM skill_data')
-  const leaderSkillData = master._exec('SELECT * FROM leader_skill_data')
-  const musicData = master._exec('SELECT id, name FROM music_data')
+    let cardData = await master._all('SELECT * FROM card_data')
+    let charaData = await master._all('SELECT * FROM chara_data')
+    const textData = [await master._all("SELECT * FROM text_data WHERE category='2'"), await master._all("SELECT * FROM text_data WHERE category='4'")]
+    const skillData = await master._all('SELECT * FROM skill_data')
+    const leaderSkillData = await master._all('SELECT * FROM leader_skill_data')
+    const musicData = await master._all('SELECT id, name FROM music_data')
 
-  let { gachaNow, gachaData } = getGachaData(gachaAll, config, now, timeOffset)
-  console.log(`gachaID: ${gachaData.id}`)
-  let gachaAvailable = master._exec(`SELECT * FROM gacha_available WHERE gacha_id LIKE '${gachaData.id}'`)
+    let { gachaNow, gachaData } = getGachaData(gachaAll, config, now, timeOffset)
+    console.log(`gachaID: ${gachaData.id}`)
+    let gachaAvailable = await master._all(`SELECT * FROM gacha_available WHERE gacha_id LIKE '${gachaData.id}'`)
 
-  let liveManifest = manifestData.liveManifest
-  let bgmManifest = manifestData.bgmManifest
-  manifestData = {}
+    let liveManifest = manifestData.liveManifest
+    let bgmManifest = manifestData.bgmManifest
+    manifestData = {}
 
-  let gachaLimited = master._exec('SELECT gacha_id, reward_id FROM gacha_available WHERE limited_flag = 1 ORDER BY reward_id')
-  let eventLimited = master._exec('SELECT event_id, reward_id FROM event_available ORDER BY reward_id')
+    let gachaLimited = await master._all('SELECT gacha_id, reward_id FROM gacha_available WHERE limited_flag = 1 ORDER BY reward_id')
+    let eventLimited = await master._all('SELECT event_id, reward_id FROM event_available ORDER BY reward_id')
 
-  let userLevel = master._exec('SELECT level, stamina, total_exp FROM user_level')
-  master.close()
-  master = void 0
+    let userLevel = await master._all('SELECT level, stamina, total_exp FROM user_level')
+    master.close(err => {
+      if (err) throw err
+      master = void 0
+    })
 
-  let { gachaLimitedCard, eventLimitedCard } = getLimitedCard(eventAll, gachaAll, eventLimited, gachaLimited)
-  charaData = resolveCharaData(charaData, textData)
-  cardData = resolveCardData(cardData, charaData, skillData, leaderSkillData, eventLimitedCard, gachaLimitedCard)
+    let { gachaLimitedCard, eventLimitedCard } = getLimitedCard(eventAll, gachaAll, eventLimited, gachaLimited)
+    charaData = resolveCharaData(charaData, textData)
+    cardData = resolveCardData(cardData, charaData, skillData, leaderSkillData, eventLimitedCard, gachaLimitedCard)
 
-  let audioManifest = resolveAudioManifest(bgmManifest, liveManifest, musicData, charaData)
-  bgmManifest = audioManifest.bgmManifest
-  liveManifest = audioManifest.liveManifest
+    let audioManifest = resolveAudioManifest(bgmManifest, liveManifest, musicData, charaData)
+    bgmManifest = audioManifest.bgmManifest
+    liveManifest = audioManifest.liveManifest
 
-  let resolvedGacha = resolveGachaAvailable(gachaAvailable, cardData, gachaData)
-  gachaAvailable = resolvedGacha.gachaAvailable
-  gachaData.count = resolvedGacha.count
+    let resolvedGacha = resolveGachaAvailable(gachaAvailable, cardData, gachaData)
+    gachaAvailable = resolvedGacha.gachaAvailable
+    gachaData.count = resolvedGacha.count
 
-  userLevel = resolveUserLevel(userLevel)
+    userLevel = resolveUserLevel(userLevel)
 
-  event.sender.send('readMaster', {
-    eventAll,
-    eventData,
-    eventAvailable,
-    cardData,
-    bgmManifest,
-    liveManifest,
-    gachaData,
-    gachaAvailable,
-    gachaNow,
-    userLevel,
-    timeOffset
+    event.sender.send('readMaster', {
+      eventAll,
+      eventData,
+      eventAvailable,
+      cardData,
+      bgmManifest,
+      liveManifest,
+      gachaData,
+      gachaAvailable,
+      gachaNow,
+      userLevel,
+      timeOffset
+    })
   })
 })
 

@@ -11,7 +11,8 @@ let renderer = {
     filename: 'mishiro.min.js'
   },
   node: {
-    __dirname: false
+    __dirname: false,
+    __filename: false
   },
   module: {
     rules: [{
@@ -57,10 +58,11 @@ let main = {
     filename: 'main.min.js'
   },
   node: {
-    __dirname: false
+    __dirname: false,
+    __filename: false
   },
   externals: {
-    'sql.js': 'require("./public/sql.js")',
+    'sqlite3': 'require("./bin/sqlite3.node")',
     'hca': 'require("./bin/hca.node")'
   },
   plugins: []
