@@ -9,7 +9,7 @@ sourceCount({
     './pack.js',
     './count.js',
     './webpack.config.js',
-    './webpack.dll.config.js',
+    './webpack.dll.config.js'
   ],
   vue: ['./src/template'],
   css: ['./src/css'],

@@ -5,7 +5,7 @@ import check from './check.js'
 import downloadManifest from './downloadManifest.js'
 import downloadMaster from './downloadMaster.js'
 import Downloader from './downloader.js'
-import { ipcRenderer, remote } from 'electron'
+import { ipcRenderer } from 'electron'
 import getPath from '../common/getPath.js'
 import idol from './idol.js'
 import player from './player.js'
@@ -116,10 +116,12 @@ export default {
           const toName = p => path.parse(p).name
           this.appData.master = masterData
           this.$emit('input', this.appData)
+
+          const bgmManifest = masterData.bgmManifest
           for (let k in bgmList) {
             if (!fs.existsSync(path.join(getPath('./public'), bgmList[k].src))) {
               let acbName = `b/${toName(bgmList[k].src)}.acb`
-              let hash = remote.getGlobal('manifests').filter(row => row.name === acbName)[0].hash
+              let hash = bgmManifest.filter(row => row.name === acbName)[0].hash
               try {
                 await downloader.download(
                   this.getBgmUrl(hash),
@@ -136,7 +138,7 @@ export default {
             }
           }
           if (masterData.eventData.type != 2 && masterData.eventData.type != 6 && !fs.existsSync(getPath(`./public/asset/sound/bgm/bgm_event_${masterData.eventData.id}.mp3`))) {
-            const eventBgmHash = remote.getGlobal('manifests').filter(row => row.name === `b/bgm_event_${masterData.eventData.id}.acb`)[0].hash
+            const eventBgmHash = bgmManifest.filter(row => row.name === `b/bgm_event_${masterData.eventData.id}.acb`)[0].hash
             try {
               await downloader.download(
                 this.getBgmUrl(eventBgmHash),

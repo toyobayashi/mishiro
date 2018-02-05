@@ -61,7 +61,7 @@ let main = {
   },
   externals: {
     'sql.js': 'require("./public/sql.js")',
-    'hca': 'require("./hca.node")'
+    'hca': 'require("./bin/hca.node")'
   },
   plugins: []
 }

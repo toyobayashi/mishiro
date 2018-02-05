@@ -36,10 +36,8 @@ void DoAsync (uv_work_t *r) {
   async_req *req = reinterpret_cast<async_req *>(r->data);
   string hcafile = req->input;
 
-  const char *filenameOut = toWavSuffix(hcafile).c_str();
-
   clHCA hca(ciphKey1, ciphKey2);
-  if (!hca.DecodeToWavefile(hcafile.c_str(), filenameOut, volume, mode, loop)) {
+  if (!hca.DecodeToWavefile(hcafile.c_str(), toWavSuffix(hcafile).c_str(), volume, mode, loop)) {
     req->output = false;
     return;
   }
@@ -99,9 +97,8 @@ void decSync (const FunctionCallbackInfo<Value> &args) {
   }
 
   string hcafile = toCString(args[0]);
-  const char *filenameOut = toWavSuffix(hcafile).c_str();
   clHCA hca(ciphKey1, ciphKey2);
-  if (!hca.DecodeToWavefile(hcafile.c_str(), filenameOut, volume, mode, loop)) {
+  if (!hca.DecodeToWavefile(hcafile.c_str(), toWavSuffix(hcafile).c_str(), volume, mode, loop)) {
     args.GetReturnValue().Set(Boolean::New(isolate, false));
     return;
   }

@@ -1,6 +1,7 @@
 import { ipcMain } from 'electron'
-import { exec } from 'child_process'
+// import { exec } from 'child_process'
 import fs from 'fs'
+import path from 'path'
 import { read } from '../util/fsExtra.js'
 import SQL from './sqlExec.js'
 import getEventData from './getEventData.js'
@@ -11,6 +12,7 @@ import resolveCardData from './resolveCardData.js'
 import resolveAudioManifest from './resolveAudioManifest.js'
 import resolveGachaAvailable from './resolveGachaAvailable.js'
 import resolveUserLevel from './resolveUserLevel.js'
+import { acb2mp3 } from './audio.js'
 import { getPath } from '../common/getPath.js'
 import { configurer } from '../common/config.js';
 
@@ -124,9 +126,23 @@ ipcMain.on('readMaster', async (event, masterFile) => {
   })
 })
 
-ipcMain.on('acb', (event, acbPath, url = '') => {
-  const name = acbPath.split('\\')[acbPath.split('\\').length - 1].split('.')[0]
-  exec(`${getPath()}\\bin\\CGSSAudio.exe ${acbPath}`, (err) => {
+ipcMain.on('acb', async (event, acbPath, url = '') => {
+  // const name = acbPath.split('\\')[acbPath.split('\\').length - 1].split('.')[0]
+  const name = path.parse(acbPath).name
+  let result = await acb2mp3(acbPath)
+  console.log(result)
+  if (url) {
+    let urlArr = url.split('/')
+    if (urlArr[urlArr.length - 2] === 'live') {
+      let fileName = urlArr[urlArr.length - 1]
+      fs.renameSync(getPath(`./public/asset/sound/live/${name}.mp3`), getPath(`./public/asset/sound/live/${fileName}`))
+      event.sender.send('acb', url)
+    } else {
+      event.sender.send('acb', url)
+    }
+  }
+  fs.unlinkSync(acbPath)
+  /* exec(`${getPath()}\\bin\\CGSSAudio.exe ${acbPath}`, (err) => {
     if (!err) {
       if (url) {
         let urlArr = url.split('/')
@@ -142,7 +158,7 @@ ipcMain.on('acb', (event, acbPath, url = '') => {
         fs.unlinkSync(acbPath)
       }
     }
-  })
+  }) */
 })
 
 export default void 0
