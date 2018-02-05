@@ -21,7 +21,7 @@ import { configurer } from '../common/config.js';
   let config = await configurer.getConfig()
   let fix = {}
   if (!config.latestResVer) {
-    fix.latestResVer = 10035100
+    fix.latestResVer = 10035250
   }
   if (config.language !== 'zh' && config.language !== 'ja') {
     fix.language = 'zh'
@@ -150,8 +150,7 @@ ipcMain.on('readMaster', async (event, masterFile) => {
 ipcMain.on('acb', async (event, acbPath, url = '') => {
   // const name = acbPath.split('\\')[acbPath.split('\\').length - 1].split('.')[0]
   const name = path.parse(acbPath).name
-  let result = await acb2mp3(acbPath)
-  console.log(result)
+  await acb2mp3(acbPath)
   if (url) {
     let urlArr = url.split('/')
     if (urlArr[urlArr.length - 2] === 'live') {

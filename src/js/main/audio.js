@@ -75,6 +75,7 @@ async function acb2mp3 (acb) {
       const hca = path.join(hcadir, hcas[i])
       // console.log(hca)
       task.push(hca2mp3(hca, path.join(acbdir, path.parse(hca).name + '.mp3')))
+      // task.push(await hca2mp3(hca, path.join(acbdir, path.parse(hca).name + '.mp3')))
     }
     let result = await Promise.all(task)
     await remove(hcadir)

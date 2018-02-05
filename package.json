@@ -2,7 +2,7 @@
   "name": "mishiro",
   "productName": "mishiro",
   "companyName": "Toyo",
-  "version": "1.2.0",
+  "version": "1.2.1",
   "description": "mishiro",
   "main": "main.min.js",
   "scripts": {
