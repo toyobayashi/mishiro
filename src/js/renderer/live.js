@@ -171,11 +171,10 @@ export default {
           this.query()
         }
       })
-      ipcRenderer.on('acb', (event, acbPath, url) => {
+      ipcRenderer.on('acb', (event, url) => {
         this.total = 0
         this.current = 0
         this.text = ''
-        fs.unlinkSync(acbPath)
         this.event.$emit('liveSelect', { src: url })
       })
     })
