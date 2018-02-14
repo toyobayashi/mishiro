@@ -60,6 +60,7 @@ ipcMain.on('readManifest', (event, manifestFile, resVer) => {
     manifests = await manifest._all('SELECT name, hash FROM manifests')
     manifestData.liveManifest = await manifest._all('SELECT name, hash FROM manifests WHERE name LIKE "l/%"')
     manifestData.bgmManifest = await manifest._all('SELECT name, hash FROM manifests WHERE name LIKE "b/%"')
+    manifestData.voiceManifest = await manifest._all('SELECT name, hash FROM manifests WHERE name LIKE "v/%"')
 
     manifest.close(err => {
       if (err) throw err
@@ -106,6 +107,7 @@ ipcMain.on('readMaster', async (event, masterFile) => {
 
     let liveManifest = manifestData.liveManifest
     let bgmManifest = manifestData.bgmManifest
+    let voiceManifest = manifestData.voiceManifest
     manifestData = {}
 
     let gachaLimited = await master._all('SELECT gacha_id, reward_id FROM gacha_available WHERE limited_flag = 1 ORDER BY reward_id')
@@ -138,6 +140,7 @@ ipcMain.on('readMaster', async (event, masterFile) => {
       cardData,
       bgmManifest,
       liveManifest,
+      voiceManifest,
       gachaData,
       gachaAvailable,
       gachaNow,
@@ -150,7 +153,11 @@ ipcMain.on('readMaster', async (event, masterFile) => {
 ipcMain.on('acb', async (event, acbPath, url = '') => {
   // const name = acbPath.split('\\')[acbPath.split('\\').length - 1].split('.')[0]
   const name = path.parse(acbPath).name
-  await acb2mp3(acbPath)
+  try {
+    await acb2mp3(acbPath)
+  } catch (err) {
+    throw err
+  }
   if (url) {
     let urlArr = url.split('/')
     if (urlArr[urlArr.length - 2] === 'live') {
@@ -159,6 +166,20 @@ ipcMain.on('acb', async (event, acbPath, url = '') => {
       event.sender.send('acb', url)
     } else {
       event.sender.send('acb', url)
+    }
+  } else {
+    let pathArr = acbPath.split('\\')
+    if (pathArr[pathArr.length - 2] === 'voice') {
+      let dir = path.parse(acbPath).dir
+      let dist = path.join(dir, path.parse(acbPath).name)
+      fs.mkdirSync(dist)
+      let files = fs.readdirSync(dir)
+      for (let i = 0; i < files.length; i++) {
+        if (/\.mp3$/.test(files[i])) {
+          fs.renameSync(path.join(dir, files[i]), path.join(dist, files[i]))
+        }
+      }
+      event.sender.send('voice')
     }
   }
   fs.unlinkSync(acbPath)

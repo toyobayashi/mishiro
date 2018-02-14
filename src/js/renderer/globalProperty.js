@@ -6,6 +6,7 @@ const gameHostBase = 'http://storage.game.starlight-stage.jp/dl/resources'
 const imgHostBase = 'https://truecolor.kirara.ca'
 const getBgmUrl = hash => `${gameHostBase}/High/Sound/Common/b/${hash}`
 const getLiveUrl = hash => `${gameHostBase}/High/Sound/Common/l/${hash}`
+const getVoiceUrl = hash => `${gameHostBase}/High/Sound/Common/v/${hash}`
 const getAcbUrl = (bORl, hash) => `${gameHostBase}/High/Sound/Common/${bORl}/${hash}`
 const getUnityUrl = hash => `${gameHostBase}/High/AssetBundles/Android/${hash}`
 const getDbUrl = hash => `${gameHostBase}/Generic/${hash}`
@@ -43,6 +44,7 @@ export default {
     }
     Vue.prototype.getBgmUrl = getBgmUrl
     Vue.prototype.getLiveUrl = getLiveUrl
+    Vue.prototype.getVoiceUrl = getVoiceUrl
     Vue.prototype.getAcbUrl = getAcbUrl
     Vue.prototype.getUnityUrl = getUnityUrl
     Vue.prototype.getDbUrl = getDbUrl

@@ -110,7 +110,8 @@ export default {
     nashi: '无',
     limited: '限定',
     event: '活動',
-    gacha: '転蛋'
+    gacha: '転蛋',
+    voice: '語音'
   },
   live: {
     decoding: '　解碼中...',
