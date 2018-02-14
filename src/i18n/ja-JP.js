@@ -110,7 +110,8 @@ export default {
     nashi: '無し',
     limited: '限定',
     event: 'イベント',
-    gacha: 'ガシャ'
+    gacha: 'ガシャ',
+    voice: 'ボイス'
   },
   live: {
     decoding: '　デコード中...',

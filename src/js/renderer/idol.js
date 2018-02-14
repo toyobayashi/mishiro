@@ -4,7 +4,7 @@ import inputText from '../../template/component/inputText.vue'
 import Downloader from './downloader.js'
 import getPath from '../common/getPath.js'
 import fs from 'fs'
-import { shell } from 'electron'
+import { ipcRenderer, shell } from 'electron'
 const dler = new Downloader()
 
 export default {
@@ -37,6 +37,9 @@ export default {
   computed: {
     cardData () {
       return this.master.cardData
+    },
+    voiceManifest () {
+      return this.master.voiceManifest
     },
     rarity () {
       switch (this.information.rarity) {
@@ -167,6 +170,30 @@ export default {
         this.event.$emit('noBg')
       }
     },
+    async downloadVoice () {
+      this.playSe(this.enterSe)
+      let downloadResult = false
+      let id = this.currentPractice === 'idol.after' ? this.activeCardPlus.id : this.activeCard.id
+      let voiceSearch = this.voiceManifest.filter(row => row.name === `v/card_${id}.acb`)
+      if (voiceSearch.length) {
+        let hash = voiceSearch[0].hash
+        try {
+          downloadResult = await dler.download(
+            this.getVoiceUrl(hash),
+            getPath(`./public/asset/sound/voice/card_${id}.acb`),
+            prog => { this.imgProgress = prog.loading }
+          )
+          if (downloadResult) {
+            this.imgProgress = 99.99
+            ipcRenderer.send('acb', getPath(`./public/asset/sound/voice/card_${id}.acb`))
+          }
+        } catch (errorPath) {
+          this.event.$emit('alert', this.$t('home.errorTitle'), this.$t('home.downloadFailed') + '<br/>' + errorPath)
+        }
+      }
+      
+      // console.log(this.voiceManifest.length)
+    },
     async downloadCard (id, progressing) {
       let downloadResult = false
       try {
@@ -278,6 +305,9 @@ export default {
         if (block === 'idol') {
           this.query()
         }
+      })
+      ipcRenderer.on('voice', event => {
+        this.imgProgress = 0
       })
     })
   }
