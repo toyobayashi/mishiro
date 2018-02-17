@@ -111,7 +111,8 @@ export default {
     limited: '限定',
     event: '活動',
     gacha: '転蛋',
-    voice: '語音'
+    voiceBtn: '語音',
+    noVoice: '這個角色没有語音。'
   },
   live: {
     decoding: '　解碼中...',

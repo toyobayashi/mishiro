@@ -172,6 +172,8 @@ export default {
             fs.mkdirSync(getPath('./public/img/card'))
           }
           let config = await this.configurer.getConfig()
+          const eventAvailable = masterData.eventAvailable
+          const cardId = this.getEventCardId(eventAvailable)
           if (config.background) {
             let result = await idol.methods.downloadCard.call(this, config.background, (prog) => {
               this.text = prog.name
@@ -181,8 +183,6 @@ export default {
               this.event.$emit('eventBgReady', config.background)
             }
           } else {
-            const eventAvailable = masterData.eventAvailable
-            const cardId = this.getEventCardId(eventAvailable)
             // const cardIdEvolution = [(Number(cardId[0]) + 1), (Number(cardId[1]) + 1)];
             let result = await idol.methods.downloadCard.call(this, Number(cardId[0]) + 1, (prog) => {
               this.text = prog.name
@@ -192,6 +192,7 @@ export default {
               this.event.$emit('eventBgReady', Number(cardId[0]) + 1)
             }
           }
+          this.event.$emit('eventRewardCard', cardId)
 
           if (!fs.existsSync(getPath('./public/img/icon'))) {
             fs.mkdirSync(getPath('./public/img/icon'))

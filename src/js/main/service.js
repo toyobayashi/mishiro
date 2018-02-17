@@ -151,7 +151,6 @@ ipcMain.on('readMaster', async (event, masterFile) => {
 })
 
 ipcMain.on('acb', async (event, acbPath, url = '') => {
-  // const name = acbPath.split('\\')[acbPath.split('\\').length - 1].split('.')[0]
   const name = path.parse(acbPath).name
   try {
     await acb2mp3(acbPath)
@@ -169,16 +168,7 @@ ipcMain.on('acb', async (event, acbPath, url = '') => {
     }
   } else {
     let pathArr = acbPath.split('\\')
-    if (pathArr[pathArr.length - 2] === 'voice') {
-      let dir = path.parse(acbPath).dir
-      let dist = path.join(dir, path.parse(acbPath).name)
-      fs.mkdirSync(dist)
-      let files = fs.readdirSync(dir)
-      for (let i = 0; i < files.length; i++) {
-        if (/\.mp3$/.test(files[i])) {
-          fs.renameSync(path.join(dir, files[i]), path.join(dist, files[i]))
-        }
-      }
+    if (pathArr[pathArr.length - 3] === 'voice') {
       event.sender.send('voice')
     }
   }
