@@ -1,8 +1,9 @@
 import { remote } from 'electron'
-import cheerio from 'cheerio'
+import marked from 'marked'
 import request from 'request'
 import getPath from '../common/getPath.js'
 import fs from 'fs'
+import { read, remove } from '../util/fsExtra.js'
 export default {
   props: {
     resVer: [String, Number]
@@ -16,34 +17,10 @@ export default {
       this.playSe(this.enterSe)
       this.event.$emit('showAbout')
     },
-    showLicense () {
+    async showLicense () {
       this.playSe(this.enterSe)
       this.event.$emit('license')
-      this.event.$emit('alert', this.$t('menu.license'), `
-<h3>The MIT License</h3><br/>
-
-<p>Copyright (c) 2017 Toyobayashi &ltlifenglin314@outlook.com&gt</p><br/>
-
-<p>Permission is hereby granted, free of charge, to any
-person obtaining a copy of this software and associated
-documentation files (the "Software"), to deal in the
-Software without restriction, including without limitation
-the rights to use, copy, modify, merge, publish, distribute,
-and/or sublicense copies of the Software, and to permit
-persons to whom the Software is furnished to do so, subject
-to the following conditions:</p><br/>
-
-<p>The above copyright notice and this permission notice shall
-  be included in all copies or substantial portions of the Software.</p><br/>
-
-<p>THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND,
-EXPRESS OR IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES
-OF MERCHANTABILITY, FITNESS FOR A PARTICULAR PURPOSE AND
-NONINFRINGEMENT. IN NO EVENT SHALL THE AUTHORS OR COPYRIGHT
-HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER LIABILITY,
-WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING
-FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR
-OTHER DEALINGS IN THE SOFTWARE.</p>`, 900)
+      this.event.$emit('alert', this.$t('menu.license'), marked(await read(getPath('./public/LICENSE.md'), 'utf8')), 900)
     },
     showVar () {
       this.playSe(this.enterSe)
@@ -56,7 +33,49 @@ OTHER DEALINGS IN THE SOFTWARE.</p>`, 900)
         return
       }
       this.$emit('checking')
-      const gitRoot = 'https://github.com'
+
+      const headers = {
+        'User-Agent': 'mishiro'
+      }
+      const releases = {
+        url: 'https://api.github.com/repos/toyobayashi/mishiro/releases',
+        headers
+      }
+      const tags = {
+        url: 'https://api.github.com/repos/toyobayashi/mishiro/tags',
+        headers
+      }
+      request(releases, (err, res, body) => {
+        if (!err) {
+          const latest = JSON.parse(body)[0]
+          const version = latest.tag_name.substr(1)
+          const description = marked(latest.body)
+          const zip = latest.assets.filter(a => a.content_type === 'application/x-zip-compressed')[0]
+          const exe = latest.assets.filter(a => a.content_type === 'application/x-msdownload')[0]
+          const zipUrl = zip ? zip.browser_download_url : null
+          const exeUrl = exe ? exe.browser_download_url : null
+
+          request(tags, (err, res, body) => {
+            this.$emit('checked')
+            if (!err) {
+              const latestTag = JSON.parse(body).filter(tag => tag.name === latest.tag_name)[0]
+              const commit = latestTag.commit.sha
+              const versionData = { version, commit, description, zipUrl, exeUrl }
+              // console.log(versionData)
+              if (remote.app.getVersion() < version) {
+                this.event.$emit('versionCheck', versionData)
+              } else {
+                this.event.$emit('alert', this.$t('menu.update'), this.$t('menu.noUpdate'))
+              }
+            } else {
+              throw err
+            }
+          })
+        } else {
+          throw err
+        }
+      })
+      /* const gitRoot = 'https://github.com'
       request.get(`${gitRoot}/toyobayashi/mishiro/releases`, (err, res, body) => {
         this.$emit('checked')
         if (!err) {
@@ -83,7 +102,7 @@ OTHER DEALINGS IN THE SOFTWARE.</p>`, 900)
         } else {
           throw new Error(err)
         }
-      })
+      }) */
     },
     relaunch () {
       this.playSe(this.enterSe)
@@ -98,7 +117,7 @@ OTHER DEALINGS IN THE SOFTWARE.</p>`, 900)
       remote.app.exit(0)
       this.playSe(this.cancelSe)
     },
-    cacheClear () {
+    async cacheClear () {
       this.playSe(this.enterSe)
       const dataDir = getPath('./data')
       const files = fs.readdirSync(dataDir)
@@ -107,7 +126,7 @@ OTHER DEALINGS IN THE SOFTWARE.</p>`, 900)
         if (!new RegExp(`${this.resVer}`).test(files[i])) deleteItem.push(getPath(`./data/${files[i]}`))
       }
       for (let i = 0; i < deleteItem.length; i++) {
-        fs.unlinkSync(deleteItem[i])
+        remove(deleteItem[i])
       }
       if (deleteItem.length) this.event.$emit('alert', this.$t('menu.cacheClear'), this.$t('menu.cacheClearSuccess'))
       else this.event.$emit('alert', this.$t('menu.cacheClear'), this.$t('menu.noCache'))

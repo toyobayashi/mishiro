@@ -1,15 +1,12 @@
 const webpack = require('webpack')
 const path = require('path')
 const UglifyJSPlugin = require('uglifyjs-webpack-plugin')
+const pkg = require('./package.json')
 
 const renderer = {
   target: 'electron-renderer',
   entry: {
-    vendor: [
-      'cheerio',
-      'request',
-      'vue-i18n'
-    ]
+    vendor: Object.keys(pkg.dependencies)
   },
   node: {
     __filename: false,

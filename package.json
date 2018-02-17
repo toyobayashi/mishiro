@@ -2,7 +2,7 @@
   "name": "mishiro",
   "productName": "mishiro",
   "companyName": "Toyo",
-  "version": "1.2.1",
+  "version": "1.2.2",
   "description": "mishiro",
   "main": "main.min.js",
   "scripts": {
@@ -32,8 +32,6 @@
   },
   "license": "MIT",
   "devDependencies": {
-    "babel-eslint": "^8.0.3",
-    "cheerio": "^1.0.0-rc.2",
     "css-loader": "^0.28.7",
     "electron": "^1.7.11",
     "eslint": "^4.16.0",
@@ -46,15 +44,17 @@
     "extract-text-webpack-plugin": "^3.0.0",
     "file-loader": "^0.11.2",
     "rcedit": "^0.9.0",
-    "request": "^2.83.0",
-    "sqlite3": "^3.1.13",
     "uglifyjs-webpack-plugin": "^1.1.4",
     "unzip": "^0.1.11",
     "url-loader": "^0.5.9",
     "vue": "^2.5.13",
-    "vue-i18n": "^7.3.3",
     "vue-loader": "^13.0.5",
     "vue-template-compiler": "^2.5.13",
     "webpack": "^3.10.0"
+  },
+  "dependencies": {
+    "marked": "^0.3.14",
+    "request": "^2.83.0",
+    "vue-i18n": "^7.4.2"
   }
 }
