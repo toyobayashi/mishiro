@@ -111,7 +111,8 @@ export default {
     limited: '限定',
     event: 'イベント',
     gacha: 'ガシャ',
-    voice: 'ボイス'
+    voiceBtn: 'ボイス',
+    noVoice: 'このキャラはボイスありません。'
   },
   live: {
     decoding: '　デコード中...',

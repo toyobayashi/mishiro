@@ -4,6 +4,7 @@ import inputText from '../../template/component/inputText.vue'
 import Downloader from './downloader.js'
 import getPath from '../common/getPath.js'
 import fs from 'fs'
+import path from 'path'
 import { ipcRenderer, shell } from 'electron'
 const dler = new Downloader()
 
@@ -21,6 +22,7 @@ export default {
       activeCardPlus: {},
       information: {},
       imgProgress: 0,
+      eventCard: [],
       currentPractice: 'idol.after',
       practice: {
         before: 'idol.before',
@@ -105,7 +107,7 @@ export default {
   },
   methods: {
     query () {
-      this.searchResult = []
+      this.searchResult.length = 0
       this.playSe(this.enterSe)
       if (this.queryString) {
         for (let i = 0; i < this.cardData.length; i++) {
@@ -131,7 +133,7 @@ export default {
           }
         }
       } else {
-        this.event.$emit('alert', this.$t('home.errorTitle'), this.$t('home.noEmptyString'))
+        this.searchResult = [].concat(this.cardData.filter(card => (card.id == this.eventCard[0] || card.id == this.eventCard[1])))
       }
     },
     selectedIdol (card) {
@@ -176,23 +178,36 @@ export default {
       let id = this.currentPractice === 'idol.after' ? this.activeCardPlus.id : this.activeCard.id
       let voiceSearch = this.voiceManifest.filter(row => row.name === `v/card_${id}.acb`)
       if (voiceSearch.length) {
-        let hash = voiceSearch[0].hash
-        try {
-          downloadResult = await dler.download(
-            this.getVoiceUrl(hash),
-            getPath(`./public/asset/sound/voice/card_${id}.acb`),
-            prog => { this.imgProgress = prog.loading }
-          )
-          if (downloadResult) {
-            this.imgProgress = 99.99
-            ipcRenderer.send('acb', getPath(`./public/asset/sound/voice/card_${id}.acb`))
+        if (!fs.existsSync(getPath(`./public/asset/sound/voice/card_${id}`))) {
+          fs.mkdirSync(getPath(`./public/asset/sound/voice/card_${id}`))
+          let hash = voiceSearch[0].hash
+          try {
+            this.$refs.voiceBtn.setAttribute('disabled', 'disabled')
+            downloadResult = await dler.download(
+              this.getVoiceUrl(hash),
+              getPath(`./public/asset/sound/voice/card_${id}/card_${id}.acb`),
+              prog => { this.imgProgress = prog.loading }
+            )
+            if (downloadResult) {
+              this.imgProgress = 99.99
+              ipcRenderer.send('acb', getPath(`./public/asset/sound/voice/card_${id}/card_${id}.acb`))
+            }
+          } catch (errorPath) {
+            this.$refs.voiceBtn.removeAttribute('disabled')
+            this.event.$emit('alert', this.$t('home.errorTitle'), this.$t('home.downloadFailed') + '<br/>' + errorPath)
           }
-        } catch (errorPath) {
-          this.event.$emit('alert', this.$t('home.errorTitle'), this.$t('home.downloadFailed') + '<br/>' + errorPath)
+        } else {
+          let voiceFiles = fs.readdirSync(getPath(`./public/asset/sound/voice/card_${id}`))
+          new Audio(
+            path.join(
+              getPath(`./public/asset/sound/voice/card_${id}`),
+              voiceFiles[Math.floor(voiceFiles.length * Math.random())]
+            )
+          ).play()
         }
+      } else {
+        this.event.$emit('alert', this.$t('home.errorTitle'), this.$t('idol.noVoice'))
       }
-      
-      // console.log(this.voiceManifest.length)
     },
     async downloadCard (id, progressing) {
       let downloadResult = false
@@ -301,6 +316,10 @@ export default {
           }
         }
       })
+      this.event.$on('eventRewardCard', cardId => {
+        this.eventCard = cardId
+        this.searchResult = [].concat(this.cardData.filter(card => (card.id == cardId[0] || card.id == cardId[1])))
+      })
       this.event.$on('enterKey', (block) => {
         if (block === 'idol') {
           this.query()
@@ -308,6 +327,7 @@ export default {
       })
       ipcRenderer.on('voice', event => {
         this.imgProgress = 0
+        this.$refs.voiceBtn.removeAttribute('disabled')
       })
     })
   }

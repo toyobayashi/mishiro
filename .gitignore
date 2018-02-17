@@ -9,6 +9,7 @@ public/mishiro.min.css
 public/img/
 public/asset/font/
 public/asset/sound/live/
+public/asset/sound/voice/
 public/asset/sound/bgm/*.mp3
 !public/asset/sound/bgm/bgm_event_3017.mp3
 !public/asset/sound/bgm/bgm_studio_day.mp3
