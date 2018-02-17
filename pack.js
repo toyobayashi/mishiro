@@ -7,7 +7,7 @@ const option = {
   arch: 'ia32',
   electronVersion: packageJson.devDependencies.electron.slice(1),
   distDir: path.join(__dirname, 'dist'),
-  ignore: new RegExp(`node_modules|data|release|download|dist|src|screenshot|${'public/img/card'.replace(/\//g, '\\\\')}|${'public/asset/sound/live'.replace(/\//g, '\\\\')}|.gitignore|README|webpack|.eslintrc.json|config.json|manifest.json|package-lock.json|pack.js|count.js|.git|.vscode`),
+  ignore: new RegExp(`node_modules|data|release|download|dist|src|screenshot|${'public/img/card'.replace(/\//g, '\\\\')}|${'public/asset/sound/live'.replace(/\//g, '\\\\')}|${'public/asset/sound/voice'.replace(/\//g, '\\\\')}|.gitignore|README|webpack|.eslintrc.json|config.json|manifest.json|package-lock.json|pack.js|count.js|.git|.vscode`),
   versionString: {
     icon: path.join(__dirname, './src/res/icon/mishiro.ico'),
     'file-version': packageJson.version,
