@@ -97,6 +97,7 @@ class Downloader {
               if (rename) {
                 fs.renameSync(path.join(p) + '.tmp', path.join(p))
               }
+              this.req = null
               resolve(p)
             })
             req.pipe(ws)

@@ -1,5 +1,4 @@
 export default {
-  title: '灰姑娘助手',
   i18n: {
     chinese: '中文',
     japanese: '日本語'

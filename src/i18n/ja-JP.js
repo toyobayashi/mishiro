@@ -1,5 +1,4 @@
 export default {
-  title: 'シンデレラヘルパー',
   i18n: {
     chinese: '中文',
     japanese: '日本語'
