@@ -156,10 +156,9 @@ export default {
     },
     async changeBackground (card) {
       this.imgProgress = 0
-
+      dler.stop()
       if (Number(card.rarity) > 4) {
         if (!fs.existsSync(getPath(`./public/img/card/bg_${card.id}.png`))) {
-          dler.stop()
           let result = await this.downloadCard(card.id)
           this.imgProgress = 0
           if (result) {
