@@ -1,5 +1,5 @@
 # mishiro
-CGSS windows桌面应用. [戳这里下载](https://github.com/toyobayashi/mishiro/releases)
+CGSS windows桌面应用。 [戳这里下载](https://github.com/toyobayashi/mishiro/releases)
 
 ## 构建
 需要 __Node.js__ 和 __npm__。  
@@ -11,7 +11,6 @@ $ git clone https://github.com/toyobayashi/mishiro.git
 ```batch
 $ cd mishiro
 $ npm config set ELECTRON_MIRROR=https://npm.taobao.org/mirrors/electron/
-$ npm config set arch ia32
 $ npm install
 ```
 3. 一键打包。  
@@ -22,7 +21,6 @@ $ npm run prod
 ```batch
 $ npm start
 ```
-提醒: ```/bin```目录下的二进制文件可以点[这里](https://github.com/toyobayashi/mishiro/releases/download/v1.1.5/extract-this-to-root-first-if-you-want-to-build-from-source.zip)下载。把它解压到项目根目录。
 
 ## 截图
 ### HOME
@@ -31,7 +29,7 @@ $ npm start
 ![home](https://github.com/toyobayashi/mishiro/raw/master/screenshot/home.png)  
 
 ### IDOL
-下载图片。  
+下载图片和偶像语音。  
 
 ![idol](https://github.com/toyobayashi/mishiro/raw/master/screenshot/idol.png)  
 

@@ -21,7 +21,7 @@ import { configurer } from '../common/config.js';
   let config = await configurer.getConfig()
   let fix = {}
   if (!config.latestResVer) {
-    fix.latestResVer = 10035250
+    fix.latestResVer = 10035900
   }
   if (config.language !== 'zh' && config.language !== 'ja') {
     fix.language = 'zh'

@@ -11,9 +11,11 @@
     "dll": "webpack --config webpack.dll.config.js",
     "dev": "webpack -w",
     "prod": "set NODE_ENV=production&&webpack --config webpack.dll.config.js&&webpack",
-    "pkg": "npm run prod&&node pack",
+    "pkg": "npm run prod&&node pack ia32",
+    "pkg64": "npm run prod&&node pack x64",
     "count": "node count",
-    "reb:hca": "cd ./src/native/hca&&node-gyp rebuild --target=%npm_package_devDependencies_electron% --arch=ia32 --dist-url=https://atom.io/download/electron"
+    "reb:hca-ia32": "cd ./src/native/hca&&node-gyp rebuild --target=%npm_package_devDependencies_electron% --arch=ia32 --dist-url=https://atom.io/download/electron",
+    "reb:hca-x64": "cd ./src/native/hca&&node-gyp rebuild --target=%npm_package_devDependencies_electron% --arch=x64 --dist-url=https://atom.io/download/electron"
   },
   "repository": {
     "type": "git",
@@ -33,7 +35,7 @@
   "license": "MIT",
   "devDependencies": {
     "css-loader": "^0.28.7",
-    "electron": "1.7.11",
+    "electron": "1.8.2",
     "eslint": "^4.16.0",
     "eslint-config-standard": "^11.0.0-beta.0",
     "eslint-plugin-html": "^3.2.2",

@@ -11,7 +11,6 @@ $ git clone https://github.com/toyobayashi/mishiro.git
 2. Install dependencies. If you are in Chinese mainland, maybe you should run ```npm config set ELECTRON_MIRROR=https://npm.taobao.org/mirrors/electron/```before your installing.  
 ```batch
 $ cd mishiro
-$ npm config set arch ia32
 $ npm install
 ```
 3. Run building command.  
@@ -22,7 +21,6 @@ $ npm run prod
 ```batch
 $ npm start
 ```
-Note: ```/bin```Binaries could be downloaded [here](https://github.com/toyobayashi/mishiro/releases/download/v1.1.5/extract-this-to-root-first-if-you-want-to-build-from-source.zip). Extract it to source root.
 
 ## Screenshots
 ### HOME
@@ -31,7 +29,7 @@ Download game resources. (.unity3d or .acb)
 ![home](https://github.com/toyobayashi/mishiro/raw/master/screenshot/home.png)  
 
 ### IDOL
-Search idol card information and download card png to your computer.  
+Search idol card information and download card png or idol voice.  
 
 ![idol](https://github.com/toyobayashi/mishiro/raw/master/screenshot/idol.png)  
 
