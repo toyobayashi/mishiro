@@ -4,7 +4,7 @@ const pack = require('./src/js/util/packager.js')
 
 const option = {
   platform: 'win32',
-  arch: 'ia32',
+  arch: process.argv[2] ? process.argv[2] : 'ia32',
   electronVersion: packageJson.devDependencies.electron,
   distDir: path.join(__dirname, 'dist'),
   ignore: new RegExp(`node_modules|data|release|download|dist|src|screenshot|${'public/img/card'.replace(/\//g, '\\\\')}|${'public/asset/sound/live'.replace(/\//g, '\\\\')}|${'public/asset/sound/voice'.replace(/\//g, '\\\\')}|.gitignore|README|webpack|.eslintrc.json|config.json|manifest.json|package-lock.json|pack.js|count.js|.git|.vscode`),

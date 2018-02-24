@@ -86,6 +86,7 @@ module.exports = function pack (option) {
   const ELECTRON_PATH = path.join(DIST_DIR, `${ELECTRON_NAME}.zip`)
   const DIST_PATH = path.join(DIST_DIR, APP_NAME)
   const APP_PATH = path.join(DIST_PATH, 'resources', 'app')
+  const BIN_PATH = path.join(APP_PATH, 'bin')
 
   if (!fs.existsSync(DIST_DIR)) fs.mkdirSync(DIST_DIR)
   downloadElectronRelease(ELECTRON_URL, ELECTRON_PATH)
@@ -113,6 +114,15 @@ module.exports = function pack (option) {
       return copy(path.join(__dirname, '../../..'), APP_PATH, IGNORE_REGEXP)
     })
     .then(pathArr => {
+      let files = fs.readdirSync(BIN_PATH)
+      for (let i = 0; i < files.length; i++) {
+        let abs = path.join(BIN_PATH, files[i])
+        if (ARCH === 'ia32') {
+          if (/-x64\.node$/.test(files[i]) && fs.statSync(abs).isFile()) remove(abs)
+        } else {
+          if (/-ia32\.node$/.test(files[i]) && fs.statSync(abs).isFile()) remove(abs)
+        }
+      }
       ilog(`[INFO ${t()}] Pack done.`)
     })
     .catch(err => {
