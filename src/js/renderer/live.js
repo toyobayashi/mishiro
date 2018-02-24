@@ -45,7 +45,7 @@ export default {
     async selectAudio (audio) {
       if (this.activeAudio.hash !== audio.hash) {
         this.playSe(this.enterSe)
-        
+
         this.total = 0
         this.current = 0
         this.text = ''

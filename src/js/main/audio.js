@@ -28,7 +28,7 @@ function readdirAsync (dir) {
 
 async function acb2hca (acb) {
   try {
-    await execAsync(`${ACB} ${acb}`)
+    await execAsync(`"${ACB}" "${acb}"`)
     return path.join(path.parse(acb).dir, `_acb_${path.parse(acb).base}`)
   } catch (err) {
     throw err
@@ -47,7 +47,7 @@ function hca2wav (hca) {
 async function wav2mp3 (wav, mp3) {
   if (!mp3) mp3 = path.parse(wav).name + '.mp3'
   try {
-    await execAsync(`${FFMPEG} -i ${wav} ${mp3} -v quiet`)
+    await execAsync(`"${FFMPEG}" -i "${wav}" "${mp3}" -v quiet`)
     return mp3
   } catch (err) {
     throw err
