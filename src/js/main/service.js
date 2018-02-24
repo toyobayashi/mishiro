@@ -151,13 +151,20 @@ ipcMain.on('readMaster', async (event, masterFile) => {
 })
 
 ipcMain.on('acb', async (event, acbPath, url = '') => {
-  const name = path.parse(acbPath).name
+  let isArr = Array.isArray(acbPath)
   try {
-    await acb2mp3(acbPath)
+    if (isArr) {
+      for (let i = 0; i < acbPath.length; i++) {
+        await acb2mp3(acbPath[i])
+      }
+    } else {
+      await acb2mp3(acbPath)
+    }
   } catch (err) {
     throw err
   }
   if (url) {
+    const name = path.parse(acbPath).name
     let urlArr = url.split('/')
     if (urlArr[urlArr.length - 2] === 'live') {
       let fileName = urlArr[urlArr.length - 1]
@@ -167,12 +174,18 @@ ipcMain.on('acb', async (event, acbPath, url = '') => {
       event.sender.send('acb', url)
     }
   } else {
-    let pathArr = acbPath.split('\\')
+    let pathArr = isArr ? acbPath[0].split('\\') : acbPath.split('\\')
     if (pathArr[pathArr.length - 3] === 'voice') {
       event.sender.send('voice')
     }
   }
-  fs.unlinkSync(acbPath)
+  if (isArr) {
+    for (let i = 0; i < acbPath.length; i++) {
+      fs.unlinkSync(acbPath[i])
+    }
+  } else {
+    fs.unlinkSync(acbPath)
+  }
   /* exec(`${getPath()}\\bin\\CGSSAudio.exe ${acbPath}`, (err) => {
     if (!err) {
       if (url) {

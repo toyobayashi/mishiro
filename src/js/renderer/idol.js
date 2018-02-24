@@ -173,36 +173,71 @@ export default {
     },
     async downloadVoice () {
       this.playSe(this.enterSe)
-      let downloadResult = false
-      let id = this.currentPractice === 'idol.after' ? this.activeCardPlus.id : this.activeCard.id
-      let voiceSearch = this.voiceManifest.filter(row => row.name === `v/card_${id}.acb`)
-      if (voiceSearch.length) {
-        if (!fs.existsSync(getPath(`./public/asset/sound/voice/card_${id}`))) {
-          fs.mkdirSync(getPath(`./public/asset/sound/voice/card_${id}`))
-          let hash = voiceSearch[0].hash
+      if (this.activeCard.charaData.voice) {
+        let charaDl = null
+        let cardDl = null
+        let id = this.currentPractice === 'idol.after' ? this.activeCardPlus.id : this.activeCard.id
+        let cid = this.activeCard.chara_id
+        let cardVoice = this.voiceManifest.filter(row => row.name === `v/card_${id}.acb`)
+        let charaVoice = this.voiceManifest.filter(row => row.name === `v/chara_${cid}.acb`)
+        let cardDir = getPath(`./public/asset/sound/voice/card_${id}`)
+        let charaDir = getPath(`./public/asset/sound/voice/chara_${cid}`)
+        let cardExist = fs.existsSync(cardDir)
+        let charaExist = fs.existsSync(charaDir)
+        if (!charaExist) {
+          fs.mkdirSync(charaDir)
+          let hash = charaVoice[0].hash
           try {
             this.$refs.voiceBtn.setAttribute('disabled', 'disabled')
-            downloadResult = await dler.download(
+            charaDl = await dler.download(
+              this.getVoiceUrl(hash),
+              getPath(`./public/asset/sound/voice/chara_${cid}/chara_${cid}.acb`),
+              prog => { this.imgProgress = prog.loading / 2 }
+            )
+            this.imgProgress = 50
+            // ipcRenderer.send('acb', getPath(`./public/asset/sound/voice/chara_${cid}/chara_${cid}.acb`))
+          } catch (errorPath) {
+            this.event.$emit('alert', this.$t('home.errorTitle'), this.$t('home.downloadFailed') + '<br/>' + errorPath)
+          }
+        }
+        if (!cardExist) {
+          fs.mkdirSync(cardDir)
+          let hash = cardVoice[0].hash
+          try {
+            // this.$refs.voiceBtn.setAttribute('disabled', 'disabled')
+            cardDl = await dler.download(
               this.getVoiceUrl(hash),
               getPath(`./public/asset/sound/voice/card_${id}/card_${id}.acb`),
-              prog => { this.imgProgress = prog.loading }
+              prog => { this.imgProgress = prog.loading / 2 + 50 }
             )
-            if (downloadResult) {
+            if (cardDl) {
               this.imgProgress = 99.99
-              ipcRenderer.send('acb', getPath(`./public/asset/sound/voice/card_${id}/card_${id}.acb`))
             }
           } catch (errorPath) {
             this.$refs.voiceBtn.removeAttribute('disabled')
             this.event.$emit('alert', this.$t('home.errorTitle'), this.$t('home.downloadFailed') + '<br/>' + errorPath)
           }
+        }
+
+        if (charaDl && cardDl) {
+          ipcRenderer.send('acb', [charaDl, cardDl])
+        } else if (!charaDl && cardDl) {
+          ipcRenderer.send('acb', cardDl)
+        } else if (charaDl && !cardDl) {
+          ipcRenderer.send('acb', charaDl)
         } else {
-          let voiceFiles = fs.readdirSync(getPath(`./public/asset/sound/voice/card_${id}`))
-          new Audio(
-            path.join(
-              getPath(`./public/asset/sound/voice/card_${id}`),
-              voiceFiles[Math.floor(voiceFiles.length * Math.random())]
-            )
-          ).play()
+          if (charaDl === null && cardDl === null) {
+            let cardVoiceFiles = fs.readdirSync(cardDir)
+            for (let i = 0; i < cardVoiceFiles.length; i++) {
+              cardVoiceFiles[i] = path.join(cardDir, cardVoiceFiles[i])
+            }
+            let charaVoiceFiles = fs.readdirSync(charaDir)
+            for (let i = 0; i < charaVoiceFiles.length; i++) {
+              charaVoiceFiles[i] = path.join(charaDir, charaVoiceFiles[i])
+            }
+            let voiceFiles = charaVoiceFiles.concat(cardVoiceFiles)
+            new Audio(voiceFiles[Math.floor(voiceFiles.length * Math.random())]).play()
+          }
         }
       } else {
         this.event.$emit('alert', this.$t('home.errorTitle'), this.$t('idol.noVoice'))
