@@ -21,8 +21,16 @@
             <td>{{process.versions.electron}}</td>
           </tr>
           <tr>
+            <td>Chromium</td>
+            <td>{{process.versions.chrome}}</td>
+          </tr>
+          <tr>
             <td>Node</td>
             <td>{{process.versions.node}}</td>
+          </tr>
+          <tr>
+            <td>Architecture</td>
+            <td>{{process.arch}}</td>
           </tr>
           <tr>
             <td>{{$t("menu.description")}}</td>
