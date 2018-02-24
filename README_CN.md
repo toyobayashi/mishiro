@@ -11,6 +11,7 @@ $ git clone https://github.com/toyobayashi/mishiro.git
 ```batch
 $ cd mishiro
 $ npm config set ELECTRON_MIRROR=https://npm.taobao.org/mirrors/electron/
+$ npm config set arch ia32
 $ npm install
 ```
 3. 一键打包。  

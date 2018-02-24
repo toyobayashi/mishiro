@@ -16,6 +16,7 @@ export default {
   },
   data () {
     return {
+      voice: new Audio(),
       queryString: '',
       searchResult: [],
       activeCard: {},
@@ -236,7 +237,8 @@ export default {
               charaVoiceFiles[i] = path.join(charaDir, charaVoiceFiles[i])
             }
             let voiceFiles = charaVoiceFiles.concat(cardVoiceFiles)
-            new Audio(voiceFiles[Math.floor(voiceFiles.length * Math.random())]).play()
+            this.voice.src = voiceFiles[Math.floor(voiceFiles.length * Math.random())]
+            this.voice.play()
           }
         }
       } else {
