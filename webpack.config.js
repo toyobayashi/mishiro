@@ -50,6 +50,15 @@ let renderer = {
   ]
 }
 
+const nativeRequire = (moduleName) => `process.arch === "ia32" ? require("./bin/${moduleName}-ia32.node") : require("./bin/${moduleName}-x64.node")`
+const native = (nativeModules) => {
+  let externals = {}
+  for (let i = 0; i < nativeModules.length; i++) {
+    externals[nativeModules[i]] = nativeRequire(nativeModules[i])
+  }
+  return externals
+}
+
 let main = {
   target: 'electron-main',
   entry: './src/main.js',
@@ -61,10 +70,7 @@ let main = {
     __dirname: false,
     __filename: false
   },
-  externals: {
-    'sqlite3': 'require("./bin/sqlite3.node")',
-    'hca': 'require("./bin/hca.node")'
-  },
+  externals: native(['sqlite3', 'hca']),
   plugins: []
 }
 
