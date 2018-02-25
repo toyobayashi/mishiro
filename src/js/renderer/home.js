@@ -4,7 +4,7 @@ import inputText from '../../template/component/inputText.vue'
 import Downloader from './downloader.js'
 import fs from 'fs'
 import getPath from '../common/getPath.js'
-import { shell, ipcRenderer } from 'electron'
+import { shell, ipcRenderer, remote } from 'electron'
 // import { dec } from 'hca'
 
 const dler = new Downloader()
@@ -38,10 +38,8 @@ export default {
     query () {
       if (this.queryString === '') {
         this.event.$emit('alert', this.$t('home.errorTitle'), this.$t('home.noEmptyString'))
-        /* console.log(getPath('./song_2005.hca'))
-        dec(getPath('./song_2005.hca'), (result) => {
-          console.log(result)
-        }) */
+      } else if (this.queryString === 'dev') {
+        remote.getCurrentWindow().webContents.openDevTools()
       } else {
         ipcRenderer.send('queryManifest', this.queryString)
       }

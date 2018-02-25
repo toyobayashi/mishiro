@@ -1,5 +1,4 @@
 import { ipcMain } from 'electron'
-// import { exec } from 'child_process'
 import fs from 'fs'
 import path from 'path'
 /* import { read } from '../util/fsExtra.js'
@@ -15,73 +14,24 @@ import resolveGachaAvailable from './resolveGachaAvailable.js'
 import resolveUserLevel from './resolveUserLevel.js'
 import { acb2mp3 } from './audio.js'
 import { getPath } from '../common/getPath.js'
-import { configurer } from '../common/config.js';
-
-(async function () {
-  let config = await configurer.getConfig()
-  let fix = {}
-  if (!config.latestResVer) {
-    fix.latestResVer = 10035900
-  }
-  if (config.language !== 'zh' && config.language !== 'ja') {
-    fix.language = 'zh'
-  }
-  if (Object.keys(fix).length) {
-    await configurer.configure(fix)
-  }
-})()
-
-sqlite3.Database.prototype._all = function (sql) {
-  return new Promise((resolve, reject) => {
-    this.all(sql, (err, rows) => {
-      if (err) reject(err)
-      else resolve(rows)
-    })
-  })
-}
+import config from './resolveConfig.js'
+import onReadManifest from './onReadManifest.js'
+import onQueryManifest from './onQueryManifest.js'
 
 let manifestData = {}
 let manifests = []
 
 ipcMain.on('queryManifest', (event, queryString) => {
-  let manifestArr = []
-  for (let i = 0; i < manifests.length; i++) {
-    if (manifests[i].name.indexOf(queryString) !== -1) {
-      manifestArr.push(manifests[i])
-    }
-  }
-  event.sender.send('queryManifest', manifestArr)
+  onQueryManifest(event, queryString, manifests)
 })
 
-ipcMain.on('readManifest', (event, manifestFile, resVer) => {
-  // let manifest = new SQL.Database(await read(manifestFile))
-  let manifest = new sqlite3.Database(manifestFile, sqlite3.OPEN_READONLY, async err => {
-    if (err) throw err
-    manifests = await manifest._all('SELECT name, hash FROM manifests')
-    manifestData.liveManifest = await manifest._all('SELECT name, hash FROM manifests WHERE name LIKE "l/%"')
-    manifestData.bgmManifest = await manifest._all('SELECT name, hash FROM manifests WHERE name LIKE "b/%"')
-    manifestData.voiceManifest = await manifest._all('SELECT name, hash FROM manifests WHERE name LIKE "v/%"')
-
-    manifest.close(err => {
-      if (err) throw err
-      manifest = void 0
-    })
-
-    let masterHash = ''
-    for (let i = 0; i < manifests.length; i++) {
-      if (manifests[i].name === 'master.mdb') {
-        masterHash = manifests[i].hash
-      }
-    }
-    console.log(`manifest: ${manifests.length}`)
-    console.log(`bgm: ${manifestData.bgmManifest.length}`)
-    console.log(`live: ${manifestData.liveManifest.length}`)
-    event.sender.send('readManifest', masterHash, resVer)
-  })
+ipcMain.on('readManifest', async (event, manifestFile, resVer) => {
+  let obj = await onReadManifest(event, manifestFile, resVer)
+  manifests = obj.manifests
+  manifestData = obj.manifestData
 })
 
 ipcMain.on('readMaster', async (event, masterFile) => {
-  let config = await configurer.getConfig()
   const timeOffset = (9 - (-(new Date().getTimezoneOffset() / 60))) * 60 * 60 * 1000
   const now = new Date().getTime()
 
