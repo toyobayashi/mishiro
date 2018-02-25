@@ -85,6 +85,16 @@ Database.prototype.all = normalizeMethod(function (statement, params) {
   return this
 })
 
+// Promisify. Create by Toyobayashi
+Database.prototype._all = function (sql) {
+  return new Promise((resolve, reject) => {
+    this.all(sql, (err, rows) => {
+      if (err) reject(err)
+      else resolve(rows)
+    })
+  })
+}
+
 // Database#each(sql, [bind1, bind2, ...], [callback], [complete])
 Database.prototype.each = normalizeMethod(function (statement, params) {
   statement.each.apply(statement, params).finalize()
