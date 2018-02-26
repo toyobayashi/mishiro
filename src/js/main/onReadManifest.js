@@ -1,16 +1,16 @@
 import sqlite3 from './node-module-sqlite3.js'
 
-function openReadonlyDatabase (db) {
+/* function openReadonlyDatabase (db) {
   return new Promise((resolve, reject) => {
     let d = new sqlite3.Database(db, sqlite3.OPEN_READONLY, err => {
       if (err) reject(err)
       else resolve(d)
     })
   })
-}
+} */
 
 export default async function (event, manifestFile, resVer) {
-  let manifest = await openReadonlyDatabase(manifestFile)
+  let manifest = await sqlite3.openAsync(manifestFile)
   let manifests = []
   let manifestData = {}
 
