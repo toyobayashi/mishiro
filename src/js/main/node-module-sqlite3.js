@@ -95,6 +95,15 @@ Database.prototype._all = function (sql) {
   })
 }
 
+sqlite3.openAsync = function (db, mode = sqlite3.OPEN_READONLY) {
+  return new Promise((resolve, reject) => {
+    let d = new sqlite3.Database(db, mode, err => {
+      if (err) reject(err)
+      else resolve(d)
+    })
+  })
+}
+
 // Database#each(sql, [bind1, bind2, ...], [callback], [complete])
 Database.prototype.each = normalizeMethod(function (statement, params) {
   statement.each.apply(statement, params).finalize()
