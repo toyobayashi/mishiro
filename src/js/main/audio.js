@@ -65,7 +65,7 @@ async function hca2mp3 (hca, mp3) {
   }
 }
 
-async function acb2mp3 (acb) {
+async function acb2mp3 (acb, singleComplete) {
   const acbdir = path.parse(acb).dir
   try {
     let hcadir = await acb2hca(acb)
@@ -76,6 +76,7 @@ async function acb2mp3 (acb) {
       // console.log(hca)
       // task.push(hca2mp3(hca, path.join(acbdir, path.parse(hca).name + '.mp3')))
       task.push(await hca2mp3(hca, path.join(acbdir, path.parse(hca).name + '.mp3')))
+      if (singleComplete) singleComplete(task.length, hcas.length)
     }
     // let result = await Promise.all(task)
     await remove(hcadir)
@@ -85,4 +86,4 @@ async function acb2mp3 (acb) {
   }
 }
 
-export { acb2mp3, hca2mp3 }
+export { acb2mp3, hca2mp3, acb2hca, readdirAsync }

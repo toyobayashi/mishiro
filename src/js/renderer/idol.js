@@ -193,9 +193,9 @@ export default {
             charaDl = await dler.download(
               this.getVoiceUrl(hash),
               getPath(`./public/asset/sound/voice/chara_${cid}/chara_${cid}.acb`),
-              prog => { this.imgProgress = prog.loading / 2 }
+              prog => { this.imgProgress = prog.loading / 4 }
             )
-            this.imgProgress = 50
+            this.imgProgress = 25
             // ipcRenderer.send('acb', getPath(`./public/asset/sound/voice/chara_${cid}/chara_${cid}.acb`))
           } catch (errorPath) {
             this.event.$emit('alert', this.$t('home.errorTitle'), this.$t('home.downloadFailed') + '<br/>' + errorPath)
@@ -209,11 +209,11 @@ export default {
             cardDl = await dler.download(
               this.getVoiceUrl(hash),
               getPath(`./public/asset/sound/voice/card_${id}/card_${id}.acb`),
-              prog => { this.imgProgress = prog.loading / 2 + 50 }
+              prog => { this.imgProgress = prog.loading / 4 + 25 }
             )
-            if (cardDl) {
-              this.imgProgress = 99.99
-            }
+            // if (cardDl) {
+            this.imgProgress = 50
+            // }
           } catch (errorPath) {
             this.$refs.voiceBtn.removeAttribute('disabled')
             this.event.$emit('alert', this.$t('home.errorTitle'), this.$t('home.downloadFailed') + '<br/>' + errorPath)
@@ -221,11 +221,11 @@ export default {
         }
 
         if (charaDl && cardDl) {
-          ipcRenderer.send('acb', [charaDl, cardDl])
+          ipcRenderer.send('voiceDec', [charaDl, cardDl])
         } else if (!charaDl && cardDl) {
-          ipcRenderer.send('acb', cardDl)
+          ipcRenderer.send('voiceDec', [cardDl])
         } else if (charaDl && !cardDl) {
-          ipcRenderer.send('acb', charaDl)
+          ipcRenderer.send('voiceDec', [charaDl])
         } else {
           if (charaDl === null && cardDl === null) {
             let cardVoiceFiles = fs.readdirSync(cardDir)
@@ -361,9 +361,12 @@ export default {
           this.query()
         }
       })
-      ipcRenderer.on('voice', event => {
+      ipcRenderer.on('voiceEnd', event => {
         this.imgProgress = 0
         this.$refs.voiceBtn.removeAttribute('disabled')
+      })
+      ipcRenderer.on('singleHca', (event, cur, total) => {
+        this.imgProgress = 50 + 50 * cur / total
       })
     })
   }
