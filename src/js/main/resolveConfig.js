@@ -1,16 +1,18 @@
-import request from 'request'
+import https from 'https'
 import { configurer } from '../common/config.js'
 
 function getResourceVersionFromMishiroLab () {
   return new Promise((resolve) => {
-    request('https://starlight.kirara.ca/api/v1/info', (err, res, body) => {
-      if (err) resolve(false)
-      else {
+    https.get('https://starlight.kirara.ca/api/v1/info', res => {
+      let body = ''
+      res.on('data', chunk => { body += chunk })
+      res.on('end', () => {
         let v = Number(JSON.parse(body).truth_version)
         console.log('Resver got: ' + v)
         resolve(v)
-      }
-    })
+      })
+      res.on('error', e => { resolve(false) })
+    }).on('error', e => { resolve(false) })
   })
 }
 
