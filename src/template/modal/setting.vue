@@ -1,7 +1,7 @@
 <template>
 <div v-show="show" class="modal">
   <transition name="scale" @after-leave="afterLeave">
-    <div :style="{ width: modalWidth }" v-show="visible">
+    <div :style="{ width: modalWidth }" v-if="visible">
       <div class="modal-header">
         <title-dot v-once></title-dot>
         <h4 class="modal-title">{{$t("menu.option")}}</h4>
@@ -180,6 +180,11 @@ export default {
         this.backgroundId = config.background ? config.background : ''
         this.show = true
         this.visible = true
+      })
+      this.event.$on('enterKey', block => {
+        if (block === 'menu' && this.visible) {
+          this.save()
+        }
       })
     })
   }

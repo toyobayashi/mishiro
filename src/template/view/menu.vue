@@ -1,7 +1,7 @@
 <template>
 <div class="main-block-style flex-center">
   <div class="gray-area menu-content">
-    <button class="cgss-btn-lg cgss-btn-lg-ok" @click="showOption">{{$t("menu.option")}}</button>
+    <button class="cgss-btn-lg cgss-btn-lg-ok" @click="showOption($event.target)">{{$t("menu.option")}}</button>
     <button class="cgss-btn-lg cgss-btn-lg-star" @click="showLicense">{{$t("menu.license")}}</button>
     <button class="cgss-btn-lg cgss-btn-lg-star" @click="cacheClear">{{$t("menu.cacheClear")}}</button>
     <button class="cgss-btn-lg cgss-btn-lg-ok" @click="update">{{$t("menu.update")}}</button>

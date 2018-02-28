@@ -163,6 +163,7 @@ export default {
               )
               if (result) {
                 ipcRenderer.send('acb', getPath(`./public/asset/sound/bgm/bgm_event_${masterData.eventData.id}.acb`))
+                await this.sleep(2000)
               }
             } catch (errorPath) {
               this.event.$emit('alert', this.$t('home.errorTitle'), this.$t('home.downloadFailed') + '<br/>' + errorPath)
