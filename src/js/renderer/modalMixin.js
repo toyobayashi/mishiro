@@ -30,7 +30,9 @@ export default {
         false
       )
       this.event.$on('escKey', () => {
-        this.close()
+        if (this.visible) {
+          this.close()
+        }
       })
     })
   }

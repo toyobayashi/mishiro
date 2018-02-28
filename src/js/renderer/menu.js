@@ -9,7 +9,8 @@ export default {
     resVer: [String, Number]
   },
   methods: {
-    showOption () {
+    showOption (btn) {
+      btn.blur()
       this.playSe(this.enterSe)
       this.event.$emit('option')
     },
