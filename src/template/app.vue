@@ -25,7 +25,7 @@
   <gacha-information :master="appData.master"></gacha-information>
   <gacha-history></gacha-history>
   <gacha-card :master="appData.master"></gacha-card>
-  <setting :master="appData.master" :latestResVer="appData.resVer" v-model="currentLanguage"></setting>
+  <setting :master="appData.master" :latestResVer="appData.latestResVer" v-model="currentLanguage"></setting>
   <alert></alert>
   <img v-show="checking" src="../res/img/spinner.gif" class="spinner" />
 </div>
@@ -94,6 +94,7 @@ export default {
       },
       appData: {
         resVer: 'Unknown',
+        latestResVer: 'Unknown',
         master: {}
       },
       time: new Date().getTime()

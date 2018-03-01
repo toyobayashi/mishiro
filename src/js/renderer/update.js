@@ -22,6 +22,7 @@ export default {
       text: this.$t('update.check'),
       appData: {
         resVer: 'Unknown',
+        latestResVer: 'Unknown',
         master: {}
       }
     }
@@ -115,16 +116,17 @@ export default {
           fs.mkdirSync(getPath('./public/asset/sound/voice'))
         }
         ipcRenderer.on('readManifest', async (event, masterHash, resVer) => {
-          this.$emit('input', this.appData)
           const masterFile = await this.getMaster(resVer, masterHash)
           if (masterFile) ipcRenderer.send('readMaster', masterFile)
         })
         ipcRenderer.on('readMaster', async (event, masterData) => {
           // console.log(masterData);
+          let config = await this.configurer.getConfig()
           const bgmList = player.data().bgmList
           const downloader = new Downloader()
           const toName = p => path.parse(p).name
           this.appData.master = masterData
+          this.appData.latestResVer = config.latestResVer
           this.$emit('input', this.appData)
 
           const bgmManifest = masterData.bgmManifest
@@ -150,31 +152,41 @@ export default {
               }
             }
           }
-          if (masterData.eventData.type != 2 && masterData.eventData.type != 6 && !fs.existsSync(getPath(`./public/asset/sound/bgm/bgm_event_${masterData.eventData.id}.mp3`))) {
-            const eventBgmHash = bgmManifest.filter(row => row.name === `b/bgm_event_${masterData.eventData.id}.acb`)[0].hash
-            try {
-              let result = await downloader.download(
-                this.getBgmUrl(eventBgmHash),
-                getPath(`./public/asset/sound/bgm/bgm_event_${masterData.eventData.id}.acb`),
-                (prog) => {
-                  this.text = prog.name + '　' + Math.ceil(prog.current / 1024) + '/' + Math.ceil(prog.max / 1024) + ' KB'
-                  this.loading = prog.loading
+          if (masterData.eventHappening) {
+            if (masterData.eventData.type != 2 && masterData.eventData.type != 6 && !fs.existsSync(getPath(`./public/asset/sound/bgm/bgm_event_${masterData.eventData.id}.mp3`))) {
+              const eventBgmHash = bgmManifest.filter(row => row.name === `b/bgm_event_${masterData.eventData.id}.acb`)[0].hash
+              try {
+                let result = await downloader.download(
+                  this.getBgmUrl(eventBgmHash),
+                  getPath(`./public/asset/sound/bgm/bgm_event_${masterData.eventData.id}.acb`),
+                  (prog) => {
+                    this.text = prog.name + '　' + Math.ceil(prog.current / 1024) + '/' + Math.ceil(prog.max / 1024) + ' KB'
+                    this.loading = prog.loading
+                  }
+                )
+                if (result) {
+                  ipcRenderer.send('acb', getPath(`./public/asset/sound/bgm/bgm_event_${masterData.eventData.id}.acb`))
+                  await this.sleep(2000)
                 }
-              )
-              if (result) {
-                ipcRenderer.send('acb', getPath(`./public/asset/sound/bgm/bgm_event_${masterData.eventData.id}.acb`))
-                await this.sleep(2000)
+              } catch (errorPath) {
+                this.event.$emit('alert', this.$t('home.errorTitle'), this.$t('home.downloadFailed') + '<br/>' + errorPath)
               }
-            } catch (errorPath) {
-              this.event.$emit('alert', this.$t('home.errorTitle'), this.$t('home.downloadFailed') + '<br/>' + errorPath)
             }
           }
+
           if (!fs.existsSync(getPath('./public/img/card'))) {
             fs.mkdirSync(getPath('./public/img/card'))
           }
-          let config = await this.configurer.getConfig()
+
           const eventAvailable = masterData.eventAvailable
           const cardId = this.getEventCardId(eventAvailable)
+
+          if (masterData.eventHappening) {
+            localStorage.setItem('msrEvent', `{"id":${masterData.eventData.id},"card":${Number(cardId[0]) + 1}}`)
+          } else {
+            localStorage.removeItem('msrEvent')
+          }
+
           if (config.background) {
             let result = await idol.methods.downloadCard.call(this, config.background, (prog) => {
               this.text = prog.name
@@ -185,15 +197,17 @@ export default {
             }
           } else {
             // const cardIdEvolution = [(Number(cardId[0]) + 1), (Number(cardId[1]) + 1)];
-            let result = await idol.methods.downloadCard.call(this, Number(cardId[0]) + 1, (prog) => {
-              this.text = prog.name
-              this.loading = prog.loading
-            })
-            if (result) {
-              this.event.$emit('eventBgReady', Number(cardId[0]) + 1)
+            if (masterData.eventHappening) {
+              let result = await idol.methods.downloadCard.call(this, Number(cardId[0]) + 1, (prog) => {
+                this.text = prog.name
+                this.loading = prog.loading
+              })
+              if (result) {
+                this.event.$emit('eventBgReady', Number(cardId[0]) + 1)
+              }
             }
           }
-          this.event.$emit('eventRewardCard', cardId)
+          if (masterData.eventHappening) this.event.$emit('eventRewardCard', cardId)
 
           if (!fs.existsSync(getPath('./public/img/icon'))) {
             fs.mkdirSync(getPath('./public/img/icon'))

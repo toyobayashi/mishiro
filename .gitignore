@@ -6,7 +6,8 @@ release/
 public/dll.js
 public/mishiro.min.js
 public/mishiro.min.css
-public/img/
+public/img/*
+!public/img/2ndAnniversary.jpg
 public/asset/font/
 public/asset/sound/live/
 public/asset/sound/voice/

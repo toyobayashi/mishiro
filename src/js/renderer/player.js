@@ -1,3 +1,6 @@
+import fs from 'fs'
+import getPath from '../common/getPath.js'
+
 const bgmList = {
   anni: {
     src: './asset/sound/bgm/bgm_event_3017.mp3',
@@ -133,10 +136,22 @@ export default {
       clearInterval(this.bgmTimer)
     }
   },
+  beforeMount () {
+    this.$nextTick(() => {
+      let msrEvent = localStorage.getItem('msrEvent')
+      if (msrEvent) {
+        let o = JSON.parse(msrEvent)
+        if (fs.existsSync(getPath(`./public/asset/sound/bgm/bgm_event_${o.id}.mp3`))) {
+          this.set({ src: `./asset/sound/bgm/bgm_event_${o.id}.mp3` })
+        }
+      } else {
+        this.set(bgmList.anni)
+      }
+    })
+  },
   mounted () {
     this.$nextTick(() => {
       // this.setStudioBgm();
-      this.set(bgmList.anni)
       this.play()
       this.playSe(new Audio('./asset/sound/se/chara_title.mp3'))
       window.bgm = this.bgm
@@ -174,17 +189,19 @@ export default {
               }
               break
             case 'live':
-              if (this.eventInfo.type == 2) {
-                if (this.playing.src !== bgmList.caravan.src) {
-                  this.play(bgmList.caravan)
-                }
-              } else if (this.eventInfo.type == 6) {
-                if (this.playing.src !== bgmList.rail.src) {
-                  this.play(bgmList.rail)
-                }
-              } else {
-                if (this.playing.src !== `./asset/sound/bgm/bgm_event_${this.eventInfo.id}.mp3`) {
-                  this.event.$emit('liveSelect', { src: `./asset/sound/bgm/bgm_event_${this.eventInfo.id}.mp3` })
+              if (this.master.eventHappening) {
+                if (this.eventInfo.type == 2) {
+                  if (this.playing.src !== bgmList.caravan.src) {
+                    this.play(bgmList.caravan)
+                  }
+                } else if (this.eventInfo.type == 6) {
+                  if (this.playing.src !== bgmList.rail.src) {
+                    this.play(bgmList.rail)
+                  }
+                } else {
+                  if (this.playing.src !== `./asset/sound/bgm/bgm_event_${this.eventInfo.id}.mp3`) {
+                    this.event.$emit('liveSelect', { src: `./asset/sound/bgm/bgm_event_${this.eventInfo.id}.mp3` })
+                  }
                 }
               }
               break
