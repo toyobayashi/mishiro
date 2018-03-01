@@ -3,19 +3,21 @@
   <img :class="{
     yoko: bg,
     tate: !bg
-  }" src="../../res/img/2ndAnniversary.jpg" />
+  }" :src="coverSrc" />
   <img src="../../res/img/touchBase.png" class="touch" id="touchBase" />
   <img src="../../res/img/touch.png" id="touch" class="touch twinkle" :class="{ active: isTouched }" />
 </div>
 </template>
 
 <script>
+import fs from 'fs'
+import getPath from '../../js/common/getPath.js'
 export default {
   data () {
     return {
       bg: null,
-      startOut: false,
-      isTouched: false
+      isTouched: false,
+      coverSrc: './img/2ndAnniversary.jpg'
     }
   },
   methods: {
@@ -28,6 +30,17 @@ export default {
         }, 1000)
       }
     }
+  },
+  beforeMount () {
+    this.$nextTick(() => {
+      let msrEvent = localStorage.getItem('msrEvent')
+      if (msrEvent) {
+        let o = JSON.parse(msrEvent)
+        if (fs.existsSync(getPath(`./public/img/card/bg_${o.card}.png`))) {
+          this.coverSrc = `./img/card/bg_${o.card}.png`
+        }
+      }
+    })
   },
   mounted () {
     this.$nextTick(() => {

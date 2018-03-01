@@ -17,7 +17,7 @@ export default async function (event, masterFile, manifestData, config) {
   const gachaAll = await master._all('SELECT * FROM gacha_data')
   const eventAll = await master._all('SELECT * FROM event_data')
 
-  const eventData = getEventData(eventAll, config, now, timeOffset)
+  const { eventData, eventHappening } = getEventData(eventAll, config, now, timeOffset)
   console.log(`eventID: ${eventData.id}`)
   const eventAvailable = await master._all(`SELECT * FROM event_available WHERE event_id = "${eventData.id}"`)
 
@@ -64,6 +64,7 @@ export default async function (event, masterFile, manifestData, config) {
     eventAll,
     eventData,
     eventAvailable,
+    eventHappening,
     cardData,
     bgmManifest,
     liveManifest,
