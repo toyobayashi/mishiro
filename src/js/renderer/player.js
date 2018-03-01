@@ -153,7 +153,12 @@ export default {
     this.$nextTick(() => {
       // this.setStudioBgm();
       this.play()
-      this.playSe(new Audio('./asset/sound/se/chara_title.mp3'))
+      let charaTitleVoiceArr = fs.readdirSync(getPath('./public/asset/sound/chara_title.asar'))
+      for (let i = 0; i < charaTitleVoiceArr.length; i++) {
+        charaTitleVoiceArr[i] = './asset/sound/chara_title.asar/' + charaTitleVoiceArr[i]
+      }
+      charaTitleVoiceArr.push('./asset/sound/se/chara_title.mp3')
+      this.playSe(new Audio(charaTitleVoiceArr[Math.floor(Math.random() * charaTitleVoiceArr.length)]))
       window.bgm = this.bgm
       document.addEventListener('click', (e) => {
         if (this.isShow && e.target !== document.getElementById('pauseBtn')) {
@@ -163,7 +168,6 @@ export default {
 
       this.event.$on('ready', () => {
         this.playStudioBgm()
-        // this.pause();
       })
       this.event.$on('changeBgm', (block) => {
         let flag = false

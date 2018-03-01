@@ -174,6 +174,28 @@ export default {
     },
     async downloadVoice () {
       this.playSe(this.enterSe)
+      /* const charaData = this.master.charaData
+      let voiceChara = []
+      for (let i = 0; i < charaData.length; i++) {
+        if (charaData[i].voice && charaData[i].chara_id > 2) voiceChara.push(charaData[i].chara_id)
+      }
+      for (let i = 0; i < voiceChara.length; i++) {
+        let charaVoice = this.voiceManifest.filter(row => row.name === `v/chara_${voiceChara[i]}.acb`)[0]
+        try {
+          await dler.download(
+            this.getVoiceUrl(charaVoice.hash),
+            getPath(`./public/asset/sound/voiceacb/chara_${voiceChara[i]}.acb`),
+            prog => { this.imgProgress = 100 / voiceChara.length * i + prog.loading / voiceChara.length }
+          )
+        } catch (e) {
+          console.log(e)
+        }
+      }
+      let acbs = fs.readdirSync(getPath('./public/asset/sound/voiceacb'))
+      acbs.forEach((v, i) => {
+        acbs[i] = path.join(getPath('./public/asset/sound/voiceacb'), v)
+      })
+      ipcRenderer.send('titleVoiceDec', acbs) */
       if (this.activeCard.charaData.voice) {
         let charaDl = null
         let cardDl = null

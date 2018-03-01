@@ -6,6 +6,7 @@ import onReadMaster from './onReadMaster.js'
 import onQueryManifest from './onQueryManifest.js'
 import onAcb from './onAcb.js'
 import onVoiceDec from './onVoiceDec.js'
+// import onTitleVoiceDec from './onTitleVoiceDec.js'
 
 let manifestData = {}
 let manifests = []
@@ -31,5 +32,9 @@ ipcMain.on('acb', (event, acbPath, arg = '') => {
 ipcMain.on('voiceDec', (event, acbs) => {
   onVoiceDec(event, acbs)
 })
+
+/* ipcMain.on('titleVoiceDec', (event, acbs) => {
+  onTitleVoiceDec(event, acbs)
+}) */
 
 export default void 0
