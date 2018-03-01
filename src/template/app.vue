@@ -1,10 +1,10 @@
 <template>
 <div style="position: absolute;width: 100%;height: 100%;">
   <transition name="fade" @after-leave="afterEnter">
-    <entry v-if="!isEntered" @enter="isEntered = !isEntered"></entry>
+    <entry v-if="!isEntered" @enter="isEntered = !isEntered" @touch="isTouched = true"></entry>
   </transition>
   <transition name="fade">
-    <update v-if="!isReady" @ready="isReady = !isReady" v-model="appData"></update>
+    <update v-if="!isReady" @ready="isReady = !isReady" v-model="appData" :is-touched="isTouched"></update>
   </transition>
   <background></background>
   <div id="mainBlock" v-show="show">
@@ -83,6 +83,7 @@ export default {
   data () {
     return {
       isEntered: false,
+      isTouched: false,
       isReady: false,
       show: true,
       currentBlock: 'home',

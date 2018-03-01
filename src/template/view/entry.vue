@@ -25,6 +25,7 @@ export default {
       if (!this.isTouched) {
         this.isTouched = true
         this.playSe(new Audio('./asset/sound/se/se_title_start.mp3'))
+        this.$emit('touch')
         setTimeout(() => {
           this.$emit('enter')
         }, 1000)

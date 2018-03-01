@@ -28,7 +28,8 @@ export default {
     }
   },
   props: {
-    'value': Object
+    'value': Object,
+    'isTouched': Boolean
   },
   methods: {
     getEventCardId (eventAvailable) {
