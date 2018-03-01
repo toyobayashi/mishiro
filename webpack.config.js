@@ -25,10 +25,6 @@ let renderer = {
         // other vue-loader options go here
       }
     }, {
-      test: /\.(eot|woff|svg|woff2|ttf|otf)$/,
-      exclude: /node_modules/,
-      loader: 'file-loader?name=./asset/font/[name].[ext]?[hash]'
-    }, {
       test: /\.(png|jpg|gif)$/,
       exclude: /node_modules/,
       loader: 'url-loader?limit=8192&name=./img/[name].[ext]?[hash]'

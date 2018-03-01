@@ -3,14 +3,6 @@
   margin: 0;
   box-sizing: border-box;
 }
-@font-face {
-    font-family: 'CGSS';
-    src: url("../res/asset/font/FRM.otf"); 
-}
-@font-face {
-    font-family: 'CGSS-B';
-    src: url("../res/asset/font/FRB.otf");
-}
 body{
   overflow: hidden;
   font-size: 15px;
