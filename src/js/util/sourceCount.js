@@ -20,8 +20,9 @@ function countFile (filePath) {
         reject(err)
         return
       }
+      let match = data.match(/\r?\n/g)
       resolve({
-        lines: data.match(/\r?\n/g).length + 1,
+        lines: match ? match.length + 1 : 1,
         files: 1
       })
     })
