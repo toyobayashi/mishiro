@@ -2,7 +2,8 @@
 <div class="bgm-select-bar clearfix">
   <button v-on:click.stop="selectBgm()">
     <span>
-      <marquee scrollAmount="2" direction="left">{{playing.src.slice(playing.src.lastIndexOf('/') + 1)}}</marquee>
+      {{playing.src.slice(playing.src.lastIndexOf('/') + 1)}}
+      <!-- <marquee scrollAmount="2" direction="left">{{playing.src.slice(playing.src.lastIndexOf('/') + 1)}}</marquee> -->
     </span>
   </button>
   <button v-on:click.stop="pauseButton()" id="pauseBtn">
@@ -42,6 +43,8 @@
   display: inline-block;
   position: relative;
   bottom: 2px;
+  height: 30px;
+  overflow: hidden;
 }
 .bgm-select-bar>button:nth-child(1){
   float: left;

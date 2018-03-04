@@ -81,15 +81,17 @@ export default {
             taskArr.push([this.getDbUrl(task[i].hash), getPath(`./download/${task[i].name.split('.')[0]}`), 'mdb'])
           }
         }
-        let completed = 0
+
         let failedList = await dler.batchDl(taskArr, (name) => {
           this.current = 0
           this.text = name
         }, (prog) => {
           this.text = `${prog.name}　${Math.ceil(prog.current / 1024)}/${Math.ceil(prog.max / 1024)} KB`
           this.current = prog.loading
-          this.total = 100 * completed / taskArr.length + prog.loading / 100 * (100 / taskArr.length)
+          this.total = 100 * prog.completed / taskArr.length + prog.loading / taskArr.length
         }, (name, filepath, suffix) => {
+          this.current = 0
+          this.text = ''
           if (suffix !== 'acb') {
             fs.readFile(filepath, 'utf-8', (err, data) => {
               if (err) throw err
@@ -110,9 +112,6 @@ export default {
           } else {
             this.event.$emit('completeTask', name)
           }
-          completed++
-          this.current = 0
-          this.text = ''
         }, () => {
           this.current = 0
           this.text = ''
