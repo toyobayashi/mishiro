@@ -9,7 +9,7 @@ class Downloader {
     this.index = -1
   }
 
-  download (u, p, progressing) {
+  download (u, p, progressing, completed) {
     let filename = this.toName(p)
     return new Promise(async (resolve, reject) => {
       if (fs.existsSync(p)) {
@@ -79,7 +79,8 @@ class Downloader {
                   name: filename,
                   current: size + current,
                   max: size + contentLength,
-                  loading: 100 * (size + current) / (size + contentLength)
+                  loading: 100 * (size + current) / (size + contentLength),
+                  completed: completed || 0
                 })
               })
               .on('abort', () => {
@@ -124,7 +125,7 @@ class Downloader {
       if (!fs.existsSync(filepath)) {
         if (start) start(this.toName(filepath), filepath, data)
         try {
-          noAborted = await this.download(url, filepath, progressing)
+          noAborted = await this.download(url, filepath, progressing, this.index)
         } catch (e) {
           errorList.push(e)
           isContinue = false

@@ -21,7 +21,7 @@ let config = (async function () {
   let fix = {}
   if (!config.latestResVer) {
     let rv346 = await getResourceVersionFromMishiroLab()
-    fix.latestResVer = rv346 || 10036160
+    fix.latestResVer = rv346 || 10036200
   }
   if (config.language !== 'zh' && config.language !== 'ja') {
     fix.language = 'zh'

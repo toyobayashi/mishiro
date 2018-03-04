@@ -218,7 +218,6 @@ export default {
             iconId.push(masterData.gachaAvailable[index].reward_id)
           }
           const iconTask = this.createCardIconTask(iconId)
-          /* let failedList =  */
           await downloader.batchDl(iconTask, (name) => {
             this.text = name + '　' + downloader.index + '/' + iconTask.length
             this.loading = 100 * downloader.index / iconTask.length
@@ -228,9 +227,7 @@ export default {
           // console.log(failedList)
           this.emitReady()
         })
-        if (navigator.onLine
-        /* false */
-        ) { // 判断网络是否连接
+        if (navigator.onLine) { // 判断网络是否连接
           const resVer = await this.getResVer()
           this.appData.resVer = Number(resVer)
           this.$emit('input', this.appData)
