@@ -1,4 +1,4 @@
-import titleDot from '../../template/component/titleDot.vue'
+import titleDot from '../../vue/component/titleDot.vue'
 export default {
   components: {
     titleDot

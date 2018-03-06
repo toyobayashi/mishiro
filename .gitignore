@@ -24,4 +24,4 @@ public/asset/sound/bgm/*.mp3
 !public/asset/sound/bgm/bgm_event_rail.mp3
 config.json
 .vscode/
-src/native/*/build/
+src/cpp/*/build/
