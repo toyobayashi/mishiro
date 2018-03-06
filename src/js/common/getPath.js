@@ -1,3 +1,2 @@
-import path from 'path'
-export const getPath = (relative = '.') => path.join(__dirname, relative)
-export default (relative = '.') => path.join(__dirname, '..', relative)
+import { join } from 'path'
+export default (relative = '.') => join(__dirname, '..', relative)

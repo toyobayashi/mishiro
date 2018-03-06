@@ -2,18 +2,18 @@
   "name": "mishiro",
   "productName": "mishiro",
   "companyName": "Toyo",
-  "version": "1.2.3",
+  "version": "1.2.4",
   "description": "mishiro",
-  "main": "main.min.js",
+  "main": "./public/mishiro.main.js",
   "scripts": {
     "start": "electron . --enable-logging",
-    "webpack": "webpack",
-    "dll": "webpack --config webpack.dll.config.js",
-    "dev": "webpack -w",
-    "prod": "set NODE_ENV=production&&webpack --config webpack.dll.config.js&&webpack",
-    "pkg": "npm run prod&&node pack ia32",
-    "pkg64": "npm run prod&&node pack x64",
-    "count": "node count",
+    "webpack": "webpack --config ./build/webpack.config.js",
+    "dll": "webpack --config ./build/webpack.dll.config.js",
+    "dev": "webpack --config ./build/webpack.config.js -w",
+    "prod": "set NODE_ENV=production&&npm run dll&&npm run webpack",
+    "pkg32": "npm run prod&&node ./build/pack.js ia32",
+    "pkg64": "npm run prod&&node ./build/pack.js x64",
+    "count": "node ./build/count.js",
     "reb:hca-ia32": "cd ./src/native/hca&&node-gyp rebuild --target=%npm_package_devDependencies_electron% --arch=ia32 --dist-url=https://atom.io/download/electron",
     "reb:hca-x64": "cd ./src/native/hca&&node-gyp rebuild --target=%npm_package_devDependencies_electron% --arch=x64 --dist-url=https://atom.io/download/electron"
   },
@@ -49,12 +49,13 @@
     "uglifyjs-webpack-plugin": "^1.1.4",
     "unzip": "^0.1.11",
     "url-loader": "^0.5.9",
-    "vue": "^2.5.13",
     "vue-loader": "^13.0.5",
     "vue-template-compiler": "^2.5.13",
-    "webpack": "^3.10.0"
+    "webpack": "^3.11.0",
+    "webpack-dev-server": "^2.11.2"
   },
   "dependencies": {
+    "vue": "^2.5.13",
     "marked": "^0.3.14",
     "request": "^2.83.0",
     "vue-i18n": "^7.4.2"

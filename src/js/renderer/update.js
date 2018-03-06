@@ -231,6 +231,21 @@ export default {
           const resVer = await this.getResVer()
           this.appData.resVer = Number(resVer)
           this.$emit('input', this.appData)
+          /* if (!fs.existsSync(getPath('./public/bin'))) {
+            const downloader = new Downloader()
+            let result = await downloader.download(
+              'https://github.com/toyobayashi/mishiro/releases/download/v1.1.5/mishiro-public-bin.zip',
+              getPath('./public/mishiro-public-bin.zip'),
+              prog => {
+                this.text = prog.name + '　' + Math.ceil(prog.current / 1024) + '/' + Math.ceil(prog.max / 1024) + ' KB'
+                this.loading = prog.loading
+              }
+            )
+            if (result) {
+              // await unzipBinary(result, getPath('./public'))
+              ipcRenderer.send('binary', result, getPath('./public'))
+            }
+          } */
           const manifestFile = await this.getManifest(resVer)
           if (manifestFile) ipcRenderer.send('readManifest', manifestFile, resVer)
         } else { // 如果网络未连接则直接触发ready事件
