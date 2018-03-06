@@ -16,7 +16,7 @@ sourceCount({
   vue: [getPath('./src/template')],
   css: [getPath('./src/css')],
   html: [getPath('./public/index.html')],
-  cpp: [getPath('./src/native/hca/hca.cpp')],
+  cpp: [getPath('./src/cpp/hca/hca.cpp')],
   markdown: [
     getPath('./README.md'),
     getPath('./LICENSE.md')

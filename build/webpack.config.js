@@ -14,7 +14,7 @@ const native = (nativeModules) => {
 
 let main = {
   target: 'electron-main',
-  entry: path.join(__dirname, '../src/main.js'),
+  entry: path.join(__dirname, '../src/js/main.js'),
   output: {
     path: path.join(__dirname, '../public'),
     filename: 'mishiro.main.js'
@@ -33,7 +33,7 @@ let main = {
 
 let renderer = {
   target: 'electron-renderer',
-  entry: path.join(__dirname, '../src/renderer.js'),
+  entry: path.join(__dirname, '../src/js/renderer.js'),
   output: {
     path: path.join(__dirname, '../public'),
     filename: 'mishiro.renderer.js'
