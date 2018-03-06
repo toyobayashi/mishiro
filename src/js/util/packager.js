@@ -75,6 +75,7 @@ module.exports = function pack (option) {
   const PLATFORM = option.platform ? option.platform : 'win32'
   const ARCH = option.arch ? option.arch : 'ia32'
   const ELECTRON_VERSION = option.electronVersion ? option.electronVersion : packageJson.devDependencies.electron.slice(1)
+  const PACK_DIR = option.packDir ? option.packDir : path.join(__dirname, '../../..')
   const DIST_DIR = option.distDir ? option.distDir : path.join(__dirname, '../../../dist')
   const IGNORE_REGEXP = option.ignore
   const VERSION_STRING = option.versionString
@@ -86,7 +87,7 @@ module.exports = function pack (option) {
   const ELECTRON_PATH = path.join(DIST_DIR, `${ELECTRON_NAME}.zip`)
   const DIST_PATH = path.join(DIST_DIR, APP_NAME)
   const APP_PATH = path.join(DIST_PATH, 'resources', 'app')
-  const BIN_PATH = path.join(APP_PATH, 'bin')
+  const NATIVE_PATH = path.join(APP_PATH, './public/lib')
 
   if (!fs.existsSync(DIST_DIR)) fs.mkdirSync(DIST_DIR)
   downloadElectronRelease(ELECTRON_URL, ELECTRON_PATH)
@@ -111,12 +112,12 @@ module.exports = function pack (option) {
     })
     .then((isChanged) => {
       if (isChanged) ilog(`[INFO ${t()}] EXE file changed.`)
-      return copy(path.join(__dirname, '../../..'), APP_PATH, IGNORE_REGEXP)
+      return copy(PACK_DIR, APP_PATH, IGNORE_REGEXP)
     })
     .then(pathArr => {
-      let files = fs.readdirSync(BIN_PATH)
+      let files = fs.readdirSync(NATIVE_PATH)
       for (let i = 0; i < files.length; i++) {
-        let abs = path.join(BIN_PATH, files[i])
+        let abs = path.join(NATIVE_PATH, files[i])
         if (ARCH === 'ia32') {
           if (/-x64\.node$/.test(files[i]) && fs.statSync(abs).isFile()) remove(abs)
         } else {

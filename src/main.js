@@ -1,6 +1,6 @@
 import { app, BrowserWindow, ipcMain } from 'electron'
 import url from 'url'
-import { getPath } from './js/common/getPath.js'
+import getPath from './js/common/getPath.js'
 import './js/main/service.js'
 
 let mainWindow
@@ -20,7 +20,7 @@ function createWindow () {
     slashes: true
   }))
 
-  // mainWindow.webContents.openDevTools()
+  if (process.env.NODE_ENV === 'development') mainWindow.webContents.openDevTools()
 
   mainWindow.on('closed', function () {
     mainWindow = null

@@ -1,15 +1,16 @@
 const path = require('path')
-const packageJson = require('./package.json')
-const pack = require('./src/js/util/packager.js')
+const packageJson = require('../package.json')
+const pack = require('../src/js/util/packager.js')
 
 const option = {
   platform: 'win32',
   arch: process.argv[2] ? process.argv[2] : 'ia32',
   electronVersion: packageJson.devDependencies.electron,
-  distDir: path.join(__dirname, 'dist'),
-  ignore: new RegExp(`node_modules|data|release|download|dist|src|screenshot|${'public/img/card'.replace(/\//g, '\\\\')}|${'public/asset/sound/live'.replace(/\//g, '\\\\')}|${'public/asset/sound/voice'.replace(/\//g, '\\\\')}|.gitignore|README|webpack|.eslintrc.json|config.json|manifest.json|package-lock.json|pack.js|count.js|.git|.vscode`),
+  packDir: path.join(__dirname, '..'),
+  distDir: path.join(__dirname, '../dist'),
+  ignore: new RegExp(`node_modules|build|data|release|download|dist|src|screenshot|${'public/img/card'.replace(/\//g, '\\\\')}|${'public/asset/sound/live'.replace(/\//g, '\\\\')}|${'public/asset/sound/voice'.replace(/\//g, '\\\\')}|.gitignore|README|.eslintrc.json|config.json|package-lock.json|.git|.vscode`),
   versionString: {
-    icon: path.join(__dirname, './src/res/icon/mishiro.ico'),
+    icon: path.join(__dirname, '../src/res/icon/mishiro.ico'),
     'file-version': packageJson.version,
     'product-version': packageJson.version,
     'version-string': {

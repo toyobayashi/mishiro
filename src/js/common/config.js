@@ -1,6 +1,6 @@
 import fs from 'fs'
 import { read, write } from '../util/fsExtra.js'
-import { getPath } from './getPath.js'
+import getPath from './getPath.js'
 
 class Configurer {
   constructor (filePath) {
@@ -38,5 +38,5 @@ class Configurer {
     return config
   }
 }
-export let configurer = new Configurer(getPath('./config.json'))
-export default new Configurer(getPath('../config.json'))
+
+export default new Configurer(getPath('./config.json'))

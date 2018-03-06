@@ -1,11 +1,13 @@
 node_modules/
+build/manifest.json
 download/
 data/
 dist/
 release/
 public/dll.js
-public/mishiro.min.js
-public/mishiro.min.css
+public/mishiro.renderer.js
+public/mishiro.renderer.css
+public/mishiro.main.js
 public/img/*
 !public/img/2ndAnniversary.jpg
 public/asset/font/
@@ -20,8 +22,6 @@ public/asset/sound/bgm/*.mp3
 !public/asset/sound/bgm/bgm_gacha_menu.mp3
 !public/asset/sound/bgm/bgm_event_typeA.mp3
 !public/asset/sound/bgm/bgm_event_rail.mp3
-main.min.js
 config.json
-manifest.json
 .vscode/
 src/native/*/build/

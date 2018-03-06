@@ -1,5 +1,5 @@
 import https from 'https'
-import { configurer } from '../common/config.js'
+import configurer from '../common/config.js'
 
 function getResourceVersionFromMishiroLab () {
   return new Promise((resolve) => {

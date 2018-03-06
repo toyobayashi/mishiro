@@ -1,12 +1,12 @@
 import { exec } from 'child_process'
 import path from 'path'
 import fs from 'fs'
-import { getPath } from '../common/getPath.js'
+import getPath from '../common/getPath.js'
 import { dec } from 'hca'
 import { remove } from '../util/fsExtra'
 
-const ACB = getPath('./bin/AcbUnzip.exe')
-const FFMPEG = getPath('./bin/ffmpeg.exe')
+const ACB = getPath('./public/bin/AcbUnzip.exe')
+const FFMPEG = getPath('./public/bin/ffmpeg.exe')
 
 function execAsync (cmd) {
   return new Promise((resolve, reject) => {

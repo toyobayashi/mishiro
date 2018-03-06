@@ -1,6 +1,6 @@
 import path from 'path'
 import fs from 'fs'
-import { getPath } from '../common/getPath.js'
+import getPath from '../common/getPath.js'
 import { acb2mp3 } from './audio.js'
 
 export default async function (event, acbPath, arg) {
