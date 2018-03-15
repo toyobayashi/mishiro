@@ -141,8 +141,12 @@ export default {
       let msrEvent = localStorage.getItem('msrEvent')
       if (msrEvent) {
         let o = JSON.parse(msrEvent)
-        if (fs.existsSync(getPath(`./public/asset/sound/bgm/bgm_event_${o.id}.mp3`))) {
-          this.set({ src: `./asset/sound/bgm/bgm_event_${o.id}.mp3` })
+        if ((o.id + '').charAt(0) !== '2' && (o.id + '').charAt(0) !== '6') {
+          if (fs.existsSync(getPath(`./public/asset/sound/bgm/bgm_event_${o.id}.mp3`))) {
+            this.set({ src: `./asset/sound/bgm/bgm_event_${o.id}.mp3` })
+          }
+        } else {
+          this.set(bgmList.anni)
         }
       } else {
         this.set(bgmList.anni)
