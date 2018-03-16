@@ -1,7 +1,7 @@
-import titleDot from '../../vue/component/titleDot.vue'
+import StaticTitleDot from '../../vue/component/StaticTitleDot.vue'
 export default {
   components: {
-    titleDot
+    StaticTitleDot
   },
   data () {
     return {

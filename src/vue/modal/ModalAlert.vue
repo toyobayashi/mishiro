@@ -3,7 +3,7 @@
   <transition name="scale" @after-leave="afterLeave">
     <div v-show="visible" :style="{ width: modalWidth }">
       <div class="modal-header">
-        <title-dot v-once></title-dot>
+        <StaticTitleDot v-once/>
         <h4 class="modal-title">{{title}}</h4>
       </div>
       <div class="modal-body" :style="{ maxHeight: bodyMaxHeight }" v-html="body"></div>

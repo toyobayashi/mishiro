@@ -3,7 +3,7 @@
   <transition name="scale" @after-leave="afterLeave">
     <div v-show="visible" :style="{ width: modalWidth }">
       <div class="modal-header">
-        <title-dot v-once></title-dot>
+        <StaticTitleDot v-once/>
         <h4 class="modal-title">{{$t('menu.calculator')}}</h4>
         <small-tab class="pull-right" :tab="eventType" v-model="currentEventTab" @tabClicked="toggle" :no-translation="true" :font-size="16"></small-tab>
       </div>

@@ -1,6 +1,6 @@
 import Vue from 'vue'
 import VueI18n from 'vue-i18n'
-import app from '../vue/app.vue'
+import Mishiro from '../vue/Mishiro.vue'
 import zh from './i18n/zh-CN.js'
 import ja from './i18n/ja-JP.js'
 import vueGlobal from './renderer/globalProperty.js'
@@ -23,6 +23,6 @@ Vue.use(vueGlobal);
   window.app = new Vue({
     el: '#app',
     i18n,
-    render: h => h(app)
+    render: h => h(Mishiro)
   })
 })()
