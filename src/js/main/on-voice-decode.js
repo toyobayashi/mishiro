@@ -1,5 +1,5 @@
 import path from 'path'
-import { remove } from '../util/fsExtra.js'
+import { remove } from '../util/fse.js'
 import { acb2hca, hca2mp3, readdirAsync } from './audio.js'
 
 export default async function (event, acbs) {
@@ -10,18 +10,17 @@ export default async function (event, acbs) {
     let hcadir = await acb2hca(acb)
     hcaDirs.push(hcadir)
     let files = await readdirAsync(hcadir)
-    let f = []
     for (let j = 0; j < files.length; j++) {
-      if (/_4_1[23]\.hca$/.test(files[j])) f.push(path.join(hcadir, files[j]))
+      files[j] = path.join(hcadir, files[j])
     }
-    hcaFiles = hcaFiles.concat(f)
+    hcaFiles = hcaFiles.concat(files)
   }
   for (let i = 0; i < hcaFiles.length; i++) {
     await hca2mp3(hcaFiles[i], path.join(path.parse(hcaFiles[i]).dir, '..', path.parse(hcaFiles[i]).name + '.mp3'))
     event.sender.send('singleHca', i + 1, hcaFiles.length)
   }
   for (let i = 0; i < acbs.length; i++) {
-    // remove(acbs[i])
+    remove(acbs[i])
     remove(hcaDirs[i])
   }
   event.sender.send('voiceEnd')

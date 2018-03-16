@@ -1,22 +1,22 @@
-import modalMixin from './modalMixin.js'
-import progressBar from '../../vue/component/progressBar.vue'
-import smallTab from '../../vue/component/smallTab.vue'
-import radio from '../../vue/component/radio.vue'
-import inputText from '../../vue/component/inputText.vue'
-import privateStatus from './calculatorData.js'
-import ataponCal from './calculatorAtapon.js'
-import caravanCal from './calculatorCaravan.js'
-import medleyCal from './calculatorMedley.js'
-import tourCal from './calculatorTour.js'
+import modalMixin from './modal-mixin.js'
+import ProgressBar from '../../vue/component/ProgressBar.vue'
+import TabSmall from '../../vue/component/TabSmall.vue'
+import InputRadio from '../../vue/component/InputRadio.vue'
+import InputText from '../../vue/component/InputText.vue'
+import privateStatus from './calculator-data.js'
+import ataponCal from './calculator-atapon.js'
+import caravanCal from './calculator-caravan.js'
+import medleyCal from './calculator-medley.js'
+import tourCal from './calculator-tour.js'
 import { ipcRenderer } from 'electron'
 
 export default {
   mixins: [modalMixin],
   components: {
-    progressBar,
-    smallTab,
-    radio,
-    inputText
+    ProgressBar,
+    TabSmall,
+    InputRadio,
+    InputText
   },
   props: {
     master: {

@@ -57,7 +57,7 @@ export default {
   float: left;
   cursor: pointer;
   display: block;
-  background-image: url("../../res/img/tabSm.png");
+  background-image: url("../../res/img/tab_small.png");
   text-decoration:none;
   text-align: center;
   height: 32px;

@@ -6,15 +6,15 @@
     </ul>
   </div>
   <div>
-    <input-text class="idol-query" v-model="queryString" :placeholder="$t('idol.input')" />
+    <InputText class="idol-query" v-model="queryString" :placeholder="$t('idol.input')" />
     <button class="cgss-btn-lg cgss-btn-lg-star pull-right margin-left-10" @click="opendir">{{$t("home.opendir")}}</button>
     <button class="cgss-btn cgss-btn-star pull-right margin-left-10" @click="downloadVoice" ref="voiceBtn">{{$t("idol.voiceBtn")}}</button>
     <button class="cgss-btn cgss-btn-ok pull-right margin-left-10" @click="query">{{$t("home.search")}}</button>
   </div>
   <div class="black-bg idol-info margin-top-10">
     <div class="clearfix">
-      <progress-bar class="cgss-progress-stamina pull-left" :percent="imgProgress"></progress-bar>
-      <small-tab class="pull-right" :tab="practice" v-model="currentPractice" @tabClicked="toggle"></small-tab>
+      <ProgressBar class="cgss-progress-stamina pull-left" :percent="imgProgress"/>
+      <TabSmall class="pull-right" :tab="practice" v-model="currentPractice" @tabClicked="toggle"/>
     </div>
     <table class="table-bordered" border="1" :class="{
       cute: information.charaData ? information.charaData.type === 1 : false,

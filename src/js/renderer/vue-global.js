@@ -1,5 +1,5 @@
 import lz4dec from './lz4.js'
-import getPath from '../common/getPath.js'
+import getPath from '../common/get-path.js'
 import configurer from '../common/config.js'
 
 const gameHostBase = 'http://storage.game.starlight-stage.jp/dl/resources'

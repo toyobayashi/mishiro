@@ -1,15 +1,15 @@
 import { ipcRenderer, shell } from 'electron'
 import fs from 'fs'
-import task from '../../vue/component/task.vue'
-import inputText from '../../vue/component/inputText.vue'
+import TaskLoading from '../../vue/component/TaskLoading.vue'
+import InputText from '../../vue/component/InputText.vue'
 import Downloader from './downloader.js'
-import getPath from '../common/getPath.js'
+import getPath from '../common/get-path.js'
 const dler = new Downloader()
 
 export default {
   components: {
-    task,
-    inputText
+    TaskLoading,
+    InputText
   },
   data () {
     return {

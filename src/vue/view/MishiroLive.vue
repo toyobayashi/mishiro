@@ -1,7 +1,7 @@
 <template>
 <div class="main-block-style">
   <div class="clearfix">
-    <input-text class="live-query" v-model="queryString" :placeholder="$t('live.input')"/>
+    <InputText class="live-query" v-model="queryString" :placeholder="$t('live.input')"/>
     <button class="cgss-btn-lg cgss-btn-lg-star pull-right margin-left-10" @click="opendir">{{$t("home.opendir")}}</button>
     <!-- <button ref="stopBtn" class="cgss-btn cgss-btn-default pull-right margin-left-10" @click="stopDownload">{{$t("home.stop")}}</button>
     <button ref="downloadBtn" class="cgss-btn cgss-btn-star pull-right margin-left-10" @click="downloadAll">{{$t("home.download")}}</button> -->
@@ -24,7 +24,7 @@
   </div>
   
   <div class="margin-top-20 clearfix live-bottom">
-    <task :total-loading="total" :current-loading="current" :text="text" :single="true" class="absolute-left" :color="'live'"></task>
+    <TaskLoading :total-loading="total" :current-loading="current" :text="text" :single="true" class="absolute-left" :color="'live'"/>
     <div class="gray-bg absolute-right flex-center timebar">
       <p>{{Math.floor(currentTime) | time}} / {{Math.floor(duration) | time}}</p>
       <input type="range" ref="playProg" :max="duration" min="0" :value="currentTime" @input="oninput()">

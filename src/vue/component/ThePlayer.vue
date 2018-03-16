@@ -37,7 +37,7 @@
   font-size: 15px;
   cursor: pointer;
   height: 30px;
-  background-image: url("../../res/img/selectBar.png");
+  background-image: url("../../res/img/bar_select.png");
 }
 .bgm-select-bar>button>span{
   display: inline-block;

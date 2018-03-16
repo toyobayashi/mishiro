@@ -21,7 +21,7 @@
 </template>
 
 <script>
-import modalMixin from '../../js/renderer/modalMixin.js'
+import modalMixin from '../../js/renderer/modal-mixin.js'
 export default {
   mixins: [modalMixin],
   data () {

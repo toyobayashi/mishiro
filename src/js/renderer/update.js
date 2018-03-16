@@ -1,19 +1,19 @@
 import fs from 'fs'
 import path from 'path'
-import progressBar from '../../vue/component/progressBar.vue'
+import ProgressBar from '../../vue/component/ProgressBar.vue'
 import check from './check.js'
-import downloadManifest from './downloadManifest.js'
-import downloadMaster from './downloadMaster.js'
+import downloadManifest from './download-manifest.js'
+import downloadMaster from './download-master.js'
 import Downloader from './downloader.js'
 import { ipcRenderer } from 'electron'
-import getPath from '../common/getPath.js'
+import getPath from '../common/get-path.js'
 import idol from './idol.js'
 import player from './player.js'
 import configurer from '../common/config.js'
 
 export default {
   components: {
-    progressBar
+    ProgressBar
   },
   data () {
     return {

@@ -11,25 +11,25 @@
           <div>
             <label>{{$t("menu.lang")}}</label>
             <div class="pull-right option-input clearfix" style="display:flex;justify-content:space-around">
-              <radio :text="$t('i18n.chinese')" value="zh" v-model="lang" lable-id="razh"></radio>
-              <radio :text="$t('i18n.japanese')" value="ja" v-model="lang" lable-id="raja"></radio>
+              <InputRadio :text="$t('i18n.chinese')" value="zh" v-model="lang" lable-id="razh"/>
+              <InputRadio :text="$t('i18n.japanese')" value="ja" v-model="lang" lable-id="raja"/>
             </div>
           </div>
           <div class="margin-top-10">
             <label>{{$t("menu.resVer")}}</label>
-            <input-text class="pull-right option-input" :placeholder="`10012760 ≤ ${$t('menu.resVer')} ≤ ${latestResVer}`" v-model="resVer" />
+            <InputText class="pull-right option-input" :placeholder="`10012760 ≤ ${$t('menu.resVer')} ≤ ${latestResVer}`" v-model="resVer" />
           </div>
           <div class="margin-top-10">
             <label>{{$t("menu.gacha")}}</label>
-            <input-text class="pull-right option-input" :placeholder="`30001 ≤ ${$t('menu.gacha')} ≤ ${gachaNow.id}`" v-model="gachaId" />
+            <InputText class="pull-right option-input" :placeholder="`30001 ≤ ${$t('menu.gacha')} ≤ ${gachaNow.id}`" v-model="gachaId" />
           </div>
           <div class="margin-top-10">
             <label>{{$t("menu.event")}}</label>
-            <input-text class="pull-right option-input" :placeholder="$t('menu.eventPlacehoder') + 'bgm_event_ID'" v-model="eventId" />
+            <InputText class="pull-right option-input" :placeholder="$t('menu.eventPlacehoder') + 'bgm_event_ID'" v-model="eventId" />
           </div>
           <div class="margin-top-10">
             <label>{{$t("menu.background")}}</label>
-            <input-text class="pull-right option-input" :placeholder="$t('menu.backPlacehoder')" v-model="backgroundId" />
+            <InputText class="pull-right option-input" :placeholder="$t('menu.backPlacehoder')" v-model="backgroundId" />
           </div>
         </form>
       </div>
@@ -43,14 +43,14 @@
 </template>
 
 <script>
-import modalMixin from '../../js/renderer/modalMixin.js'
-import radio from '../component/radio.vue'
-import inputText from '../component/inputText.vue'
+import modalMixin from '../../js/renderer/modal-mixin.js'
+import InputRadio from '../component/InputRadio.vue'
+import InputText from '../component/InputText.vue'
 export default {
   mixins: [modalMixin],
   components: {
-    radio,
-    inputText
+    InputRadio,
+    InputText
   },
   data () {
     return {

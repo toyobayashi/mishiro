@@ -18,6 +18,34 @@
 </div>
 </template>
 
+<script>
+export default {
+  data () {
+    return {
+      bg: null,
+      backgroundId: false
+    }
+  },
+  mounted () {
+    this.$nextTick(() => {
+      this.bg = (window.innerWidth / window.innerHeight >= 1280 / 824)
+      window.addEventListener('resize', () => {
+        this.bg = (window.innerWidth / window.innerHeight >= 1280 / 824)
+      }, false)
+      this.event.$on('eventBgReady', (cardId) => {
+        this.backgroundId = cardId
+      })
+      this.event.$on('idolSelect', (cardId) => {
+        this.backgroundId = cardId
+      })
+      this.event.$on('noBg', () => {
+        this.backgroundId = false
+      })
+    })
+  }
+}
+</script>
+
 <style>
 @keyframes rotatePlus {
   0% { transform: rotate(0deg); }
@@ -85,31 +113,3 @@
   top: -512px;
 }
 </style>
-
-<script>
-export default {
-  data () {
-    return {
-      bg: null,
-      backgroundId: false
-    }
-  },
-  mounted () {
-    this.$nextTick(() => {
-      this.bg = (window.innerWidth / window.innerHeight >= 1280 / 824)
-      window.addEventListener('resize', () => {
-        this.bg = (window.innerWidth / window.innerHeight >= 1280 / 824)
-      }, false)
-      this.event.$on('eventBgReady', (cardId) => {
-        this.backgroundId = cardId
-      })
-      this.event.$on('idolSelect', (cardId) => {
-        this.backgroundId = cardId
-      })
-      this.event.$on('noBg', () => {
-        this.backgroundId = false
-      })
-    })
-  }
-}
-</script>

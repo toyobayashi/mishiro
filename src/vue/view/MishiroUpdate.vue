@@ -2,7 +2,7 @@
 <div class="black">
   <div class="lb" v-show="isTouched">
     <p>{{text}}</p>
-    <progress-bar class="cgss-progress-load" :percent="loading"></progress-bar>
+    <ProgressBar class="cgss-progress-load" :percent="loading"/>
     <p>{{$t("update.tip")}}</p>
   </div>
   <img src="../../res/img/spinner.gif" class="spinner" v-show="isTouched"/>

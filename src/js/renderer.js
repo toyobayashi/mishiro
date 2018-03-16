@@ -3,7 +3,7 @@ import VueI18n from 'vue-i18n'
 import Mishiro from '../vue/Mishiro.vue'
 import zh from './i18n/zh-CN.js'
 import ja from './i18n/ja-JP.js'
-import vueGlobal from './renderer/globalProperty.js'
+import vueGlobal from './renderer/vue-global.js'
 import configurer from './common/config.js'
 
 Vue.use(VueI18n)

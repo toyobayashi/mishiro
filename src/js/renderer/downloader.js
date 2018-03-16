@@ -1,6 +1,6 @@
 import request from 'request'
 import fs from 'fs'
-import { read } from '../util/fsExtra.js'
+import { read } from '../util/fse.js'
 import path from 'path'
 class Downloader {
   constructor (taskArr = []) {

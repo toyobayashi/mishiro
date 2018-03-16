@@ -4,7 +4,7 @@ const request = require('request')
 const fs = require('fs')
 const path = require('path')
 const { slog, log, ilog, wlog, elog } = require('./rainbow.js')
-const { copy, remove } = require('./fsExtra.js')
+const { copy, remove } = require('./fse.js')
 const packageJson = require('../../../package.json')
 
 function downloadElectronRelease (electronUrl, electronPath) {

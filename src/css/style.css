@@ -165,7 +165,7 @@ td, th{
   height: 64px;
   border: none;
   outline: none;
-  background-image: url("../res/img/buttonLg.png");
+  background-image: url("../res/img/button_large.png");
   background-color: rgba(255,255,255,0);
   font-family: "CGSS-B";
   font-size: 29px;
@@ -208,7 +208,7 @@ td, th{
   height: 64px;
   border: none;
   outline: none;
-  background-image: url("../res/img/buttonSm.png");
+  background-image: url("../res/img/button_small.png");
   background-color: rgba(255,255,255,0);
   font-family: "CGSS-B";
   font-size: 25px;

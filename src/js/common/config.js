@@ -1,6 +1,6 @@
 import fs from 'fs'
-import { read, write } from '../util/fsExtra.js'
-import getPath from './getPath.js'
+import { read, write } from '../util/fse.js'
+import getPath from './get-path.js'
 
 class Configurer {
   constructor (filePath) {
