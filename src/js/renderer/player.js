@@ -1,5 +1,5 @@
 import fs from 'fs'
-import getPath from '../common/getPath.js'
+import getPath from '../common/get-path.js'
 
 const bgmList = {
   anni: {

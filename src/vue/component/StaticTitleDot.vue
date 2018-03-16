@@ -11,6 +11,6 @@
   display: inline-block;
   width: 6px;
   height: 27px;
-  border-left: 3px dotted #333;
+  border-left: 4px dotted #333;
 }
 </style>

@@ -5,7 +5,7 @@
       <div class="modal-header">
         <StaticTitleDot v-once/>
         <h4 class="modal-title">{{information.name ? information.name : ""}}</h4>
-        <small-tab class="pull-right" :tab="practice" v-model="currentPractice" @tabClicked="toggle"></small-tab>
+        <TabSmall class="pull-right" :tab="practice" v-model="currentPractice" @tabClicked="toggle"/>
       </div>
       <div class="modal-body" :style="{ maxHeight: bodyMaxHeight }">
         <table class="table-bordered" border="1" :class="{
@@ -109,13 +109,13 @@
 </template>
 
 <script>
-import smallTab from '../component/smallTab.vue'
+import TabSmall from '../component/TabSmall.vue'
 import vmIdol from '../../js/renderer/idol.js'
-import modalMixin from '../../js/renderer/modalMixin.js'
+import modalMixin from '../../js/renderer/modal-mixin.js'
 export default {
   mixins: [modalMixin],
   components: {
-    smallTab
+    TabSmall
   },
   data () {
     return {

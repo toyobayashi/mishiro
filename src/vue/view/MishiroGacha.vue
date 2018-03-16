@@ -58,7 +58,7 @@
 .gacha-btn {
   width: 194px;
   height: 70px;
-  background-image: url("../../res/img/gachaBtn.png");
+  background-image: url("../../res/img/button_gacha.png");
   cursor: pointer;
   user-select: none;
 }

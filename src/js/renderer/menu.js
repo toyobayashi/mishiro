@@ -1,9 +1,9 @@
 import { remote } from 'electron'
 import marked from 'marked'
 import request from 'request'
-import getPath from '../common/getPath.js'
+import getPath from '../common/get-path.js'
 import fs from 'fs'
-import { read, remove } from '../util/fsExtra.js'
+import { read, remove } from '../util/fse.js'
 export default {
   props: {
     resVer: [String, Number]

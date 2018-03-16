@@ -1,18 +1,18 @@
-import cgssTable from '../../vue/component/table.vue'
-import task from '../../vue/component/task.vue'
-import inputText from '../../vue/component/inputText.vue'
+import TheTable from '../../vue/component/TheTable.vue'
+import TaskLoading from '../../vue/component/TaskLoading.vue'
+import InputText from '../../vue/component/InputText.vue'
 import Downloader from './downloader.js'
 import fs from 'fs'
-import getPath from '../common/getPath.js'
+import getPath from '../common/get-path.js'
 import { shell, ipcRenderer, remote } from 'electron'
 // import { dec } from 'hca'
 
 const dler = new Downloader()
 export default {
   components: {
-    cgssTable,
-    task,
-    inputText
+    TheTable,
+    TaskLoading,
+    InputText
   },
   data () {
     return {

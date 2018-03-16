@@ -1,22 +1,22 @@
 <template>
 <div style="position: absolute;width: 100%;height: 100%;">
   <transition name="fade" @after-leave="afterEnter">
-    <entry v-if="!isEntered" @enter="isEntered = !isEntered" @touch="isTouched = true"></entry>
+    <MishiroEntry v-if="!isEntered" @enter="isEntered = !isEntered" @touch="isTouched = true"/>
   </transition>
   <transition name="fade">
-    <update v-if="!isReady" @ready="isReady = !isReady" v-model="appData" :is-touched="isTouched"></update>
+    <MishiroUpdate v-if="!isReady" @ready="isReady = !isReady" v-model="appData" :is-touched="isTouched"/>
   </transition>
   <TheBackground/>
   <div id="mainBlock" v-show="show">
-    <home v-show="currentBlock === 'home'"></home>
-    <idol v-show="currentBlock === 'idol'" :master="appData.master"></idol>
-    <live v-show="currentBlock === 'live'" :master="appData.master"></live>
-    <gacha v-show="currentBlock === 'gacha'" :master="appData.master"></gacha>
-    <menyuu v-show="currentBlock === 'menu'" @checking="checking = true" @checked="checking = false" :resVer="appData.resVer"></menyuu>
+    <MishiroHome v-show="currentBlock === 'home'"/>
+    <MishiroIdol v-show="currentBlock === 'idol'" :master="appData.master"/>
+    <MishiroLive v-show="currentBlock === 'live'" :master="appData.master"/>
+    <MishiroGacha v-show="currentBlock === 'gacha'" :master="appData.master"/>
+    <MishiroMenu v-show="currentBlock === 'menu'" @checking="checking = true" @checked="checking = false" :resVer="appData.resVer"/>
     <TheToggleButton @toggle="showBackground"/>
     <TheVersion :resVer="appData.resVer"/>
     <ThePlayer :master="appData.master"/>
-    <small-tab :tab="i18nTabs" v-model="currentLanguage" id="i18nTab" @tabClicked="changeLanguage"></small-tab>
+    <TabSmall :tab="i18nTabs" v-model="currentLanguage" id="i18nTab" @tabClicked="changeLanguage"/>
     <TheNavigationBar :current-block="currentBlock" @changeBlock="changeBlock"/>
   </div>
   <ModalCalculator :master="appData.master" :time="time"/>
@@ -32,17 +32,17 @@
 </template>
 
 <script>
-import entry from './view/entry.vue'
-import update from './view/update.vue'
-import home from './view/home.vue'
-import idol from './view/idol.vue'
-import live from './view/live.vue'
-import gacha from './view/gacha.vue'
-import menu from './view/menu.vue'
+import MishiroEntry from './view/MishiroEntry.vue'
+import MishiroUpdate from './view/MishiroUpdate.vue'
+import MishiroHome from './view/MishiroHome.vue'
+import MishiroIdol from './view/MishiroIdol.vue'
+import MishiroLive from './view/MishiroLive.vue'
+import MishiroGacha from './view/MishiroGacha.vue'
+import MishiroMenu from './view/MishiroMenu.vue'
 
 import ThePlayer from './component/ThePlayer.vue'
 import TheBackground from './component/TheBackground.vue'
-import smallTab from './component/smallTab.vue'
+import TabSmall from './component/TabSmall.vue'
 import TheToggleButton from './component/TheToggleButton.vue'
 import TheNavigationBar from './component/TheNavigationBar.vue'
 import TheVersion from './component/TheVersion.vue'
@@ -58,19 +58,19 @@ import ModalCalculator from './modal/ModalCalculator.vue'
 
 export default {
   components: {
-    entry,
+    MishiroEntry,
     ThePlayer,
-    update,
+    MishiroUpdate,
     TheBackground,
-    smallTab,
+    TabSmall,
     TheToggleButton,
     TheNavigationBar,
     TheVersion,
-    home,
-    idol,
-    live,
-    gacha,
-    menyuu: menu,
+    MishiroHome,
+    MishiroIdol,
+    MishiroLive,
+    MishiroGacha,
+    MishiroMenu,
     ModalAlert,
     ModalGachaHistory,
     ModalGachaCard,

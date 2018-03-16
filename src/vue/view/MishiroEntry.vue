@@ -4,14 +4,14 @@
     yoko: bg,
     tate: !bg
   }" :src="coverSrc" />
-  <img src="../../res/img/touchBase.png" class="touch" id="touchBase" />
+  <img src="../../res/img/touch_base.png" class="touch" id="touchBase" />
   <img src="../../res/img/touch.png" id="touch" class="touch twinkle" :class="{ active: isTouched }" />
 </div>
 </template>
 
 <script>
 import fs from 'fs'
-import getPath from '../../js/common/getPath.js'
+import getPath from '../../js/common/get-path.js'
 export default {
   data () {
     return {

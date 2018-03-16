@@ -1,13 +1,13 @@
 import sqlite3 from './node-module-sqlite3.js'
 
-import getEventData from './getEventData.js'
-import getGachaData from './getGachaData.js'
-import getLimitedCard from './getLimitedCard.js'
-import resolveCharaData from './resolveCharaData.js'
-import resolveCardData from './resolveCardData.js'
-import resolveAudioManifest from './resolveAudioManifest.js'
-import resolveGachaAvailable from './resolveGachaAvailable.js'
-import resolveUserLevel from './resolveUserLevel.js'
+import getEventData from './get-event-data.js'
+import getGachaData from './get-gacha-data.js'
+import getLimitedCard from './get-limited-card.js'
+import resolveCharaData from './resolve-chara-data.js'
+import resolveCardData from './resolve-card-data.js'
+import resolveAudioManifest from './resolve-audio-manifest.js'
+import resolveGachaAvailable from './resolve-gacha-available.js'
+import resolveUserLevel from './resolve-user-level.js'
 
 export default async function (event, masterFile, manifestData, config) {
   const timeOffset = (9 - (-(new Date().getTimezoneOffset() / 60))) * 60 * 60 * 1000

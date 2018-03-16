@@ -1,9 +1,9 @@
 import { exec } from 'child_process'
 import path from 'path'
 import fs from 'fs'
-import getPath from '../common/getPath.js'
+import getPath from '../common/get-path.js'
 import { dec } from 'hca'
-import { remove } from '../util/fsExtra'
+import { remove } from '../util/fse.js'
 
 const ACB = getPath('./public/bin/AcbUnzip.exe')
 const FFMPEG = getPath('./public/bin/ffmpeg.exe')

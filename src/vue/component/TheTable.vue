@@ -19,7 +19,10 @@
 
 <script>
 export default {
-  props: ['data', 'isDisabled'],
+  props: {
+    'data': Array,
+    'isDisabled': Function
+  },
   data () {
     return {
       selected: [],

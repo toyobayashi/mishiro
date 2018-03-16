@@ -1,5 +1,5 @@
 const path = require('path')
-const sourceCount = require('../src/js/util/sourceCount.js')
+const sourceCount = require('../src/js/util/source-count.js')
 const getPath = r => path.join(__dirname, '..', r)
 
 sourceCount({
@@ -14,6 +14,7 @@ sourceCount({
   css: [getPath('./src/css')],
   html: [getPath('./public/index.html')],
   cpp: [getPath('./src/cpp/hca/hca.cpp')],
+  batch: [getPath('./bin')],
   markdown: [
     getPath('./README.md'),
     getPath('./LICENSE.md')

@@ -1,7 +1,7 @@
 import { app, BrowserWindow, ipcMain } from 'electron'
 import url from 'url'
-import getPath from './common/getPath.js'
-import './main/service.js'
+import getPath from './common/get-path.js'
+import './main/ipc.js'
 
 let mainWindow
 

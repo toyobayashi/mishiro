@@ -5,7 +5,7 @@
       <div class="modal-header">
         <StaticTitleDot v-once/>
         <h4 class="modal-title">{{$t('menu.calculator')}}</h4>
-        <small-tab class="pull-right" :tab="eventType" v-model="currentEventTab" @tabClicked="toggle" :no-translation="true" :font-size="16"></small-tab>
+        <TabSmall class="pull-right" :tab="eventType" v-model="currentEventTab" @tabClicked="toggle" :no-translation="true" :font-size="16"/>
       </div>
       <div class="modal-body" :style="{ maxHeight: bodyMaxHeight }">
         <!-- Progress bar -->
@@ -15,14 +15,14 @@
               <span>{{staminaTimeLeft}}</span>
               <span>PLv. {{publicStatus.plv}}</span>
             </p>
-            <progress-bar class="cgss-progress-stamina" :percent="staminaPercent"></progress-bar>
+            <ProgressBar class="cgss-progress-stamina" :percent="staminaPercent"/>
           </div>
           <div class="progress-wrap">
             <p>
               <span><!-- {{$t('event.timeLeft')}} -->{{eventTimeLeft > 0 ? timeFormate(eventTimeLeft) : timeFormate(0)}}</span>
               <span>{{eventData ? eventData.name : ''}}</span>
             </p>
-            <progress-bar class="cgss-progress-event" :percent="eventTimePercent"></progress-bar>
+            <ProgressBar class="cgss-progress-event" :percent="eventTimePercent"/>
           </div>
         </div>
         <!-- Progress bar end -->
@@ -33,56 +33,53 @@
             <div class="arg-row">
               <label>{{$t('event.plv')}}</label>
               <div class="event-input">
-                <input-text
+                <InputText
                   v-model="publicStatus.plv"
                   :height="30"
                   :width="90"
                   style="text-align:right"
                   :limit="[1, 300]"
                   :disabled="isCounting"
-                  @focus.native="$event.target.select()">
-                </input-text> / 300
+                  @focus.native="$event.target.select()"/> / 300
               </div>
             </div>
             <div class="arg-row">
               <label>{{$t('event.stamina')}}</label>
               <div class="event-input">
-                <input-text
+                <InputText
                   v-model="publicStatus.stamina"
                   :height="30" :width="90"
                   style="text-align:right"
                   :limit="[0, maxStamina]"
                   :disabled="isCounting"
-                  @focus.native="$event.target.select()">
-                </input-text> / {{maxStamina}}
+                  @focus.native="$event.target.select()"/> / {{maxStamina}}
               </div>
             </div>
             <div class="arg-row">
               <label>{{$t('event.exp')}}</label>
               <div class="event-input">
-                <input-text
+                <InputText
                   v-model="publicStatus.exp"
                   :height="30"
                   :width="90"
                   style="text-align:right"
                   :limit="[0, maxExp]"
-                  @focus.native="$event.target.select()">
-                </input-text> / {{maxExp}}
+                  @focus.native="$event.target.select()"/> / {{maxExp}}
               </div>
             </div>
             <div v-for="(tab, type) in eventType" v-show="currentEventTab === tab">
               <div class="arg-row" v-for="(playerStatus, name) in privateStatus[type].input">
                 <label>{{$t(`event.${name}`)}}</label>
-                <input-text v-if="playerStatus.type === 'text'" v-model="playerStatus.model" :height="30" class="event-input" :limit="playerStatus.limit" @focus.native="$event.target.select()"></input-text>
+                <InputText v-if="playerStatus.type === 'text'" v-model="playerStatus.model" :height="30" class="event-input" :limit="playerStatus.limit" @focus.native="$event.target.select()"/>
                 <div class="radio-group" v-if="playerStatus.type === 'radio'">
-                  <radio
+                  <InputRadio
                     style="margin-left:10px"
                     v-for="radio in playerStatus.option"
                     :text="radio.text"
                     :lable-id="radio.id"
                     :key="radio.id"
                     v-model="playerStatus.model"
-                    :value="radio.value"></radio>
+                    :value="radio.value"/>
                 </div>
               </div>
             </div>

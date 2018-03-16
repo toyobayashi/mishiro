@@ -9,7 +9,9 @@
 
 <script>
 export default {
-  props: ['percent']
+  props: {
+    'percent': Number
+  }
 }
 </script>
 

@@ -1,6 +1,6 @@
 import request from 'request'
 import fs from 'fs'
-import getPath from '../common/getPath.js'
+import getPath from '../common/get-path.js'
 import configurer from '../common/config.js'
 
 let current = 0

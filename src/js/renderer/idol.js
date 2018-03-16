@@ -1,8 +1,8 @@
-import progressBar from '../../vue/component/progressBar.vue'
-import smallTab from '../../vue/component/smallTab.vue'
-import inputText from '../../vue/component/inputText.vue'
+import ProgressBar from '../../vue/component/ProgressBar.vue'
+import TabSmall from '../../vue/component/TabSmall.vue'
+import InputText from '../../vue/component/InputText.vue'
 import Downloader from './downloader.js'
-import getPath from '../common/getPath.js'
+import getPath from '../common/get-path.js'
 import fs from 'fs'
 import path from 'path'
 import { ipcRenderer, shell } from 'electron'
@@ -10,9 +10,9 @@ const dler = new Downloader()
 
 export default {
   components: {
-    progressBar,
-    smallTab,
-    inputText
+    ProgressBar,
+    TabSmall,
+    InputText
   },
   data () {
     return {
