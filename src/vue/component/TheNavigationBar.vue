@@ -8,7 +8,9 @@
 
 <script>
 export default {
-  props: ['currentBlock'],
+  props: {
+    'currentBlock': String
+  },
   data () {
     return {
       blocks: ['home', 'idol', 'live', 'gacha', 'menu']

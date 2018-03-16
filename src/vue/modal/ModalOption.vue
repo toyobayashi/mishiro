@@ -3,7 +3,7 @@
   <transition name="scale" @after-leave="afterLeave">
     <div :style="{ width: modalWidth }" v-if="visible">
       <div class="modal-header">
-        <title-dot v-once></title-dot>
+        <StaticTitleDot v-once/>
         <h4 class="modal-title">{{$t("menu.option")}}</h4>
       </div>
       <div class="modal-body" :style="{ maxHeight: bodyMaxHeight }">

@@ -3,7 +3,7 @@
   <transition name="scale" @after-leave="afterLeave">
     <div style="width:900px" v-show="visible">
       <div class="modal-header">
-        <title-dot v-once></title-dot>
+        <StaticTitleDot v-once/>
         <h4 class="modal-title">{{information.name ? information.name : ""}}</h4>
         <small-tab class="pull-right" :tab="practice" v-model="currentPractice" @tabClicked="toggle"></small-tab>
       </div>

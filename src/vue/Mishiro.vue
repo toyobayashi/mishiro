@@ -6,27 +6,27 @@
   <transition name="fade">
     <update v-if="!isReady" @ready="isReady = !isReady" v-model="appData" :is-touched="isTouched"></update>
   </transition>
-  <background></background>
+  <TheBackground/>
   <div id="mainBlock" v-show="show">
     <home v-show="currentBlock === 'home'"></home>
     <idol v-show="currentBlock === 'idol'" :master="appData.master"></idol>
     <live v-show="currentBlock === 'live'" :master="appData.master"></live>
     <gacha v-show="currentBlock === 'gacha'" :master="appData.master"></gacha>
     <menyuu v-show="currentBlock === 'menu'" @checking="checking = true" @checked="checking = false" :resVer="appData.resVer"></menyuu>
-    <hide-button @toggle="showBackground"></hide-button>
-    <version :resVer="appData.resVer"></version>
-    <player :master="appData.master"></player>
+    <TheToggleButton @toggle="showBackground"/>
+    <TheVersion :resVer="appData.resVer"/>
+    <ThePlayer :master="appData.master"/>
     <small-tab :tab="i18nTabs" v-model="currentLanguage" id="i18nTab" @tabClicked="changeLanguage"></small-tab>
-    <nav-bar :current-block="currentBlock" @changeBlock="changeBlock"></nav-bar>
+    <TheNavigationBar :current-block="currentBlock" @changeBlock="changeBlock"/>
   </div>
-  <calculator :master="appData.master" :time="time"></calculator>
-  <version-check></version-check>
-  <about></about>
-  <gacha-information :master="appData.master"></gacha-information>
-  <gacha-history></gacha-history>
-  <gacha-card :master="appData.master"></gacha-card>
-  <setting :master="appData.master" :latestResVer="appData.latestResVer" v-model="currentLanguage"></setting>
-  <alert></alert>
+  <ModalCalculator :master="appData.master" :time="time"/>
+  <ModalVersion/>
+  <ModalAbout/>
+  <ModalGachaInformation :master="appData.master"/>
+  <ModalGachaHistory/>
+  <ModalGachaCard :master="appData.master"/>
+  <ModalOption :master="appData.master" :latestResVer="appData.latestResVer" v-model="currentLanguage"/>
+  <ModalAlert/>
   <img v-show="checking" src="../res/img/spinner.gif" class="spinner" />
 </div>
 </template>
@@ -40,45 +40,45 @@ import live from './view/live.vue'
 import gacha from './view/gacha.vue'
 import menu from './view/menu.vue'
 
-import player from './component/player.vue'
-import background from './component/background.vue'
+import ThePlayer from './component/ThePlayer.vue'
+import TheBackground from './component/TheBackground.vue'
 import smallTab from './component/smallTab.vue'
-import hideButton from './component/hideButton.vue'
-import navBar from './component/navBar.vue'
-import version from './component/version.vue'
+import TheToggleButton from './component/TheToggleButton.vue'
+import TheNavigationBar from './component/TheNavigationBar.vue'
+import TheVersion from './component/TheVersion.vue'
 
-import alert from './modal/alert.vue'
-import gachaHistory from './modal/gachaHistory.vue'
-import gachaCard from './modal/gachaCard.vue'
-import gachaInformation from './modal/gachaInformation.vue'
-import about from './modal/about.vue'
-import setting from './modal/setting.vue'
-import versionCheck from './modal/versionCheck.vue'
-import calculator from './modal/calculator.vue'
+import ModalAlert from './modal/ModalAlert.vue'
+import ModalGachaHistory from './modal/ModalGachaHistory.vue'
+import ModalGachaCard from './modal/ModalGachaCard.vue'
+import ModalGachaInformation from './modal/ModalGachaInformation.vue'
+import ModalAbout from './modal/ModalAbout.vue'
+import ModalOption from './modal/ModalOption.vue'
+import ModalVersion from './modal/ModalVersion.vue'
+import ModalCalculator from './modal/ModalCalculator.vue'
 
 export default {
   components: {
     entry,
-    player,
+    ThePlayer,
     update,
-    background,
+    TheBackground,
     smallTab,
-    hideButton,
-    navBar,
-    version,
+    TheToggleButton,
+    TheNavigationBar,
+    TheVersion,
     home,
     idol,
     live,
     gacha,
     menyuu: menu,
-    alert,
-    gachaHistory,
-    gachaCard,
-    gachaInformation,
-    about,
-    versionCheck,
-    setting,
-    calculator
+    ModalAlert,
+    ModalGachaHistory,
+    ModalGachaCard,
+    ModalGachaInformation,
+    ModalAbout,
+    ModalVersion,
+    ModalOption,
+    ModalCalculator
   },
   data () {
     return {
