@@ -116,6 +116,9 @@ export default {
         if (!fs.existsSync(getPath('./public/asset/sound/voice'))) {
           fs.mkdirSync(getPath('./public/asset/sound/voice'))
         }
+        if (!fs.existsSync(getPath('./public/asset/score'))) {
+          fs.mkdirSync(getPath('./public/asset/score'))
+        }
         ipcRenderer.on('readManifest', async (event, masterHash, resVer) => {
           const masterFile = await this.getMaster(resVer, masterHash)
           if (masterFile) ipcRenderer.send('readMaster', masterFile)

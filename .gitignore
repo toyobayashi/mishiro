@@ -8,9 +8,12 @@ public/dll.js
 public/mishiro.renderer.js
 public/mishiro.renderer.css
 public/mishiro.main.js
+public/mishiro.live.js
 public/img/*
+public/bin/CGSSAudio.exe
 !public/img/2ndAnniversary.jpg
-public/asset/font/
+public/asset/score/
+public/asset/sound/se/
 public/asset/sound/live/
 public/asset/sound/voice/
 public/asset/sound/bgm/*.mp3

@@ -22,6 +22,7 @@
   <ModalCalculator :master="appData.master" :time="time"/>
   <ModalVersion/>
   <ModalAbout/>
+  <ModalLiveDifficulty/>
   <ModalGachaInformation :master="appData.master"/>
   <ModalGachaHistory/>
   <ModalGachaCard :master="appData.master"/>
@@ -55,6 +56,7 @@ import ModalAbout from './modal/ModalAbout.vue'
 import ModalOption from './modal/ModalOption.vue'
 import ModalVersion from './modal/ModalVersion.vue'
 import ModalCalculator from './modal/ModalCalculator.vue'
+import ModalLiveDifficulty from './modal/ModalLiveDifficulty.vue'
 
 export default {
   components: {
@@ -78,7 +80,8 @@ export default {
     ModalAbout,
     ModalVersion,
     ModalOption,
-    ModalCalculator
+    ModalCalculator,
+    ModalLiveDifficulty
   },
   data () {
     return {

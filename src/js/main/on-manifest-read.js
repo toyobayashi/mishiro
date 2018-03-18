@@ -18,6 +18,7 @@ export default async function (event, manifestFile, resVer) {
   manifestData.liveManifest = await manifest._all('SELECT name, hash FROM manifests WHERE name LIKE "l/%"')
   manifestData.bgmManifest = await manifest._all('SELECT name, hash FROM manifests WHERE name LIKE "b/%"')
   manifestData.voiceManifest = await manifest._all('SELECT name, hash FROM manifests WHERE name LIKE "v/%"')
+  manifestData.scoreManifest = await manifest._all('SELECT name, hash FROM manifests WHERE name LIKE "musicscores_m___.bdb"')
 
   manifest.close(err => {
     if (err) throw err

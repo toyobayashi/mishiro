@@ -115,7 +115,11 @@ export default {
   },
   live: {
     decoding: '　解碼中...',
-    input: '捜索Live曲'
+    input: '捜索Live曲',
+    live: 'LIVE',
+    noScore: '這首曲子没有譜面。',
+    noAudio: '未発現MP3文件。',
+    start: '開始'
   },
   gacha: {
     ikkai: '単抽',

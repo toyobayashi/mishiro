@@ -161,7 +161,7 @@ export default {
       for (let i = 0; i < charaTitleVoiceArr.length; i++) {
         charaTitleVoiceArr[i] = './asset/sound/chara_title.asar/' + charaTitleVoiceArr[i]
       }
-      charaTitleVoiceArr.push('./asset/sound/se/chara_title.mp3')
+      charaTitleVoiceArr.push('./asset/sound/se.asar/chara_title.mp3')
       this.playSe(new Audio(charaTitleVoiceArr[Math.floor(Math.random() * charaTitleVoiceArr.length)]))
       window.bgm = this.bgm
       document.addEventListener('click', (e) => {
@@ -240,6 +240,9 @@ export default {
         if (!flag) {
           this.play(bgm)
         }
+      })
+      this.event.$on('pauseBgm', () => {
+        this.pause()
       })
     })
   }

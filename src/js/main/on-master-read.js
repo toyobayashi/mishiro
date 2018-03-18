@@ -26,7 +26,7 @@ export default async function (event, masterFile, manifestData, config) {
   const textData = [await master._all("SELECT * FROM text_data WHERE category='2'"), await master._all("SELECT * FROM text_data WHERE category='4'")]
   const skillData = await master._all('SELECT * FROM skill_data')
   const leaderSkillData = await master._all('SELECT * FROM leader_skill_data')
-  const musicData = await master._all('SELECT id, name FROM music_data')
+  const musicData = await master._all('SELECT id, name, bpm FROM music_data')
 
   let { gachaNow, gachaData } = getGachaData(gachaAll, config, now, timeOffset)
   console.log(`gachaID: ${gachaData.id}`)
@@ -35,12 +35,14 @@ export default async function (event, masterFile, manifestData, config) {
   let liveManifest = manifestData.liveManifest
   let bgmManifest = manifestData.bgmManifest
   let voiceManifest = manifestData.voiceManifest
+  let scoreManifest = manifestData.scoreManifest
   manifestData = {}
 
   let gachaLimited = await master._all('SELECT gacha_id, reward_id FROM gacha_available WHERE limited_flag = 1 ORDER BY reward_id')
   let eventLimited = await master._all('SELECT event_id, reward_id FROM event_available ORDER BY reward_id')
 
   let userLevel = await master._all('SELECT level, stamina, total_exp FROM user_level')
+  let liveData = await master._all('SELECT id, music_data_id FROM live_data')
   master.close(err => {
     if (err) throw err
     master = void 0
@@ -50,7 +52,7 @@ export default async function (event, masterFile, manifestData, config) {
   charaData = resolveCharaData(charaData, textData)
   cardData = resolveCardData(cardData, charaData, skillData, leaderSkillData, eventLimitedCard, gachaLimitedCard)
 
-  let audioManifest = resolveAudioManifest(bgmManifest, liveManifest, musicData, charaData)
+  let audioManifest = resolveAudioManifest(bgmManifest, liveManifest, musicData, charaData, liveData, scoreManifest)
   bgmManifest = audioManifest.bgmManifest
   liveManifest = audioManifest.liveManifest
 
