@@ -115,7 +115,11 @@ export default {
   },
   live: {
     decoding: '　デコード中...',
-    input: 'ライブ曲検索'
+    input: 'ライブ曲検索',
+    live: 'ライブ',
+    noScore: 'この曲は譜面がないので、プレイできません。',
+    noAudio: 'MP3ファイルが見つかりませんでした。',
+    start: '決定'
   },
   gacha: {
     ikkai: '1回引く',

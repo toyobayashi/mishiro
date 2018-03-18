@@ -18,8 +18,8 @@ export default {
     // 全局属性
     Vue.prototype.event = new Vue({}) // 全局事件总站
     Vue.prototype.bgm = new Audio() // 背景音乐
-    Vue.prototype.enterSe = new Audio('./asset/sound/se/se_common_enter.mp3') // 确认音效
-    Vue.prototype.cancelSe = new Audio('./asset/sound/se/se_common_cancel.mp3') // 取消音效
+    Vue.prototype.enterSe = new Audio('./asset/sound/se.asar/se_common_enter.mp3') // 确认音效
+    Vue.prototype.cancelSe = new Audio('./asset/sound/se.asar/se_common_cancel.mp3') // 取消音效
     Vue.prototype.configurer = configurer
 
     // 全局方法

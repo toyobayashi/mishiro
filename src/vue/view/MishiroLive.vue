@@ -3,8 +3,8 @@
   <div class="clearfix">
     <InputText class="live-query" v-model="queryString" :placeholder="$t('live.input')"/>
     <button class="cgss-btn-lg cgss-btn-lg-star pull-right margin-left-10" @click="opendir">{{$t("home.opendir")}}</button>
-    <!-- <button ref="stopBtn" class="cgss-btn cgss-btn-default pull-right margin-left-10" @click="stopDownload">{{$t("home.stop")}}</button>
-    <button ref="downloadBtn" class="cgss-btn cgss-btn-star pull-right margin-left-10" @click="downloadAll">{{$t("home.download")}}</button> -->
+    <button class="cgss-btn cgss-btn-star pull-right margin-left-10" @click="startGame">{{$t("live.live")}}</button>
+    <!-- <button ref="downloadBtn" class="cgss-btn cgss-btn-star pull-right margin-left-10" @click="downloadAll">{{$t("home.download")}}</button> -->
     <button class="cgss-btn cgss-btn-ok pull-right margin-left-10" @click="query">{{$t("home.search")}}</button>
   </div>
   <div class="margin-top-10 clearfix live-middle">
@@ -64,7 +64,7 @@
 }
 .live-query{
   margin: 12px 0;
-  width: calc(100% - 370px);
+  width: calc(100% - 535px);
 }
 .live-result>ul>li{
   cursor: pointer;

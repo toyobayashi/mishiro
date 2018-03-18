@@ -33,10 +33,13 @@ let main = {
 
 let renderer = {
   target: 'electron-renderer',
-  entry: path.join(__dirname, '../src/js/renderer.js'),
+  entry: {
+    'mishiro.renderer': path.join(__dirname, '../src/js/renderer.js'),
+    'mishiro.live': path.join(__dirname, '../src/js/renderer-game.js')
+  },
   output: {
     path: path.join(__dirname, '../public'),
-    filename: 'mishiro.renderer.js'
+    filename: '[name].js'
   },
   node: {
     __dirname: false,

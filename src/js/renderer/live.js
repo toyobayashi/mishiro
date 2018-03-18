@@ -5,6 +5,7 @@ import InputText from '../../vue/component/InputText.vue'
 import Downloader from './downloader.js'
 import getPath from '../common/get-path.js'
 const dler = new Downloader()
+const scoreDownloader = new Downloader()
 
 export default {
   components: {
@@ -44,7 +45,7 @@ export default {
     },
     async selectAudio (audio) {
       if (this.activeAudio.hash !== audio.hash) {
-        this.playSe(this.enterSe)
+        await this.playSe(this.enterSe)
 
         this.total = 0
         this.current = 0
@@ -136,6 +137,41 @@ export default {
     opendir () {
       this.playSe(this.enterSe)
       shell.openExternal(getPath('./public/asset/sound'))
+    },
+    async startGame () {
+      await this.playSe(this.enterSe)
+
+      if (this.activeAudio.score) {
+        if (!fs.existsSync(getPath(`./public/asset/sound/live/${this.activeAudio.fileName}`))) {
+          this.event.$emit('alert', this.$t('home.errorTitle'), this.$t('live.noAudio'))
+          return
+        }
+        let isContinue = true
+        if (!fs.existsSync(getPath(`./public/asset/score/${this.activeAudio.score}`))) {
+          try {
+            let scoreBdb = await scoreDownloader.download(
+              this.getDbUrl(this.activeAudio.scoreHash),
+              getPath(`./public/asset/score/${this.activeAudio.score.split('.')[0]}`),
+              () => { }
+            )
+            if (scoreBdb) {
+              this.lz4dec(scoreBdb, 'bdb')
+              fs.unlinkSync(getPath(`./public/asset/score/${this.activeAudio.score.split('.')[0]}`))
+            } else {
+              isContinue = false
+              this.event.$emit('alert', this.$t('home.errorTitle'), 'Error!')
+            }
+          } catch (errorPath) {
+            isContinue = false
+            this.event.$emit('alert', this.$t('home.errorTitle'), this.$t('home.downloadFailed') + '<br/>' + errorPath)
+          }
+        }
+        if (isContinue) {
+          this.event.$emit('game', this.activeAudio)
+        }
+      } else {
+        this.event.$emit('alert', this.$t('home.errorTitle'), this.$t('live.noScore'))
+      }
     }
   },
   filters: {
@@ -176,6 +212,10 @@ export default {
         this.current = 0
         this.text = ''
         this.event.$emit('liveSelect', { src: url })
+      })
+      ipcRenderer.on('liveEnd', (event, liveResult, isCompleted) => {
+        if (isCompleted) this.playSe(new Audio('./asset/sound/se.asar/se_live_wow.mp3'))
+        console.log(liveResult)
       })
     })
   }
