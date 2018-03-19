@@ -51,14 +51,18 @@ let renderer = {
       exclude: /node_modules/,
       loader: 'vue-loader',
       options: {
-        loaders: {},
-        extractCSS: true
-        // other vue-loader options go here
+        loaders: {
+          css: ExtractTextPlugin.extract({
+            use: [{
+              loader: 'css-loader',
+              options: {
+                url: false
+              }
+            }]
+          })
+        }
+        // extractCSS: true
       }
-    }, {
-      test: /\.(png|jpg|gif)$/,
-      exclude: /node_modules/,
-      loader: 'url-loader?limit=8192&name=./img/[name].[ext]?[hash]'
     }]
   },
   plugins: [

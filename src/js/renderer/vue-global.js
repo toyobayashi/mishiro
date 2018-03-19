@@ -26,7 +26,9 @@ export default {
     Vue.prototype.lz4dec = lz4dec // lz4解压
     Vue.prototype.playSe = function (se) { // 播放音效
       se.currentTime = 0
-      se.play()
+      setTimeout(() => {
+        se.play()
+      }, 0)
     }
     Vue.prototype.createCardBackgroundTask = function (cardIdArr) {
       let task = []

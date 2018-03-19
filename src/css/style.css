@@ -10,6 +10,14 @@ body{
   cursor: default;
   font-family: "CGSS";
 }
+@font-face{
+  font-family:'CGSS';
+  src:url(./asset/font.asar/FRM.otf)
+}
+@font-face{
+  font-family:'CGSS-B';
+  src:url(./asset/font.asar/FRB.otf)
+}
 ::-webkit-scrollbar{
   width:0;
 }
@@ -122,7 +130,7 @@ td, th{
   height: 64px;
   border: none;
   outline: none;
-  background-image: url("../res/img/button.png");
+  background-image: url("./img/img.asar/button.png");
   background-color: rgba(255,255,255,0);
   font-family: "CGSS-B";
   font-size: 29px;
@@ -165,7 +173,7 @@ td, th{
   height: 64px;
   border: none;
   outline: none;
-  background-image: url("../res/img/button_large.png");
+  background-image: url("./img/img.asar/button_large.png");
   background-color: rgba(255,255,255,0);
   font-family: "CGSS-B";
   font-size: 29px;
@@ -208,7 +216,7 @@ td, th{
   height: 64px;
   border: none;
   outline: none;
-  background-image: url("../res/img/button_small.png");
+  background-image: url("./img/img.asar/button_small.png");
   background-color: rgba(255,255,255,0);
   font-family: "CGSS-B";
   font-size: 25px;

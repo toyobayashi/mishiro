@@ -35,7 +35,7 @@ export default {
   left: 50%;
   margin-left: -336px;
   bottom: 0;
-  background-image: url("../../res/img/bar_navigation.png");
+  background-image: url("./img/img.asar/bar_navigation.png");
   z-index: 200;
 }
 .main-bar ul{
@@ -49,7 +49,7 @@ export default {
   width: 128px;
   height: 68px;
   text-decoration: none;
-  background-image: url("../../res/img/bar_navigation.png");
+  background-image: url("./img/img.asar/bar_navigation.png");
 }
 .main-bar ul li:nth-child(1){
   background-position: 0 0;
