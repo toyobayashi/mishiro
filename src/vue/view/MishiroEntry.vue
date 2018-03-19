@@ -4,8 +4,8 @@
     yoko: bg,
     tate: !bg
   }" :src="coverSrc" />
-  <img src="../../res/img/touch_base.png" class="touch" id="touchBase" />
-  <img src="../../res/img/touch.png" id="touch" class="touch twinkle" :class="{ active: isTouched }" />
+  <img :src="'./img/img.asar/touch_base.png'" class="touch" id="touchBase" />
+  <img :src="'./img/img.asar/touch.png'" id="touch" class="touch twinkle" :class="{ active: isTouched }" />
 </div>
 </template>
 
@@ -17,7 +17,7 @@ export default {
     return {
       bg: null,
       isTouched: false,
-      coverSrc: './img/2ndAnniversary.jpg'
+      coverSrc: './img/img.asar/2ndAnniversary.jpg'
     }
   },
   methods: {

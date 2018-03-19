@@ -20,7 +20,7 @@ export default {
   right:5px;
   width:65px;
   height:65px;
-  background-image:url('../../res/img/button_toggle.png');
+  background-image:url('./img/img.asar/button_toggle.png');
   background-position:0 -65px;
   cursor: pointer;
 }

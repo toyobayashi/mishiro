@@ -5,7 +5,7 @@
     <ProgressBar class="cgss-progress-load" :percent="loading"/>
     <p>{{$t("update.tip")}}</p>
   </div>
-  <img src="../../res/img/spinner.gif" class="spinner" v-show="isTouched"/>
+  <img :src="'./img/img.asar/spinner.gif'" class="spinner" v-show="isTouched"/>
 </div>
 </template>
 

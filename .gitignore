@@ -10,8 +10,8 @@ public/mishiro.renderer.css
 public/mishiro.main.js
 public/mishiro.live.js
 public/img/*
+!public/img/img.asar
 public/bin/CGSSAudio.exe
-!public/img/2ndAnniversary.jpg
 public/asset/score/
 public/asset/sound/se/
 public/asset/sound/live/
@@ -28,3 +28,4 @@ public/asset/sound/bgm/*.mp3
 config.json
 .vscode/
 src/cpp/*/build/
+src/res/img.asar

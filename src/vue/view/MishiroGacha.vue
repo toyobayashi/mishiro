@@ -16,14 +16,14 @@
       <div class="gacha-btn gacha-btn-jukkai pull-right margin-left-100" id="jukkai" @click="jukkaiHiku()">
         <div class="gacha-btn-text">{{$t("gacha.jukkai")}}</div>
         <div class="gacha-btn-jewel">
-          <img src="../../res/img/jewel.png">2500
+          <img :src="'./img/img.asar/jewel.png'">2500
           <span class="white">{{$t("gacha.ko")}}</span>
         </div>
       </div>
       <div class="gacha-btn gacha-btn-ikkai pull-right" id="ikkai" @click="ikkaiHiku()">
         <div class="gacha-btn-text">{{$t("gacha.ikkai")}}</div>
         <div class="gacha-btn-jewel">
-          <img src="../../res/img/jewel.png">250
+          <img :src="'./img/img.asar/jewel.png'">250
           <span class="white">{{$t("gacha.ko")}}</span>
         </div>
       </div>
@@ -58,7 +58,7 @@
 .gacha-btn {
   width: 194px;
   height: 70px;
-  background-image: url("../../res/img/button_gacha.png");
+  background-image: url("./img/img.asar/button_gacha.png");
   cursor: pointer;
   user-select: none;
 }
