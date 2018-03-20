@@ -3,7 +3,9 @@ let liveResult = {
   great: 0,
   nice: 0,
   bad: 0,
-  miss: 0
+  miss: 0,
+  combo: 0,
+  hp: 100
 }
 
 let se = {
@@ -37,7 +39,7 @@ class Note {
 }
 Note.IMG = newImage('./img/img.asar/icon_notes.png')
 // Note.CTX = document.getElementById('live').getContext('2d')
-Note.SPEED = 10 // x 60 px / s
+Note.SPEED = 12 // x 60 px / s
 Note.PX_SPEED = Note.SPEED * 60 / 1000
 Note.TOP_TO_BOTTOM = 592
 Note.X = [238.5, 414.5, 589.5, 764.5, 937.5]
@@ -206,6 +208,7 @@ function down () {
   if (this.status === 0) {
     let dt = Math.abs(this.y - Note.TOP_TO_BOTTOM) / Note.PX_SPEED
     if (dt <= Note.RANGE) {
+      this.clean()
       rank(dt)
       this.status = 1
       this.length = this.length - (this.y - Note.TOP_TO_BOTTOM)
@@ -236,28 +239,41 @@ function up () {
 }
 
 function rank (dt) {
-  if (dt <= 40) {
+  if (dt <= 50) {
     liveResult.perfect++
+    liveResult.combo++
     playSe(se.tapPerfect)
     // console.log('perfect')
-  } else if (dt <= 60) {
+  } else if (dt <= 75) {
     liveResult.great++
+    liveResult.combo++
     playSe(se.tapGreat)
     // console.log('great')
-  } else if (dt <= 80) {
+  } else if (dt <= 87.5) {
     liveResult.nice++
+    liveResult.combo = 0
     playSe(se.tapNice)
     // console.log('nice')
   } else {
-    liveResult.bad++
     playSe(se.tapNice)
+    liveResult.bad++
+    liveResult.combo = 0
+    liveResult.hp -= 4
+    hpCheck()
     // console.log('bad')
   }
 }
 
 function miss () {
   liveResult.miss++
-  console.log('miss')
+  liveResult.combo = 0
+  liveResult.hp -= 6
+  hpCheck()
+  // console.log('miss')
+}
+
+function hpCheck () {
+  if (liveResult.hp < 0) window.close()
 }
 
 function keydown (path) {
