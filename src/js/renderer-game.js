@@ -6,7 +6,7 @@ window.addEventListener('load', () => {
   keyBind()
   Note.CTX = document.getElementById('live').getContext('2d')
   let ctxIconBar = document.getElementById('iconBar').getContext('2d')
-  let liveIcon = newImage('./img/live_icon_857x114.png')
+  let liveIcon = newImage('./img/img.asar/live_icon_857x114.png')
   liveIcon.addEventListener('load', function () {
     ctxIconBar.drawImage(this, 211.5, 586)
   }, false)

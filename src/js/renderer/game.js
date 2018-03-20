@@ -35,7 +35,7 @@ class Note {
     Note.queue[this.path - 1].push(this)
   }
 }
-Note.IMG = newImage('./img/icon_notes.png')
+Note.IMG = newImage('./img/img.asar/icon_notes.png')
 // Note.CTX = document.getElementById('live').getContext('2d')
 Note.SPEED = 10 // x 60 px / s
 Note.PX_SPEED = Note.SPEED * 60 / 1000
