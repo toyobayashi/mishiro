@@ -3,52 +3,17 @@
 <head>
   <meta charset="UTF-8">
   <title></title>
-  <style>
-    *{
-      margin: 0;
-      padding: 0;
-    }
-    .canvas {
-      position: fixed;
-      left: 50%;
-      top: 50%;
-      transform: translate(-50%, -50%);
-      /* border: 1px solid #000; */
-    }
-
-    .canvas-middle {
-      width: 100%;
-    }
-
-    .canvas-center {
-      height: 100%;
-    }
-
-    .img-middle {
-      position: fixed;
-      bottom: 0;
-      left: 0;
-      width: 100%;
-      z-index: -1000;
-    }
-
-    .img-center {
-      position: fixed;
-      left: 50%;
-      top: 50%;
-      transform: translate(-50%, -50%);
-      height: 100%;
-      z-index: -1000;
-    }
-  </style>
+  <link id="css" rel="stylesheet" type="text/css" href="./mishiro.live.css" />
 </head>
 <body>
-  <div style="position:relative">
+  <div style="position:fixed;width:100%;height:100%">
     <img src="./img/img.asar/bg_live_4004.png" class="img-middle">
     <div style="background: rgba(0,0,0,0.5);position:fixed;width:100%;height:100%"></div>
+    <div id="app"></div>
     <canvas class="canvas canvas-center" id="iconBar" width="1280" height="720"></canvas>
     <canvas class="canvas canvas-center" id="live" width="1280" height="720"></canvas>
   </div>
+  <script src="./dll.js"></script>
   <script src="./mishiro.live.js"></script>
 </body>
 </html>

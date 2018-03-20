@@ -66,7 +66,7 @@ let renderer = {
     }]
   },
   plugins: [
-    new ExtractTextPlugin('./mishiro.renderer.css'),
+    new ExtractTextPlugin('./[name].css'),
     new webpack.LoaderOptionsPlugin({
       minimize: true
     }),

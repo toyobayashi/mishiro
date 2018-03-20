@@ -1,6 +1,8 @@
 import { remote, ipcRenderer } from 'electron'
 import { parse } from 'path'
 import { Note, ShortNote, LongNote, newImage, keyBind, liveResult } from './renderer/game.js'
+import Vue from 'vue'
+import Game from '../vue/MishiroGame.vue'
 
 window.addEventListener('load', () => {
   keyBind()
@@ -38,4 +40,9 @@ ipcRenderer.on('start', (event, song, fromWindowId) => {
   }, false)
 
   music.play()
+})
+
+window.app = new Vue({
+  el: '#app',
+  render: h => h(Game)
 })
