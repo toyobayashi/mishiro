@@ -7,7 +7,7 @@ import Game from '../vue/MishiroGame.vue'
 window.addEventListener('load', () => {
   keyBind()
   Note.CTX = document.getElementById('live').getContext('2d')
-  let ctxIconBar = document.getElementById('iconBar').getContext('2d')
+  let ctxIconBar = Note.BACK_CTX = document.getElementById('iconBar').getContext('2d')
   let liveIcon = newImage('./img/img.asar/live_icon_857x114.png')
   liveIcon.addEventListener('load', function () {
     ctxIconBar.drawImage(this, 211.5, 586)
@@ -16,7 +16,8 @@ window.addEventListener('load', () => {
 
 ipcRenderer.on('start', (event, song, fromWindowId) => {
   let name = parse(song.src).name.split('-')[1]
-  document.getElementsByTagName('title')[0].innerHTML = name
+  document.getElementsByTagName('title')[0].innerHTML = liveResult.name = name
+  liveResult.fullCombo = song.fullCombo
   let isCompleted = false
   window.addEventListener('beforeunload', (e) => {
     const fromWindow = remote.BrowserWindow.fromId(fromWindowId)

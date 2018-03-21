@@ -6,6 +6,7 @@ import './main/ipc.js'
 let mainWindow
 
 function createWindow () {
+  // Menu.setApplicationMenu(null)
   mainWindow = new BrowserWindow({
     width: 1296,
     height: 863,

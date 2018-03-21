@@ -33,11 +33,11 @@ export default {
   line-height: 80px;
 }
 .combo > .combo-text {
-	-webkit-text-stroke: 2px rgb(240,144,0);
+	-webkit-text-stroke: 1px rgb(240,144,0);
 	color: #f0f0f0;
-	font-size: 40px;
+	font-size: 35px;
   font-family: "CGSS-B";
-  height: 40px;
-  line-height: 40px;
+  height: 35px;
+  line-height: 35px;
 }
 </style>

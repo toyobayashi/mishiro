@@ -16,6 +16,11 @@ export default async function (event, scoreFile, difficulty, bpm, src) {
   let data = rows.filter(row => row.name === nameField)[0].data.toString()
 
   let score = createScore(data, bpm)
-  let obj = { src, bpm, score }
+
+  let fullCombo = 0
+  for (let i = 0; i < score.length; i++) {
+    fullCombo += score[i][2] ? 2 : 1
+  }
+  let obj = { src, bpm, score, fullCombo }
   event.sender.send('game', obj)
 }

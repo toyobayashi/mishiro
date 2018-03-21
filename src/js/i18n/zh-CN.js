@@ -119,7 +119,9 @@ export default {
     live: 'LIVE',
     noScore: '這首曲子没有譜面。',
     noAudio: '未発現MP3文件。',
-    start: '開始'
+    start: '開始',
+    gameRunning: 'LIVE正在進行。',
+    liveResult: 'LIVE成績'
   },
   gacha: {
     ikkai: '単抽',

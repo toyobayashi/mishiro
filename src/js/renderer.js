@@ -20,7 +20,7 @@ Vue.use(vueGlobal);
     }
   })
 
-  window.app = new Vue({
+  new Vue({
     el: '#app',
     i18n,
     render: h => h(Mishiro)

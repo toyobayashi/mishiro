@@ -22,7 +22,8 @@ export default {
       duration: 100,
       currentTime: 0,
       allLive: true,
-      liveQueryList: []
+      liveQueryList: [],
+      isGameRunning: false
     }
   },
   props: {
@@ -141,6 +142,11 @@ export default {
     async startGame () {
       await this.playSe(this.enterSe)
 
+      if (this.isGameRunning) {
+        this.event.$emit('alert', this.$t('home.errorTitle'), this.$t('live.gameRunning'))
+        return
+      }
+
       if (this.activeAudio.score) {
         if (!fs.existsSync(getPath(`./public/asset/sound/live/${this.activeAudio.fileName}`))) {
           this.event.$emit('alert', this.$t('home.errorTitle'), this.$t('live.noAudio'))
@@ -202,6 +208,9 @@ export default {
           this.activeAudio = this.liveManifest.filter(bgm => bgm.fileName === fileName)[0]
         }
       })
+      this.event.$on('gameStart', () => {
+        this.isGameRunning = true
+      })
       this.event.$on('enterKey', (block) => {
         if (block === 'live') {
           this.query()
@@ -214,8 +223,9 @@ export default {
         this.event.$emit('liveSelect', { src: url })
       })
       ipcRenderer.on('liveEnd', (event, liveResult, isCompleted) => {
+        this.isGameRunning = false
         if (isCompleted) this.playSe(new Audio('./asset/sound/se.asar/se_live_wow.mp3'))
-        console.log(liveResult)
+        this.event.$emit('showLiveResult', liveResult)
       })
     })
   }
