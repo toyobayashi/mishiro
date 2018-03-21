@@ -62,7 +62,7 @@ export default {
   mounted () {
     this.$nextTick(() => {
       ipcRenderer.on('game', (event, obj) => {
-        console.log(obj)
+        this.event.$emit('gameStart')
         this.event.$emit('pauseBgm')
         const windowID = BrowserWindow.getFocusedWindow().id
 
@@ -85,6 +85,8 @@ export default {
         win.webContents.on('did-finish-load', function () {
           win.webContents.send('start', obj, windowID)
         })
+
+        this.visible = false
       })
       this.event.$on('game', (live) => {
         this.difficulty = '4'

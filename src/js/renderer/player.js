@@ -244,6 +244,9 @@ export default {
       this.event.$on('pauseBgm', () => {
         this.pause()
       })
+      this.event.$on('playBgm', () => {
+        this.play()
+      })
     })
   }
 }

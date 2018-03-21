@@ -5,6 +5,7 @@ let liveResult = {
   bad: 0,
   miss: 0,
   combo: 0,
+  maxCombo: 0,
   hp: 100
 }
 
@@ -16,6 +17,8 @@ let se = {
   tapNice: new Audio('./asset/sound/se.asar/se_live_tap_nice.mp3'),
   tapPerfect: new Audio('./asset/sound/se.asar/se_live_tap_perfect.mp3')
 }
+
+const rankImg = newImage('./img/img.asar/rank.png')
 
 function playSe (se) {
   se.currentTime = 0
@@ -242,16 +245,21 @@ function rank (dt) {
   if (dt <= 50) {
     liveResult.perfect++
     liveResult.combo++
+    if (liveResult.combo > liveResult.maxCombo) liveResult.maxCombo = liveResult.combo
+    showRank('perfect')
     playSe(se.tapPerfect)
     // console.log('perfect')
   } else if (dt <= 75) {
     liveResult.great++
     liveResult.combo++
+    if (liveResult.combo > liveResult.maxCombo) liveResult.maxCombo = liveResult.combo
+    showRank('great')
     playSe(se.tapGreat)
     // console.log('great')
   } else if (dt <= 87.5) {
     liveResult.nice++
     liveResult.combo = 0
+    showRank('nice')
     playSe(se.tapNice)
     // console.log('nice')
   } else {
@@ -259,6 +267,7 @@ function rank (dt) {
     liveResult.bad++
     liveResult.combo = 0
     liveResult.hp -= 4
+    showRank('bad')
     hpCheck()
     // console.log('bad')
   }
@@ -268,12 +277,104 @@ function miss () {
   liveResult.miss++
   liveResult.combo = 0
   liveResult.hp -= 6
+  showRank('miss')
   hpCheck()
   // console.log('miss')
 }
 
 function hpCheck () {
   if (liveResult.hp < 0) window.close()
+}
+
+function clearRank () {
+  Note.BACK_CTX.clearRect(0, Note.TOP_TO_BOTTOM - 100, 1280, 54)
+}
+
+let t = 1
+let st = 1
+function showRank (rank) {
+  clearTimeout(st)
+  clearRank()
+  let f = 0
+  cancelAnimationFrame(t)
+  t = requestAnimationFrame(show)
+
+  function show () {
+    clearRank()
+    if (rank === 'perfect') {
+      Note.BACK_CTX.drawImage(
+        rankImg,
+        0,
+        212,
+        253,
+        54,
+        // (1280 - 253) / 2,
+        (1280 - f * 253 / 9) / 2,
+        // Note.TOP_TO_BOTTOM - 100,
+        Note.TOP_TO_BOTTOM - 75 - f * 25 / 9,
+        f * 253 / 9,
+        f * 54 / 9
+      )
+    } else if (rank === 'great') {
+      Note.BACK_CTX.drawImage(
+        rankImg,
+        0,
+        159,
+        208,
+        53,
+        (1280 - f * 208 / 9) / 2,
+        Note.TOP_TO_BOTTOM - 75 - f * 25 / 9,
+        f * 208 / 9,
+        f * 53 / 9
+      )
+    } else if (rank === 'nice') {
+      Note.BACK_CTX.drawImage(
+        rankImg,
+        0,
+        106,
+        141,
+        53,
+        (1280 - f * 141 / 9) / 2,
+        Note.TOP_TO_BOTTOM - 75 - f * 25 / 9,
+        f * 141 / 9,
+        f * 53 / 9
+      )
+    } else if (rank === 'bad') {
+      Note.BACK_CTX.drawImage(
+        rankImg,
+        0,
+        53,
+        128,
+        53,
+        (1280 - f * 128 / 9) / 2,
+        Note.TOP_TO_BOTTOM - 75 - f * 25 / 9,
+        f * 128 / 9,
+        f * 53 / 9
+      )
+    } else if (rank === 'miss') {
+      Note.BACK_CTX.drawImage(
+        rankImg,
+        0,
+        0,
+        151,
+        53,
+        (1280 - f * 151 / 9) / 2,
+        Note.TOP_TO_BOTTOM - 75 - f * 25 / 9,
+        f * 151 / 9,
+        f * 53 / 9
+      )
+    }
+    if (f >= 9) {
+      cancelAnimationFrame(t)
+      clearTimeout(st)
+      st = setTimeout(() => {
+        clearRank()
+      }, 500)
+    } else {
+      f++
+      requestAnimationFrame(show)
+    }
+  }
 }
 
 function keydown (path) {

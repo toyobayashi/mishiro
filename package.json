@@ -15,7 +15,9 @@
     "pkg64": "npm run prod&&node ./build/pack.js x64",
     "count": "node ./build/count.js",
     "reb:hca-ia32": "cd ./src/cpp/hca&&node-gyp rebuild --target=%npm_package_devDependencies_electron% --arch=ia32 --dist-url=https://atom.io/download/electron",
-    "reb:hca-x64": "cd ./src/cpp/hca&&node-gyp rebuild --target=%npm_package_devDependencies_electron% --arch=x64 --dist-url=https://atom.io/download/electron"
+    "reb:hca-x64": "cd ./src/cpp/hca&&node-gyp rebuild --target=%npm_package_devDependencies_electron% --arch=x64 --dist-url=https://atom.io/download/electron",
+    "sql32": "npm install sqlite3@3.1.13 --no-save --build-from-source --runtime=electron --target=%npm_package_devDependencies_electron% --target_arch=ia32 --dist-url=https://atom.io/download/electron",
+    "sql64": "npm install sqlite3@3.1.13 --no-save --build-from-source --runtime=electron --target=%npm_package_devDependencies_electron% --target_arch=x64 --dist-url=https://atom.io/download/electron"
   },
   "repository": {
     "type": "git",
@@ -35,7 +37,7 @@
   "license": "MIT",
   "devDependencies": {
     "css-loader": "^0.28.7",
-    "electron": "1.8.2",
+    "electron": "1.8.4",
     "eslint": "^4.16.0",
     "eslint-config-standard": "^11.0.0-beta.0",
     "eslint-plugin-html": "^3.2.2",

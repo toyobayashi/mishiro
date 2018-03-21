@@ -10,7 +10,8 @@
   },
   "rules": {
     "eqeqeq": 0,
-    "no-irregular-whitespace": 0
+    "no-irregular-whitespace": 0,
+    "no-new": 0
   },
   "plugins": [
     "html"
