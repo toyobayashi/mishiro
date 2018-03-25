@@ -20,8 +20,8 @@ class Configurer {
       return {}
     }
   }
-  async configure (key, value) {
-    let config = await this.getConfig()
+  configure (key, value) {
+    let config = this.getConfigSync()
     if (typeof key === 'string') {
       config[key] = value
     } else if (typeof key === 'object') {
@@ -35,7 +35,7 @@ class Configurer {
         }
       }
     }
-    await write(this.configFile, JSON.stringify(config, null, '  '))
+    fs.writeFileSync(this.configFile, JSON.stringify(config, null, '  '))
     return config
   }
   async remove (key) {

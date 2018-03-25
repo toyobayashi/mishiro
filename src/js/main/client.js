@@ -2,17 +2,16 @@ import crypto from 'crypto'
 import Rijndael from 'rijndael-js'
 import msgpack5 from 'msgpack5'
 import request from 'request'
+import config from './resolve-config.js'
 import configurer from '../common/config.js'
-
-let versionFrom = configurer.getConfigSync().latestResVer
 
 const msgpack = msgpack5({ compatibilityMode: true })
 
 class ApiClient {
-  constructor (user, viewer, udid, resVer = versionFrom ? versionFrom.toString() : '10036000') {
-    this.user = user
-    this.viewer = viewer
-    this.udid = udid
+  constructor (account, resVer) {
+    this.user = account.split(':')[0]
+    this.viewer = account.split(':')[1]
+    this.udid = account.split(':')[2]
     this.sid = void 0
     this.resVer = resVer
   }
@@ -79,7 +78,7 @@ class ApiClient {
         let resVer = Number(res.data_headers.required_res_ver)
         console.log('/load/check [New Verision] ' + this.resVer + ' => ' + resVer)
         this.resVer = res.data_headers.required_res_ver
-        await configurer.configure('latestResVer', resVer)
+        configurer.configure('latestResVer', resVer)
         return resVer
       } else if (res.data_headers.result_code === 1) {
         console.log('/load/check [latest Verision] ' + this.resVer)
@@ -207,6 +206,8 @@ function md5 (s) {
   return crypto.createHash('md5').update(s).digest('hex')
 }
 
-let client = new ApiClient('775891250', '910841675', '600a5efd-cae5-41ff-a0c7-7deda751c5ed')
-
+let client = new ApiClient('940464243:174481488:cf608be5-6d38-421a-8eb1-11a501132c0a', config.latestResVer.toString())
+// let client = new ApiClient('775891250', '910841675', '600a5efd-cae5-41ff-a0c7-7deda751c5ed')
+// let client = new ApiClient()
+export { config }
 export default client

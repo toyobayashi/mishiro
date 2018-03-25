@@ -44,7 +44,7 @@ async function check (progressing) {
   }
 
   let versionFrom = (await configurer.getConfig()).latestResVer
-  ipcRenderer.send('api', 'check', versionFrom)
+  ipcRenderer.send('api', 'check')
   return new Promise((resolve) => {
     ipcRenderer.on('api', async (event, methodName, res) => {
       if (methodName === 'check') {
@@ -80,7 +80,7 @@ async function check (progressing) {
         }
         if (!isContinue) {
           // fs.writeFileSync(getPath("./data/version"), resVer);
-          await configurer.configure('latestResVer', resVer)
+          configurer.configure('latestResVer', resVer)
           resolve(resVer)
         }
       })
