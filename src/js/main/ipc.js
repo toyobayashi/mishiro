@@ -1,6 +1,7 @@
 import { ipcMain } from 'electron'
 /* import SQL from './sql-exec.js' */
-import config from './resolve-config.js'
+// import config from './resolve-config.js'
+import { config } from './client.js'
 import onManifestRead from './on-manifest-read.js'
 import onMasterRead from './on-master-read.js'
 import onManifestQuery from './on-manifest-query.js'

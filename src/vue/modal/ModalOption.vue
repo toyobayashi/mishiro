@@ -90,7 +90,7 @@ export default {
     }
   },
   methods: {
-    async save () {
+    save () {
       this.playSe(this.enterSe)
       let resVer, gachaId, eventId, backgroundId
       if (this.resVer) {
@@ -159,7 +159,7 @@ export default {
 
       this.$emit('input', this.language[this.lang])
       this._i18n._vm.locale = this.lang
-      await this.configurer.configure({
+      this.configurer.configure({
         language: this.lang,
         resVer,
         gacha: gachaId,
