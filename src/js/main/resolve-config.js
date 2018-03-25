@@ -1,5 +1,6 @@
 import https from 'https'
 import configurer from '../common/config.js'
+import client from './client.js'
 
 function getResourceVersionFromMishiroLab () {
   return new Promise((resolve) => {
@@ -20,8 +21,9 @@ let config = (async function () {
   let config = await configurer.getConfig()
   let fix = {}
   if (!config.latestResVer) {
-    let rv346 = await getResourceVersionFromMishiroLab()
-    fix.latestResVer = rv346 || 10036950
+    let resVer = await client.check()
+    let rv346 = resVer || await getResourceVersionFromMishiroLab()
+    fix.latestResVer = rv346 || 10037000
   }
   if (config.language !== 'zh' && config.language !== 'ja') {
     fix.language = 'zh'

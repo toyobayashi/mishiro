@@ -6,6 +6,13 @@ class Configurer {
   constructor (filePath) {
     this.configFile = filePath
   }
+  getConfigSync () {
+    if (fs.existsSync(this.configFile)) {
+      return JSON.parse(fs.readFileSync(this.configFile))
+    } else {
+      return {}
+    }
+  }
   async getConfig () {
     if (fs.existsSync(this.configFile)) {
       return JSON.parse(await read(this.configFile))

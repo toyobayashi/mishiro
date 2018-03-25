@@ -2,6 +2,7 @@ import request from 'request'
 import fs from 'fs'
 import getPath from '../common/get-path.js'
 import configurer from '../common/config.js'
+import { ipcRenderer } from 'electron'
 
 let current = 0
 let max = 20
@@ -41,13 +42,19 @@ async function check (progressing) {
   if (config.resVer) {
     return config.resVer
   }
-  /* if(!config.latestResVer){
-        configurer.configure("latestResVer", 10033600);
-    } */
 
   let versionFrom = (await configurer.getConfig()).latestResVer
-
+  ipcRenderer.send('api', 'check', versionFrom)
   return new Promise((resolve) => {
+    ipcRenderer.on('api', async (event, methodName, res) => {
+      if (methodName === 'check') {
+        if (!res) {
+          checkVersion(versionFrom)
+        } else {
+          resolve(res)
+        }
+      }
+    })
     let resVer = versionFrom
 
     function checkVersion (versionFrom) {
@@ -78,8 +85,6 @@ async function check (progressing) {
         }
       })
     }
-
-    checkVersion(versionFrom)
   })
 }
 export default check
