@@ -2,7 +2,7 @@
   "name": "mishiro",
   "productName": "mishiro",
   "companyName": "Toyo",
-  "version": "1.3.0",
+  "version": "1.3.1",
   "description": "mishiro",
   "main": "./public/mishiro.main.js",
   "scripts": {
@@ -47,7 +47,9 @@
     "eslint-plugin-standard": "^3.0.1",
     "extract-text-webpack-plugin": "^3.0.0",
     "file-loader": "^0.11.2",
+    "msgpack5": "^4.0.2",
     "rcedit": "^0.9.0",
+    "rijndael-js": "^1.0.0",
     "uglifyjs-webpack-plugin": "^1.1.4",
     "unzip": "^0.1.11",
     "url-loader": "^0.5.9",

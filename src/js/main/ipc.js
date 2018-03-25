@@ -7,6 +7,7 @@ import onManifestQuery from './on-manifest-query.js'
 import onAcb from './on-acb.js'
 import onVoiceDecode from './on-voice-decode.js'
 import onGame from './on-game.js'
+import onApi from './on-api.js'
 // import onTitleVoiceDecode from './on-title-voice-decode.js'
 
 let manifestData = {}
@@ -36,6 +37,10 @@ ipcMain.on('voiceDec', (event, acbs) => {
 
 ipcMain.on('game', (event, scoreFile, difficulty, bpm, audioFile) => {
   onGame(event, scoreFile, difficulty, bpm, audioFile)
+})
+
+ipcMain.on('api', (event, methodName, arg) => {
+  onApi(event, methodName, arg)
 })
 
 /* ipcMain.on('titleVoiceDec', (event, acbs) => {
