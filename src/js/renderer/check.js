@@ -2,7 +2,9 @@ import request from 'request'
 import fs from 'fs'
 import getPath from '../common/get-path.js'
 import configurer from '../common/config.js'
-import { ipcRenderer } from 'electron'
+import { remote } from 'electron'
+
+let client = remote.getGlobal('client')
 
 let current = 0
 let max = 20
@@ -38,23 +40,16 @@ async function check (progressing) {
   if (!fs.existsSync(getPath('./data'))) {
     fs.mkdirSync(getPath('./data'))
   }
-  let config = await configurer.getConfig()
+  let config = remote.getGlobal('config')
   if (config.resVer) {
     return config.resVer
   }
+  let res = await client.check()
+  if (typeof res === 'number') return res
 
-  let versionFrom = (await configurer.getConfig()).latestResVer
-  ipcRenderer.send('api', 'check')
+  let versionFrom = config.latestResVer
+  // ipcRenderer.send('api', 'check')
   return new Promise((resolve) => {
-    ipcRenderer.on('api', async (event, methodName, res) => {
-      if (methodName === 'check') {
-        if (!res) {
-          checkVersion(versionFrom)
-        } else {
-          resolve(res)
-        }
-      }
-    })
     let resVer = versionFrom
 
     function checkVersion (versionFrom) {
@@ -79,12 +74,12 @@ async function check (progressing) {
           }
         }
         if (!isContinue) {
-          // fs.writeFileSync(getPath("./data/version"), resVer);
           configurer.configure('latestResVer', resVer)
           resolve(resVer)
         }
       })
     }
+    checkVersion(versionFrom)
   })
 }
 export default check

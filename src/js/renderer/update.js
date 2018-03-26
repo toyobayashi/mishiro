@@ -125,7 +125,7 @@ export default {
         })
         ipcRenderer.on('readMaster', async (event, masterData) => {
           // console.log(masterData);
-          let config = await this.configurer.getConfig()
+          let config = this.configurer.getConfigSync()
           const bgmList = player.data().bgmList
           const downloader = new Downloader()
           const toName = p => path.parse(p).name

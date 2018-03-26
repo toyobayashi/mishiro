@@ -36,4 +36,6 @@ let config = (function () {
   }
 })()
 
+global.config = config
+
 export default config
