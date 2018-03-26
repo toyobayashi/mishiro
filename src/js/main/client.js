@@ -67,25 +67,29 @@ class ApiClient {
   }
 
   async check () {
+    let res
     try {
-      let res = await this.post('/load/check', {
+      res = await this.post('/load/check', {
         campaign_data: '',
         campaign_user: 1337,
         campaign_sign: md5('All your APIs are belong to us'),
         app_type: 0
       })
-      if (res.data_headers.result_code === 214) {
-        let resVer = Number(res.data_headers.required_res_ver)
-        console.log('/load/check [New Verision] ' + this.resVer + ' => ' + resVer)
-        this.resVer = res.data_headers.required_res_ver
-        configurer.configure('latestResVer', resVer)
-        return resVer
-      } else if (res.data_headers.result_code === 1) {
-        console.log('/load/check [latest Verision] ' + this.resVer)
-        return Number(this.resVer)
-      }
     } catch (err) {
-      throw err
+      return false
+    }
+    if (res.data_headers.result_code === 214) {
+      let resVer = Number(res.data_headers.required_res_ver)
+      console.log('/load/check [New Verision] ' + this.resVer + ' => ' + resVer)
+      this.resVer = res.data_headers.required_res_ver
+      configurer.configure('latestResVer', resVer)
+      global.config.latestResVer = resVer
+      return resVer
+    } else if (res.data_headers.result_code === 1) {
+      console.log('/load/check [latest Verision] ' + this.resVer)
+      return Number(this.resVer)
+    } else {
+      return false
     }
   }
 
@@ -207,6 +211,7 @@ function md5 (s) {
 }
 
 let client = new ApiClient('940464243:174481488:cf608be5-6d38-421a-8eb1-11a501132c0a', config.latestResVer.toString())
+global.client = client
 // let client = new ApiClient('775891250', '910841675', '600a5efd-cae5-41ff-a0c7-7deda751c5ed')
 // let client = new ApiClient()
 export { config }
