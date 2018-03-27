@@ -5,11 +5,10 @@ import check from './check.js'
 import downloadManifest from './download-manifest.js'
 import downloadMaster from './download-master.js'
 import Downloader from './downloader.js'
-import { ipcRenderer } from 'electron'
+import { ipcRenderer, remote } from 'electron'
 import getPath from '../common/get-path.js'
 import idol from './idol.js'
 import player from './player.js'
-import configurer from '../common/config.js'
 
 export default {
   components: {
@@ -252,7 +251,7 @@ export default {
           const manifestFile = await this.getManifest(resVer)
           if (manifestFile) ipcRenderer.send('readManifest', manifestFile, resVer)
         } else { // 如果网络未连接则直接触发ready事件
-          let resVer = (await configurer.getConfig()).latestResVer
+          let resVer = remote.getGlobal('config').latestResVer
           this.appData.resVer = Number(resVer)
           this.$emit('input', this.appData)
           if (fs.existsSync(getPath(`./data/manifest_${resVer}.db`)) && fs.existsSync(getPath(`./data/master_${resVer}.db`))) {

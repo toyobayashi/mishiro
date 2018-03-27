@@ -1,7 +1,8 @@
 export default {
   i18n: {
     chinese: '中文',
-    japanese: '日本語'
+    japanese: '日本語',
+    english: 'English'
   },
   home: {
     play: '播放',
@@ -150,6 +151,7 @@ export default {
     gacha: '転蛋ID',
     event: '活動ID',
     background: '背景',
+    account: '帳号',
     license: '権利許可',
     lang: '語言',
     update: '更新',

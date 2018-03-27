@@ -31,6 +31,10 @@
             <label>{{$t("menu.background")}}</label>
             <InputText class="pull-right option-input" :placeholder="$t('menu.backPlacehoder')" v-model="backgroundId" />
           </div>
+          <div class="margin-top-10">
+            <label>{{$t("menu.account")}}</label>
+            <InputText class="pull-right option-input" placeholder="123456789:987654321:0a1b2c3d-5c6d-4e7f-8a9b-0e1f2a3b4c5d" v-model="account" />
+          </div>
         </form>
       </div>
       <div class="modal-footer">
@@ -59,6 +63,7 @@ export default {
       gachaId: '',
       eventId: '',
       backgroundId: '',
+      account: '',
       language: {
         zh: 'i18n.chinese',
         ja: 'i18n.japanese'
@@ -92,7 +97,7 @@ export default {
   methods: {
     save () {
       this.playSe(this.enterSe)
-      let resVer, gachaId, eventId, backgroundId
+      let resVer, gachaId, eventId, backgroundId, account
       if (this.resVer) {
         if (
           Number(this.resVer) < 10012760 ||
@@ -157,6 +162,21 @@ export default {
         backgroundId = this.backgroundId
       }
 
+      if (this.account) {
+        if (!/^[0-9]{9}:[0-9]{9}:[0-9a-f]{8}-[0-9a-f]{4}-4[0-9a-f]{3}-[89ab][0-9a-f]{3}-[0-9a-f]{12}$/.test(this.account)) {
+          this.event.$emit(
+            'alert',
+            this.$t('home.errorTitle'),
+            'account error'
+          )
+          return
+        } else {
+          account = this.account
+        }
+      } else {
+        account = this.account
+      }
+
       this.$emit('input', this.language[this.lang])
       this._i18n._vm.locale = this.lang
       this.configurer.configure({
@@ -164,7 +184,8 @@ export default {
         resVer,
         gacha: gachaId,
         event: eventId,
-        background: backgroundId
+        background: backgroundId,
+        account: account
       })
       this.visible = false
     }
@@ -178,6 +199,7 @@ export default {
         this.gachaId = config.gacha ? config.gacha : ''
         this.eventId = config.event ? config.event : ''
         this.backgroundId = config.background ? config.background : ''
+        this.account = config.account ? config.account : ''
         this.show = true
         this.visible = true
       })

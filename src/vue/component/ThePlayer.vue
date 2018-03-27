@@ -30,7 +30,7 @@
   font-family: 'CGSS-B';
   position: absolute;
   top: 0;
-  left: 200px;
+  left: calc(50% - 140px);
 }
 .bgm-select-bar>button{
   font-family: 'CGSS-B';

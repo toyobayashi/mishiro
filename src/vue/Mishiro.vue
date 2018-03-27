@@ -97,7 +97,8 @@ export default {
       currentLanguage: 'i18n.chinese',
       i18nTabs: {
         zh: 'i18n.chinese',
-        ja: 'i18n.japanese'
+        ja: 'i18n.japanese',
+        en: 'i18n.english'
       },
       appData: {
         resVer: 'Unknown',
@@ -115,6 +116,7 @@ export default {
       switch (language) {
         case 'i18n.japanese': this._i18n._vm.locale = 'ja'; break
         case 'i18n.chinese': this._i18n._vm.locale = 'zh'; break
+        case 'i18n.english': this._i18n._vm.locale = 'en'; break
       }
       // this.$el.parentNode.parentNode.getElementsByTagName("title")[0].innerHTML = this.$t("title");
     },

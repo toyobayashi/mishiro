@@ -210,9 +210,8 @@ function md5 (s) {
   return crypto.createHash('md5').update(s).digest('hex')
 }
 
-let client = new ApiClient('940464243:174481488:cf608be5-6d38-421a-8eb1-11a501132c0a', config.latestResVer.toString())
+let client = new ApiClient(config.account || '940464243:174481488:cf608be5-6d38-421a-8eb1-11a501132c0a', config.latestResVer.toString())
 global.client = client
-// let client = new ApiClient('775891250', '910841675', '600a5efd-cae5-41ff-a0c7-7deda751c5ed')
-// let client = new ApiClient()
+
 export { config }
 export default client
