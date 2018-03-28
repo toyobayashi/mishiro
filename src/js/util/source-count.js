@@ -70,7 +70,7 @@ function sourceCount (task) {
     }
     o.total = addOn(arr)
     for (let type in o) {
-      if (type !== 'total') o[type].percentage = Math.floor(100 * o[type].lines / o.total.lines) + '%'
+      if (type !== 'total') o[type].percentage = (Math.floor(10000 * o[type].lines / o.total.lines) / 100).toFixed(2) + '%'
     }
     return o
   })

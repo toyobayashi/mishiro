@@ -12,7 +12,10 @@ sourceCount({
   ],
   vue: [getPath('./src/vue')],
   css: [getPath('./src/css')],
-  html: [getPath('./public/index.html')],
+  html: [
+    getPath('./public/index.html'),
+    getPath('./public/game.html')
+  ],
   cpp: [getPath('./src/cpp/hca/hca.cpp')],
   batch: [getPath('./bin')],
   markdown: [

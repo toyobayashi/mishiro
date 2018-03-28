@@ -63,6 +63,17 @@ let renderer = {
         }
         // extractCSS: true
       }
+    }, {
+      test: /\.css$/,
+      exclude: /node_modules/,
+      use: ExtractTextPlugin.extract({
+        use: [{
+          loader: 'css-loader',
+          options: {
+            url: false
+          }
+        }]
+      })
     }]
   },
   plugins: [
