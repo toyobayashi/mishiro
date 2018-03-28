@@ -4,10 +4,56 @@ let liveResult = {
   nice: 0,
   bad: 0,
   miss: 0,
+  maxCombo: 0
+  // combo: 0,
+  // hp: 100
+}
+
+let comboDom = document.getElementById('combo')
+let numberDom = comboDom.getElementsByClassName('combo-number')[0]
+let hpDom = document.getElementById('hp')
+
+let model = {
   combo: 0,
-  maxCombo: 0,
   hp: 100
 }
+
+Object.defineProperties(liveResult, {
+  combo: {
+    configurable: true,
+    enumerable: true,
+    get () {
+      return model.combo
+    },
+    set (n) {
+      model.combo = n
+      if (n > 0) {
+        comboDom.style.display = 'flex'
+        numberDom.innerHTML = n
+      } else {
+        comboDom.style.display = 'none'
+      }
+    }
+  },
+  hp: {
+    configurable: true,
+    enumerable: true,
+    get () {
+      return model.hp
+    },
+    set (h) {
+      model.hp = h
+      hpDom.style.width = h + '%'
+      if (h <= 40 && h > 20) {
+        hpDom.className = 'hp warning'
+      } else if (h <= 20) {
+        hpDom.className = 'hp dangerous'
+      } else {
+        hpDom.className = 'hp'
+      }
+    }
+  }
+})
 
 let se = {
   clap: new Audio('./asset/sound/se.asar/se_live_clap.mp3'),
