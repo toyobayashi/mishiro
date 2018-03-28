@@ -13,6 +13,7 @@
             <div class="pull-right option-input clearfix" style="display:flex;justify-content:space-around">
               <InputRadio :text="$t('i18n.chinese')" value="zh" v-model="lang" lable-id="razh"/>
               <InputRadio :text="$t('i18n.japanese')" value="ja" v-model="lang" lable-id="raja"/>
+              <InputRadio :text="$t('i18n.english')" value="en" v-model="lang" lable-id="raen"/>
             </div>
           </div>
           <div class="margin-top-10">
@@ -66,7 +67,8 @@ export default {
       account: '',
       language: {
         zh: 'i18n.chinese',
-        ja: 'i18n.japanese'
+        ja: 'i18n.japanese',
+        en: 'i18n.english'
       }
     }
   },

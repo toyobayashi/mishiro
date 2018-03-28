@@ -34,6 +34,7 @@
 </template>
 
 <script>
+import { remote } from 'electron'
 import MishiroEntry from './view/MishiroEntry.vue'
 import MishiroUpdate from './view/MishiroUpdate.vue'
 import MishiroHome from './view/MishiroHome.vue'
@@ -59,6 +60,12 @@ import ModalVersion from './modal/ModalVersion.vue'
 import ModalCalculator from './modal/ModalCalculator.vue'
 import ModalLiveDifficulty from './modal/ModalLiveDifficulty.vue'
 import ModalLiveResult from './modal/ModalLiveResult.vue'
+
+const i18nTabs = {
+  zh: 'i18n.chinese',
+  ja: 'i18n.japanese',
+  en: 'i18n.english'
+}
 
 export default {
   components: {
@@ -94,12 +101,8 @@ export default {
       show: true,
       currentBlock: 'home',
       checking: false,
-      currentLanguage: 'i18n.chinese',
-      i18nTabs: {
-        zh: 'i18n.chinese',
-        ja: 'i18n.japanese',
-        en: 'i18n.english'
-      },
+      currentLanguage: i18nTabs[remote.getGlobal('config').language],
+      i18nTabs,
       appData: {
         resVer: 'Unknown',
         latestResVer: 'Unknown',

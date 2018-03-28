@@ -25,7 +25,7 @@ let config = (function () {
     let rv346 = resVer || await getResourceVersionFromMishiroLab() */
     fix.latestResVer = 10037000
   }
-  if (config.language !== 'zh' && config.language !== 'ja') {
+  if (config.language !== 'zh' && config.language !== 'ja' && config.language !== 'en') {
     fix.language = 'zh'
   }
   if (Object.keys(fix).length) {
