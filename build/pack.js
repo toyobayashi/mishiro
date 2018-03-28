@@ -8,7 +8,7 @@ const option = {
   electronVersion: packageJson.devDependencies.electron,
   packDir: path.join(__dirname, '..'),
   distDir: path.join(__dirname, '../dist'),
-  ignore: new RegExp(`node_modules|build|data|release|download|dist|src|screenshot|public/img/card|public/asset/sound/live|public/asset/sound/voice|public/asset/score|.gitignore|README|.eslintrc.json|config.json|package-lock.json|.bin|.git|.vscode`.replace(/\//g, '\\\\')),
+  ignore: new RegExp(`node_modules|build|data|release|download|dist|src|screenshot|public/img/card|public/asset/sound/live|public/asset/sound/voice|public/asset/score|\\.gitignore|README|\\.eslintrc\\.json|config\\.json|package-lock\\.json|\\.bin|\\.git|\\.vscode`.replace(/\//g, '\\\\')),
   versionString: {
     icon: path.join(__dirname, '../src/res/icon/mishiro.ico'),
     'file-version': packageJson.version,
