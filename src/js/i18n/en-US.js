@@ -19,7 +19,7 @@ export default {
     close: 'CLOSE',
     stop: 'STOP',
     input: 'SEARCH DATABASE',
-    resVer: 'RESOURSE VERSION',
+    resVer: 'RESOURCE VERSION',
     downloadFailed: 'Download failed. Please download again under good network environment.',
     msg: 'MESSAGE',
     stmnFull: 'Stamina healed.'
