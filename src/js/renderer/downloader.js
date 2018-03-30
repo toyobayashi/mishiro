@@ -86,6 +86,7 @@ class Downloader {
               .on('abort', () => {
                 rename = false
                 console.log('abort: ' + u)
+                this.req = null
                 resolve(false)
               })
               /* .on('end', () => {
@@ -145,9 +146,15 @@ class Downloader {
   stop (failed) {
     if (this.taskArr.length) {
       this.taskArr = []
-      if (this.req) this.req.abort()
+      if (this.req) {
+        this.req.abort()
+        this.req = null
+      }
     } else {
-      if (this.req) this.req.abort()
+      if (this.req) {
+        this.req.abort()
+        this.req = null
+      }
       if (failed) failed()
     }
   }
