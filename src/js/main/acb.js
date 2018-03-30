@@ -1,4 +1,5 @@
 import fs from 'fs'
+import { read, write } from '../util/fse.js'
 import path from 'path'
 
 function UTFTable (acb) {
@@ -12,14 +13,14 @@ function UTFTable (acb) {
     tableNameStringOffset: body.readUIntBE(0xc, 4),
     columnLength: body.readUIntBE(0x10, 2),
     rowTotalByte: body.readUIntBE(0x12, 2),
-    rowLength: body.readUIntBE(0x14, 4),
+    rowLength: body.readUIntBE(0x14, 4)
   }
 
   let columnType = {
     zero: 0x10,
     constant: 0x30,
     perrow: 0x50,
-    constant2: 0x70,
+    constant2: 0x70
   }
 
   let dataType = {
@@ -34,7 +35,7 @@ function UTFTable (acb) {
     Float: 0x08,
     Double: 0x09,
     String: 0x0a,
-    Binary: 0x0b,
+    Binary: 0x0b
   }
 
   let keyData = body.slice(0x18, tableHeader.tableDataOffset)
@@ -54,10 +55,9 @@ function UTFTable (acb) {
       let keyT = keyData[i] & 0xf0
       let dataT = keyData[i] & 0x0f
 
-
       let data
       // let st
-      
+
       switch (dataT) {
         case dataType.Uint8:
           data = tableData.readUInt8(d)
@@ -136,7 +136,7 @@ function UTFTable (acb) {
           // st = ': Binary'
           break
         default:
-          break;
+          break
       }
 
       if (keyT === columnType.zero || keyT === columnType.perrow) {
@@ -145,7 +145,7 @@ function UTFTable (acb) {
         let key = stringData.slice(keyoffset).toString().split('\x00')[0]
         row[key] = data
         i += 5
-      } else { // I don't know.
+      } else { // I don't know. Here will throw error.
         /* let keyoffset = keyData.readUIntBE(i + 1, 4)
         let c = keyData.readUIntBE(i + 5, kd)
         let key = stringData.slice(keyoffset).toString().split('\x00')[0]
@@ -165,14 +165,13 @@ function getHCAFromAWB (awb, name, cueNameTable) {
   let fileCount = awb.readUInt32LE(0x8)
   let alignment = awb.readUInt32LE(0xc)
 
-
   let fileIndex = []
   let d = 16
   for (let i = 0; i < fileCount; i++) {
     fileIndex.push(awb.readUInt8(d))
     d += 2
   }
-  
+
   let fileEndPoints = []
   for (let i = 0; i <= fileCount; i++) {
     fileEndPoints.push(awb.readUIntLE(d, dataSizeLength))
@@ -180,9 +179,9 @@ function getHCAFromAWB (awb, name, cueNameTable) {
   }
 
   let hcaFiles = []
-  
+
   for (let i = 1; i < fileEndPoints.length; i++) {
-    let start = Math.ceil(fileEndPoints[i - 1] / alignment) === fileEndPoints[i - 1] / alignment ? (fileEndPoints[i - 1] / alignment + 1) * alignment : Math.ceil(fileEndPoints[i - 1] / alignment) * alignment
+    let start = Math.ceil(fileEndPoints[i - 1] / alignment) * alignment
     let index = fileIndex[i - 1]
     let cueName = ''
     for (let j = 0; j < cueNameTable.length; j++) {
@@ -199,16 +198,19 @@ function getHCAFromAWB (awb, name, cueNameTable) {
   return hcaFiles
 }
 
-function extractACB (acbPath, outputDir = path.join(path.parse(acbPath).dir, `_acb_${path.parse(acbPath).base}`)) {
-  let utftable = UTFTable(fs.readFileSync(acbPath))
+async function extractACB (acbPath, outputDir = path.join(path.parse(acbPath).dir, `_acb_${path.parse(acbPath).base}`)) {
+  let utftable = UTFTable(await read(acbPath))
   let cueNameTable = UTFTable(utftable[0].CueNameTable)
   let awb = utftable[0].AwbFile
   let hcaFiles = getHCAFromAWB(awb, utftable[0].Name, cueNameTable)
-  
+
   if (!fs.existsSync(outputDir)) fs.mkdirSync(outputDir)
+  let promiseArr = []
   for (const f of hcaFiles) {
-    fs.writeFileSync(path.join(outputDir, f.name), f.buf)
+    promiseArr.push(write(path.join(outputDir, f.name), f.buf))
   }
+  await Promise.all(promiseArr)
+  return outputDir
 }
 
 export default extractACB

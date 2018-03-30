@@ -4,8 +4,8 @@ import fs from 'fs'
 import getPath from '../common/get-path.js'
 import { dec } from 'hca'
 import { remove } from '../util/fse.js'
+import extractACB from './acb.js'
 
-const ACB = getPath('./public/bin/AcbUnzip.exe')
 const FFMPEG = getPath('./public/bin/ffmpeg.exe')
 
 function execAsync (cmd) {
@@ -28,8 +28,10 @@ function readdirAsync (dir) {
 
 async function acb2hca (acb) {
   try {
-    await execAsync(`"${ACB}" "${acb}"`)
-    return path.join(path.parse(acb).dir, `_acb_${path.parse(acb).base}`)
+    // await execAsync(`"${ACB}" "${acb}"`)
+    // return path.join(path.parse(acb).dir, `_acb_${path.parse(acb).base}`)
+    let hcadir = await extractACB(acb)
+    return hcadir
   } catch (err) {
     throw err
   }

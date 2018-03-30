@@ -80,13 +80,13 @@ class ApiClient {
     }
     if (res.data_headers.result_code === 214) {
       let resVer = Number(res.data_headers.required_res_ver)
-      console.log('/load/check [New Verision] ' + this.resVer + ' => ' + resVer)
+      console.log('/load/check [New Version] ' + this.resVer + ' => ' + resVer)
       this.resVer = res.data_headers.required_res_ver
       configurer.configure('latestResVer', resVer)
       global.config.latestResVer = resVer
       return resVer
     } else if (res.data_headers.result_code === 1) {
-      console.log('/load/check [latest Verision] ' + this.resVer)
+      console.log('/load/check [latest Version] ' + this.resVer)
       return Number(this.resVer)
     } else {
       return false
