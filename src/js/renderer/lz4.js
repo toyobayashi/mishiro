@@ -1,42 +1,37 @@
 import fs from 'fs'
-// Binary Reader for Uint8Array
-/* class BinaryReader */
-class BinaryReader {
-  constructor (array) {
-    this.ary = array
+
+class FileReader {
+  constructor (buf) {
+    this.buf = buf
     this.curPos = 0
   }
-  readByte () {
+  readUInt8 () {
     this.curPos++
-    return this.ary[this.curPos - 1]
+    return this.buf.readUInt8(this.curPos - 1)
   }
-  readShortLE () {
+  readUInt16LE () {
     this.curPos += 2
-    return this.ary[this.curPos - 2] + (this.ary[this.curPos - 1] << 8)
+    return this.buf.readUInt16LE(this.curPos - 2)
   }
-  readIntLE () {
+  readUInt32LE () {
     this.curPos += 4
-    return this.ary[this.curPos - 4] + (this.ary[this.curPos - 3] << 8) + (this.ary[this.curPos - 2] << 16) + (this.ary[this.curPos - 1] << 24)
+    return this.buf.readUInt32LE(this.curPos - 4)
   }
-  copyBytes (dst, offset, size) {
-    dst.set(this.ary.slice(this.curPos, this.curPos + size), offset)
-    this.curPos += size
+  copy (target, targetStart, thisSize) {
+    this.buf.copy(target, targetStart, this.curPos, this.curPos + thisSize)
+    this.curPos += thisSize
   }
-  seekAbs (pos) {
+  seek (pos) {
     this.curPos = pos
   }
-  seekRel (diff) {
-    this.curPos += diff
-  }
-  getPos () {
+  tell () {
     return this.curPos
   }
 }
 
-// Unity LZ4 Decompressor for Uint8Array
 class Lz4 {
-  constructor (array) {
-    this.reader = new BinaryReader(array)
+  constructor (buf) {
+    this.reader = new FileReader(buf)
   }
   decompress () {
     let r = this.reader
@@ -52,45 +47,45 @@ class Lz4 {
     let retCurPos = 0
     let endPos = 0
 
-    r.seekAbs(4)
-    decompressedSize = r.readIntLE()
-    dataSize = r.readIntLE()
+    r.seek(4)
+    decompressedSize = r.readUInt32LE()
+    dataSize = r.readUInt32LE()
     endPos = dataSize + 16
-    retArray = new Uint8Array(decompressedSize)
+    retArray = Buffer.alloc(decompressedSize)
 
-    r.seekAbs(16)
+    r.seek(16)
 
     // Start reading sequences
     while (1) {
       // read the LiteralSize and the MatchSize
-      token = r.readByte()
+      token = r.readUInt8()
       sqSize = token >> 4
       matchSize = (token & 0x0F) + 4
-      if (sqSize == 15) { sqSize += this.readAdditionalSize(r) }
+      if (sqSize === 15) sqSize += this.readAdditionalSize(r)
 
       // copy the literal
-      r.copyBytes(retArray, retCurPos, sqSize)
+      r.copy(retArray, retCurPos, sqSize)
       retCurPos += sqSize
 
-      if (r.getPos() >= endPos - 1) { break }
+      if (r.tell() >= endPos - 1) break
 
       // read the offset
-      offset = r.readShortLE()
+      offset = r.readUInt16LE()
 
       // read the additional MatchSize
-      if (matchSize == 19) { matchSize += this.readAdditionalSize(r) }
+      if (matchSize === 19) matchSize += this.readAdditionalSize(r)
 
       // copy the match properly
       if (matchSize > offset) {
         let matchPos = retCurPos - offset
         while (1) {
-          retArray.copyWithin(retCurPos, matchPos, matchPos + offset)
+          retArray.copy(retArray, retCurPos, matchPos, matchPos + offset)
           retCurPos += offset
           matchSize -= offset
-          if (matchSize < offset) { break }
+          if (matchSize < offset) break
         }
       }
-      retArray.copyWithin(retCurPos, retCurPos - offset, retCurPos - offset + matchSize)
+      retArray.copy(retArray, retCurPos, retCurPos - offset, retCurPos - offset + matchSize)
       retCurPos += matchSize
     }
 
@@ -98,48 +93,16 @@ class Lz4 {
   }
 
   readAdditionalSize (reader) {
-    let size = reader.readByte()
-    if (size == 255) { return size + this.readAdditionalSize(reader) } else { return size }
+    let size = reader.readUInt8()
+    if (size === 255) return size + this.readAdditionalSize(reader)
+    else return size
   }
 }
 
 function lz4dec (input, output = 'unity3d') {
   let dec = new Lz4(fs.readFileSync(input))
-  let raw = dec.decompress()
-  fs.writeFileSync(input + '.' + output, Buffer.from(raw.buffer))
+  fs.writeFileSync(input + '.' + output, dec.decompress())
   return input + '.' + output
 }
 
 export default lz4dec
-
-/*
-* in browser
-
-function handleFileSelect (loaded) {
-  var file = $('#file').prop('files')[0]
-  if (file == null) {
-    alert('Please select a file.')
-    return
-  }
-  var reader = new FileReader()
-  reader.onload = function () {
-    loaded(reader.result, file.name)
-  }
-  reader.readAsArrayBuffer(file)
-}
-$(function () {
-  $('#load').click(function () {
-    handleFileSelect(function (ary, name) {
-      var fBuf = new Uint8Array(ary)
-      var dec = new lz4(fBuf)
-      var raw = dec.decompress()
-      var blob = new Blob([raw], { type: 'octet/stream' })
-      var a = document.createElement('a')
-      a.href = URL.createObjectURL(blob)
-      a.target = '_blank'
-      a.download = name + '.unity3d'
-      a.click()
-    })
-  })
-})
-*/

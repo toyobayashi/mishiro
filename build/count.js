@@ -17,7 +17,7 @@ sourceCount({
     getPath('./public/game.html')
   ],
   cpp: [getPath('./src/cpp/hca/hca.cpp')],
-  batch: [getPath('./bin')],
+  batch: [getPath('./.bin')],
   markdown: [
     getPath('./README.md'),
     getPath('./LICENSE.md')
