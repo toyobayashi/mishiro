@@ -64,9 +64,11 @@ export default {
           this.text = this.$t('update.manifest') + Math.ceil(prog.current / 1024) + '/' + Math.ceil(prog.max / 1024) + ' KB'
           this.loading = prog.loading
         })
-        manifestFile = this.lz4dec(manifestLz4File, 'db')
-        fs.unlinkSync(getPath(`./data/manifest_${resVer}`))
-        return manifestFile
+        if (manifestLz4File) {
+          manifestFile = this.lz4dec(manifestLz4File, 'db')
+          fs.unlinkSync(getPath(`./data/manifest_${resVer}`))
+          return manifestFile
+        } else throw new Error('Download failed.')
       } catch (errorPath) {
         this.event.$emit('alert', this.$t('home.errorTitle'), this.$t('home.downloadFailed') + '<br/>' + errorPath)
         return false
@@ -87,9 +89,11 @@ export default {
           this.text = this.$t('update.master') + Math.ceil(prog.current / 1024) + '/' + Math.ceil(prog.max / 1024) + ' KB'
           this.loading = prog.loading
         })
-        masterFile = this.lz4dec(masterLz4File, 'db')
-        fs.unlinkSync(getPath(`./data/master_${resVer}`))
-        return masterFile
+        if (masterLz4File) {
+          masterFile = this.lz4dec(masterLz4File, 'db')
+          fs.unlinkSync(getPath(`./data/master_${resVer}`))
+          return masterFile
+        } else throw new Error('Download failed.')
       } catch (errorPath) {
         this.event.$emit('alert', this.$t('home.errorTitle'), this.$t('home.downloadFailed') + '<br/>' + errorPath)
         return false
