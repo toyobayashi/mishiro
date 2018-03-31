@@ -94,8 +94,7 @@
           <tr v-if="card.limited">
             <td>{{$t("idol.limited")}}</td>
             <td colspan="3">
-              <p v-for="limit in card.limited">{{"(" + (limit.id > 9999 ? $t("idol.gacha") + limit.id : $t("idol.event") + limit.id) + ") " + limit.name +
-                ": " + limit.startDate + " ～ " + limit.endDate}}</p>
+              <p v-for="limit in card.limited">{{"(" + (limit.id > 9999 ? $t("idol.gacha") + limit.id : $t("idol.event") + limit.id) + ") " + limit.name + ": " + limit.startDate + " ～ " + limit.endDate}}</p>
             </td>
           </tr>
         </table>
