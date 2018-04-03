@@ -47,7 +47,7 @@
     "eslint-plugin-standard": "^3.0.1",
     "extract-text-webpack-plugin": "^3.0.0",
     "file-loader": "^0.11.2",
-    "msgpack5": "^4.0.2",
+    "msgpack-lite": "^0.1.26",
     "rcedit": "^0.9.0",
     "rijndael-js": "^1.0.0",
     "uglifyjs-webpack-plugin": "^1.1.4",
@@ -55,8 +55,7 @@
     "url-loader": "^0.5.9",
     "vue-loader": "^13.0.5",
     "vue-template-compiler": "^2.5.13",
-    "webpack": "^3.11.0",
-    "webpack-dev-server": "^2.11.2"
+    "webpack": "^3.11.0"
   },
   "dependencies": {
     "vue": "^2.5.13",
