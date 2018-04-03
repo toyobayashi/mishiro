@@ -1,11 +1,15 @@
 import crypto from 'crypto'
+import https from 'https'
 import Rijndael from 'rijndael-js'
-import msgpack5 from 'msgpack5'
-import request from 'request'
+import msgpackLite from 'msgpack-lite'
 import config from './resolve-config.js'
 import configurer from '../common/config.js'
 
-const msgpack = msgpack5({ compatibilityMode: true })
+const msgpackLiteOptions = { codec: msgpackLite.createCodec({ useraw: true }) }
+const msgpack = {
+  encode: o => msgpackLite.encode(o, msgpackLiteOptions),
+  decode: o => msgpackLite.decode(o, msgpackLiteOptions)
+}
 
 class ApiClient {
   constructor (account, resVer) {
@@ -45,14 +49,28 @@ class ApiClient {
       'User-Agent': 'Dalvik/2.1.0 (Linux; U; Android 13.3.7; Nexus 42 Build/XYZZ1Y)'
     }
     return new Promise((resolve, reject) => {
-      request({
-        url: ApiClient.BASE + path,
-        timeout: 10000,
+      let req = https.request({
+        protocol: 'https:',
+        host: 'game.starlight-stage.jp',
+        method: 'POST',
+        path: path,
         headers: headers,
-        body: body
-      }, (err, res, body) => {
-        if (err) reject(err)
-        else {
+        timeout: 10000
+      }, res => {
+        let chunks = []
+        let size = 0
+        res.on('data', chunk => {
+          chunks.push(chunk)
+          size += chunk.length
+        })
+        res.on('end', () => {
+          let buf = Buffer.alloc(size)
+          let pos = 0
+          for (const chunk of chunks) {
+            chunk.copy(buf, pos)
+            pos += chunk.length
+          }
+          let body = buf.toString()
           let bin = Buffer.from(body, 'base64')
           let data = bin.slice(0, bin.length - 32)
           let key = bin.slice(bin.length - 32).toString('ascii')
@@ -61,8 +79,14 @@ class ApiClient {
           let msg = msgpack.decode(Buffer.from(plain, 'base64'))
           this.sid = typeof msg === 'object' ? (msg.data_headers ? msg.data_headers.sid : void 0) : void 0
           resolve(msg)
-        }
+        })
       })
+      req.on('error', err => {
+        console.log(err)
+        reject(err)
+      })
+      req.write(body)
+      req.end()
     })
   }
 
@@ -76,6 +100,7 @@ class ApiClient {
         app_type: 0
       })
     } catch (err) {
+      console.log(err)
       return false
     }
     if (res.data_headers.result_code === 214) {
@@ -111,7 +136,6 @@ class ApiClient {
     }
   }
 }
-ApiClient.BASE = 'http://game.starlight-stage.jp'
 ApiClient.VIEWER_ID_KEY = 'cyU1Vk5RKEgkJkJxYjYjMys3OGgyOSFGdDR3U2cpZXg='
 ApiClient.SID_KEY = 'ciFJQG50OGU1aT0='
 
