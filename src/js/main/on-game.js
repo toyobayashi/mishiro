@@ -1,6 +1,41 @@
 import sqlite3 from './node-module-sqlite3.js'
 import path from 'path'
-import createScore from './score.js'
+
+function createScore (csv, bpm) {
+  let csvTable = csv.split('\n')
+  for (let i = 0; i < csvTable.length; i++) {
+    csvTable[i] = csvTable[i].split(',')
+    csvTable[i][1] = Math.round(csvTable[i][1] / (60 / bpm) * 1000) / 1000
+    if (i > 0) {
+      csvTable[i][2] = Number(csvTable[i][2])
+      if (csvTable[i][2] !== 1 && csvTable[i][2] !== 2) {
+        csvTable.splice(i, 1)
+        i--
+      }
+    }
+  }
+
+  let score = []
+  for (let i = 1; i < csvTable.length; i++) {
+    let note = [csvTable[i][1], Number(csvTable[i][4])]
+    if (csvTable[i][2] === 2) {
+      let j = i + 1
+      for (j = i + 1; j < csvTable.length; j++) {
+        if (csvTable[j][4] == csvTable[i][4]) {
+          let length = csvTable[j][1] - csvTable[i][1]
+          note.push(length)
+          csvTable.splice(j, 1)
+          score.push(note)
+          break
+        }
+      }
+    } else {
+      score.push(note)
+    }
+  }
+
+  return score
+}
 
 export default async function (event, scoreFile, difficulty, bpm, src) {
   let bdb = await sqlite3.openAsync(scoreFile)
