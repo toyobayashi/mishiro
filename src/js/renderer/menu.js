@@ -1,6 +1,6 @@
 import { remote } from 'electron'
 import marked from 'marked'
-import request from 'request'
+import request from '../common/request.js'
 import getPath from '../common/get-path.js'
 import fs from 'fs'
 import { read, remove } from '../util/fse.js'
@@ -46,7 +46,7 @@ export default {
         url: 'https://api.github.com/repos/toyobayashi/mishiro/tags',
         headers
       }
-      request(releases, (err, res, body) => {
+      request(releases, (err, body) => {
         if (!err) {
           const latest = JSON.parse(body)[0]
           const version = latest.tag_name.substr(1)
@@ -56,7 +56,7 @@ export default {
           const zipUrl = zip ? zip.browser_download_url : null
           const exeUrl = exe ? exe.browser_download_url : null
 
-          request(tags, (err, res, body) => {
+          request(tags, (err, body) => {
             this.$emit('checked')
             if (!err) {
               const latestTag = JSON.parse(body).filter(tag => tag.name === latest.tag_name)[0]

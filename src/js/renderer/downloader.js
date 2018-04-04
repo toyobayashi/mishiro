@@ -1,6 +1,5 @@
-import request from 'request'
+import request from '../common/request.js'
 import fs from 'fs'
-import { read } from '../util/fse.js'
 import path from 'path'
 class Downloader {
   constructor (taskArr = []) {
@@ -10,9 +9,27 @@ class Downloader {
   }
 
   download (u, p, progressing, completed) {
-    let filename = this.toName(p)
-    return new Promise(async (resolve, reject) => {
-      if (fs.existsSync(p)) {
+    // let filename = this.toName(p)
+    return new Promise((resolve, reject) => {
+      this.req = request({
+        url: u,
+        path: p,
+        onData: progressing,
+        headers: {
+          'User-Agent': 'Dalvik/2.1.0 (Linux; U; Android 7.0; Nexus 42 Build/XYZZ1Y)',
+          'X-Unity-Version': '5.1.2f1',
+          'Accept-Encoding': 'gzip',
+          'Connection': 'Keep-Alive'
+        }
+      }, (err, res, p) => {
+        if (err) {
+          if (err.message === 'abort' || /^[4-9][0-9][0-9]$/.test(err.message)) resolve(false)
+          else reject(err)
+        } else {
+          resolve(p)
+        }
+      })
+      /* if (fs.existsSync(p)) {
         resolve(p)
       } else {
         let size = 0
@@ -89,12 +106,6 @@ class Downloader {
                 this.req = null
                 resolve(false)
               })
-              /* .on('end', () => {
-                if (rename) {
-                  fs.renameSync(path.join(p) + '.tmp', path.join(p))
-                }
-                resolve(p)
-              }) */
             ws.on('close', () => {
               if (rename) {
                 fs.renameSync(path.join(p) + '.tmp', path.join(p))
@@ -108,7 +119,7 @@ class Downloader {
           console.log(e + '\nURL: ' + u)
           reject(p)
         })
-      }
+      } */
     })
   }
 

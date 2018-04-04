@@ -5,7 +5,6 @@ import Downloader from './downloader.js'
 import fs from 'fs'
 import getPath from '../common/get-path.js'
 import { shell, ipcRenderer, remote } from 'electron'
-// import { dec } from 'hca'
 
 const dler = new Downloader()
 export default {
@@ -88,7 +87,7 @@ export default {
         }, (prog) => {
           this.text = `${prog.name}　${Math.ceil(prog.current / 1024)}/${Math.ceil(prog.max / 1024)} KB`
           this.current = prog.loading
-          this.total = 100 * prog.completed / taskArr.length + prog.loading / taskArr.length
+          this.total = 100 * dler.index / taskArr.length + prog.loading / taskArr.length
         }, (name, filepath, suffix) => {
           this.current = 0
           this.text = ''

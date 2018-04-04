@@ -1,9 +1,9 @@
 import crypto from 'crypto'
-import https from 'https'
 import Rijndael from 'rijndael-js'
 import msgpackLite from 'msgpack-lite'
 import config from './resolve-config.js'
 import configurer from '../common/config.js'
+import request from '../common/request.js'
 
 const msgpackLiteOptions = { codec: msgpackLite.createCodec({ useraw: true }) }
 const msgpack = {
@@ -49,7 +49,26 @@ class ApiClient {
       'User-Agent': 'Dalvik/2.1.0 (Linux; U; Android 13.3.7; Nexus 42 Build/XYZZ1Y)'
     }
     return new Promise((resolve, reject) => {
-      let req = https.request({
+      request({
+        url: 'https://game.starlight-stage.jp' + path,
+        method: 'POST',
+        headers: headers,
+        timeout: 10000,
+        body: body
+      }, (err, body) => {
+        if (err) reject(err)
+        else {
+          let bin = Buffer.from(body, 'base64')
+          let data = bin.slice(0, bin.length - 32)
+          let key = bin.slice(bin.length - 32).toString('ascii')
+          let plain = ApiClient.cryptAES.decryptRJ256(data, bodyIV, key)
+
+          let msg = msgpack.decode(Buffer.from(plain, 'base64'))
+          this.sid = typeof msg === 'object' ? (msg.data_headers ? msg.data_headers.sid : void 0) : void 0
+          resolve(msg)
+        }
+      })
+      /* let req = https.request({
         protocol: 'https:',
         host: 'game.starlight-stage.jp',
         method: 'POST',
@@ -86,7 +105,7 @@ class ApiClient {
         reject(err)
       })
       req.write(body)
-      req.end()
+      req.end() */
     })
   }
 

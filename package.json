@@ -49,6 +49,7 @@
     "file-loader": "^0.11.2",
     "msgpack-lite": "^0.1.26",
     "rcedit": "^0.9.0",
+    "request": "^2.85.0",
     "rijndael-js": "^1.0.0",
     "uglifyjs-webpack-plugin": "^1.1.4",
     "unzip": "^0.1.11",
@@ -58,9 +59,8 @@
     "webpack": "^3.11.0"
   },
   "dependencies": {
-    "vue": "^2.5.13",
     "marked": "^0.3.14",
-    "request": "^2.83.0",
+    "vue": "^2.5.13",
     "vue-i18n": "^7.4.2"
   }
 }

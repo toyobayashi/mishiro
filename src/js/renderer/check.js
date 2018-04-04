@@ -1,4 +1,4 @@
-import request from 'request'
+import request from '../common/request.js'
 import fs from 'fs'
 import getPath from '../common/get-path.js'
 import configurer from '../common/config.js'
@@ -11,7 +11,7 @@ let max = 20
 
 function httpGetVersion (resVer, progressing) {
   const option = {
-    method: 'GET',
+    // method: 'GET',
     url: `http://storage.game.starlight-stage.jp/dl/${resVer}/manifests/all_dbmanifest`,
     headers: {
       'User-Agent': 'Dalvik/2.1.0 (Linux; U; Android 7.0; Nexus 42 Build/XYZZ1Y)',
@@ -20,7 +20,16 @@ function httpGetVersion (resVer, progressing) {
     }
   }
   return new Promise((resolve) => {
-    request(option, (err, res) => {
+    request(option, (err) => {
+      if (err) {
+        resolve({ version: resVer, isExisting: false })
+      } else {
+        current++
+        progressing({ current, max, loading: 100 * current / max })
+        resolve({ version: resVer, isExisting: true })
+      }
+    })
+    /* request(option, (err, res) => {
       if (err) {
         resolve({ version: resVer, isExisting: false })
       } else {
@@ -32,7 +41,7 @@ function httpGetVersion (resVer, progressing) {
           resolve({ version: resVer, isExisting: false })
         }
       }
-    })
+    }) */
   })
 }
 
