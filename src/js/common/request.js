@@ -68,12 +68,14 @@ function request (options, callback) {
     res.on('data', chunk => {
       size += chunk.length
       if (p) {
-        onData({
-          name: path.parse(p).base,
-          current: fileLength + size,
-          max: fileLength + contentLength,
-          loading: 100 * (fileLength + size) / (fileLength + contentLength)
-        })
+        if (onData) {
+          onData({
+            name: path.parse(p).base,
+            current: fileLength + size,
+            max: fileLength + contentLength,
+            loading: 100 * (fileLength + size) / (fileLength + contentLength)
+          })
+        }
       } else {
         chunks.push(chunk)
       }

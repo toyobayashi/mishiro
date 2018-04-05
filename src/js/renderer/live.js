@@ -157,8 +157,7 @@ export default {
           try {
             let scoreBdb = await scoreDownloader.download(
               this.getDbUrl(this.activeAudio.scoreHash),
-              getPath(`./public/asset/score/${this.activeAudio.score.split('.')[0]}`),
-              () => { }
+              getPath(`./public/asset/score/${this.activeAudio.score.split('.')[0]}`)
             )
             if (scoreBdb) {
               this.lz4dec(scoreBdb, 'bdb')

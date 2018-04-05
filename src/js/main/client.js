@@ -8,7 +8,7 @@ import request from '../common/request.js'
 const msgpackLiteOptions = { codec: msgpackLite.createCodec({ useraw: true }) }
 const msgpack = {
   encode: o => msgpackLite.encode(o, msgpackLiteOptions),
-  decode: o => msgpackLite.decode(o, msgpackLiteOptions)
+  decode: o => msgpackLite.decode(o)
 }
 
 class ApiClient {
