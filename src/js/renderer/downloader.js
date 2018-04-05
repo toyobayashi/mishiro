@@ -8,7 +8,7 @@ class Downloader {
     this.index = -1
   }
 
-  download (u, p, progressing, completed) {
+  download (u, p, progressing) {
     // let filename = this.toName(p)
     return new Promise((resolve, reject) => {
       this.req = request({

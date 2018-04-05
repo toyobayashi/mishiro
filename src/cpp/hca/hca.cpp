@@ -21,7 +21,7 @@ string toCString (Local<Value> jsValue) {
 struct async_req {
   uv_work_t req;
   string input;
-  bool output;
+  string output;
   Isolate *isolate;
   Persistent<Function> callback;
 };
@@ -38,10 +38,11 @@ void DoAsync (uv_work_t *r) {
 
   clHCA hca(ciphKey1, ciphKey2);
   if (!hca.DecodeToWavefile(hcafile.c_str(), toWavSuffix(hcafile).c_str(), volume, mode, loop)) {
-    req->output = false;
+    req->output = "";
     return;
   }
-  req->output = true;
+  string wavfile = hcafile.substr(0, hcafile.find_last_of(".")) + ".wav";
+  req->output = wavfile;
 }
 
 void AfterAsync(uv_work_t *r) {
@@ -49,7 +50,7 @@ void AfterAsync(uv_work_t *r) {
   Isolate *isolate = req->isolate;
   HandleScope scope(isolate);
 
-  Local<Value> argv[1] = { Boolean::New(isolate, req->output) };
+  Local<Value> argv[1] = { String::NewFromUtf8(isolate, req->output.c_str()) };
 
   TryCatch try_catch(isolate);
 
@@ -77,7 +78,7 @@ void dec (const FunctionCallbackInfo<Value> &args) {
   req->req.data = req;
 
   req->input = toCString(args[0]);
-  req->output = false;
+  req->output = "";
   req->isolate = isolate;
 
   Local<Function> callback = Local<Function>::Cast(args[1]);
