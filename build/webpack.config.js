@@ -2,15 +2,7 @@
 const ExtractTextPlugin = require('extract-text-webpack-plugin')
 const UglifyJSPlugin = require('uglifyjs-webpack-plugin')
 const path = require('path')
-
-const nativeRequire = (moduleName) => `process.arch === "ia32" ? require("./lib/${moduleName}-ia32.node") : require("./lib/${moduleName}-x64.node")`
-const native = (nativeModules) => {
-  let externals = {}
-  for (let i = 0; i < nativeModules.length; i++) {
-    externals[nativeModules[i]] = nativeRequire(nativeModules[i])
-  }
-  return externals
-}
+const nativeExternals = require('./native-externals.js')
 
 let main = {
   target: 'electron-main',
@@ -23,7 +15,7 @@ let main = {
     __dirname: false,
     __filename: false
   },
-  externals: native(['sqlite3', 'hca']),
+  externals: Object.assign({}, nativeExternals('./lib', ['sqlite3', 'hca'])),
   plugins: [
     new webpack.DefinePlugin({
       'process.env.NODE_ENV': process.env.NODE_ENV === 'production' ? '"production"' : '"development"'
