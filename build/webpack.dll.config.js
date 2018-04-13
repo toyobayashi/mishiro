@@ -4,6 +4,7 @@ const UglifyJSPlugin = require('uglifyjs-webpack-plugin')
 const pkg = require('../package.json')
 
 const renderer = {
+  mode: process.env.NODE_ENV === 'production' ? 'production' : 'development',
   target: 'electron-renderer',
   entry: {
     vendor: Object.keys(pkg.dependencies)
@@ -18,24 +19,28 @@ const renderer = {
     library: 'dll'
   },
   plugins: [
-    new UglifyJSPlugin({
-      uglifyOptions: {
-        ecma: 8,
-        output: {
-          comments: false,
-          beautify: false
-        },
-        warnings: false
-      }
-    }),
     new webpack.DllPlugin({
       path: path.join(__dirname, 'manifest.json'),
-      name: 'dll'
-    }),
-    new webpack.DefinePlugin({
-      'process.env.NODE_ENV': process.env.NODE_ENV === 'production' ? '"production"' : '"development"'
+      name: 'dll',
+      context: __dirname
     })
-  ]
+  ],
+  optimization: {
+    minimizer: [
+      new UglifyJSPlugin({
+        parallel: true,
+        cache: true,
+        uglifyOptions: {
+          ecma: 8,
+          output: {
+            comments: false,
+            beautify: false
+          },
+          warnings: false
+        }
+      })
+    ]
+  }
 }
 
 module.exports = renderer
