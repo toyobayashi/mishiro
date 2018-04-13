@@ -1,0 +1,21 @@
+{
+  "compilerOptions": {
+    "strict": true,
+    "allowJs": true,
+    "noImplicitReturns": true,
+    "moduleResolution": "node",
+    "experimentalDecorators": true,
+    "strictPropertyInitialization": false,
+    "noUnusedLocals": true,
+    "noUnusedParameters": true,
+    "target": "ES6",
+    "typeRoots": [
+      "./node_module/@types",
+      "./src/@types"
+    ]
+  },
+  "include": [
+    "./src/js/**/*",
+    "./src/vue/**/*"
+  ]
+}

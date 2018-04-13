@@ -1,6 +1,6 @@
-const webpack = require('webpack')
-const path = require('path')
-const UglifyJSPlugin = require('uglifyjs-webpack-plugin')
+import * as webpack from 'webpack'
+import * as path from 'path'
+import UglifyJSPlugin = require('uglifyjs-webpack-plugin')
 const pkg = require('../package.json')
 
 const renderer = {
@@ -43,4 +43,4 @@ const renderer = {
   }
 }
 
-module.exports = renderer
+export default renderer
