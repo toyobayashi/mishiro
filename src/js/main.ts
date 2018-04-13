@@ -1,9 +1,9 @@
 import { app, BrowserWindow, ipcMain } from 'electron'
-import url from 'url'
+import * as url from 'url'
 import getPath from './common/get-path.js'
-import './main/ipc.js'
+import './main/ipc.ts'
 
-let mainWindow
+let mainWindow: BrowserWindow | null
 
 function createWindow () {
   // Menu.setApplicationMenu(null)
@@ -28,7 +28,7 @@ function createWindow () {
   })
 
   mainWindow.on('focus', () => {
-    mainWindow.flashFrame(false)
+    mainWindow && mainWindow.flashFrame(false)
   })
 }
 
@@ -46,6 +46,6 @@ app.on('activate', function () {
   }
 })
 
-ipcMain.on('flash', (event) => {
-  mainWindow.flashFrame(true)
+ipcMain.on('flash', () => {
+  mainWindow && mainWindow.flashFrame(true)
 })

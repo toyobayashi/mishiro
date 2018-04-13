@@ -1,26 +1,78 @@
-import crypto from 'crypto'
+import * as crypto from 'crypto'
 import Rijndael from 'rijndael-js'
-import msgpackLite from 'msgpack-lite'
+import * as msgpackLite from 'msgpack-lite'
 import config from './resolve-config.js'
 import configurer from '../common/config.js'
 import request from '../common/request.js'
 
+let g: any = global
 const msgpackLiteOptions = { codec: msgpackLite.createCodec({ useraw: true }) }
 const msgpack = {
-  encode: o => msgpackLite.encode(o, msgpackLiteOptions),
-  decode: o => msgpackLite.decode(o)
+  encode: (o: any) => msgpackLite.encode(o, msgpackLiteOptions),
+  decode: (o: Buffer) => msgpackLite.decode(o)
 }
 
 class ApiClient {
-  constructor (account, resVer) {
+  static VIEWER_ID_KEY: string = 'cyU1Vk5RKEgkJkJxYjYjMys3OGgyOSFGdDR3U2cpZXg='
+  static SID_KEY: string = 'ciFJQG50OGU1aT0='
+  static cryptoGrapher = { // 4位16进制表示长度 + 每个字符变成(两位随机数 + (ascii码 + 10的字符) + 一位随机数) + 32位随机数
+    encode (s: string) {
+      let arr = []
+      for (let i = 0; i < s.length; i++) {
+        let c = s[i]
+        arr.push(createRandomNumberString(2) + chr(ord(c) + 10) + createRandomIntNumberFromZeroTo(10))
+      }
+      return $04x(s.length) + arr.join('') + createRandomNumberString(32)
+    },
+    decode (s: string) {
+      let l = parseInt(s.substr(0, 4), 16)
+      let e = ''
+      for (let i = 6; i < s.length; i += 4) {
+        e += s[i]
+      }
+      e = e.substr(0, l)
+      let arr = []
+      for (let i = 0; i < e.length; i++) {
+        arr.push(chr(ord(e[i]) - 10))
+      }
+      return arr.join('')
+    }
+  }
+  static cryptAES = { // rijndael256cbc
+    encryptRJ256 (s: string, iv: string, key: string) {
+      let cipher = new Rijndael(key, 'cbc')
+      let ciphertext = cipher.encrypt(s, 256, iv)
+      let ascii = ''
+      for (let i = 0; i < ciphertext.length; i++) {
+        ascii += chr(ciphertext[i])
+      }
+      return ascii
+    },
+    decryptRJ256 (s: Buffer, iv: string, key: string) {
+      let cipher = new Rijndael(key, 'cbc')
+      let plaintext = cipher.decrypt(s, 256, iv)
+      let ascii = ''
+      for (let i = 0; i < plaintext.length; i++) {
+        ascii += chr(plaintext[i])
+      }
+      return ascii
+    }
+  }
+
+  user: string
+  viewer: string
+  udid: string
+  sid: string
+  resVer: string
+  constructor (account: string, resVer: string) {
     this.user = account.split(':')[0]
     this.viewer = account.split(':')[1]
     this.udid = account.split(':')[2]
-    this.sid = void 0
+    this.sid = ''
     this.resVer = resVer
   }
 
-  post (path, args) {
+  post (path: string, args: any) {
     let viewerIV = createRandomNumberString(32)
     args.timezone = '09:00:00'
     args.viewer_id = viewerIV + b64encode(ApiClient.cryptAES.encryptRJ256(this.viewer, viewerIV, b64decode(ApiClient.VIEWER_ID_KEY)))
@@ -55,9 +107,8 @@ class ApiClient {
         headers: headers,
         timeout: 10000,
         body: body
-      }, (err, body) => {
-        if (err) reject(err)
-        else {
+      }, (err: Error, body: string) => {
+        if (!err) {
           let bin = Buffer.from(body, 'base64')
           let data = bin.slice(0, bin.length - 32)
           let key = bin.slice(bin.length - 32).toString('ascii')
@@ -66,51 +117,13 @@ class ApiClient {
           let msg = msgpack.decode(Buffer.from(plain, 'base64'))
           this.sid = typeof msg === 'object' ? (msg.data_headers ? msg.data_headers.sid : void 0) : void 0
           resolve(msg)
-        }
+        } else reject(err)
       })
-      /* let req = https.request({
-        protocol: 'https:',
-        host: 'game.starlight-stage.jp',
-        method: 'POST',
-        path: path,
-        headers: headers,
-        timeout: 10000
-      }, res => {
-        let chunks = []
-        let size = 0
-        res.on('data', chunk => {
-          chunks.push(chunk)
-          size += chunk.length
-        })
-        res.on('end', () => {
-          let buf = Buffer.alloc(size)
-          let pos = 0
-          for (const chunk of chunks) {
-            chunk.copy(buf, pos)
-            pos += chunk.length
-          }
-          let body = buf.toString()
-          let bin = Buffer.from(body, 'base64')
-          let data = bin.slice(0, bin.length - 32)
-          let key = bin.slice(bin.length - 32).toString('ascii')
-          let plain = ApiClient.cryptAES.decryptRJ256(data, bodyIV, key)
-
-          let msg = msgpack.decode(Buffer.from(plain, 'base64'))
-          this.sid = typeof msg === 'object' ? (msg.data_headers ? msg.data_headers.sid : void 0) : void 0
-          resolve(msg)
-        })
-      })
-      req.on('error', err => {
-        console.log(err)
-        reject(err)
-      })
-      req.write(body)
-      req.end() */
     })
   }
 
   async check () {
-    let res
+    let res: any
     try {
       res = await this.post('/load/check', {
         campaign_data: '',
@@ -127,7 +140,7 @@ class ApiClient {
       console.log('/load/check [New Version] ' + this.resVer + ' => ' + resVer)
       this.resVer = res.data_headers.required_res_ver
       configurer.configure('latestResVer', resVer)
-      global.config.latestResVer = resVer
+      g.config.latestResVer = resVer
       return resVer
     } else if (res.data_headers.result_code === 1) {
       console.log('/load/check [latest Version] ' + this.resVer)
@@ -137,7 +150,7 @@ class ApiClient {
     }
   }
 
-  async getProfile (viewer) {
+  async getProfile (viewer: string | number) {
     try {
       let res = await this.post('/profile/get_profile', { friend_id: viewer.toString() })
       return res
@@ -146,7 +159,7 @@ class ApiClient {
     }
   }
 
-  async getGachaRate (gacha) {
+  async getGachaRate (gacha: string | number) {
     try {
       let res = await this.post('/gacha/get_rate', { gacha_id: gacha.toString() })
       return res
@@ -155,67 +168,20 @@ class ApiClient {
     }
   }
 }
-ApiClient.VIEWER_ID_KEY = 'cyU1Vk5RKEgkJkJxYjYjMys3OGgyOSFGdDR3U2cpZXg='
-ApiClient.SID_KEY = 'ciFJQG50OGU1aT0='
 
-ApiClient.cryptoGrapher = { // 4位16进制表示长度 + 每个字符变成(两位随机数 + (ascii码 + 10的字符) + 一位随机数) + 32位随机数
-  encode (s) {
-    let arr = []
-    for (let i = 0; i < s.length; i++) {
-      let c = s[i]
-      arr.push(createRandomNumberString(2) + chr(ord(c) + 10) + createRandomIntNumberFromZeroTo(10))
-    }
-    return $04x(s.length) + arr.join('') + createRandomNumberString(32)
-  },
-  decode (s) {
-    let l = parseInt(s.substr(0, 4), 16)
-    let e = ''
-    for (let i = 6; i < s.length; i += 4) {
-      e += s[i]
-    }
-    e = e.substr(0, l)
-    let arr = []
-    for (let i = 0; i < e.length; i++) {
-      arr.push(chr(ord(e[i]) - 10))
-    }
-    return arr.join('')
-  }
-}
-
-ApiClient.cryptAES = { // rijndael256cbc
-  encryptRJ256 (s, iv, key) {
-    let cipher = new Rijndael(key, 'cbc')
-    let ciphertext = cipher.encrypt(s, 256, iv)
-    let ascii = ''
-    for (let i = 0; i < ciphertext.length; i++) {
-      ascii += chr(ciphertext[i])
-    }
-    return ascii
-  },
-  decryptRJ256 (s, iv, key) {
-    let cipher = new Rijndael(key, 'cbc')
-    let plaintext = cipher.decrypt(s, 256, iv)
-    let ascii = ''
-    for (let i = 0; i < plaintext.length; i++) {
-      ascii += chr(plaintext[i])
-    }
-    return ascii
-  }
-}
-
-function chr (code) {
+function chr (code: number) {
   return String.fromCharCode(code)
 }
 
-function ord (str) {
-  return str.charCodeAt()
+function ord (str: string) {
+  return str.charCodeAt(0)
 }
 
-function createRandomIntNumberFromZeroTo (r) {
+function createRandomIntNumberFromZeroTo (r: number) {
   return Math.floor(r * Math.random())
 }
 
-function createRandomNumberString (l) {
+function createRandomNumberString (l: number) {
   let s = ''
   for (let i = 0; i < l; i++) {
     s += createRandomIntNumberFromZeroTo(10)
@@ -223,7 +189,7 @@ function createRandomNumberString (l) {
   return s
 }
 
-function $04x (n) {
+function $04x (n: number) {
   let s = n.toString(16)
   let d = 4 - s.length
   return Array.from({ length: d }, () => '0').join('') + s
@@ -237,24 +203,26 @@ function $xFFFF32 () {
   return s.join('')
 }
 
-function b64encode (s) {
-  return Buffer.from(s, 'ascii').toString('base64')
+function b64encode (s: string | Buffer) {
+  if (typeof s === 'string') return Buffer.from(s, 'ascii').toString('base64')
+  else if (s.constructor === Buffer) return s.toString('base64')
+  throw new TypeError('b64encode (s: string | Buffer)')
 }
 
-function b64decode (s) {
+function b64decode (s: string) {
   return Buffer.from(s, 'base64').toString('ascii')
 }
 
-function sha1 (s) {
+function sha1 (s: string) {
   return crypto.createHash('sha1').update(s).digest('hex')
 }
 
-function md5 (s) {
+function md5 (s: string) {
   return crypto.createHash('md5').update(s).digest('hex')
 }
 
 let client = new ApiClient(config.account || '940464243:174481488:cf608be5-6d38-421a-8eb1-11a501132c0a', config.latestResVer.toString())
-global.client = client
+g.client = client
 
 export { config }
 export default client
