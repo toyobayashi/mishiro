@@ -1,18 +1,10 @@
-import sqlite3 from './node-module-sqlite3.js'
+import * as sqlite3 from '../../@types/sqlite3/'
+import { Event } from 'electron'
 
-/* function openReadonlyDatabase (db) {
-  return new Promise((resolve, reject) => {
-    let d = new sqlite3.Database(db, sqlite3.OPEN_READONLY, err => {
-      if (err) reject(err)
-      else resolve(d)
-    })
-  })
-} */
-
-export default async function (event, manifestFile, resVer) {
-  let manifest = await sqlite3.openAsync(manifestFile)
-  let manifests = []
-  let manifestData = {}
+export default async function (event: Event, manifestFile: string, resVer: number) {
+  let manifest: undefined | sqlite3.Database = await sqlite3.openAsync(manifestFile)
+  let manifests: any[] = []
+  let manifestData: any = {}
 
   manifests = await manifest._all('SELECT name, hash FROM manifests')
   manifestData.liveManifest = await manifest._all('SELECT name, hash FROM manifests WHERE name LIKE "l/%"')

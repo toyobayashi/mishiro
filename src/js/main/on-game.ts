@@ -1,8 +1,9 @@
-import sqlite3 from './node-module-sqlite3.js'
-import path from 'path'
+import * as sqlite3 from '../../@types/sqlite3/'
+import * as path from 'path'
+import { Event } from 'electron'
 
-function createScore (csv, bpm) {
-  let csvTable = csv.split('\n')
+function createScore (csv: string, bpm: number) {
+  let csvTable: any = csv.split('\n')
   for (let i = 0; i < csvTable.length; i++) {
     csvTable[i] = csvTable[i].split(',')
     csvTable[i][1] = Math.round(csvTable[i][1] / (60 / bpm) * 1000) / 1000
@@ -21,7 +22,7 @@ function createScore (csv, bpm) {
     if (csvTable[i][2] === 2) {
       let j = i + 1
       for (j = i + 1; j < csvTable.length; j++) {
-        if (csvTable[j][4] == csvTable[i][4]) {
+        if (Number(csvTable[j][4]) === Number(csvTable[i][4])) {
           let length = csvTable[j][1] - csvTable[i][1]
           note.push(length)
           csvTable.splice(j, 1)
@@ -37,14 +38,15 @@ function createScore (csv, bpm) {
   return score
 }
 
-export default async function (event, scoreFile, difficulty, bpm, src) {
+export default async function (event: Event, scoreFile: string, difficulty: number | string, bpm: number, src: string) {
   let bdb = await sqlite3.openAsync(scoreFile)
   let rows = await bdb._all('SELECT name, data FROM blobs')
   let name = path.parse(scoreFile).name.split('_')
   let musicscores = name[0]
   let mxxx = name[1]
 
-  let id = Number(name[1].match(/[0-9]+$/)[0])
+  let matchedIdArr = name[1].match(/[0-9]+$/)
+  let id = matchedIdArr ? Number(matchedIdArr[0]) : void 0
 
   let nameField = `${musicscores}/${mxxx}/${id}_${difficulty}.csv`
 

@@ -1,5 +1,5 @@
 import Downloader from './downloader.js'
-import getPath from '../common/get-path.js'
+import getPath from '../common/get-path.ts'
 const dler = new Downloader()
 
 const downloadManifest = (resVer, progressing) => {

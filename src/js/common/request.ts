@@ -1,21 +1,31 @@
-import http from 'http'
-import https from 'https'
-import fs from 'fs'
-import url from 'url'
-import path from 'path'
+import * as http from 'http'
+import * as https from 'https'
+import * as fs from 'fs'
+import * as url from 'url'
+import * as path from 'path'
 
-const protocol = {
+const protocol: any = {
   'http:': http,
   'https:': https
 }
 
-function request (options, callback) {
+interface RequestOption {
+  url: string
+  method?: string
+  timeout?: number
+  headers?: any
+  body?: string | Buffer,
+  path?: string
+  onData?: (prog: {name?: string; current?: number; max?: number; loading?: number}) => void
+}
+
+function request (options: RequestOption, callback: (err: Error | null, body?: string | null, path?: string | null) => void) {
   let u = url.parse(options.url)
   let m = options.method || 'GET'
   let t = options.timeout || 5000
   let h = options.headers
   let b = options.body
-  let p = options.path
+  let p: any = options.path
   let onData = options.onData
 
   let _protocol = u.protocol
@@ -41,18 +51,19 @@ function request (options, callback) {
       else h = { Range: 'bytes=' + fileLength + '-' }
     }
   }
-  let req = protocol[_protocol].request({
+
+  let req = protocol[_protocol || 'http'].request({
     method: m,
     host: _host,
     path: _path,
     headers: h,
     timeout: t
-  }, res => {
+  }, (res: any) => {
     if (res.statusCode >= 400) {
       callback(new Error(res.statusCode.toString()))
       return
     }
-    let chunks = []
+    let chunks: Buffer[] = []
     let size = 0
     contentLength = Number(res.headers['content-length'])
     if (p) {
@@ -65,7 +76,7 @@ function request (options, callback) {
       })
       res.pipe(ws)
     }
-    res.on('data', chunk => {
+    res.on('data', (chunk: Buffer) => {
       size += chunk.length
       if (p) {
         if (onData) {
@@ -97,7 +108,7 @@ function request (options, callback) {
     rename = false
     callback(new Error('abort'))
   })
-  req.on('error', err => {
+  req.on('error', (err: Error) => {
     callback(err)
   })
   if (m === 'POST') req.write(b)

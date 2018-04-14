@@ -16,6 +16,7 @@
   },
   "include": [
     "./src/js/**/*",
-    "./src/vue/**/*"
+    "./src/vue/**/*",
+    "./src/@types/**/*"
   ]
 }

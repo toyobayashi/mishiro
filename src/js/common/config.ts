@@ -1,26 +1,27 @@
-import fs from 'fs'
-import { read, write } from '../util/fse.js'
-import getPath from './get-path.js'
+import * as fs from 'fs'
+import { read, write } from '../util/fse'
+import getPath from './get-path'
 
 class Configurer {
-  constructor (filePath) {
-    this.configFile = filePath
+  configFile: string
+  constructor (configFile: string) {
+    this.configFile = configFile
   }
   getConfigSync () {
     if (fs.existsSync(this.configFile)) {
-      return JSON.parse(fs.readFileSync(this.configFile))
+      return JSON.parse(fs.readFileSync(this.configFile, 'utf8'))
     } else {
       return {}
     }
   }
   async getConfig () {
     if (fs.existsSync(this.configFile)) {
-      return JSON.parse(await read(this.configFile))
+      return JSON.parse(await read(this.configFile, 'utf8'))
     } else {
       return {}
     }
   }
-  configure (key, value) {
+  configure (key: any, value?: any) {
     let config = this.getConfigSync()
     if (typeof key === 'string') {
       config[key] = value
@@ -38,7 +39,7 @@ class Configurer {
     fs.writeFileSync(this.configFile, JSON.stringify(config, null, '  '))
     return config
   }
-  async remove (key) {
+  async remove (key: string) {
     let config = await this.getConfig()
     delete config[key]
     await write(this.configFile, JSON.stringify(config, null, '  '))
@@ -47,3 +48,11 @@ class Configurer {
 }
 
 export default new Configurer(getPath('./config.json'))
+export interface MishiroConfig {
+  latestResVer?: number
+  resVer?: number
+  gacha?: number
+  event?: number
+  language?: string
+  account?: string
+}

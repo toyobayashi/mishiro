@@ -1,9 +1,10 @@
-import path from 'path'
-import fs from 'fs'
-import getPath from '../common/get-path.js'
-import { acb2mp3 } from './audio.js'
+import * as path from 'path'
+import * as fs from 'fs'
+import { Event } from 'electron'
+import getPath from '../common/get-path'
+import { acb2mp3 } from './audio'
 
-export default async function (event, acbPath, arg) {
+export default async function (event: Event, acbPath: any, arg?: any) {
   let isArr = Array.isArray(acbPath)
   try {
     if (isArr) {
@@ -16,7 +17,7 @@ export default async function (event, acbPath, arg) {
   } catch (err) {
     throw err
   }
-  if (arg) {
+  if (arg && !isArr) {
     const name = path.parse(acbPath).name
     let argArr = arg.split('/')
     if (argArr[argArr.length - 2] === 'live') {

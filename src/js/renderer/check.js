@@ -1,7 +1,7 @@
-import request from '../common/request.js'
+import request from '../common/request.ts'
 import fs from 'fs'
-import getPath from '../common/get-path.js'
-import configurer from '../common/config.js'
+import getPath from '../common/get-path.ts'
+import configurer from '../common/config.ts'
 import { remote } from 'electron'
 
 let client = remote.getGlobal('client')

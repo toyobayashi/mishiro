@@ -3,7 +3,7 @@ import TaskLoading from '../../vue/component/TaskLoading.vue'
 import InputText from '../../vue/component/InputText.vue'
 import Downloader from './downloader.js'
 import fs from 'fs'
-import getPath from '../common/get-path.js'
+import getPath from '../common/get-path.ts'
 import { shell, ipcRenderer, remote } from 'electron'
 
 const dler = new Downloader()

@@ -34,7 +34,7 @@ import url from 'url'
 import modalMixin from '../../js/renderer/modal-mixin.js'
 import InputRadio from '../component/InputRadio.vue'
 import { ipcRenderer, remote } from 'electron'
-import getPath from '../../js/common/get-path.js'
+import getPath from '../../js/common/get-path.ts'
 const BrowserWindow = remote.BrowserWindow
 export default {
   mixins: [modalMixin],

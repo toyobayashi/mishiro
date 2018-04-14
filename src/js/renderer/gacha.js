@@ -1,5 +1,5 @@
 import { shell } from 'electron'
-import getPath from '../common/get-path.js'
+import getPath from '../common/get-path.ts'
 export default {
   data () {
     return {

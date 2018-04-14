@@ -1,19 +1,20 @@
-import sqlite3 from './node-module-sqlite3.js'
+import * as sqlite3 from '../../@types/sqlite3/'
+import { Event } from 'electron'
+import { MishiroConfig } from '../common/config'
+import getEventData from './get-event-data'
+import getGachaData from './get-gacha-data'
+import getLimitedCard from './get-limited-card'
+import resolveCharaData from './resolve-chara-data'
+import resolveCardData from './resolve-card-data'
+import resolveAudioManifest from './resolve-audio-manifest'
+import resolveGachaAvailable from './resolve-gacha-available'
+import resolveUserLevel from './resolve-user-level'
 
-import getEventData from './get-event-data.js'
-import getGachaData from './get-gacha-data.js'
-import getLimitedCard from './get-limited-card.js'
-import resolveCharaData from './resolve-chara-data.js'
-import resolveCardData from './resolve-card-data.js'
-import resolveAudioManifest from './resolve-audio-manifest.js'
-import resolveGachaAvailable from './resolve-gacha-available.js'
-import resolveUserLevel from './resolve-user-level.js'
-
-export default async function (event, masterFile, manifestData, config) {
+export default async function (event: Event, masterFile: string, manifestData: any, config: MishiroConfig) {
   const timeOffset = (9 - (-(new Date().getTimezoneOffset() / 60))) * 60 * 60 * 1000
   const now = new Date().getTime()
 
-  let master = await sqlite3.openAsync(masterFile)
+  let master: sqlite3.Database | undefined = await sqlite3.openAsync(masterFile)
   const gachaAll = await master._all('SELECT * FROM gacha_data')
   const eventAll = await master._all('SELECT * FROM event_data')
 

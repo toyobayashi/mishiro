@@ -3,7 +3,7 @@ import fs from 'fs'
 import TaskLoading from '../../vue/component/TaskLoading.vue'
 import InputText from '../../vue/component/InputText.vue'
 import Downloader from './downloader.js'
-import getPath from '../common/get-path.js'
+import getPath from '../common/get-path.ts'
 const dler = new Downloader()
 const scoreDownloader = new Downloader()
 
