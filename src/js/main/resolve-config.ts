@@ -1,5 +1,5 @@
 // import https from 'https'
-import configurer from '../common/config.js'
+import configurer, { MishiroConfig } from '../common/config'
 // import client from './client.js'
 
 /* function getResourceVersionFromMishiroLab () {
@@ -16,10 +16,10 @@ import configurer from '../common/config.js'
     }).on('error', e => { resolve(false) })
   })
 } */
-
+let g: any = global
 let config = (function () {
-  let config = configurer.getConfigSync()
-  let fix = {}
+  let config: MishiroConfig = configurer.getConfigSync()
+  let fix: MishiroConfig = {}
   if (!config.latestResVer) {
     /* let resVer = await client.check()
     let rv346 = resVer || await getResourceVersionFromMishiroLab() */
@@ -36,6 +36,6 @@ let config = (function () {
   }
 })()
 
-global.config = config
+g.config = config
 
 export default config

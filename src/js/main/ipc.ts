@@ -1,17 +1,17 @@
-import { ipcMain } from 'electron'
+import { ipcMain, Event } from 'electron'
 /* import SQL from './sql-exec.js' */
 // import config from './resolve-config.js'
 import { config } from './client'
-import onManifestRead from './on-manifest-read.js'
-import onMasterRead from './on-master-read.js'
-import onManifestQuery from './on-manifest-query.js'
-import onAcb from './on-acb.js'
-import onVoiceDecode from './on-voice-decode.js'
-import onGame from './on-game.js'
+import onManifestRead from './on-manifest-read'
+import onMasterRead from './on-master-read'
+import onManifestQuery from './on-manifest-query'
+import onAcb from './on-acb'
+import onVoiceDecode from './on-voice-decode'
+import onGame from './on-game'
 // import onTitleVoiceDecode from './on-title-voice-decode.js'
 
-let manifestData: object = {}
-let manifests: object[] = []
+let manifestData: any = {}
+let manifests: any[] = []
 
 ipcMain.on('queryManifest', (event: Event, queryString: string) => {
   onManifestQuery(event, queryString, manifests)

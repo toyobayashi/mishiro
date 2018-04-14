@@ -1,9 +1,9 @@
 import * as crypto from 'crypto'
 import Rijndael from 'rijndael-js'
 import * as msgpackLite from 'msgpack-lite'
-import config from './resolve-config.js'
-import configurer from '../common/config.js'
-import request from '../common/request.js'
+import config from './resolve-config'
+import configurer from '../common/config'
+import request from '../common/request'
 
 let g: any = global
 const msgpackLiteOptions = { codec: msgpackLite.createCodec({ useraw: true }) }
@@ -107,9 +107,9 @@ class ApiClient {
         headers: headers,
         timeout: 10000,
         body: body
-      }, (err: Error, body: string) => {
+      }, (err?: Error | null, body?: string | null) => {
         if (!err) {
-          let bin = Buffer.from(body, 'base64')
+          let bin = Buffer.from(body || '', 'base64')
           let data = bin.slice(0, bin.length - 32)
           let key = bin.slice(bin.length - 32).toString('ascii')
           let plain = ApiClient.cryptAES.decryptRJ256(data, bodyIV, key)

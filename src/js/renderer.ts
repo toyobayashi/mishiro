@@ -1,10 +1,10 @@
 import Vue from 'vue'
 import VueI18n from 'vue-i18n'
 import Mishiro from '../vue/Mishiro.vue'
-import zh from './i18n/zh-CN.js'
-import ja from './i18n/ja-JP.js'
-import en from './i18n/en-US.js'
-import vueGlobal from './renderer/vue-global.js'
+import zh from './i18n/zh-CN'
+import ja from './i18n/ja-JP'
+import en from './i18n/en-US'
+import vueGlobal from './renderer/vue-global'
 import { remote } from 'electron'
 
 Vue.use(VueI18n)
@@ -19,6 +19,7 @@ const i18n = new VueI18n({
   }
 })
 
+// tslint:disable-next-line:no-unused-expression
 new Vue({
   el: '#app',
   i18n,

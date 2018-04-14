@@ -6,7 +6,7 @@ import downloadManifest from './download-manifest.js'
 import downloadMaster from './download-master.js'
 import Downloader from './downloader.js'
 import { ipcRenderer, remote } from 'electron'
-import getPath from '../common/get-path.js'
+import getPath from '../common/get-path.ts'
 import idol from './idol.js'
 import player from './player.js'
 

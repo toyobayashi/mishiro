@@ -1,4 +1,5 @@
 /* npm install sqlite3 --save-dev --build-from-source --runtime=electron --target=1.7.11 --target_arch=ia32 --dist-url=https: //atom.io/download/electron */
+
 var util = require('util')
 var path = require('path')
 var binding = require('sqlite3')

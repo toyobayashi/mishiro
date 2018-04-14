@@ -11,7 +11,7 @@
 
 <script>
 import fs from 'fs'
-import getPath from '../../js/common/get-path.js'
+import getPath from '../../js/common/get-path.ts'
 export default {
   data () {
     return {

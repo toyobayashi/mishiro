@@ -1,9 +1,10 @@
-export default function getEventData (eventAll, config, now, timeOffset) {
+import { MishiroConfig } from '../common/config'
+export default function getEventData (eventAll: any[], config: MishiroConfig, now: number, timeOffset: number) {
   eventAll.sort((a, b) => new Date(b.event_start).getTime() - new Date(a.event_start).getTime())
 
   if (config && config.event) {
     for (let i = 0; i < eventAll.length; i++) {
-      if (config.event == eventAll[i].id) return { eventData: eventAll[i], eventHappening: true }
+      if (config.event === Number(eventAll[i].id)) return { eventData: eventAll[i], eventHappening: true }
     }
   }
 

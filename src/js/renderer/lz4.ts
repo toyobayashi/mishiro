@@ -1,7 +1,9 @@
-import fs from 'fs'
+import * as fs from 'fs'
 
 class FileReader {
-  constructor (buf) {
+  buf: Buffer
+  curPos: number
+  constructor (buf: Buffer) {
     this.buf = buf
     this.curPos = 0
   }
@@ -17,11 +19,11 @@ class FileReader {
     this.curPos += 4
     return this.buf.readUInt32LE(this.curPos - 4)
   }
-  copy (target, targetStart, thisSize) {
+  copy (target: Buffer, targetStart: number, thisSize: number) {
     this.buf.copy(target, targetStart, this.curPos, this.curPos + thisSize)
     this.curPos += thisSize
   }
-  seek (pos) {
+  seek (pos: number) {
     this.curPos = pos
   }
   tell () {
@@ -30,7 +32,8 @@ class FileReader {
 }
 
 class Lz4 {
-  constructor (buf) {
+  reader: FileReader
+  constructor (buf: Buffer) {
     this.reader = new FileReader(buf)
   }
   decompress () {
@@ -92,14 +95,14 @@ class Lz4 {
     return retArray
   }
 
-  readAdditionalSize (reader) {
+  readAdditionalSize (reader: FileReader): number {
     let size = reader.readUInt8()
     if (size === 255) return size + this.readAdditionalSize(reader)
     else return size
   }
 }
 
-function lz4dec (input, output = 'unity3d') {
+function lz4dec (input: string, output = 'unity3d') {
   let dec = new Lz4(fs.readFileSync(input))
   fs.writeFileSync(input + '.' + output, dec.decompress())
   return input + '.' + output

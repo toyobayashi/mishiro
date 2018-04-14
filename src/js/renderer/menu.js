@@ -1,7 +1,7 @@
 import { remote } from 'electron'
 import marked from 'marked'
-import request from '../common/request.js'
-import getPath from '../common/get-path.js'
+import request from '../common/request.ts'
+import getPath from '../common/get-path.ts'
 import fs from 'fs'
 import { read, remove } from '../util/fse.js'
 export default {

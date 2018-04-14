@@ -1,8 +1,8 @@
-import fs from 'fs'
-import { read, write } from '../util/fse.js'
-import path from 'path'
+import * as fs from 'fs'
+import { read, write } from '../util/fse'
+import * as path from 'path'
 
-function UTFTable (acb) {
+function UTFTable (acb: Buffer) {
   let body = acb.slice(8)
 
   let tableHeader = {
@@ -48,7 +48,7 @@ function UTFTable (acb) {
 
   for (let r = 0; r < tableHeader.rowLength; r++) {
     let d = r * tableHeader.rowTotalByte
-    let row = {}
+    let row: any = {}
     let constant = {}
     let kd = 0
     for (let i = 0; i < keyData.length;) {
@@ -96,13 +96,13 @@ function UTFTable (acb) {
           // st = ': Int32'
           break
         case dataType.Uint64:
-          data = tableData.readUInt64BE(d)
+          data = parseInt(tableData.slice(d, d + 8).toString('hex'), 16)
           kd = 8
           d += 8
           // st = ': UInt64'
           break
         case dataType.Int64:
-          data = tableData.readInt64BE(d)
+          data = (parseInt(tableData.slice(d, d + 1).toString('hex'), 16) ? -1 : 1) * parseInt(tableData.slice(d + 1, d + 8).toString('hex'), 16)
           kd = 8
           d += 8
           // st = ': Int64'
@@ -160,7 +160,7 @@ function UTFTable (acb) {
   return rows
 }
 
-function getHCAFromAWB (awb, name, cueNameTable) {
+function getHCAFromAWB (awb: Buffer, cueNameTable: any[]) {
   let dataSizeLength = awb.readUInt8(0x5)
   let fileCount = awb.readUInt32LE(0x8)
   let alignment = awb.readUInt32LE(0xc)
@@ -198,11 +198,11 @@ function getHCAFromAWB (awb, name, cueNameTable) {
   return hcaFiles
 }
 
-async function extractACB (acbPath, outputDir = path.join(path.parse(acbPath).dir, `_acb_${path.parse(acbPath).base}`)) {
+async function extractACB (acbPath: string, outputDir: string = path.join(path.parse(acbPath).dir, `_acb_${path.parse(acbPath).base}`)) {
   let utftable = UTFTable(await read(acbPath))
   let cueNameTable = UTFTable(utftable[0].CueNameTable)
   let awb = utftable[0].AwbFile
-  let hcaFiles = getHCAFromAWB(awb, utftable[0].Name, cueNameTable)
+  let hcaFiles = getHCAFromAWB(awb, /* utftable[0].Name,  */cueNameTable)
 
   if (!fs.existsSync(outputDir)) fs.mkdirSync(outputDir)
   let promiseArr = []

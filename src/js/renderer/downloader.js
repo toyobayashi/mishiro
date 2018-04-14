@@ -1,4 +1,4 @@
-import request from '../common/request.js'
+import request from '../common/request.ts'
 import fs from 'fs'
 import path from 'path'
 class Downloader {

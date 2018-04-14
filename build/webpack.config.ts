@@ -50,7 +50,7 @@ let renderer: webpack.Configuration = {
   mode: process.env.NODE_ENV === 'production' ? 'production' : 'development',
   target: 'electron-renderer',
   entry: {
-    'mishiro.renderer': path.join(__dirname, '../src/js/renderer.js'),
+    'mishiro.renderer': path.join(__dirname, '../src/js/renderer.ts'),
     'mishiro.live': path.join(__dirname, '../src/js/renderer-game.js')
   },
   output: {
