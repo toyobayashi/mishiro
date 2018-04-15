@@ -1,4 +1,4 @@
-let liveResult = {
+let liveResult: any = {
   perfect: 0,
   great: 0,
   nice: 0,
@@ -10,10 +10,11 @@ let liveResult = {
 }
 
 let comboDom = document.getElementById('combo')
+if (comboDom === null) throw new Error('#comboDom null')
 let numberDom = comboDom.getElementsByClassName('combo-number')[0]
 let hpDom = document.getElementById('hp')
 
-let model = {
+let model: any = {
   combo: 0,
   hp: 100
 }
@@ -27,11 +28,13 @@ Object.defineProperties(liveResult, {
     },
     set (n) {
       model.combo = n
-      if (n > 0) {
-        comboDom.style.display = 'flex'
-        numberDom.innerHTML = n
-      } else {
-        comboDom.style.display = 'none'
+      if (comboDom !== null) {
+        if (n > 0) {
+          comboDom.style.display = 'flex'
+          numberDom.innerHTML = n
+        } else {
+          comboDom.style.display = 'none'
+        }
       }
     }
   },
@@ -43,13 +46,15 @@ Object.defineProperties(liveResult, {
     },
     set (h) {
       model.hp = h
-      hpDom.style.width = h + '%'
-      if (h <= 40 && h > 20) {
-        hpDom.className = 'hp warning'
-      } else if (h <= 20) {
-        hpDom.className = 'hp dangerous'
-      } else {
-        hpDom.className = 'hp'
+      if (hpDom !== null) {
+        hpDom.style.width = h + '%'
+        if (h <= 40 && h > 20) {
+          hpDom.className = 'hp warning'
+        } else if (h <= 20) {
+          hpDom.className = 'hp dangerous'
+        } else {
+          hpDom.className = 'hp'
+        }
       }
     }
   }
@@ -66,19 +71,35 @@ let se = {
 
 const rankImg = newImage('./img/img.asar/rank.png')
 
-function playSe (se) {
+function playSe (se: HTMLAudioElement) {
   se.currentTime = 0
   se.play()
 }
 
-function newImage (src) {
-  var img = new Image()
+function newImage (src: string) {
+  let img = new Image()
   img.src = src
   return img
 }
 
 class Note {
-  constructor (path, distance) {
+  static CTX: CanvasRenderingContext2D
+  static BACK_CTX: CanvasRenderingContext2D
+  static IMG: HTMLImageElement = newImage('./img/img.asar/icon_notes.png')
+  static SPEED: number = 12 // x 60 px / s
+  static PX_SPEED: number = Note.SPEED * 60 / 1000
+  static TOP_TO_BOTTOM: number = 592
+  static X: number[] = [238.5, 414.5, 589.5, 764.5, 937.5]
+  static queue: any[][] = [[], [], [], [], []]
+  static W: number = 102
+  static H: number = 102
+  static DISTANCE: number = Note.TOP_TO_BOTTOM + Note.H
+  static RANGE: number = 100
+  path: number
+  exist: boolean
+  x: number
+  y: number
+  constructor (path: number, distance: number) {
     this.path = path
     this.exist = true
     this.x = Note.X[this.path - 1]
@@ -86,20 +107,12 @@ class Note {
     Note.queue[this.path - 1].push(this)
   }
 }
-Note.IMG = newImage('./img/img.asar/icon_notes.png')
-// Note.CTX = document.getElementById('live').getContext('2d')
-Note.SPEED = 12 // x 60 px / s
-Note.PX_SPEED = Note.SPEED * 60 / 1000
-Note.TOP_TO_BOTTOM = 592
-Note.X = [238.5, 414.5, 589.5, 764.5, 937.5]
-Note.queue = [[], [], [], [], []]
-Note.W = 102
-Note.H = 102
-Note.DISTANCE = Note.TOP_TO_BOTTOM + Note.H
-Note.RANGE = 100
 
 class ShortNote extends Note {
-  constructor (path, distance = Note.DISTANCE, doDrop = true) {
+  static IMG_POSITION_X: number = 0
+  static IMG_POSITION_Y: number = 0
+  t: number
+  constructor (path: number, distance: number = Note.DISTANCE, doDrop: boolean = true) {
     super(path, distance)
     this.draw()
     if (doDrop) this.startDrop()
@@ -123,34 +136,38 @@ class ShortNote extends Note {
     )
   }
 
-  update (distance) {
+  update (distance: number) {
     this.clean()
     this.y = Note.TOP_TO_BOTTOM - distance
     this.draw()
   }
 
   startDrop () {
-    this.t = requestAnimationFrame(frame.bind(this))
+    this.t = requestAnimationFrame(frame)
+    let self = this
     function frame () {
-      if (this.y >= Note.TOP_TO_BOTTOM + Note.RANGE * Note.PX_SPEED) {
-        this.exist = false
-        cancelAnimationFrame(this.t)
-        this.clean()
-        Note.queue[this.path - 1].shift()
+      if (self.y >= Note.TOP_TO_BOTTOM + Note.RANGE * Note.PX_SPEED) {
+        self.exist = false
+        cancelAnimationFrame(self.t)
+        self.clean()
+        Note.queue[self.path - 1].shift()
         miss()
-      } else if (this.exist) {
-        var d = Note.TOP_TO_BOTTOM - this.y
-        this.update(d - Note.SPEED)
-        requestAnimationFrame(frame.bind(this))
+      } else if (self.exist) {
+        let d = Note.TOP_TO_BOTTOM - self.y
+        self.update(d - Note.SPEED)
+        requestAnimationFrame(frame)
       }
     }
   }
 }
-ShortNote.IMG_POSITION_X = 0
-ShortNote.IMG_POSITION_Y = 0
 
 class LongNote extends Note {
-  constructor (path, length, distance = Note.DISTANCE, doDrop = true) {
+  static IMG_POSITION_X: number = 102
+  static IMG_POSITION_Y: number = 0
+  status: number
+  length: number
+  t: number
+  constructor (path: number, length: number, distance: number = Note.DISTANCE, doDrop: boolean = true) {
     super(path, distance)
     this.status = 0
     this.length = length
@@ -196,7 +213,7 @@ class LongNote extends Note {
     }
   }
 
-  update (distance, length) {
+  update (distance: number, length: number) {
     this.clean()
     this.y = Note.TOP_TO_BOTTOM - distance
     this.length = length
@@ -204,63 +221,62 @@ class LongNote extends Note {
   }
 
   startDrop () {
-    this.t = requestAnimationFrame(frame.bind(this))
+    this.t = requestAnimationFrame(frame)
+    let self = this
     function frame () {
-      if (this.y >= Note.TOP_TO_BOTTOM + Note.RANGE * Note.PX_SPEED) {
-        this.exist = false
-        cancelAnimationFrame(this.t)
-        this.clean()
-        Note.queue[this.path - 1].shift()
+      if (self.y >= Note.TOP_TO_BOTTOM + Note.RANGE * Note.PX_SPEED) {
+        self.exist = false
+        cancelAnimationFrame(self.t)
+        self.clean()
+        Note.queue[self.path - 1].shift()
         miss()
         miss()
         return
       }
 
-      if (this.status === 0 && this.exist) {
-        var d = Note.TOP_TO_BOTTOM - this.y
-        this.update(d - Note.SPEED, this.length)
-        requestAnimationFrame(frame.bind(this))
-      } else if (this.status === 1 && this.exist) {
-        if (this.y - this.length >= Note.TOP_TO_BOTTOM + Note.RANGE * Note.PX_SPEED) {
-          this.exist = false
-          cancelAnimationFrame(this.t)
-          this.clean()
-          Note.queue[this.path - 1].shift()
+      if (self.status === 0 && self.exist) {
+        let d = Note.TOP_TO_BOTTOM - self.y
+        self.update(d - Note.SPEED, self.length)
+        requestAnimationFrame(frame)
+      } else if (self.status === 1 && self.exist) {
+        if (self.y - self.length >= Note.TOP_TO_BOTTOM + Note.RANGE * Note.PX_SPEED) {
+          self.exist = false
+          cancelAnimationFrame(self.t)
+          self.clean()
+          Note.queue[self.path - 1].shift()
           miss()
           se.longLoop.pause()
           return
         }
-        var l = this.length
-        this.update(0, l - Note.SPEED)
-        requestAnimationFrame(frame.bind(this))
+        let l = self.length
+        self.update(0, l - Note.SPEED)
+        requestAnimationFrame(frame)
       }
     }
   }
 }
-LongNote.IMG_POSITION_X = 102
-LongNote.IMG_POSITION_Y = 0
 
-function tap () {
-  let dt = Math.abs(this.y - Note.TOP_TO_BOTTOM) / Note.PX_SPEED
+function tap (note: ShortNote) {
+  let dt = Math.abs(note.y - Note.TOP_TO_BOTTOM) / Note.PX_SPEED
   if (dt <= Note.RANGE) {
-    this.exist = false
-    cancelAnimationFrame(this.t)
-    this.clean()
-    Note.queue[this.path - 1].shift()
+    note.exist = false
+    cancelAnimationFrame(note.t)
+    note.clean()
+    Note.queue[note.path - 1].shift()
     rank(dt)
   } else {
     playSe(se.clap)
   }
 }
 
-function down () {
-  if (this.status === 0) {
-    let dt = Math.abs(this.y - Note.TOP_TO_BOTTOM) / Note.PX_SPEED
+function down (note: LongNote) {
+  if (note.status === 0) {
+    let dt = Math.abs(note.y - Note.TOP_TO_BOTTOM) / Note.PX_SPEED
     if (dt <= Note.RANGE) {
-      this.clean()
+      note.clean()
       rank(dt)
-      this.status = 1
-      this.length = this.length - (this.y - Note.TOP_TO_BOTTOM)
+      note.status = 1
+      note.length = note.length - (note.y - Note.TOP_TO_BOTTOM)
       se.longLoop.loop = true
       se.longLoop.play()
     } else {
@@ -269,25 +285,25 @@ function down () {
   }
 }
 
-function up () {
+function up (note: LongNote) {
   se.longLoop.pause()
-  let dt = Math.abs(this.y - this.length - Note.TOP_TO_BOTTOM) / Note.PX_SPEED
+  let dt = Math.abs(note.y - note.length - Note.TOP_TO_BOTTOM) / Note.PX_SPEED
   if (dt <= Note.RANGE) {
-    this.exist = false
-    cancelAnimationFrame(this.t)
-    this.clean()
-    Note.queue[this.path - 1].shift()
+    note.exist = false
+    cancelAnimationFrame(note.t)
+    note.clean()
+    Note.queue[note.path - 1].shift()
     rank(dt)
   } else { // miss
-    this.exist = false
-    cancelAnimationFrame(this.t)
-    this.clean()
-    Note.queue[this.path - 1].shift()
+    note.exist = false
+    cancelAnimationFrame(note.t)
+    note.clean()
+    Note.queue[note.path - 1].shift()
     miss()
   }
 }
 
-function rank (dt) {
+function rank (dt: number) {
   if (dt <= 50) {
     liveResult.perfect++
     liveResult.combo++
@@ -337,9 +353,9 @@ function clearRank () {
 }
 
 let t = 1
-let st = 1
-function showRank (rank) {
-  clearTimeout(st)
+let st: number | NodeJS.Timer = 1
+function showRank (rank: string) {
+  clearTimeout(st as NodeJS.Timer)
   clearRank()
   let f = 0
   cancelAnimationFrame(t)
@@ -412,7 +428,7 @@ function showRank (rank) {
     }
     if (f >= 9) {
       cancelAnimationFrame(t)
-      clearTimeout(st)
+      clearTimeout(st as NodeJS.Timer)
       st = setTimeout(() => {
         clearRank()
       }, 500)
@@ -423,19 +439,19 @@ function showRank (rank) {
   }
 }
 
-function keydown (path) {
+function keydown (path: number) {
   let note = Note.queue[path - 1][0]
   if (note) {
-    if (note.constructor === ShortNote) tap.call(note)
-    else down.call(note)
+    if (note.constructor === ShortNote) tap(note)
+    else down(note)
   } else {
     playSe(se.clap)
   }
 }
 
-function keyup (path) {
+function keyup (path: number) {
   let note = Note.queue[path - 1][0]
-  if (note && note.constructor === LongNote && note.status === 1) up.call(note)
+  if (note && note.constructor === LongNote && note.status === 1) up(note)
 }
 
 function keyBind () {

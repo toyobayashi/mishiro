@@ -56,29 +56,25 @@
 </div>
 </template>
 
-<script>
-import modalMixin from '../../js/renderer/modal-mixin.js'
-export default {
-  mixins: [modalMixin],
-  data () {
-    return {
-      info: {}
-    }
-  },
-  props: {
-    'master': {
-      type: Object,
-      require: true
-    }
-  },
-  computed: {
-    gachaData () {
-      return this.master.gachaData ? this.master.gachaData : {}
-    }
-  },
+<script lang="ts">
+import modalMixin from '../../ts/renderer/modal-mixin'
+import Component, { mixins } from 'vue-class-component'
+import { Prop } from 'vue-property-decorator'
+import { MasterData } from '../../ts/main/on-master-read'
+@Component
+export default class extends mixins(modalMixin) {
+
+  info: any = {}
+
+  @Prop({ default: (() => ({})), type: Object }) master: MasterData
+
+  get gachaData () {
+    return this.master.gachaData ? this.master.gachaData : {}
+  }
+
   mounted () {
     this.$nextTick(() => {
-      this.event.$on('showInformation', (info) => {
+      this.event.$on('showInformation', (info: any) => {
         this.info = info
         this.show = true
         this.visible = true

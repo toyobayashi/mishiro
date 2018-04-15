@@ -2,7 +2,7 @@
 <button class="hideButton" @click="toggle"></button>
 </template>
 
-<script lang="ts" src="../../js/renderer/the-toggle-button.ts">
+<script lang="ts" src="../../ts/renderer/the-toggle-button.ts">
 </script>
 
 <style scoped>

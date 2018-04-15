@@ -47,23 +47,20 @@
 </div>
 </template>
 
-<script>
+<script lang="ts">
 import { remote, shell } from 'electron'
-import modalMixin from '../../js/renderer/modal-mixin.js'
-export default {
-  mixins: [modalMixin],
-  data () {
-    return {
-      remote,
-      process
-    }
-  },
-  methods: {
-    showRepo () {
-      shell.openExternal('https://github.com/toyobayashi/mishiro')
-      this.playSe(this.enterSe)
-    }
-  },
+import modalMixin from '../../ts/renderer/modal-mixin'
+import Component, { mixins } from 'vue-class-component'
+@Component
+export default class extends mixins(modalMixin) {
+  remote = remote
+  process = process
+
+  showRepo () {
+    shell.openExternal('https://github.com/toyobayashi/mishiro')
+    this.playSe(this.enterSe)
+  }
+
   mounted () {
     this.$nextTick(() => {
       this.event.$on('showAbout', () => {

@@ -1,26 +1,25 @@
 import StaticTitleDot from '../../vue/component/StaticTitleDot.vue'
-// import { Vue } from 'vue-property-decorator'
-export default {
+import { Vue, Component } from 'vue-property-decorator'
+@Component({
   components: {
     StaticTitleDot
-  },
-  data () {
-    return {
-      show: false,
-      visible: false,
-      bodyMaxHeight: window.innerHeight - 267 + 'px',
-      modalWidth: '600px'
-    }
-  },
-  methods: {
-    close () {
-      this.playSe(this.cancelSe)
-      this.visible = false
-    },
-    afterLeave () {
-      this.show = false
-    }
-  },
+  }
+})
+export default class extends Vue {
+
+  show: boolean = false
+  visible: boolean = false
+  bodyMaxHeight: string = window.innerHeight - 267 + 'px'
+  modalWidth: string = '600px'
+
+  close () {
+    this.playSe(this.cancelSe)
+    this.visible = false
+  }
+  afterLeave () {
+    this.show = false
+  }
+
   mounted () {
     this.$nextTick(() => {
       window.addEventListener(

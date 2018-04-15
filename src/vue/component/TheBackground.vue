@@ -18,7 +18,7 @@
 </div>
 </template>
 
-<script lang="ts" src="../../js/renderer/the-background.ts">
+<script lang="ts" src="../../ts/renderer/the-background.ts">
 </script>
 
 <style>

@@ -6,7 +6,7 @@
 </div>
 </template>
 
-<script lang="ts" src="../../js/renderer/the-navigation-bar.ts">
+<script lang="ts" src="../../ts/renderer/the-navigation-bar.ts">
 </script>
 
 <style>

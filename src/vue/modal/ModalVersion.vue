@@ -31,31 +31,29 @@
 </div>
 </template>
 
-<script>
+<script lang="ts">
 import { shell } from 'electron'
-import modalMixin from '../../js/renderer/modal-mixin.js'
-export default {
-  mixins: [modalMixin],
-  data () {
-    return {
-      versionData: {}
+import modalMixin from '../../ts/renderer/modal-mixin'
+import Component, { mixins } from 'vue-class-component'
+@Component
+export default class extends mixins(modalMixin) {
+
+  versionData: any = {}
+
+  showRepo () {
+    if (this.versionData.exeUrl) {
+      shell.openExternal(this.versionData.exeUrl)
+    } else if (this.versionData.zipUrl) {
+      shell.openExternal(this.versionData.zipUrl)
+    } else {
+      shell.openExternal('https://github.com/toyobayashi/mishiro/releases')
     }
-  },
-  methods: {
-    showRepo () {
-      if (this.versionData.exeUrl) {
-        shell.openExternal(this.versionData.exeUrl)
-      } else if (this.versionData.zipUrl) {
-        shell.openExternal(this.versionData.zipUrl)
-      } else {
-        shell.openExternal('https://github.com/toyobayashi/mishiro/releases')
-      }
-      this.playSe(this.enterSe)
-    }
-  },
+    this.playSe(this.enterSe)
+  }
+
   mounted () {
     this.$nextTick(() => {
-      this.event.$on('versionCheck', (versionData) => {
+      this.event.$on('versionCheck', (versionData: any) => {
         this.show = true
         this.visible = true
         this.versionData = versionData
