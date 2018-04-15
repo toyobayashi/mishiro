@@ -9,7 +9,7 @@
 </div>
 </template>
 
-<script lang="ts" src="../../js/renderer/mishiro-entry.ts">
+<script lang="ts" src="../../ts/renderer/mishiro-entry.ts">
 </script>
 
 <style>

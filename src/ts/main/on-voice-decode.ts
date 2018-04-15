@@ -1,6 +1,6 @@
 import * as path from 'path'
 import { Event } from 'electron'
-import { remove } from '../util/fse'
+import { remove } from '../../js/fse'
 import { acb2hca, hca2mp3, readdirAsync } from './audio'
 
 export default async function (event: Event, acbs: string[]) {

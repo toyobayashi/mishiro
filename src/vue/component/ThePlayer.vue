@@ -21,7 +21,7 @@
 </div>
 </template>
 
-<script lang="ts" src="../../js/renderer/the-player.ts">
+<script lang="ts" src="../../ts/renderer/the-player.ts">
 </script>
 
 <style>

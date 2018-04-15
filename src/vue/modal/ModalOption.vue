@@ -47,151 +47,146 @@
 </div>
 </template>
 
-<script>
-import modalMixin from '../../js/renderer/modal-mixin.js'
+<script lang="ts">
+import modalMixin from '../../ts/renderer/modal-mixin'
 import InputRadio from '../component/InputRadio.vue'
 import InputText from '../component/InputText.vue'
-export default {
-  mixins: [modalMixin],
+import Component, { mixins } from 'vue-class-component'
+import { Prop } from 'vue-property-decorator'
+import { MasterData } from '../../ts/main/on-master-read'
+@Component({
   components: {
     InputRadio,
     InputText
-  },
-  data () {
-    return {
-      lang: '',
-      resVer: '',
-      gachaId: '',
-      eventId: '',
-      backgroundId: '',
-      account: '',
-      language: {
-        zh: 'i18n.chinese',
-        ja: 'i18n.japanese',
-        en: 'i18n.english'
+  }
+})
+export default class extends mixins(modalMixin) {
+
+  lang: string = ''
+  resVer: string = ''
+  gachaId: string = ''
+  eventId: string = ''
+  backgroundId: string = ''
+  account: string = ''
+  language: any = {
+    zh: 'i18n.chinese',
+    ja: 'i18n.japanese',
+    en: 'i18n.english'
+  }
+
+  @Prop({ default: (() => ({})), type: Object }) master: MasterData
+  @Prop({ required: true }) latestResVer: string | number
+  @Prop() value: string
+
+  get cardData (): any {
+    return this.master.cardData ? this.master.cardData : {}
+  }
+  get eventData (): any {
+    return this.master.eventAll ? this.master.eventAll : {}
+  }
+  get gachaNow (): any {
+    return this.master.gachaNow ? this.master.gachaNow : {}
+  }
+
+  save () {
+    this.playSe(this.enterSe)
+    let resVer
+    let gachaId
+    let eventId
+    let backgroundId
+    let account
+    if (this.resVer) {
+      if (
+        Number(this.resVer) < 10012760 ||
+        Number(this.resVer) % 10 !== 0 ||
+        Number(this.resVer) > this.latestResVer
+      ) {
+        this.event.$emit('alert', this.$t('home.errorTitle'), 'resVer error')
+        return
+      } else {
+        resVer = Number(this.resVer)
       }
+    } else {
+      resVer = this.resVer
     }
-  },
-  props: {
-    master: {
-      type: Object,
-      require: true
-    },
-    latestResVer: {
-      type: [String, Number],
-      require: true
-    },
-    value: {
-      type: String
+
+    if (this.gachaId) {
+      if (
+        Number(this.gachaId) < 30000 ||
+        Number(this.gachaId) > this.gachaNow.id ||
+        Math.floor(Number(this.gachaId)) !== Number(this.gachaId)
+      ) {
+        this.event.$emit(
+          'alert',
+          this.$t('home.errorTitle'),
+          'gachaId error'
+        )
+        return
+      } else {
+        gachaId = Number(this.gachaId)
+      }
+    } else {
+      gachaId = this.gachaId
     }
-  },
-  computed: {
-    cardData () {
-      return this.master.cardData ? this.master.cardData : {}
-    },
-    eventData () {
-      return this.master.eventAll ? this.master.eventAll : {}
-    },
-    gachaNow () {
-      return this.master.gachaNow ? this.master.gachaNow : {}
+
+    if (this.eventId) {
+      if (!this.eventData.filter((e: any) => Number(e.id) === Number(this.eventId)).length) {
+        this.event.$emit(
+          'alert',
+          this.$t('home.errorTitle'),
+          'eventId error'
+        )
+        return
+      } else {
+        eventId = Number(this.eventId)
+      }
+    } else {
+      eventId = this.eventId
     }
-  },
-  methods: {
-    save () {
-      this.playSe(this.enterSe)
-      let resVer, gachaId, eventId, backgroundId, account
-      if (this.resVer) {
-        if (
-          Number(this.resVer) < 10012760 ||
-          Number(this.resVer) % 10 !== 0 ||
-          Number(this.resVer) > this.latestResVer
-        ) {
-          this.event.$emit('alert', this.$t('home.errorTitle'), 'resVer error')
-          return
-        } else {
-          resVer = Number(this.resVer)
-        }
-      } else {
-        resVer = this.resVer
-      }
 
-      if (this.gachaId) {
-        if (
-          Number(this.gachaId) < 30000 ||
-          Number(this.gachaId) > this.gachaNow.id ||
-          Math.floor(Number(this.gachaId)) !== Number(this.gachaId)
-        ) {
-          this.event.$emit(
-            'alert',
-            this.$t('home.errorTitle'),
-            'gachaId error'
-          )
-          return
-        } else {
-          gachaId = Number(this.gachaId)
-        }
+    if (this.backgroundId) {
+      if (!this.cardData.filter((c: any) => Number(c.id) === Number(this.backgroundId)).length) {
+        this.event.$emit(
+          'alert',
+          this.$t('home.errorTitle'),
+          'backgroundId error'
+        )
+        return
       } else {
-        gachaId = this.gachaId
+        backgroundId = Number(this.backgroundId)
       }
+    } else {
+      backgroundId = this.backgroundId
+    }
 
-      if (this.eventId) {
-        if (!this.eventData.filter(e => e.id == this.eventId).length) {
-          this.event.$emit(
-            'alert',
-            this.$t('home.errorTitle'),
-            'eventId error'
-          )
-          return
-        } else {
-          eventId = Number(this.eventId)
-        }
-      } else {
-        eventId = this.eventId
-      }
-
-      if (this.backgroundId) {
-        if (!this.cardData.filter(c => c.id == this.backgroundId).length) {
-          this.event.$emit(
-            'alert',
-            this.$t('home.errorTitle'),
-            'backgroundId error'
-          )
-          return
-        } else {
-          backgroundId = Number(this.backgroundId)
-        }
-      } else {
-        backgroundId = this.backgroundId
-      }
-
-      if (this.account) {
-        if (!/^[0-9]{9}:[0-9]{9}:[0-9a-f]{8}-[0-9a-f]{4}-4[0-9a-f]{3}-[89ab][0-9a-f]{3}-[0-9a-f]{12}$/.test(this.account)) {
-          this.event.$emit(
-            'alert',
-            this.$t('home.errorTitle'),
-            'account error'
-          )
-          return
-        } else {
-          account = this.account
-        }
+    if (this.account) {
+      if (!/^[0-9]{9}:[0-9]{9}:[0-9a-f]{8}-[0-9a-f]{4}-4[0-9a-f]{3}-[89ab][0-9a-f]{3}-[0-9a-f]{12}$/.test(this.account)) {
+        this.event.$emit(
+          'alert',
+          this.$t('home.errorTitle'),
+          'account error'
+        )
+        return
       } else {
         account = this.account
       }
-
-      this.$emit('input', this.language[this.lang])
-      this._i18n._vm.locale = this.lang
-      this.configurer.configure({
-        language: this.lang,
-        resVer,
-        gacha: gachaId,
-        event: eventId,
-        background: backgroundId,
-        account: account
-      })
-      this.visible = false
+    } else {
+      account = this.account
     }
-  },
+
+    this.$emit('input', this.language[this.lang])
+    this._i18n._vm.locale = this.lang
+    this.configurer.configure({
+      language: this.lang,
+      resVer,
+      gacha: gachaId,
+      event: eventId,
+      background: backgroundId,
+      account: account
+    })
+    this.visible = false
+  }
+
   mounted () {
     this.$nextTick(() => {
       this.event.$on('option', async () => {
@@ -205,7 +200,7 @@ export default {
         this.show = true
         this.visible = true
       })
-      this.event.$on('enterKey', block => {
+      this.event.$on('enterKey', (block: string) => {
         if (block === 'menu' && this.visible) {
           this.save()
         }

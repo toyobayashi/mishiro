@@ -8,7 +8,7 @@ import * as path from 'path'
 let main: webpack.Configuration = {
   mode: process.env.NODE_ENV === 'production' ? 'production' : 'development',
   target: 'electron-main',
-  entry: path.join(__dirname, '../src/js/main.ts'),
+  entry: path.join(__dirname, '../src/ts/main.ts'),
   output: {
     path: path.join(__dirname, '../public'),
     filename: 'mishiro.main.js'
@@ -50,8 +50,8 @@ let renderer: webpack.Configuration = {
   mode: process.env.NODE_ENV === 'production' ? 'production' : 'development',
   target: 'electron-renderer',
   entry: {
-    'mishiro.renderer': path.join(__dirname, '../src/js/renderer.ts'),
-    'mishiro.live': path.join(__dirname, '../src/js/renderer-game.js')
+    'mishiro.renderer': path.join(__dirname, '../src/ts/renderer.ts'),
+    'mishiro.live': path.join(__dirname, '../src/ts/renderer-game.ts')
   },
   output: {
     path: path.join(__dirname, '../public'),

@@ -33,7 +33,7 @@
 </div>
 </template>
 
-<script lang="ts" src="../../js/renderer/mishiro-live.ts">
+<script lang="ts" src="../../ts/renderer/mishiro-live.ts">
 </script>
 
 <style>

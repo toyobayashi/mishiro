@@ -115,7 +115,7 @@
 </div>
 </template>
 
-<script src="../../js/renderer/calculator.js">
+<script lang="ts" src="../../ts/renderer/calculator">
 </script>
 
 <style scoped>

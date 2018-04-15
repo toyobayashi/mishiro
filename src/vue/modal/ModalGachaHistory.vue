@@ -20,25 +20,23 @@
 </div>
 </template>
 
-<script>
-import modalMixin from '../../js/renderer/modal-mixin.js'
-export default {
-  mixins: [modalMixin],
-  data () {
-    return {
-      modalWidth: '700px',
-      list: []
-    }
-  },
-  methods: {
-    showCard (card) {
-      this.playSe(this.enterSe)
-      this.event.$emit('showCard', card)
-    }
-  },
+<script lang="ts">
+import modalMixin from '../../ts/renderer/modal-mixin'
+import Component, { mixins } from 'vue-class-component'
+@Component
+export default class extends mixins(modalMixin) {
+
+  modalWidth: string = '700px'
+  list: any[] = []
+
+  showCard (card: any) {
+    this.playSe(this.enterSe)
+    this.event.$emit('showCard', card)
+  }
+
   mounted () {
     this.$nextTick(() => {
-      this.event.$on('showHistory', (list) => {
+      this.event.$on('showHistory', (list: any[]) => {
         this.list = list
         this.show = true
         this.visible = true

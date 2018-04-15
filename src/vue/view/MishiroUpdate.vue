@@ -36,5 +36,5 @@
 }
 </style>
 
-<script lang="ts" src="../../js/renderer/mishiro-update.ts">
+<script lang="ts" src="../../ts/renderer/mishiro-update.ts">
 </script>

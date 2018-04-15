@@ -29,39 +29,37 @@
 </div>
 </template>
 
-<script>
-import url from 'url'
-import modalMixin from '../../js/renderer/modal-mixin.js'
+<script lang="ts">
+import * as url from 'url'
 import InputRadio from '../component/InputRadio.vue'
-import { ipcRenderer, remote } from 'electron'
-import getPath from '../../js/common/get-path.ts'
+import { ipcRenderer, remote, Event } from 'electron'
+import getPath from '../../ts/common/get-path'
+import modalMixin from '../../ts/renderer/modal-mixin'
+import Component, { mixins } from 'vue-class-component'
 const BrowserWindow = remote.BrowserWindow
-export default {
-  mixins: [modalMixin],
+@Component({
   components: {
     InputRadio
-  },
-  data () {
-    return {
-      difficulty: '4',
-      live: {}
-    }
-  },
-  methods: {
-    start () {
-      this.playSe(this.enterSe)
-      ipcRenderer.send(
-        'game',
-        getPath(`./public/asset/score/${this.live.score}`), // scoreFile
-        this.difficulty, // difficulty
-        this.live.bpm, // bpm
-        getPath(`./public/asset/sound/live/${this.live.fileName}`) // audioFile
-      )
-    }
-  },
+  }
+})
+export default class extends mixins(modalMixin) {
+
+  difficulty: string = '4'
+  live: any = {}
+
+  start () {
+    this.playSe(this.enterSe)
+    ipcRenderer.send(
+      'game',
+      getPath(`./public/asset/score/${this.live.score}`), // scoreFile
+      this.difficulty, // difficulty
+      this.live.bpm, // bpm
+      getPath(`./public/asset/sound/live/${this.live.fileName}`) // audioFile
+    )
+  }
   mounted () {
     this.$nextTick(() => {
-      ipcRenderer.on('game', (event, obj) => {
+      ipcRenderer.on('game', (_event: Event, obj: { src: string; bpm: number; score: any[][]; fullCombo: number;}) => {
         this.event.$emit('gameStart')
         this.event.$emit('pauseBgm')
         const windowID = BrowserWindow.getFocusedWindow().id
@@ -88,13 +86,13 @@ export default {
 
         this.visible = false
       })
-      this.event.$on('game', (live) => {
+      this.event.$on('game', (live: any) => {
         this.difficulty = '4'
         this.live = live
         this.show = true
         this.visible = true
       })
-      this.event.$on('enterKey', block => {
+      this.event.$on('enterKey', (block: string) => {
         if (block === 'live' && this.visible) {
           this.start()
         }

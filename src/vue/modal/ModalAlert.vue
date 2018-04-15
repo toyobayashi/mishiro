@@ -15,27 +15,24 @@
 </div>
 </template>
 
-<script>
-import modalMixin from '../../js/renderer/modal-mixin.js'
-export default {
-  mixins: [modalMixin],
-  data () {
-    return {
-      title: '',
-      body: ''
-    }
-  },
-  methods: {
-    afterLeave () {
-      this.show = false
-      this.title = ''
-      this.body = ''
-      this.modalWidth = '600px'
-    }
-  },
+<script lang="ts">
+import modalMixin from '../../ts/renderer/modal-mixin'
+import Component, { mixins } from 'vue-class-component'
+@Component
+export default class extends mixins(modalMixin) {
+  title: string = ''
+  body: string = ''
+
+  afterLeave () {
+    this.show = false
+    this.title = ''
+    this.body = ''
+    this.modalWidth = '600px'
+  }
+
   mounted () {
     this.$nextTick(() => {
-      this.event.$on('alert', (title, body, width) => {
+      this.event.$on('alert', (title: string, body: string, width: number) => {
         if (width) this.modalWidth = width + 'px'
         this.title = title
         this.body = body

@@ -46,25 +46,22 @@
 </div>
 </template>
 
-<script>
-import modalMixin from '../../js/renderer/modal-mixin.js'
-export default {
-  mixins: [modalMixin],
-  data () {
-    return {
-      liveResult: {}
-    }
-  },
-  methods: {
-    close () {
-      this.playSe(this.cancelSe)
-      this.visible = false
-      this.event.$emit('playBgm')
-    }
-  },
+<script lang="ts">
+import modalMixin from '../../ts/renderer/modal-mixin'
+import Component, { mixins } from 'vue-class-component'
+@Component
+export default class extends mixins(modalMixin) {
+
+  liveResult: any = {}
+
+  close () {
+    this.playSe(this.cancelSe)
+    this.visible = false
+    this.event.$emit('playBgm')
+  }
   mounted () {
     this.$nextTick(() => {
-      this.event.$on('showLiveResult', liveResult => {
+      this.event.$on('showLiveResult', (liveResult: any) => {
         this.liveResult = liveResult
         this.show = true
         this.visible = true

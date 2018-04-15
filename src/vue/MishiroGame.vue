@@ -8,7 +8,7 @@
 <script>
 import TheCombo from './component/TheCombo.vue'
 import TheLiveGauge from './component/TheLiveGauge.vue'
-import { liveResult } from '../js/renderer/game.js'
+import { liveResult } from '../ts/renderer/game.js'
 export default {
   components: {
     TheCombo,

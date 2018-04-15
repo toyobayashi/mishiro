@@ -8,7 +8,7 @@
 </ul>
 </template>
 
-<script lang="ts" src="../../js/renderer/tab-small.ts">
+<script lang="ts" src="../../ts/renderer/tab-small.ts">
 </script>
 
 <style>

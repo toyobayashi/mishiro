@@ -14,7 +14,7 @@
 </div>
 </template>
 
-<script lang="ts" src="../../js/renderer/mishiro-home.ts">
+<script lang="ts" src="../../ts/renderer/mishiro-home.ts">
 </script>
 
 <style>

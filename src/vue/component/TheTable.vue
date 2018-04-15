@@ -17,7 +17,7 @@
 </table>
 </template>
 
-<script lang="ts" src="../../js/renderer/the-table.ts">
+<script lang="ts" src="../../ts/renderer/the-table.ts">
 </script>
 
 <style>

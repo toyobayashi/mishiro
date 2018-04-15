@@ -1,14 +1,18 @@
 const path = require('path')
-const sourceCount = require('../src/js/util/source-count.js')
+const sourceCount = require('../src/js/source-count.js')
 const getPath = r => path.join(__dirname, '..', r)
 
 sourceCount({
+  ts: [
+    getPath('./src/ts'),
+    getPath('./src/@types'),
+    getPath('./build/webpack.config.ts'),
+    getPath('./build/webpack.dll.config.ts')
+  ],
   js: [
     getPath('./src/js'),
     getPath('./build/pack.js'),
     getPath('./build/count.js'),
-    getPath('./build/webpack.config.js'),
-    getPath('./build/webpack.dll.config.js')
   ],
   vue: [getPath('./src/vue')],
   css: [getPath('./src/css')],
@@ -24,7 +28,9 @@ sourceCount({
   ],
   json: [
     getPath('./package.json'),
-    getPath('./.eslintrc.json')
+    getPath('./tslint.json'),
+    getPath('./tsconfig.json'),
+    getPath('./build/tsconfig.webpack.json')
   ]
 }).then(data => {
   console.log(data)
