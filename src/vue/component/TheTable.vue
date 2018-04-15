@@ -8,7 +8,7 @@
   </thead>
   <tbody>
     <tr v-for="row in data">
-      <td class="flex-center"><input type="checkbox" :id="row.hash" :value="row" v-model="selected" @change="updateValue" 
+      <td class="flex-center"><input type="checkbox" :id="row.hash" :value="row" v-model="selected" @change="change(selected)" 
       :disabled="isDisabled(row)"
       /><label :for="row.hash"></label></td>
       <td v-for="item in row">{{item}}</td>
@@ -17,57 +17,7 @@
 </table>
 </template>
 
-<script>
-export default {
-  props: {
-    'data': Array,
-    'isDisabled': Function
-  },
-  data () {
-    return {
-      selected: [],
-      selectAll: false
-    }
-  },
-  methods: {
-    updateValue () {
-      this.$emit('change', this.selected)
-    }
-  },
-  watch: {
-    selectAll (val) {
-      if (val) {
-        this.selected = []
-        for (let i = 0; i < this.data.length; i++) {
-          if (!this.isDisabled(this.data[i])) {
-            this.selected.push(this.data[i])
-          }
-        }
-      } else {
-        this.selected = []
-      }
-      this.$emit('change', this.selected)
-    }
-  },
-  mounted () {
-    this.$nextTick(() => {
-      this.event.$on('completeTask', (name) => {
-        for (let i = 0; i < this.selected.length; i++) {
-          if (this.selected[i].name === name ||
-            this.selected[i].name === 'b/' + name ||
-            this.selected[i].name === 'c/' + name ||
-            this.selected[i].name === 'l/' + name ||
-            this.selected[i].name === 'r/' + name ||
-            this.selected[i].name === 'v/' + name) {
-            document.getElementById(this.selected[i].hash).setAttribute('disabled', true)
-            this.selected.splice(i, 1)
-            break
-          }
-        }
-      })
-    })
-  }
-}
+<script lang="ts" src="../../js/renderer/the-table.ts">
 </script>
 
 <style>

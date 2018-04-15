@@ -106,7 +106,7 @@
 </div>
 </template>
 
-<script src="../../js/renderer/idol.js">
+<script lang="ts" src="../../js/renderer/mishiro-idol.ts">
 </script>
 
 <style>

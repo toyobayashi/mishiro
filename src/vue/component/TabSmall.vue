@@ -8,44 +8,7 @@
 </ul>
 </template>
 
-<script>
-export default {
-  model: {
-    prop: 'value',
-    event: 'tabClicked'
-  },
-  props: {
-    tab: {
-      type: Object,
-      required: true,
-      default: {}
-    },
-    value: {
-      type: String
-    },
-    noTranslation: {
-      type: Boolean,
-      default: false
-    },
-    fontSize: {
-      type: Number,
-      default: 18
-    }
-  },
-  data () {
-    return {
-      currentActive: this.value
-    }
-  },
-  methods: {
-    liClick (item) {
-      if (item !== this.value) {
-        this.playSe(this.enterSe)
-        this.$emit('tabClicked', item)
-      }
-    }
-  }
-}
+<script lang="ts" src="../../js/renderer/tab-small.ts">
 </script>
 
 <style>

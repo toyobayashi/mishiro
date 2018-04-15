@@ -10,18 +10,16 @@ import { remote } from 'electron'
 Vue.use(VueI18n)
 Vue.use(vueGlobal)
 
-const i18n = new VueI18n({
-  locale: remote.getGlobal('config').language,
-  messages: {
-    zh,
-    ja,
-    en
-  }
-})
-
 // tslint:disable-next-line:no-unused-expression
 new Vue({
   el: '#app',
-  i18n,
+  i18n: new VueI18n({
+    locale: remote.getGlobal('config').language,
+    messages: {
+      zh,
+      ja,
+      en
+    }
+  }),
   render: h => h(Mishiro)
 })

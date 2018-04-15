@@ -6,25 +6,7 @@
 </div>
 </template>
 
-<script>
-export default {
-  props: {
-    'currentBlock': String
-  },
-  data () {
-    return {
-      blocks: ['home', 'idol', 'live', 'gacha', 'menu']
-    }
-  },
-  methods: {
-    navToggle (block) {
-      if (block !== this.currentBlock) {
-        this.$emit('changeBlock', block)
-        this.playSe(this.enterSe)
-      }
-    }
-  }
-}
+<script lang="ts" src="../../js/renderer/the-navigation-bar.ts">
 </script>
 
 <style>

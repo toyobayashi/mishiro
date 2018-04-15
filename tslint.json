@@ -1,3 +1,6 @@
 {
-  "extends": "tslint-config-standard"
+  "extends": "tslint-config-standard",
+  "rules": {
+    "ter-no-irregular-whitespace": false
+  }
 }

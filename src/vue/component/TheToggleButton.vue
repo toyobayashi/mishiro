@@ -2,15 +2,7 @@
 <button class="hideButton" @click="toggle"></button>
 </template>
 
-<script>
-export default {
-  methods: {
-    toggle () {
-      this.playSe(this.cancelSe)
-      this.$emit('toggle')
-    }
-  }
-}
+<script lang="ts" src="../../js/renderer/the-toggle-button.ts">
 </script>
 
 <style scoped>

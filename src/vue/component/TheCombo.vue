@@ -5,11 +5,11 @@
   </div>
 </template>
 
-<script>
-export default {
-  props: {
-    combo: Number
-  }
+<script lang="ts">
+import { Vue, Component, Prop } from 'vue-property-decorator'
+@Component
+export default class extends Vue {
+  @Prop() combo: number
 }
 </script>
 

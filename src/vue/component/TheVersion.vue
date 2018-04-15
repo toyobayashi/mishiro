@@ -1,14 +1,11 @@
 <template>
 <div class="version white-bg">{{$t("home.resVer")}}: {{resVer}}</div>
 </template>
-<script>
-export default {
-  props: {
-    'resVer': {
-      type: [Number, String],
-      required: true
-    }
-  }
+<script lang="ts">
+import { Vue, Component, Prop } from 'vue-property-decorator'
+@Component
+export default class extends Vue {
+  @Prop({ required: true }) resVer: number | string
 }
 </script>
 <style scoped>

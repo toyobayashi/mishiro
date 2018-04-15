@@ -4,6 +4,13 @@ import * as fs from 'fs'
 import * as url from 'url'
 import * as path from 'path'
 
+export interface ProgressInfo {
+  name?: string
+  current: number
+  max: number
+  loading: number
+}
+
 const protocol: any = {
   'http:': http,
   'https:': https
@@ -16,7 +23,7 @@ interface RequestOption {
   headers?: any
   body?: string | Buffer,
   path?: string
-  onData?: (prog: {name?: string; current?: number; max?: number; loading?: number}) => void
+  onData?: (prog: ProgressInfo) => void
 }
 
 function request (options: RequestOption, callback: (err: Error | null, body?: string | null, path?: string | null) => void) {
@@ -52,7 +59,7 @@ function request (options: RequestOption, callback: (err: Error | null, body?: s
     }
   }
 
-  let req = protocol[_protocol || 'http'].request({
+  let req: http.ClientRequest = protocol[_protocol || 'http'].request({
     method: m,
     host: _host,
     path: _path,
