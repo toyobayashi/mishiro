@@ -18,32 +18,7 @@
 </div>
 </template>
 
-<script>
-export default {
-  data () {
-    return {
-      bg: null,
-      backgroundId: false
-    }
-  },
-  mounted () {
-    this.$nextTick(() => {
-      this.bg = (window.innerWidth / window.innerHeight >= 1280 / 824)
-      window.addEventListener('resize', () => {
-        this.bg = (window.innerWidth / window.innerHeight >= 1280 / 824)
-      }, false)
-      this.event.$on('eventBgReady', (cardId) => {
-        this.backgroundId = cardId
-      })
-      this.event.$on('idolSelect', (cardId) => {
-        this.backgroundId = cardId
-      })
-      this.event.$on('noBg', () => {
-        this.backgroundId = false
-      })
-    })
-  }
-}
+<script lang="ts" src="../../js/renderer/the-background.ts">
 </script>
 
 <style>

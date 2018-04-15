@@ -107,53 +107,58 @@
 </div>
 </template>
 
-<script>
+<script lang="ts">
 import TabSmall from '../component/TabSmall.vue'
-import vmIdol from '../../js/renderer/idol.js'
+import MishiroIdol from '../../js/renderer/mishiro-idol'
 import modalMixin from '../../js/renderer/modal-mixin.js'
-export default {
+import { Vue, Component } from 'vue-property-decorator'
+
+@Component({
   mixins: [modalMixin],
   components: {
     TabSmall
-  },
-  data () {
-    return {
-      card: {},
-      cardPlus: {},
-      information: {},
-      currentPractice: 'idol.before',
-      practice: {
-        be: 'idol.before',
-        af: 'idol.after'
-      }
-    }
-  },
-  props: {
+  }
+})
+export default class extends MishiroIdol {
+
+  card: any = {}
+  cardPlus: any = {}
+  // information: {},
+  // currentPractice: string = 'idol.before'
+  /* practice: { be: string; af: string } = {
+    be: 'idol.before',
+    af: 'idol.after'
+  } */
+
+  /* props: {
     'master': {
       type: Object,
       require: true
     }
-  },
-  filters: vmIdol.filters,
-  computed: vmIdol.computed,
-  methods: {
-    toggle (practice) {
-      switch (practice) {
-        case 'idol.before':
-          this.information = this.card
-          break
-        case 'idol.after':
-          this.information = this.cardPlus
-          break
-        default:
-          break
-      }
+  }, */
+  /* filters: new MishiroIdol().filters,
+  computed: new MishiroIdol().computed, */
+  event: Vue
+  show: boolean
+  visible: boolean
+
+  toggle (practice: string) {
+    switch (practice) {
+      case 'idol.before':
+        this.information = this.card
+        break
+      case 'idol.after':
+        this.information = this.cardPlus
+        break
+      default:
+        break
     }
-  },
+  }
+
   mounted () {
     this.$nextTick(() => {
-      this.event.$on('showCard', (card) => {
-        const cardPlus = this.cardData.filter(c => c.id == card.evolution_id)[0]
+      this.event.$on('showCard', (card: any) => {
+        const cardPlus = this.cardData.filter((c: any) => Number(c.id) === Number(card.evolution_id))[0]
         this.currentPractice = 'idol.before'
         this.information = card
         this.card = card

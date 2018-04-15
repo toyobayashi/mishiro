@@ -1,15 +1,16 @@
-import request from '../common/request.ts'
-import fs from 'fs'
-import getPath from '../common/get-path.ts'
-import configurer from '../common/config.ts'
+import request, { ProgressInfo } from '../common/request'
+import * as fs from 'fs'
+import getPath from '../common/get-path'
+import configurer from '../common/config'
 import { remote } from 'electron'
+import { ApiClient } from '../main/client'
 
-let client = remote.getGlobal('client')
+let client: ApiClient = remote.getGlobal('client')
 
 let current = 0
 let max = 20
 
-function httpGetVersion (resVer, progressing) {
+function httpGetVersion (resVer: number, progressing: (prog: ProgressInfo) => void): Promise<{ version: number; isExisting: boolean}> {
   const option = {
     // method: 'GET',
     url: `http://storage.game.starlight-stage.jp/dl/${resVer}/manifests/all_dbmanifest`,
@@ -45,7 +46,7 @@ function httpGetVersion (resVer, progressing) {
   })
 }
 
-async function check (progressing) {
+async function check (progressing: (prog: ProgressInfo) => void) {
   if (!fs.existsSync(getPath('./data'))) {
     fs.mkdirSync(getPath('./data'))
   }
@@ -61,12 +62,12 @@ async function check (progressing) {
   return new Promise((resolve) => {
     let resVer = versionFrom
 
-    function checkVersion (versionFrom) {
+    function checkVersion (versionFrom: number) {
       let versionArr = []
       for (let i = 10; i < 210; i += 10) {
         versionArr.push(Number(versionFrom) + i)
       }
-      let promiseArr = []
+      let promiseArr: Promise<{ version: number; isExisting: boolean}>[] = []
       versionArr.forEach((v) => {
         promiseArr.push(httpGetVersion(v, progressing))
       })

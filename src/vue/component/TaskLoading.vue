@@ -7,19 +7,20 @@
 </div>
 </template>
 
-<script>
+<script lang="ts">
 import ProgressBar from './ProgressBar.vue'
-export default {
+import { Vue, Component, Prop } from 'vue-property-decorator'
+@Component({
   components: {
     ProgressBar
-  },
-  props: {
-    'currentLoading': Number,
-    'totalLoading': Number,
-    'text': [String, Number],
-    'single': Boolean,
-    'color': String
   }
+})
+export default class extends Vue {
+  @Prop() currentLoading: number
+  @Prop() totalLoading: number
+  @Prop() text: number | string
+  @Prop() single: boolean
+  @Prop() color: string
 }
 </script>
 

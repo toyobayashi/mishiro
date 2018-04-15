@@ -79,3 +79,19 @@ export default async function (event: Event, masterFile: string, manifestData: a
     timeOffset
   })
 }
+
+export interface MasterData {
+  eventAll: any[]
+  eventData: any
+  eventAvailable: any[]
+  eventHappening: any
+  cardData: any[]
+  bgmManifest: any[]
+  liveManifest: any[]
+  voiceManifest: any[]
+  gachaData: any[]
+  gachaAvailable: any[]
+  gachaNow: any
+  userLevel: any[]
+  timeOffset: number
+}

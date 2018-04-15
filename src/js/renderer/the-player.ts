@@ -1,7 +1,9 @@
-import fs from 'fs'
-import getPath from '../common/get-path.ts'
+import * as fs from 'fs'
+import getPath from '../common/get-path'
+import { Vue, Component, Prop } from 'vue-property-decorator'
+import { MasterData } from '../main/on-master-read'
 
-const bgmList = {
+const bgmList: any = {
   anni: {
     src: './asset/sound/bgm/bgm_event_3017.mp3',
     start: 31.35,
@@ -42,100 +44,94 @@ const bgmList = {
   }
 }
 
-export default {
-  data () {
-    return {
-      bgmTimer: 0,
-      startTime: 0,
-      endTime: 0,
-      isPlaying: false,
-      bgmList,
-      isShow: false,
-      playing: bgmList.anni
+@Component
+export default class extends Vue {
+
+  bgmTimer: number | NodeJS.Timer = 0
+  startTime: number = 0
+  endTime: number = 0
+  isPlaying: boolean = false
+  bgmList = bgmList
+  isShow: boolean = false
+  playing: any = bgmList.anni
+
+  @Prop({ type: Object, default: (() => ({})) }) master!: MasterData
+
+  get eventInfo () {
+    return this.master.eventData
+  }
+
+  initSrc () {
+    let t = new Date()
+    if (t.getHours() >= 5 && t.getHours() <= 16) {
+      return bgmList.day.src
+    } else if (t.getHours() < 5 || t.getHours() >= 20) {
+      return bgmList.night.src
+    } else {
+      return bgmList.sunset.src
     }
-  },
-  props: {
-    'master': {
-      type: Object,
-      require: true
+  }
+  pauseButton () {
+    this.playSe(this.cancelSe)
+    if (this.isPlaying) {
+      this.pause()
+    } else {
+      this.play()
     }
-  },
-  computed: {
-    eventInfo () {
-      return this.master.eventData
+  }
+  selectBgm () {
+    this.playSe(this.enterSe)
+    this.isShow = !this.isShow
+  }
+  set (bgm: any) {
+    this.bgm.src = bgm.src
+    this.startTime = bgm.start
+    this.endTime = bgm.end
+    this.playing = bgm
+  }
+  playStudioBgm () {
+    let t = new Date()
+    if (t.getHours() >= 5 && t.getHours() <= 16) {
+      this.play(bgmList.day)
+    } else if (t.getHours() < 5 || t.getHours() >= 20) {
+      this.play(bgmList.night)
+    } else {
+      this.play(bgmList.sunset)
     }
-  },
-  methods: {
-    initSrc () {
-      let t = new Date()
-      if (t.getHours() >= 5 && t.getHours() <= 16) {
-        return bgmList.day.src
-      } else if (t.getHours() < 5 || t.getHours() >= 20) {
-        return bgmList.night.src
-      } else {
-        return bgmList.sunset.src
-      }
-    },
-    pauseButton () {
-      this.playSe(this.cancelSe)
-      if (this.isPlaying) {
-        this.pause()
-      } else {
-        this.play()
-      }
-    },
-    selectBgm () {
-      this.playSe(this.enterSe)
-      this.isShow = !this.isShow
-    },
-    set (bgm) {
-      this.bgm.src = bgm.src
-      this.startTime = bgm.start
-      this.endTime = bgm.end
-      this.playing = bgm
-    },
-    playStudioBgm () {
-      let t = new Date()
-      if (t.getHours() >= 5 && t.getHours() <= 16) {
-        this.play(bgmList.day)
-      } else if (t.getHours() < 5 || t.getHours() >= 20) {
-        this.play(bgmList.night)
-      } else {
-        this.play(bgmList.sunset)
-      }
-    },
-    play (bgm) {
-      if (bgm) {
-        this.set(bgm)
-        this.event.$emit('playerSelect', bgm.src.split('/')[bgm.src.split('/').length - 1])
-      }
-      setTimeout(() => {
-        clearInterval(this.bgmTimer)
-        this.bgm.volume = 1
-        this.bgm.play()
-        this.isPlaying = true
-        if (this.startTime && this.endTime) {
-          this.bgm.onended = null
-          this.bgmTimer = setInterval(() => {
-            if (this.bgm.currentTime >= this.endTime) {
-              this.bgm.currentTime = this.startTime
-              this.bgm.play()
-            }
-          }, 1)
-        } else {
-          this.bgm.onended = function () {
-            this.currentTime = 0
-            this.play()
+  }
+  play (bgm?: any) {
+    if (bgm) {
+      this.set(bgm)
+      this.event.$emit('playerSelect', bgm.src.split('/')[bgm.src.split('/').length - 1])
+    }
+    setTimeout(() => {
+      clearInterval(this.bgmTimer as NodeJS.Timer)
+      this.bgm.volume = 1
+      this.bgm.play()
+      this.isPlaying = true
+      if (this.startTime && this.endTime) {
+        (this.bgm.onended as any) = null
+        this.bgmTimer = setInterval(() => {
+          if (this.bgm.currentTime >= this.endTime) {
+            this.bgm.currentTime = this.startTime
+            this.bgm.play()
           }
+        }, 1)
+      } else {
+        let windowbgm = this.bgm
+        this.bgm.onended = function () {
+          windowbgm.currentTime = 0
+          windowbgm.play()
         }
-      }, 0)
-    },
-    pause () {
-      this.bgm.pause()
-      this.isPlaying = false
-      clearInterval(this.bgmTimer)
-    }
-  },
+      }
+    }, 0)
+  }
+  pause () {
+    this.bgm.pause()
+    this.isPlaying = false
+    clearInterval(this.bgmTimer as NodeJS.Timer)
+  }
+
   beforeMount () {
     this.$nextTick(() => {
       let msrEvent = localStorage.getItem('msrEvent')
@@ -152,7 +148,7 @@ export default {
         this.set(bgmList.anni)
       }
     })
-  },
+  }
   mounted () {
     this.$nextTick(() => {
       // this.setStudioBgm();
@@ -162,8 +158,8 @@ export default {
         charaTitleVoiceArr[i] = './asset/sound/chara_title.asar/' + charaTitleVoiceArr[i]
       }
       charaTitleVoiceArr.push('./asset/sound/se.asar/chara_title.mp3')
-      this.playSe(new Audio(charaTitleVoiceArr[Math.floor(Math.random() * charaTitleVoiceArr.length)]))
-      window.bgm = this.bgm
+      this.playSe(new Audio(charaTitleVoiceArr[Math.floor(Math.random() * charaTitleVoiceArr.length)]));
+      (window as any).bgm = this.bgm
       document.addEventListener('click', (e) => {
         if (this.isShow && e.target !== document.getElementById('pauseBtn')) {
           this.isShow = false
@@ -173,7 +169,7 @@ export default {
       this.event.$on('ready', () => {
         this.playStudioBgm()
       })
-      this.event.$on('changeBgm', (block) => {
+      this.event.$on('changeBgm', (block: string) => {
         let flag = false
         for (let b in bgmList) {
           if (bgmList[b].src === this.playing.src) {
@@ -198,11 +194,11 @@ export default {
               break
             case 'live':
               if (this.master.eventHappening) {
-                if (this.eventInfo.type == 2) {
+                if (Number(this.eventInfo.type) === 2) {
                   if (this.playing.src !== bgmList.caravan.src) {
                     this.play(bgmList.caravan)
                   }
-                } else if (this.eventInfo.type == 6) {
+                } else if (Number(this.eventInfo.type) === 6) {
                   if (this.playing.src !== bgmList.rail.src) {
                     this.play(bgmList.rail)
                   }
@@ -228,7 +224,7 @@ export default {
           }
         }
       })
-      this.event.$on('liveSelect', (bgm) => {
+      this.event.$on('liveSelect', (bgm: any) => {
         let flag = false
         for (let b in bgmList) {
           if (bgmList[b].src === bgm.src) {

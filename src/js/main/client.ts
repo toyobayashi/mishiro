@@ -224,5 +224,5 @@ function md5 (s: string) {
 let client = new ApiClient(config.account || '940464243:174481488:cf608be5-6d38-421a-8eb1-11a501132c0a', config.latestResVer.toString())
 g.client = client
 
-export { config }
+export { config, ApiClient }
 export default client

@@ -1,4 +1,5 @@
 import StaticTitleDot from '../../vue/component/StaticTitleDot.vue'
+// import { Vue } from 'vue-property-decorator'
 export default {
   components: {
     StaticTitleDot

@@ -2,7 +2,7 @@ import * as fs from 'fs'
 import { read, write } from '../util/fse'
 import getPath from './get-path'
 
-class Configurer {
+export class Configurer {
   configFile: string
   constructor (configFile: string) {
     this.configFile = configFile
@@ -47,7 +47,9 @@ class Configurer {
   }
 }
 
-export default new Configurer(getPath('./config.json'))
+let configurer: Configurer = new Configurer(getPath('./config.json'))
+export default configurer
+
 export interface MishiroConfig {
   latestResVer?: number
   resVer?: number

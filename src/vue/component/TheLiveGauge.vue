@@ -4,11 +4,11 @@
   </div>
 </template>
 
-<script>
-export default {
-  props: {
-    hp: Number
-  }
+<script lang="ts">
+import { Vue, Component, Prop } from 'vue-property-decorator'
+@Component
+export default class extends Vue {
+  @Prop() hp: number
 }
 </script>
 

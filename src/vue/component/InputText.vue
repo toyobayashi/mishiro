@@ -8,47 +8,35 @@
   :style="{ height: height + 'px', width: width ? width + 'px' : undefined }">
 </template>
 
-<script>
-export default {
-  props: {
-    value: {
-      type: [String, Number],
-      default: ''
-    },
-    height: {
-      type: Number,
-      default: 40
-    },
-    width: {
-      type: Number
-    },
-    placeholder: {
-      type: String,
-      default: ''
-    },
-    limit: Array
-  },
-  methods: {
-    onInput (target) {
-      let v = target.value
-      if (this.limit && this.limit.length) {
-        if (Number(v) > this.limit[1]) {
-          this.$emit('input', this.limit[1])
-          target.value = this.limit[1]
-        } else if (Number(v) < this.limit[0] || isNaN(Number(v)) || v === '') {
-          this.$emit('input', this.limit[0])
-          target.value = this.limit[0]
-        } else {
-          if (Number(v) !== parseInt(v)) {
-            this.$emit('input', parseInt(v))
-            target.value = parseInt(v)
-          } else {
-            this.$emit('input', Number(v))
-          }
-        }
+<script lang="ts">
+import { Vue, Component, Prop } from 'vue-property-decorator'
+@Component
+export default class extends Vue {
+  @Prop({ default: '' }) value: string | number
+  @Prop({ default: 40 }) height: number
+  @Prop() width: number
+  @Prop({ default: '' }) placeholder: string
+  @Prop() limit: [number, number]
+
+  onInput (target: HTMLInputElement) {
+    let v = target.value
+    if (this.limit && this.limit.length) {
+      if (Number(v) > this.limit[1]) {
+        this.$emit('input', this.limit[1])
+        target.value = this.limit[1] as any
+      } else if (Number(v) < this.limit[0] || isNaN(Number(v)) || v === '') {
+        this.$emit('input', this.limit[0])
+        target.value = this.limit[0] as any
       } else {
-        this.$emit('input', v)
+        if (Number(v) !== parseInt(v, 10)) {
+          this.$emit('input', parseInt(v, 10))
+          target.value = parseInt(v, 10) as any
+        } else {
+          this.$emit('input', Number(v))
+        }
       }
+    } else {
+      this.$emit('input', v)
     }
   }
 }

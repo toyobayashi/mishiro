@@ -1,37 +1,26 @@
 <template>
 <div style="display:flex;align-items:center">
-  <input type="radio" :checked="selected === value" :value="value" :id="lableId" @change="onInput($event.target.value)" />
+  <input type="radio" :checked="selected === value" :value="value" :id="lableId" @change="check($event.target.value)" />
   <label :for="lableId"></label>
   <span>{{text}}</span>
 </div>
 </template>
 
-<script>
-export default {
-  model: {
-    prop: 'selected',
-    event: 'check'
-  },
-  props: {
-    selected: {},
-    lableId: {
-      type: String,
-      required: true
-    },
-    value: {
-      type: [String, Number],
-      required: true
-    },
-    text: {
-      type: String,
-      required: true
-    }
-  },
-  methods: {
-    onInput (v) {
-      this.$emit('check', v)
-    }
+<script lang="ts">
+import { Vue, Component, Prop, Model, Emit } from 'vue-property-decorator'
+@Component
+export default class extends Vue {
+  @Model('check') selected: any
+
+  @Prop({ required: true }) lableId: string
+  @Prop({ required: true }) value: string | number
+  @Prop({ required: true }) text: string
+
+  @Emit()
+  check (_v: any) {
+    // this.$emit('check', v)
   }
+
 }
 </script>
 

@@ -32,7 +32,7 @@
 </div>
 </template>
 
-<script src="../../js/renderer/gacha.js">
+<script lang="ts" src="../../js/renderer/mishiro-gacha.ts">
 </script>
 
 <style>
