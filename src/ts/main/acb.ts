@@ -1,5 +1,5 @@
 import * as fs from 'fs'
-import { read, write } from '../../js/fse'
+import { read, write } from '../common/fse'
 import * as path from 'path'
 
 function UTFTable (acb: Buffer) {

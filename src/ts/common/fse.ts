@@ -1,7 +1,7 @@
-const fs = require('fs')
-const path = require('path')
+import * as fs from 'fs'
+import * as path from 'path'
 
-function copyFile (oldPath, newPath) {
+function copyFile (oldPath: string, newPath: string): Promise<string[]> {
   return new Promise((resolve, reject) => {
     let rs = fs.createReadStream(oldPath)
     rs.on('error', err => reject(err))
@@ -14,8 +14,8 @@ function copyFile (oldPath, newPath) {
   })
 }
 
-function copyFolder (oldPath, newPath, ignore) {
-  let task = []
+function copyFolder (oldPath: string, newPath: string, ignore?: RegExp): Promise<string[][]> {
+  let task: Promise<any>[] = []
   const files = fs.readdirSync(oldPath)
   if (!fs.existsSync(newPath)) fs.mkdirSync(newPath)
   for (let i = 0; i < files.length; i++) {
@@ -32,7 +32,7 @@ function copyFolder (oldPath, newPath, ignore) {
   return task.length ? Promise.all(task) : Promise.resolve([])
 }
 
-function removeFile (filePath) {
+function removeFile (filePath: string): Promise<string> {
   return new Promise((resolve, reject) => {
     fs.unlink(filePath, err => {
       if (err) reject(err)
@@ -41,15 +41,15 @@ function removeFile (filePath) {
   })
 }
 
-function removeFolder (folderPath) {
-  let task = []
+function removeFolder (folderPath: string): Promise<any[]> {
+  let task: Promise<any>[] = []
   const files = fs.readdirSync(folderPath)
   if (files.length) {
     for (let i = 0; i < files.length; i++) {
       let file = path.join(folderPath, files[i])
       task.push(fs.statSync(file).isFile() ? removeFile(file) : removeFolder(file))
     }
-    return Promise.all(task).then((arr) => {
+    return Promise.all(task).then((arr: any[]) => {
       fs.rmdirSync(folderPath)
       return arr
     })
@@ -59,31 +59,29 @@ function removeFolder (folderPath) {
   }
 }
 
-function copy (src, tar, ignore) {
+function copy (src: string, tar: string, ignore?: RegExp): Promise<string[] | string[][]> {
   return new Promise((resolve, reject) => {
     fs.stat(src, (err, stats) => {
-      if (err) reject(err)
-      else {
+      if (!err) {
         if (stats.isFile()) resolve(copyFile(src, tar))
         else resolve(copyFolder(src, tar, ignore))
-      }
+      } else reject(err)
     })
   })
 }
 
-function remove (src) {
+function remove (src: string): Promise<any> {
   return new Promise((resolve, reject) => {
     fs.stat(src, (err, stats) => {
-      if (err) reject(err)
-      else {
+      if (!err) {
         if (stats.isFile()) resolve(removeFile(src))
         else resolve(removeFolder(src))
-      }
+      } else reject(err)
     })
   })
 }
 
-function read (file, option) {
+function read (file: string, option?: any): Promise<any> {
   return new Promise((resolve, reject) => {
     fs.readFile(file, option, (err, data) => {
       if (err) reject(err)
@@ -92,7 +90,7 @@ function read (file, option) {
   })
 }
 
-function write (file, data, option) {
+function write (file: string, data: any, option?: any): Promise<string> {
   return new Promise((resolve, reject) => {
     fs.writeFile(file, data, option, (err) => {
       if (err) reject(err)
@@ -101,4 +99,4 @@ function write (file, data, option) {
   })
 }
 
-module.exports = { copy, remove, read, write }
+export { copy, remove, read, write }

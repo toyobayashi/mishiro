@@ -1,46 +1,34 @@
-const unzip = require('unzip')
-const rcedit = require('rcedit')
-const request = require('request')
-const fs = require('fs')
-const path = require('path')
-const { slog, log, ilog, wlog, elog } = require('./rainbow.js')
-const { copy, remove } = require('./fse.js')
-const packageJson = require('../../package.json')
+import * as unzip from 'unzip'
+import rcedit = require('rcedit')
+import * as fs from 'fs'
+import * as path from 'path'
+import { slog, log, ilog, wlog, elog } from './rainbow'
+import { copy, remove } from '../src/ts/common/fse'
+import request, { RequestOption, ProgressInfo } from '../src/ts/common/request'
+const packageJson = require('../package.json')
 
-function downloadElectronRelease (electronUrl, electronPath) {
-  const PROGRESS_LENGTH = 50
-  if (!fs.existsSync(electronPath)) {
-    return new Promise((resolve, reject) => {
-      let cur = 0
-      const FILE_SIZE = fs.existsSync(electronPath + '.tmp') ? fs.readFileSync(electronPath + '.tmp').length : 0
-      let options = FILE_SIZE ? { url: electronUrl, headers: { 'Range': 'bytes=' + FILE_SIZE + '-' } } : { url: electronUrl }
-      let req = request(options)
-      req.on('response', response => {
-        if (response.statusCode !== 200 && response.statusCode !== 304 && response.statusCode !== 206) {
-          log(response.statusCode)
-          req.abort()
-          reject(new Error('Request failed.'))
-        } else {
-          ilog(`[INFO ${t()}] Downloading ${path.parse(electronPath).base}`)
-          const CONTENT_LENGTH = Number(response.headers['content-length'])
-          let ws = fs.createWriteStream(electronPath + '.tmp', { flags: 'a+' })
-          req.on('data', chunk => {
-            cur += chunk.length
-            const PERCENT = (FILE_SIZE + cur) / (CONTENT_LENGTH + FILE_SIZE)
-            const COMPLETED_LENGTH = Math.floor(PROGRESS_LENGTH * PERCENT)
-            const PROGRESS_BAR = `[${repeat('=', COMPLETED_LENGTH - 1)}>${repeat(' ', PROGRESS_LENGTH - COMPLETED_LENGTH)}] `
-            slog(PROGRESS_BAR + (100 * PERCENT).toFixed(2) + '%')
-          })
-          ws.on('close', () => {
-            fs.renameSync(electronPath + '.tmp', electronPath)
-            ilog(`\n[INFO ${t()}] Download completed.`)
-            resolve()
-          })
-          req.pipe(ws)
-        }
-      }).on('error', err => reject(err))
+function downloadElectronRelease (electronUrl: string, electronPath: string): Promise<void> {
+  return new Promise((resolve, reject) => {
+    const PROGRESS_LENGTH = 50
+    let options: RequestOption = {
+      url: electronUrl,
+      path: electronPath,
+      onData: (prog: ProgressInfo) => {
+        const PERCENT = prog.loading / 100
+        const COMPLETED_LENGTH = Math.floor(PROGRESS_LENGTH * PERCENT)
+        const PROGRESS_BAR = `[${repeat('=', COMPLETED_LENGTH - 1)}>${repeat(' ', PROGRESS_LENGTH - COMPLETED_LENGTH)}] `
+        slog(PROGRESS_BAR + (100 * PERCENT).toFixed(2) + '%')
+      }
+    }
+
+    let req = request(options, (err: Error, _body: string, path: string) => {
+      if (!err) {
+        ilog(`\n[INFO ${t()}] Download completed.`)
+        resolve()
+      } else reject(err)
     })
-  } else return Promise.resolve()
+  })
+
   function repeat (char, l) {
     l = l < 0 ? 0 : l
     return Array.from({ length: l }, (v, k) => char).join('')
@@ -71,17 +59,18 @@ function t () {
   return new Date().toLocaleString()
 }
 
-module.exports = function pack (option) {
+function pack (option) {
   const PLATFORM = option.platform ? option.platform : 'win32'
   const ARCH = option.arch ? option.arch : 'ia32'
   const ELECTRON_VERSION = option.electronVersion ? option.electronVersion : packageJson.devDependencies.electron.slice(1)
-  const PACK_DIR = option.packDir ? option.packDir : path.join(__dirname, '../../..')
-  const DIST_DIR = option.distDir ? option.distDir : path.join(__dirname, '../../../dist')
+  const PACK_DIR = option.packDir ? option.packDir : path.join(__dirname, '..')
+  const DIST_DIR = option.distDir ? option.distDir : path.join(__dirname, '../dist')
   const IGNORE_REGEXP = option.ignore
   const VERSION_STRING = option.versionString
 
   const ELECTRON_NAME = `electron-v${ELECTRON_VERSION}-${PLATFORM}-${ARCH}`
-  const ELECTRON_URL = `https://npm.taobao.org/mirrors/electron/${ELECTRON_VERSION}/${ELECTRON_NAME}.zip`
+  // http://cdn.npm.taobao.org/dist/electron/1.8.4/electron-v1.8.4-win32-ia32.zip
+  const ELECTRON_URL = `https://cdn.npm.taobao.org/dist/electron/${ELECTRON_VERSION}/${ELECTRON_NAME}.zip`
   // const ELECTRON_URL = `https://github.com/electron/electron/releases/download/v${ELECTRON_VERSION}/${ELECTRON_NAME}.zip`
   const APP_NAME = `${packageJson.name}-v${packageJson.version}-${PLATFORM}-${ARCH}`
   const ELECTRON_PATH = path.join(DIST_DIR, `${ELECTRON_NAME}.zip`)
@@ -130,3 +119,28 @@ module.exports = function pack (option) {
       elog(`[ERROR ${t()}] ${err}`)
     })
 }
+
+const option = {
+  platform: 'win32',
+  arch: process.argv[2] ? process.argv[2] : 'ia32',
+  electronVersion: packageJson.devDependencies.electron,
+  packDir: path.join(__dirname, '..'),
+  distDir: path.join(__dirname, '../dist'),
+  ignore: new RegExp(`node_modules|build|data|release|download|dist|src|screenshot|public/img/card|public/asset/sound/live|public/asset/sound/voice|public/asset/score|\\.gitignore|README|\\.eslintrc\\.json|tslint\\.json|tsconfig\\.json|config\\.json|package-lock\\.json|\\.bin|\\.git|\\.vscode`.replace(/\//g, '\\\\')),
+  versionString: {
+    icon: path.join(__dirname, '../src/res/icon/mishiro.ico'),
+    'file-version': packageJson.version,
+    'product-version': packageJson.version,
+    'version-string': {
+      // 'Block Header': '080404b0',
+      FileDescription: packageJson.description,
+      InternalName: packageJson.name,
+      OriginalFilename: packageJson.name + '.exe',
+      ProductName: packageJson.name,
+      CompanyName: packageJson.author.name,
+      LegalCopyright: 'Copyright (C) 2017 Toyobayashi'
+    }
+  }
+}
+
+pack(option)

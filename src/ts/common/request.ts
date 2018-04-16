@@ -16,7 +16,7 @@ const protocol: any = {
   'https:': https
 }
 
-interface RequestOption {
+export interface RequestOption {
   url: string
   method?: string
   timeout?: number

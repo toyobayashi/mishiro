@@ -1,5 +1,5 @@
 import * as fs from 'fs'
-import { read, write } from '../../js/fse'
+import { read, write } from './fse'
 import getPath from './get-path'
 
 export class Configurer {

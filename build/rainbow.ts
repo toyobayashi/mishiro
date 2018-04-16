@@ -1,4 +1,4 @@
-const util = require('util')
+import * as util from 'util'
 
 const colors = {
   reset: '\x1b[0m',
@@ -110,26 +110,26 @@ function clearLine (n = 0) {
   std.write(CLEAR_LINE)
 }
 
-function slog (...arg) {
-  const str = util.format(...arg)
+function slog (format, ...arg) {
+  const str = util.format(format, ...arg)
   clearLine(LF)
   std.write(str)
   const matching = str.match(/\n/g)
   LF = matching ? matching.length : 0
 }
 
-function llog (...arg) {
-  std.write(util.format(...arg))
+function llog (format, ...arg) {
+  std.write(util.format(format, ...arg))
   if (LF) LF = 0
 }
 
-function log (...arg) {
-  llog(...arg)
+function log (format, ...arg) {
+  llog(format, ...arg)
   llog('\n')
 }
 
-function l (...arg) {
-  std.write(colors.fg[this] + util.format(...arg) + colors.reset + '\n')
+function l (format, ...arg) {
+  std.write(colors.fg[this] + util.format(format, ...arg) + colors.reset + '\n')
   if (LF) LF = 0
 }
 
@@ -137,7 +137,7 @@ const ilog = l.bind('bGreen')
 const wlog = l.bind('bYellow')
 const elog = l.bind('bRed')
 
-module.exports = {
+export {
   colors,
   c,
   llog,
