@@ -1,6 +1,6 @@
 import * as util from 'util'
 
-const colors = {
+const colors: any = {
   reset: '\x1b[0m',
   fg: {
     black: '\x1b[30m',
@@ -51,7 +51,7 @@ const CLEAR_LINE = LEFT + ERASE
 
 let LF = 0
 
-function checkRGB (arr) {
+function checkRGB (arr: [number, number, number]) {
   let flag = false
   if (arr.length === 3) {
     let n = 0
@@ -67,7 +67,7 @@ function checkRGB (arr) {
   return flag
 }
 
-function addColor (content, cl, type) {
+function addColor (content: string, cl: string | [number, number, number], type: any) {
   if (cl) {
     if (Array.isArray(cl)) {
       if (checkRGB(cl)) {
@@ -76,14 +76,14 @@ function addColor (content, cl, type) {
     } else if (typeof cl === 'string') {
       if (cl[0] === '#') {
         if (cl.length === 4) {
-          let clarr = cl.split('#')[1].match(/.{1}/g)
-          let clnum = clarr.map(v => Number(`0x${v + v}`))
+          let clarr = cl.split('#')[1].match(/.{1}/g) as RegExpMatchArray
+          let clnum = clarr.map(v => Number(`0x${v + v}`)) as [number, number, number]
           if (checkRGB(clnum)) {
             content = `${colors[type].rgb}${clnum[0]};${clnum[1]};${clnum[2]}m${util.format(content)}${colors.reset}`
           }
         } else if (cl.length === 7) {
-          let clarr = cl.split('#')[1].match(/.{2}/g)
-          let clnum = clarr.map(v => Number(`0x${v}`))
+          let clarr = cl.split('#')[1].match(/.{2}/g) as RegExpMatchArray
+          let clnum = clarr.map(v => Number(`0x${v}`)) as [number, number, number]
           if (checkRGB(clnum)) {
             content = `${colors[type].rgb}${clnum[0]};${clnum[1]};${clnum[2]}m${util.format(content)}${colors.reset}`
           }
@@ -94,7 +94,7 @@ function addColor (content, cl, type) {
   return content
 }
 
-function c (content, fg, bg) {
+function c (content: string, fg: string | [number, number, number], bg: string | [number, number, number]) {
   content = addColor(content, fg, 'fg')
   content = addColor(content, bg, 'bg')
   return content
@@ -110,7 +110,7 @@ function clearLine (n = 0) {
   std.write(CLEAR_LINE)
 }
 
-function slog (format, ...arg) {
+function slog (format: string, ...arg: any[]) {
   const str = util.format(format, ...arg)
   clearLine(LF)
   std.write(str)
@@ -118,24 +118,26 @@ function slog (format, ...arg) {
   LF = matching ? matching.length : 0
 }
 
-function llog (format, ...arg) {
+function llog (format: string, ...arg: any[]) {
   std.write(util.format(format, ...arg))
   if (LF) LF = 0
 }
 
-function log (format, ...arg) {
+function log (format: string, ...arg: any[]) {
   llog(format, ...arg)
   llog('\n')
 }
 
-function l (format, ...arg) {
-  std.write(colors.fg[this] + util.format(format, ...arg) + colors.reset + '\n')
-  if (LF) LF = 0
+function logFun (type: string): (format: string, ...arg: any[]) => void {
+  return function l (format: string, ...arg: any[]) {
+    std.write(colors.fg[type] + util.format(format, ...arg) + colors.reset + '\n')
+    if (LF) LF = 0
+  }
 }
 
-const ilog = l.bind('bGreen')
-const wlog = l.bind('bYellow')
-const elog = l.bind('bRed')
+const ilog = logFun('bGreen')
+const wlog = logFun('bYellow')
+const elog = logFun('bRed')
 
 export {
   colors,

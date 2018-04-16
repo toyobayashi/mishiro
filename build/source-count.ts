@@ -9,35 +9,46 @@ function countFile (filePath: string): number {
 }
 
 interface CountInfo {
-  format: string
+  language?: string
   fileCount: number
   lineCount: number
 }
 
-function count (folderPath: string, resolve: string[]): CountInfo[] {
+function count (folderPath: string, resolve: string[], exclude?: RegExp): CountInfo[] {
   let result: CountInfo[] = []
   for (const ext of resolve) {
-    result.push({ format: ext, fileCount: 0, lineCount: 0 })
+    result.push({ language: ext, fileCount: 0, lineCount: 0 })
   }
   function countFolder (folderPath: string, resolve: string[]) {
     let list = fs.readdirSync(folderPath)
     for (const name of list) {
       const absPath = path.join(folderPath, name)
-      if (fs.statSync(absPath).isFile()) {
-        const extIndex = resolve.indexOf(path.parse(absPath).ext)
-        if (extIndex !== -1) {
-          result[extIndex].lineCount += countFile(absPath)
-          result[extIndex].fileCount += 1
-        }
-      } else {
-        countFolder(absPath, resolve)
+      if (!exclude || !exclude.test(absPath)) {
+        if (fs.statSync(absPath).isFile()) {
+          const extIndex = resolve.indexOf(path.parse(absPath).ext)
+          if (extIndex !== -1) {
+            result[extIndex].lineCount += countFile(absPath)
+            result[extIndex].fileCount += 1
+          }
+        } else countFolder(absPath, resolve)
       }
     }
   }
   countFolder(folderPath, resolve)
+
+  let total: CountInfo = { fileCount: 0, lineCount: 0 }
+  for (const c of result) {
+    total.fileCount += c.fileCount
+    total.lineCount += c.lineCount
+  }
+  result.push(total)
   return result
 }
 
 const getPath = (r: string) => path.join(__dirname, '..', r)
 
-console.log(count(getPath('./src'), ['.ts', '.js', '.vue']))
+console.log(count(
+  getPath('.'),
+  ['.ts', '.js', '.css', '.cpp', '.vue', '.bat', '.json', '.html'],
+  /node_modules|\.vscode|\.git|data|dist|download|public\\.*\..+s|release|package-lock\.json/
+))

@@ -1,3 +1,2 @@
 @echo off
-node ..\build\count.js
-pause>nul
+npm run count&&pause>nul
