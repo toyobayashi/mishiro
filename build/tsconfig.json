@@ -4,10 +4,14 @@
     "noImplicitReturns": true,
     "moduleResolution": "node",
     "module": "commonjs",
-    "target": "es5",
+    "target": "es6",
     "allowSyntheticDefaultImports": true,
     "esModuleInterop": true,
     "noUnusedLocals": true,
-    "noUnusedParameters": true
+    "noUnusedParameters": true,
+    "typeRoots": [
+      "../node_module/@types",
+      "../src/@types"
+    ]
   }
 }

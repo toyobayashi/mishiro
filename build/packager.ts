@@ -1,8 +1,8 @@
 import * as unzip from 'unzip'
-import rcedit = require('rcedit')
+import rcedit from 'rcedit'
 import * as fs from 'fs'
 import * as path from 'path'
-import { slog, log, ilog, wlog, elog } from './rainbow'
+import { slog, ilog, wlog, elog } from './rainbow'
 import { copy, remove } from '../src/ts/common/fse'
 import request, { RequestOption, ProgressInfo } from '../src/ts/common/request'
 const packageJson = require('../package.json')
@@ -21,7 +21,7 @@ function downloadElectronRelease (electronUrl: string, electronPath: string): Pr
       }
     }
 
-    let req = request(options, (err: Error, _body: string, path: string) => {
+    request(options, (err: Error | null) => {
       if (!err) {
         ilog(`\n[INFO ${t()}] Download completed.`)
         resolve()
@@ -29,13 +29,13 @@ function downloadElectronRelease (electronUrl: string, electronPath: string): Pr
     })
   })
 
-  function repeat (char, l) {
+  function repeat (char: string, l: number) {
     l = l < 0 ? 0 : l
-    return Array.from({ length: l }, (v, k) => char).join('')
+    return Array.from({ length: l }, () => char).join('')
   }
 }
 
-function unzipElectron (electronPath, distPath) {
+function unzipElectron (electronPath: string, distPath: string) {
   return new Promise(resolve => {
     let readStream = fs.createReadStream(electronPath)
     let writeStream = unzip.Extract({ path: distPath })
@@ -46,9 +46,9 @@ function unzipElectron (electronPath, distPath) {
   })
 }
 
-function changeExeInfo (exePath, option) {
+function changeExeInfo (exePath: string, option: string): Promise<boolean> {
   return new Promise((resolve, reject) => {
-    rcedit(exePath, option, err => {
+    rcedit(exePath, option, (err?: Error) => {
       if (err) reject(err)
       else resolve(true)
     })
@@ -59,7 +59,7 @@ function t () {
   return new Date().toLocaleString()
 }
 
-function pack (option) {
+function pack (option: any) {
   const PLATFORM = option.platform ? option.platform : 'win32'
   const ARCH = option.arch ? option.arch : 'ia32'
   const ELECTRON_VERSION = option.electronVersion ? option.electronVersion : packageJson.devDependencies.electron.slice(1)
@@ -103,7 +103,7 @@ function pack (option) {
       if (isChanged) ilog(`[INFO ${t()}] EXE file changed.`)
       return copy(PACK_DIR, APP_PATH, IGNORE_REGEXP)
     })
-    .then(pathArr => {
+    .then(() => {
       let files = fs.readdirSync(NATIVE_PATH)
       for (let i = 0; i < files.length; i++) {
         let abs = path.join(NATIVE_PATH, files[i])
