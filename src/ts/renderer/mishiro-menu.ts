@@ -4,7 +4,7 @@ import * as marked from 'marked'
 import request from '../common/request'
 import getPath from '../common/get-path'
 import * as fs from 'fs'
-import { read, remove } from '../../js/fse'
+import { read, remove } from '../common/fse'
 
 @Component
 export default class extends Vue {

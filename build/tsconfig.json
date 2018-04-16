@@ -1,5 +1,8 @@
 {
   "compilerOptions": {
+    "strict": true,
+    "noImplicitReturns": true,
+    "moduleResolution": "node",
     "module": "commonjs",
     "target": "es5",
     "allowSyntheticDefaultImports": true,

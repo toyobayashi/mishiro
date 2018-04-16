@@ -2,7 +2,7 @@ import { exec } from 'child_process'
 import * as path from 'path'
 import * as fs from 'fs'
 import getPath from '../common/get-path'
-import { remove } from '../../js/fse'
+import { remove } from '../common/fse'
 import extractACB from './acb'
 import { dec } from '../../@types/hca/'
 
