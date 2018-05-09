@@ -1,4 +1,4 @@
-import * as sqlite3 from '../../@types/sqlite3/'
+import sqlite3 from './sqlite3'
 import * as path from 'path'
 import { Event } from 'electron'
 
@@ -50,7 +50,7 @@ export default async function (event: Event, scoreFile: string, difficulty: numb
 
   let nameField = `${musicscores}/${mxxx}/${id}_${difficulty}.csv`
 
-  let data = rows.filter(row => row.name === nameField)[0].data.toString()
+  let data = rows.filter((row: any) => row.name === nameField)[0].data.toString()
 
   let score = createScore(data, bpm)
 

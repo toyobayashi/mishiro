@@ -1,4 +1,4 @@
-import * as sqlite3 from '../../@types/sqlite3/'
+// import * as sqlite3 from '../../@types/sqlite3/'
 import { Event } from 'electron'
 import { MishiroConfig } from '../common/config'
 import getEventData from './get-event-data'
@@ -9,12 +9,13 @@ import resolveCardData from './resolve-card-data'
 import resolveAudioManifest from './resolve-audio-manifest'
 import resolveGachaAvailable from './resolve-gacha-available'
 import resolveUserLevel from './resolve-user-level'
+import sqlite3 from './sqlite3'
 
 export default async function (event: Event, masterFile: string, manifestData: any, config: MishiroConfig) {
   const timeOffset = (9 - (-(new Date().getTimezoneOffset() / 60))) * 60 * 60 * 1000
   const now = new Date().getTime()
 
-  let master: sqlite3.Database | undefined = await sqlite3.openAsync(masterFile)
+  let master: any = await sqlite3.openAsync(masterFile)
   const gachaAll = await master._all('SELECT * FROM gacha_data')
   const eventAll = await master._all('SELECT * FROM event_data')
 
@@ -44,7 +45,7 @@ export default async function (event: Event, masterFile: string, manifestData: a
 
   let userLevel = await master._all('SELECT level, stamina, total_exp FROM user_level')
   let liveData = await master._all('SELECT id, music_data_id FROM live_data')
-  master.close(err => {
+  master.close((err: Error) => {
     if (err) throw err
     master = void 0
   })

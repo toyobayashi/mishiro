@@ -1,20 +1,21 @@
-import events = require("events");
+declare module '*sqlite3' {
+  import events = require("events");
 
-export const OPEN_READONLY: number;
-export const OPEN_READWRITE: number;
-export const OPEN_CREATE: number;
+  export const OPEN_READONLY: number;
+  export const OPEN_READWRITE: number;
+  export const OPEN_CREATE: number;
 
-export const cached: {
+  export const cached: {
     Database(filename: string, callback?: (this: Database, err: Error | null) => void): Database;
     Database(filename: string, mode?: number, callback?: (this: Database, err: Error | null) => void): Database;
-};
+  };
 
-export interface RunResult extends Statement {
+  export interface RunResult extends Statement {
     lastID: number;
     changes: number;
-}
+  }
 
-export class Statement {
+  export class Statement {
     bind(callback?: (err: Error | null) => void): this;
     bind(...params: any[]): this;
 
@@ -37,9 +38,9 @@ export class Statement {
     each(callback?: (err: Error | null, row: any) => void, complete?: (err: Error | null, count: number) => void): this;
     each(params: any, callback?: (this: RunResult, err: Error | null, row: any) => void, complete?: (err: Error | null, count: number) => void): this;
     each(...params: any[]): this;
-}
+  }
 
-export class Database extends events.EventEmitter {
+  export class Database extends events.EventEmitter {
     constructor(filename: string, callback?: (err: Error | null) => void);
     constructor(filename: string, mode?: number, callback?: (err: Error | null) => void);
 
@@ -78,13 +79,13 @@ export class Database extends events.EventEmitter {
     on(event: string, listener: (...args: any[]) => void): this;
 
     configure(option: "busyTimeout", value: number): void;
-}
+  }
 
-export function verbose(): sqlite3;
+  export function verbose(): sqlite3;
 
-export function openAsync(db: string, mode?: number): Promise<Database>;
+  export function openAsync(db: string, mode?: number): Promise<Database>;
 
-export interface sqlite3 {
+  export interface sqlite3 {
     OPEN_READONLY: number;
     OPEN_READWRITE: number;
     OPEN_CREATE: number;
@@ -92,7 +93,7 @@ export interface sqlite3 {
     RunResult: RunResult;
     Statement: typeof Statement;
     Database: typeof Database;
-    openAsync(db: string, mode: number): Promise<Database>;
+    openAsync(db: string, mode?: number): Promise<Database>;
     verbose(): this;
+  }
 }
-

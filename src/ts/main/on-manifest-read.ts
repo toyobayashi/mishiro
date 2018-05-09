@@ -1,8 +1,8 @@
-import * as sqlite3 from '../../@types/sqlite3/'
+import sqlite3 from './sqlite3'
 import { Event } from 'electron'
 
 export default async function (event: Event, manifestFile: string, resVer: number) {
-  let manifest: undefined | sqlite3.Database = await sqlite3.openAsync(manifestFile)
+  let manifest: any = await sqlite3.openAsync(manifestFile)
   let manifests: any[] = []
   let manifestData: any = {}
 
@@ -12,7 +12,7 @@ export default async function (event: Event, manifestFile: string, resVer: numbe
   manifestData.voiceManifest = await manifest._all('SELECT name, hash FROM manifests WHERE name LIKE "v/%"')
   manifestData.scoreManifest = await manifest._all('SELECT name, hash FROM manifests WHERE name LIKE "musicscores_m___.bdb"')
 
-  manifest.close(err => {
+  manifest.close((err: Error) => {
     if (err) throw err
     manifest = void 0
   })

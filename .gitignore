@@ -4,6 +4,7 @@ download/
 data/
 dist/
 release/
+piblic/lib/
 public/*.js
 public/*.css
 public/img/*
