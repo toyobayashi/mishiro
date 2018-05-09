@@ -1,4 +1,4 @@
-import * as util from 'util'
+import util from 'util'
 
 const colors: any = {
   reset: '\x1b[0m',

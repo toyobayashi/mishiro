@@ -7,12 +7,10 @@
   "main": "./public/mishiro.main.js",
   "scripts": {
     "start": "electron . --enable-logging",
-    "webpack": "set TS_NODE_PROJECT=./build/tsconfig.json&&webpack --config ./build/webpack.config.ts",
-    "dll": "set TS_NODE_PROJECT=./build/tsconfig.json&&webpack --config ./build/webpack.dll.config.ts",
-    "dev": "set TS_NODE_PROJECT=./build/tsconfig.json&&webpack --config ./build/webpack.config.ts -w",
-    "prod": "set NODE_ENV=production&&npm run dll&&npm run webpack",
-    "pkg32": "npm run reb:hca-ia32&&npm run prod&&ts-node -P ./build/tsconfig.json ./build/packager.ts ia32",
-    "pkg64": "npm run reb:hca-x64&&npm run prod&&ts-node -P ./build/tsconfig.json ./build/packager.ts x64",
+    "dev": "ts-node -P ./build/tsconfig.json ./build/webpack.ts",
+    "prod": "set NODE_ENV=production&&ts-node -P ./build/tsconfig.json ./build/webpack.ts",
+    "pkg32": "set NODE_ENV=production&&ts-node -P ./build/tsconfig.json ./build/packager.ts ia32",
+    "pkg64": "set NODE_ENV=production&&ts-node -P ./build/tsconfig.json ./build/packager.ts x64",
     "count": "ts-node -P ./build/tsconfig.json ./build/source-count.ts",
     "dlc": "ts-node -P ./build/tsconfig.json ./build/release-download-count.ts",
     "reb:hca-ia32": "cd ./src/cpp/hca&&node-gyp rebuild --target=%npm_package_devDependencies_electron% --arch=ia32 --dist-url=https://atom.io/download/electron",
@@ -22,7 +20,7 @@
   },
   "repository": {
     "type": "git",
-    "url": "https://github.com/toyobayashi/mishiro"
+    "url": "https://github.com/toyobayashi/mishiro+git"
   },
   "keywords": [
     "CGSS",
@@ -32,7 +30,7 @@
     "mishiro"
   ],
   "author": {
-    "name": "Toyobayashi",
+    "name": "toyobayashi",
     "url": "https://github.com/toyobayashi"
   },
   "license": "MIT",
@@ -56,7 +54,6 @@
     "node-gyp": "^3.6.2",
     "optimize-css-assets-webpack-plugin": "^4.0.0",
     "rijndael-js": "^1.0.0",
-    "sqlite3": "^4.0.0",
     "ts-loader": "^4.2.0",
     "ts-node": "^5.0.1",
     "tsconfig-paths": "^3.2.0",
@@ -64,10 +61,9 @@
     "tslint-config-standard": "^7.0.0",
     "typescript": "^2.8.1",
     "uglifyjs-webpack-plugin": "^1.2.4",
-    "vue-loader": "^14.2.2",
+    "vue-loader": "^15.0.9",
     "vue-template-compiler": "^2.5.16",
-    "webpack": "^4.8.1",
-    "webpack-cli": "^2.0.14"
+    "webpack": "^4.8.1"
   },
   "dependencies": {
     "marked": "^0.3.14",

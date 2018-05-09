@@ -7,13 +7,10 @@
     "target": "es6",
     "esModuleInterop": true,
     "noUnusedLocals": true,
-    "noUnusedParameters": true,
-    "typeRoots": [
-      "../node_module/@types",
-      "../src/@types"
-    ]
+    "noUnusedParameters": true
   },
   "include": [
-    "../src/@types/**/*"
+    "../src/ts/**/*",
+    "./**/*"
   ]
 }
