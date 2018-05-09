@@ -12,19 +12,26 @@ const msgpack = {
   decode: (o: Buffer) => msgpackLite.decode(o)
 }
 
+const chr: (code: number) => string = c => String.fromCharCode(c)
+const ord: (char: string) => number = char => char.charCodeAt(0)
+const sha1: (s: string) => string = s => crypto.createHash('sha1').update(s).digest('hex')
+const md5: (s: string) => string = s => crypto.createHash('md5').update(s).digest('hex')
+const createRandomNumberString: (l: number) => string = l => Array(l).fill(void 0).map(() => Math.floor(10 * Math.random())).join('')
+const $04x: (n: number) => string = n => ('0000' + n.toString(16)).slice(-4)
+const $xFFFF32: () => string = () => Array(32).fill(void 0).map(() => Math.floor(65536 * Math.random()).toString(16)).join('')
+
 class ApiClient {
   static VIEWER_ID_KEY: string = 'cyU1Vk5RKEgkJkJxYjYjMys3OGgyOSFGdDR3U2cpZXg='
   static SID_KEY: string = 'ciFJQG50OGU1aT0='
   static cryptoGrapher = { // 4位16进制表示长度 + 每个字符变成(两位随机数 + (ascii码 + 10的字符) + 一位随机数) + 32位随机数
-    encode (s: string) {
-      let arr = []
-      for (let i = 0; i < s.length; i++) {
-        let c = s[i]
-        arr.push(createRandomNumberString(2) + chr(ord(c) + 10) + createRandomIntNumberFromZeroTo(10))
-      }
-      return $04x(s.length) + arr.join('') + createRandomNumberString(32)
+    encode (s: string): string {
+      return (
+        $04x(s.length) +
+        s.split('').map((c: string) => createRandomNumberString(2) + chr(ord(c) + 10) + createRandomNumberString(1)).join('') +
+        createRandomNumberString(32)
+      )
     },
-    decode (s: string) {
+    decode (s: string): string {
       let l = parseInt(s.substr(0, 4), 16)
       let e = ''
       for (let i = 6; i < s.length; i += 4) {
@@ -169,40 +176,6 @@ class ApiClient {
   }
 }
 
-function chr (code: number) {
-  return String.fromCharCode(code)
-}
-
-function ord (str: string) {
-  return str.charCodeAt(0)
-}
-
-function createRandomIntNumberFromZeroTo (r: number) {
-  return Math.floor(r * Math.random())
-}
-
-function createRandomNumberString (l: number) {
-  let s = ''
-  for (let i = 0; i < l; i++) {
-    s += createRandomIntNumberFromZeroTo(10)
-  }
-  return s
-}
-
-function $04x (n: number) {
-  let s = n.toString(16)
-  let d = 4 - s.length
-  return Array.from({ length: d }, () => '0').join('') + s
-}
-
-function $xFFFF32 () {
-  let s = []
-  for (let i = 0; i < 32; i++) {
-    s.push(createRandomIntNumberFromZeroTo(65536).toString(16))
-  }
-  return s.join('')
-}
-
 function b64encode (s: string | Buffer) {
   if (typeof s === 'string') return Buffer.from(s, 'ascii').toString('base64')
   else if (s.constructor === Buffer) return s.toString('base64')
@@ -211,14 +184,6 @@ function b64encode (s: string | Buffer) {
 
 function b64decode (s: string) {
   return Buffer.from(s, 'base64').toString('ascii')
-}
-
-function sha1 (s: string) {
-  return crypto.createHash('sha1').update(s).digest('hex')
-}
-
-function md5 (s: string) {
-  return crypto.createHash('md5').update(s).digest('hex')
 }
 
 let client = new ApiClient(config.account || '940464243:174481488:cf608be5-6d38-421a-8eb1-11a501132c0a', config.latestResVer.toString())

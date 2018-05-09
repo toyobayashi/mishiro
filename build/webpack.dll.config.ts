@@ -1,9 +1,9 @@
 import * as webpack from 'webpack'
 import * as path from 'path'
 import UglifyJSPlugin = require('uglifyjs-webpack-plugin')
-const pkg = require('../package.json')
+const pkg: any = require('../package.json')
 
-const renderer = {
+const renderer: webpack.Configuration = {
   mode: process.env.NODE_ENV === 'production' ? 'production' : 'development',
   target: 'electron-renderer',
   entry: {
