@@ -4,7 +4,8 @@ import * as fs from 'fs'
 import getPath from '../common/get-path'
 import { remove } from '../common/fse'
 import extractACB from './acb'
-import { dec } from '../../@types/hca/'
+// import { dec } from '../../@types/hca/'
+import { dec } from '../../cpp/hca/build/Release/hca.node'
 
 const FFMPEG = getPath('./public/bin/ffmpeg.exe')
 

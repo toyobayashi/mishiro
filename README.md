@@ -21,6 +21,8 @@ Require __Node.js__ and __npm__.
 ``` bash
 > cd mishiro
 > npm install
+> npm run sql64
+> npm run reb:hca-x64
 ```
 3. Run building command.  
 ``` bash

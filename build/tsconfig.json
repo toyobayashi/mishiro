@@ -5,7 +5,6 @@
     "moduleResolution": "node",
     "module": "commonjs",
     "target": "es6",
-    "allowSyntheticDefaultImports": true,
     "esModuleInterop": true,
     "noUnusedLocals": true,
     "noUnusedParameters": true,
@@ -13,5 +12,8 @@
       "../node_module/@types",
       "../src/@types"
     ]
-  }
+  },
+  "include": [
+    "../src/@types/**/*"
+  ]
 }

@@ -22,10 +22,18 @@ let main: webpack.Configuration = {
       test: /\.ts$/,
       exclude: /node_modules/,
       loader: 'ts-loader'
+    }, {
+      test: /\.node$/,
+      use: [{
+        loader: 'native-addon-loader',
+        options: {
+          path: './lib'
+        }
+      }]
     }]
   },
   resolve: {
-    extensions: ['.ts', '.js', '.json']
+    extensions: ['.ts', '.js', '.json', '.node']
   },
   externals: nativeExternals('./lib', ['sqlite3', 'hca']),
   optimization: {
