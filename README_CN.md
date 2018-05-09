@@ -11,7 +11,7 @@
 * [ MENU ] 活动算分，设置等
 
 ## 构建
-需要 __Node.js__ 和 __npm__。  
+需要 __Node.js 8+__， __Python 2.7__， __Visual Studio 2015/2017__， __.Net 4.5.1 (只有Windows 7需要)__。  
 1. 克隆这个git仓库。  
 ``` bash 
 > git clone https://github.com/toyobayashi/mishiro.git
