@@ -12,7 +12,7 @@
 * [ MENU ] Event PT calculator, options...
 
 ## Build
-Require __Node.js__ and __npm__.  
+Require __Node.js 8+__, __Python 2.7__, __Visual Studio 2015/2017__, __.Net 4.5.1 (Windows 7 only)__.  
 1. Clone.  
 ``` bash 
 > git clone https://github.com/toyobayashi/mishiro.git
