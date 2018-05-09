@@ -1,6 +1,6 @@
 import Vue from 'vue'
 import VueI18n from 'vue-i18n'
-import { Configurer } from '../ts/common/config';
+import { Configurer } from '../common/config';
 
 declare module 'vue/types/vue' {
   interface Vue {

@@ -1,3 +1,4 @@
+import '../css/mishiro.css'
 import Vue from 'vue'
 import VueI18n from 'vue-i18n'
 import Mishiro from '../vue/Mishiro.vue'

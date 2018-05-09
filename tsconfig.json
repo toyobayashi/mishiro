@@ -10,13 +10,12 @@
     "target": "ES2017",
     "module": "es6",
     "typeRoots": [
-      "./node_module/@types",
-      "./src/@types"
+      "./node_modules/@types",
+      "./src/ts/@types"
     ]
   },
   "include": [
     "./src/ts/**/*",
-    "./src/vue/**/*",
-    "./src/@types/**/*"
+    "./src/vue/**/*"
   ]
 }
