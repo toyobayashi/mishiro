@@ -124,7 +124,7 @@ let renderer: webpack.Configuration = {
 
 export default [renderer, main]
 
-function nativeExternals (relativePath: string, nativeModules: string[]) {
+function nativeExternals (relativePath: string, nativeModules: string[]): webpack.ExternalsObjectElement {
   let externals: webpack.ExternalsObjectElement = {}
   for (const moduleName of nativeModules) {
     externals[moduleName] = `require("${relativePath}/${moduleName}-" + process.arch + ".node")`
