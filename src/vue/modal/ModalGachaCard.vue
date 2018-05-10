@@ -13,83 +13,11 @@
           cool: information.charaData ? information.charaData.type === 2 : false,
           passion: information.charaData ? information.charaData.type === 3 : false
         }">
-          <tr>
-            <td width="15%">{{$t("idol.id")}}</td>
-            <td width="45%">{{information.id}}</td>
-            <td width="15%">{{$t("idol.okurigana")}}</td>
-            <td width="25%">{{information.charaData ? information.charaData.name_kana : ""}}</td>
-          </tr>
-          <tr>
-            <td>{{$t("idol.card_name")}}</td>
-            <td>{{information.name}}</td>
-            <td>{{$t("idol.name")}}</td>
-            <td>{{information.charaData ? information.charaData.name : ""}}</td>
-          </tr>
-          <tr>
-            <td>{{$t("idol.chara_id")}}</td>
-            <td>{{information.chara_id}}</td>
-            <td>{{$t("idol.age")}}</td>
-            <td>{{information.charaData ? information.charaData.age : ""}}</td>
-          </tr>
-          <tr>
-            <td>{{$t("idol.rarity")}}</td>
-            <td>{{rarity}}</td>
-            <td>{{$t("idol.height")}}</td>
-            <td>{{information.charaData ? information.charaData.height : ""}}</td>
-          </tr>
-          <tr>
-            <td class="hp">{{$t("idol.hp")}}</td>
-            <td class="hp">{{hp}}</td>
-            <td>{{$t("idol.weight")}}</td>
-            <td>{{information.charaData ? information.charaData.weight : ""}}</td>
-          </tr>
-          <tr>
-            <td class="vocal">{{$t("idol.vocal")}}</td>
-            <td class="vocal">{{vocal}}</td>
-            <td>{{$t("idol.birth")}}</td>
-            <td>{{information.charaData ? (information.charaData.birth_month + "月" + information.charaData.birth_day + "日") : ""}}</td>
-          </tr>
-          <tr>
-            <td class="dance">{{$t("idol.dance")}}</td>
-            <td class="dance">{{dance}}</td>
-            <td>{{$t("idol.blood")}}</td>
-            <td>{{information.charaData ? information.charaData.blood_type : "" | blood}}</td>
-          </tr>
-          <tr>
-            <td class="visual">{{$t("idol.visual")}}</td>
-            <td class="visual">{{visual}}</td>
-            <td>{{$t("idol.handedness")}}</td>
-            <td>{{information.charaData ? information.charaData.hand : "" | hand}}</td>
-          </tr>
-          <tr>
-            <td>{{$t("idol.solo_live")}}</td>
-            <td>{{solo}}</td>
-            <td>{{$t("idol.threesize")}}</td>
-            <td>{{information.charaData ? [information.charaData.body_size_1, information.charaData.body_size_2, information.charaData.body_size_3] : [] | threesize}}</td>
-          </tr>
-          <tr>
-            <td>{{$t("idol.skill_name")}}</td>
-            <td>{{information.skill ? information.skill.skill_name : ""}}</td>
-            <td>{{$t("idol.hometown")}}</td>
-            <td>{{information.charaData ? information.charaData.hometown : ""}}</td>
-          </tr>
-          <tr>
-            <!-- <td>{{$t("idol.skill_explain")}}</td> -->
-            <td colspan="2" style="text-align:left">{{information.skill ? information.skill.explain : ""}}</td>
-            <td>{{$t("idol.constellation")}}</td>
-            <td>{{information.charaData ? information.charaData.seiza : ""}}</td>
-          </tr>
-          <tr>
-            <td>{{$t("idol.leader_skill_name")}}</td>
-            <td>{{information.leaderSkill ? information.leaderSkill.name : ""}}</td>
-            <td>{{$t("idol.voice")}}</td>
-            <td>{{information.charaData ? information.charaData.voice : ""}}</td>
-          </tr>
-          <tr>
-            <!-- <td>{{$t("idol.leader_skill_explain")}}</td> -->
-            <td colspan="2" style="text-align:left">{{information.leaderSkill ? information.leaderSkill.explain : ""}}</td>
-            <td>{{$t("idol.favorite")}}</td>
-            <td>{{information.charaData ? information.charaData.favorite : ""}}</td>
+          <tr v-for="line in table">
+            <td :width="line[0].width || '15%'" :class="line[0].class" :colspan="line[0].colspan || 1">{{line[0].text}}</td>
+            <td :width="line[1].width || '35%'" :class="line[1].class" :colspan="line[1].colspan || 1">{{line[1].text}}</td>
+            <td :width="line[2].width || '15%'">{{line[2].text}}</td>
+            <td :width="line[3].width || '35%'" v-if="line[3]">{{line[3].text}}</td>
           </tr>
           <tr v-if="card.limited">
             <td>{{$t("idol.limited")}}</td>

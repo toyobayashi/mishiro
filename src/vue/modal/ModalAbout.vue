@@ -8,33 +8,9 @@
       </div>
       <div class="modal-body" :style="{ maxHeight: bodyMaxHeight }">
         <table class="table-bordered" border="1">
-          <tr>
-            <td width="25%">{{$t("menu.appname")}}</td>
-            <td width="75%">{{remote.app.getName()}}</td>
-          </tr>
-          <tr>
-            <td>{{$t("menu.appver")}}</td>
-            <td>{{remote.app.getVersion()}}</td>
-          </tr>
-          <tr>
-            <td>Electron</td>
-            <td>{{process.versions.electron}}</td>
-          </tr>
-          <tr>
-            <td>Chromium</td>
-            <td>{{process.versions.chrome}}</td>
-          </tr>
-          <tr>
-            <td>Node</td>
-            <td>{{process.versions.node}}</td>
-          </tr>
-          <tr>
-            <td>Architecture</td>
-            <td>{{process.arch}}</td>
-          </tr>
-          <tr>
-            <td>{{$t("menu.description")}}</td>
-            <td>{{$t("menu.descCon")}}</td>
+          <tr v-for="line in lines">
+            <td width="25%">{{line.key}}</td>
+            <td width="75%">{{line.value}}</td>
           </tr>
         </table>
       </div>
@@ -51,10 +27,23 @@
 import { remote, shell } from 'electron'
 import modalMixin from '../../ts/renderer/modal-mixin'
 import Component, { mixins } from 'vue-class-component'
+
 @Component
 export default class extends mixins(modalMixin) {
-  remote = remote
-  process = process
+
+  data () {
+    return {
+      lines: [
+        { key: this.$t('menu.appname'), value: remote.app.getName() },
+        { key: this.$t('menu.appver'), value: remote.app.getVersion() },
+        { key: 'Electron', value: process.versions.electron },
+        { key: 'Chromium', value: process.versions.chrome },
+        { key: 'Node', value: process.versions.node },
+        { key: 'Architecture', value: process.arch },
+        { key: this.$t('menu.description'), value: this.$t('menu.descCon') }
+      ]
+    }
+  }
 
   showRepo () {
     shell.openExternal('https://github.com/toyobayashi/mishiro')

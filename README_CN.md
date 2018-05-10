@@ -22,8 +22,6 @@
 > npm config set registry http://registry.npm.taobao.org/
 > npm config set ELECTRON_MIRROR https://npm.taobao.org/mirrors/electron/
 > npm install
-> npm run sql64
-> npm run reb:hca-x64
 ```
 3. 打包生产环境代码。  
 ``` bash 

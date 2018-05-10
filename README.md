@@ -21,8 +21,6 @@ Require __Node.js 8+__, __Python 2.7__, __Visual Studio 2015/2017__, __.Net 4.5.
 ``` bash
 > cd mishiro
 > npm install
-> npm run sql64
-> npm run reb:hca-x64
 ```
 3. Run building command.  
 ``` bash

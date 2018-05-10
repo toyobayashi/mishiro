@@ -8,33 +8,9 @@
       </div>
       <div class="modal-body" :style="{ maxHeight: bodyMaxHeight }">
         <table class="table-bordered" border="1">
-          <tr>
-            <td width="25%">LIVE</td>
-            <td width="75%">{{liveResult.name}}</td>
-          </tr>
-          <tr>
-            <td>PERFECT</td>
-            <td>{{liveResult.perfect}}</td>
-          </tr>
-          <tr>
-            <td>GREAT</td>
-            <td>{{liveResult.great}}</td>
-          </tr>
-          <tr>
-            <td>NICE</td>
-            <td>{{liveResult.nice}}</td>
-          </tr>
-          <tr>
-            <td>BAD</td>
-            <td>{{liveResult.bad}}</td>
-          </tr>
-          <tr>
-            <td>MISS</td>
-            <td>{{liveResult.miss}}</td>
-          </tr>
-          <tr>
-            <td>COMBO</td>
-            <td>{{liveResult.maxCombo + ' / ' + liveResult.fullCombo}}</td>
+          <tr v-for="line in table">
+            <td width="25%">{{line[0]}}</td>
+            <td width="75%">{{line[1]}}</td>
           </tr>
         </table>
       </div>
@@ -53,6 +29,18 @@ import Component, { mixins } from 'vue-class-component'
 export default class extends mixins(modalMixin) {
 
   liveResult: any = {}
+
+  get table () {
+    return [
+      ['LIVE', this.liveResult.name],
+      ['PERFECT', this.liveResult.perfect],
+      ['GREAT', this.liveResult.great],
+      ['NICE', this.liveResult.nice],
+      ['BAD', this.liveResult.bad],
+      ['MISS', this.liveResult.miss],
+      ['COMBO', this.liveResult.maxCombo + ' / ' + this.liveResult.fullCombo]
+    ]
+  }
 
   close () {
     this.playSe(this.cancelSe)

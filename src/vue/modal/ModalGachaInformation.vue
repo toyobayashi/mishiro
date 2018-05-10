@@ -8,43 +8,11 @@
       </div>
       <div class="modal-body" :style="{ maxHeight: bodyMaxHeight }">
         <table class="table-bordered" border="1">
-          <tr>
-            <td colspan="1">{{$t("gacha.id")}}</td>
-            <td colspan="3">{{gachaData.id}}</td>
-          </tr>
-          <tr>
-            <td colspan="1">{{$t("gacha.name")}}</td>
-            <td colspan="3">{{gachaData.name}}</td>
-          </tr>
-          <tr>
-            <td colspan="1">{{$t("gacha.discription")}}</td>
-            <td colspan="3">{{gachaData.dicription}}</td>
-          </tr>
-          <tr>
-            <td colspan="1">{{$t("gacha.endDate")}}</td>
-            <td colspan="3">{{gachaData.end_date}} (JST)</td>
-          </tr>
-          <tr>
-            <td width="18%">{{$t("gacha.r")}}</td>
-            <td width="32%">{{gachaData.count ? gachaData.count.R : 0}} ({{(gachaData.count ? gachaData.count.fes : false) ? "82.00%" : "85.00%"}})</td>
-            <td width="18%">{{$t("gacha.get")}}</td>
-            <td width="32%">{{info.r}} ({{info.r > 0 ? (100 * info.r / info.total).toFixed(2) : "0.00"}}%)</td>
-          </tr>
-          <tr>
-            <td>{{$t("gacha.sr")}}</td>
-            <td>{{gachaData.count ? gachaData.count.SR : 0}} (12.00%)</td>
-            <td>{{$t("gacha.get")}}</td>
-            <td>{{info.sr}} ({{info.sr > 0 ? (100 * info.sr / info.total).toFixed(2) : "0.00"}}%)</td>
-          </tr>
-          <tr>
-            <td>{{$t("gacha.ssr")}}</td>
-            <td>{{gachaData.count ? gachaData.count.SSR : 0}} ({{(gachaData.count ? gachaData.count.fes : false) ? "6.00%" : "3.00%"}})</td>
-            <td>{{$t("gacha.get")}}</td>
-            <td>{{info.ssr}} ({{info.ssr > 0 ? (100 * info.ssr / info.total).toFixed(2) : "0.00"}}%)</td>
-          </tr>
-          <tr>
-            <td colspan="1">{{$t("gacha.cost")}}</td>
-            <td colspan="3">{{info.costStarJewel}}</td>
+          <tr v-for="line in table">
+            <td width="18%" :colspan="line[0].colspan || 1">{{line[0].text}}</td>
+            <td width="32%" :colspan="line[1].colspan || 1">{{line[1].text}}</td>
+            <td width="18%" v-if="line[2]">{{line[2].text}}</td>
+            <td width="32%" v-if="line[3]">{{line[3].text}}</td>
           </tr>
         </table>
       </div>
@@ -68,8 +36,51 @@ export default class extends mixins(modalMixin) {
 
   @Prop({ default: (() => ({})), type: Object }) master: MasterData
 
-  get gachaData () {
+  get gachaData (): any {
     return this.master.gachaData ? this.master.gachaData : {}
+  }
+
+  get table () {
+    return [
+      [
+        { text: this.$t('gacha.id') },
+        { text: this.gachaData.id, colspan: 3 }
+      ],
+      [
+        { text: this.$t('gacha.name') },
+        { text: this.gachaData.name, colspan: 3 }
+      ],
+      [
+        { text: this.$t('gacha.discription') },
+        { text: this.gachaData.dicription, colspan: 3 }
+      ],
+      [
+        { text: this.$t('gacha.endDate') },
+        { text: this.gachaData.end_date + '(JST)', colspan: 3 }
+      ],
+      [
+        { text: this.$t('gacha.r') },
+        { text: `${this.gachaData.count ? this.gachaData.count.R : 0} (${(this.gachaData.count ? this.gachaData.count.fes : false) ? '82.00%' : '85.00%'})` },
+        { text: this.$t('gacha.get') },
+        { text: `${this.info.r} (${this.info.r > 0 ? (100 * this.info.r / this.info.total).toFixed(2) : '0.00'}%)` }
+      ],
+      [
+        { text: this.$t('gacha.sr') },
+        { text: `${this.gachaData.count ? this.gachaData.count.SR : 0} (12.00%)` },
+        { text: this.$t('gacha.get') },
+        { text: `${this.info.sr} (${this.info.sr > 0 ? (100 * this.info.sr / this.info.total).toFixed(2) : '0.00'}%)` }
+      ],
+      [
+        { text: this.$t('gacha.ssr') },
+        { text: `${this.gachaData.count ? this.gachaData.count.SSR : 0} (${(this.gachaData.count ? this.gachaData.count.fes : false) ? '6.00%' : '3.00%'})` },
+        { text: this.$t('gacha.get') },
+        { text: `${this.info.ssr} (${this.info.ssr > 0 ? (100 * this.info.ssr / this.info.total).toFixed(2) : '0.00'}%)` }
+      ],
+      [
+        { text: this.$t('gacha.cost') },
+        { text: this.info.costStarJewel, colspan: 3 }
+      ]
+    ]
   }
 
   mounted () {

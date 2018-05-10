@@ -11,21 +11,6 @@ export default class extends mixins(modalMixin, MishiroIdol) {
 
   card: any = {}
   cardPlus: any = {}
-  // information: {},
-  // currentPractice: string = 'idol.before'
-  /* practice: { be: string; af: string } = {
-    be: 'idol.before',
-    af: 'idol.after'
-  } */
-
-  /* props: {
-    'master': {
-      type: Object,
-      require: true
-    }
-  }, */
-  /* filters: new MishiroIdol().filters,
-  computed: new MishiroIdol().computed, */
 
   toggle (practice: string) {
     switch (practice) {
