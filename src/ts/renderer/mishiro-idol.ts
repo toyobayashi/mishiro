@@ -16,43 +16,6 @@ const dler = new Downloader()
     ProgressBar,
     TabSmall,
     InputText
-  },
-  filters: {
-    hand (v: number | string) {
-      switch (v) {
-        case 3001:
-          return '右'
-        case 3002:
-          return '左'
-        case 3003:
-          return '両'
-        default:
-          return ''
-      }
-    },
-    blood (v: number | string) {
-      switch (v) {
-        case 2001:
-          return 'A'
-        case 2002:
-          return 'B'
-        case 2003:
-          return 'AB'
-        case 2004:
-          return 'O'
-        default:
-          return ''
-      }
-    },
-    threesize (v: any[]) {
-      if (v[0] === undefined || v[1] === undefined || v[2] === undefined) {
-        return ''
-      } else if (v[0] >= 1000 && v[1] >= 1000 && v[2] >= 1000) {
-        return '？/？/？'
-      } else {
-        return v[0] + '/' + v[1] + '/' + v[2]
-      }
-    }
   }
 })
 export default class extends Vue {
@@ -72,6 +35,126 @@ export default class extends Vue {
   }
 
   @Prop({ default: (() => ({})), type: Object }) master!: MasterData
+
+  blood (v: any) {
+    switch (v) {
+      case 2001:
+        return 'A'
+      case 2002:
+        return 'B'
+      case 2003:
+        return 'AB'
+      case 2004:
+        return 'O'
+      default:
+        return ''
+    }
+  }
+
+  hand (v: any) {
+    switch (v) {
+      case 3001:
+        return '右'
+      case 3002:
+        return '左'
+      case 3003:
+        return '両'
+      default:
+        return ''
+    }
+  }
+
+  threesize (v: any) {
+    if (!v) return
+    if (v[0] === undefined || v[1] === undefined || v[2] === undefined) {
+      return ''
+    } else if (v[0] >= 1000 && v[1] >= 1000 && v[2] >= 1000) {
+      return '？/？/？'
+    } else {
+      return v[0] + '/' + v[1] + '/' + v[2]
+    }
+  }
+
+  get table () {
+    return [
+      [
+        { text: this.$t('idol.id') },
+        { text: this.information.id },
+        { text: this.$t('idol.okurigana') },
+        { text: this.information.charaData && this.information.charaData.name_kana }
+      ],
+      [
+        { text: this.$t('idol.card_name') },
+        { text: this.information.name },
+        { text: this.$t('idol.name') },
+        { text: this.information.charaData && this.information.charaData.name }
+      ],
+      [
+        { text: this.$t('idol.chara_id') },
+        { text: this.information.chara_id },
+        { text: this.$t('idol.age') },
+        { text: this.information.charaData && this.information.charaData.age }
+      ],
+      [
+        { text: this.$t('idol.rarity') },
+        { text: this.rarity },
+        { text: this.$t('idol.height') },
+        { text: this.information.charaData && this.information.charaData.height }
+      ],
+      [
+        { text: this.$t('idol.hp'), class: 'hp' },
+        { text: this.hp, class: 'hp' },
+        { text: this.$t('idol.weight') },
+        { text: this.information.charaData && this.information.charaData.weight }
+      ],
+      [
+        { text: this.$t('idol.vocal'), class: 'vocal' },
+        { text: this.vocal, class: 'vocal' },
+        { text: this.$t('idol.birth') },
+        { text: this.information.charaData && (this.information.charaData.birth_month + '月' + this.information.charaData.birth_day + '日') }
+      ],
+      [
+        { text: this.$t('idol.dance'), class: 'dance' },
+        { text: this.dance, class: 'dance' },
+        { text: this.$t('idol.blood') },
+        { text: this.blood(this.information.charaData && this.information.charaData.blood_type) }
+      ],
+      [
+        { text: this.$t('idol.visual'), class: 'visual' },
+        { text: this.visual, class: 'visual' },
+        { text: this.$t('idol.handedness') },
+        { text: this.hand(this.information.charaData && this.information.charaData.hand) }
+      ],
+      [
+        { text: this.$t('idol.solo_live') },
+        { text: this.solo },
+        { text: this.$t('idol.threesize') },
+        { text: this.threesize(this.information.charaData && [this.information.charaData.body_size_1, this.information.charaData.body_size_2, this.information.charaData.body_size_3]) }
+      ],
+      [
+        { text: this.$t('idol.skill_name') },
+        { text: this.information.skill && this.information.skill.skill_name },
+        { text: this.$t('idol.hometown') },
+        { text: this.information.charaData && this.information.charaData.hometown }
+      ],
+      [
+        { text: this.information.skill && this.information.skill.explain, colspan: '2', class: 'text-left' },
+        { text: this.$t('idol.constellation'), width: '15%' },
+        { text: this.information.charaData && this.information.charaData.seiza }
+      ],
+      [
+        { text: this.$t('idol.leader_skill_name') },
+        { text: this.information.leaderSkill && this.information.leaderSkill.name },
+        { text: this.$t('idol.voice') },
+        { text: this.information.charaData && this.information.charaData.voice }
+      ],
+      [
+        { text: this.information.leaderSkill && this.information.leaderSkill.explain, colspan: '2', class: 'text-left' },
+        { text: this.$t('idol.favorite'), width: '15%' },
+        { text: this.information.charaData && this.information.charaData.favorite }
+      ]
+    ]
+  }
 
   get cardData () {
     return this.master.cardData
