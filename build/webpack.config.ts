@@ -4,6 +4,7 @@ import OptimizeCSSAssetsPlugin from 'optimize-css-assets-webpack-plugin'
 import UglifyJSPlugin from 'uglifyjs-webpack-plugin'
 import { VueLoaderPlugin } from 'vue-loader'
 import path from 'path'
+import fs from 'fs-extra'
 import pkg from '../package.json'
 
 export const mode = process.env.NODE_ENV === 'production' ? 'production' : 'development'
@@ -69,7 +70,7 @@ export const main: webpack.Configuration = {
       use: [{
         loader: 'native-addon-loader',
         options: {
-          path: './lib'
+          path: './addon'
         }
       }]
     }]
@@ -84,8 +85,9 @@ export const main: webpack.Configuration = {
 
 export const manifest: any = path.join(__dirname, 'manifest.json')
 
-export function renderer (manifest: string): webpack.Configuration {
-  console.log(require(manifest).name)
+export function renderer (manifestPath: string): webpack.Configuration {
+  const manifestJson = fs.readJsonSync(manifestPath)
+  console.log('Global variable name: ' + manifestJson.name)
   return {
     mode,
     target: 'electron-renderer',
@@ -131,7 +133,7 @@ export function renderer (manifest: string): webpack.Configuration {
         chunkFilename: '[id].css'
       }),
       new webpack.DllReferencePlugin({
-        manifest: require(manifest),
+        manifest: manifestJson,
         context: __dirname
       }),
       new VueLoaderPlugin()

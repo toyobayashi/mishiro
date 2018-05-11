@@ -208,24 +208,28 @@ export default class extends Vue {
             localStorage.removeItem('msrEvent')
           }
 
-          if (config.background) {
-            let result = await new MishiroIdol().downloadCard.call(this, config.background, (prog: ProgressInfo) => {
-              this.text = prog.name || ''
-              this.loading = prog.loading
-            })
-            if (result) {
-              this.event.$emit('eventBgReady', config.background)
-            }
-          } else {
-            // const cardIdEvolution = [(Number(cardId[0]) + 1), (Number(cardId[1]) + 1)];
-            if (masterData.eventHappening) {
-              let result = await new MishiroIdol().downloadCard.call(this, Number(cardId[0]) + 1, (prog: ProgressInfo) => {
+          let downloadCard = new MishiroIdol().downloadCard
+
+          const getBackground = async (id: string | number) => {
+            try {
+              let result = await downloadCard.call(this, id, (prog: ProgressInfo) => {
                 this.text = prog.name || ''
                 this.loading = prog.loading
               })
               if (result) {
-                this.event.$emit('eventBgReady', Number(cardId[0]) + 1)
+                this.event.$emit('eventBgReady', id)
               }
+            } catch (err) {
+              this.event.$emit('alert', this.$t('home.errorTitle'), this.$t('home.downloadFailed') + '<br/>' + err)
+            }
+          }
+
+          if (config.background) {
+            await getBackground(config.background)
+          } else {
+            // const cardIdEvolution = [(Number(cardId[0]) + 1), (Number(cardId[1]) + 1)];
+            if (masterData.eventHappening) {
+              await getBackground(Number(cardId[0]) + 1)
             }
           }
           if (masterData.eventHappening) this.event.$emit('eventRewardCard', cardId)
