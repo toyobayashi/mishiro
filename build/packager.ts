@@ -4,30 +4,46 @@ import os from 'os'
 import fs from 'fs-extra'
 import { exec, ExecOptions } from 'child_process'
 import pkg from '../package.json'
-const prod = require('./webpack.ts')
+import { prod } from './webpack'
+import { ilog, wlog, elog } from './rainbow'
+import { zip } from 'zauz'
+
+const productionPackage = {
+  name: pkg.name,
+  version: pkg.version,
+  main: pkg.main,
+  dependencies: {
+    sqlite3: '^4.0.0'
+  }
+}
+
 const args = process.argv.slice(2)
 const _arch = args[0] as packager.arch || 'x64'
-const execAsync = (cmd: string, options?: ExecOptions) => new Promise((resolve, reject) => {
-  exec(cmd, options, (err, stdout) => {
-    if (!err) resolve(stdout)
-    else reject(err)
+const execAsync = (cmd: string, options?: ExecOptions) => {
+  return new Promise((resolve, reject) => {
+    exec(cmd, options, (err, stdout) => {
+      if (!err) resolve(stdout)
+      else reject(err)
+    })
+    // childProcess.stdout.on('data', chunk => log(chunk.toString()))
+    // childProcess.stderr.on('data', chunk => log(chunk.toString()))
   })
-})
+}
+
 Promise.resolve().then(() => {
-  console.log('rebuild hca...')
-  return execAsync(`npm run reb:hca-${_arch}`, { cwd: path.join(__dirname, '..') })
+  ilog(`[${new Date().toLocaleString()}] Rebuild hca...`)
+  return execAsync(`npm run hca --arch=${_arch}`, { cwd: path.join(__dirname, '..') })
 }).then(() => {
-  console.log('bundle production code...')
-  return prod()
+  ilog(`[${new Date().toLocaleString()}] Bundle production code...`)
+  return prod(() => ilog(`[${new Date().toLocaleString()}] Packaging App...`))
 }).then(() => {
-  console.log('package...')
   return packager({
     dir: path.join(__dirname, '..'),
     out: path.join(__dirname, '..', 'dist'),
     platform: 'win32',
     arch: _arch,
     icon: path.join(__dirname, '../src/res/icon/mishiro.ico'),
-    ignore: /node_modules|build|data|release|download|dist|src|screenshot|public\/img\/card|public\/asset\/sound\/live|public\/asset\/sound\/voice|public\/asset\/score|README|\.eslintrc\.json|tslint\.json|tsconfig\.json|config\.json|package-lock\.json|\.bin|\.git|\.vscode/,
+    ignore: /node_modules|build|data|release|download|dist|src|public\/img\/card|public\/asset\/sound\/live|public\/asset\/sound\/voice|public\/asset\/score|README|tslint\.json|tsconfig\.json|config\.json|package\.json|package-lock\.json|\.git|\.vscode/,
     appCopyright: 'Copyright (C) 2017 Toyobayashi',
     download: {
       cache: path.join(os.homedir(), '.electron'),
@@ -36,17 +52,51 @@ Promise.resolve().then(() => {
     overwrite: true
   })
 }).then(appPaths => {
+  ilog(`[${new Date().toLocaleString()}] Write package.json...`)
+  fs.writeFileSync(path.join(appPaths[0], './resources/app', 'package.json'), JSON.stringify(productionPackage), 'utf8')
+
   let dirName: string | string[] = path.basename(appPaths[0]).split('-')
   dirName.splice(1, 0, `v${pkg.version}`)
   dirName = dirName.join('-')
   const newPath = path.join(path.dirname(appPaths[0]), dirName)
-  console.log('install sqlite3...')
+
+  ilog(`[${new Date().toLocaleString()}] Installing Dependencies...`)
   return execAsync(
-    `npm install sqlite3 --no-save --build-from-source --runtime=electron --target=${pkg.devDependencies.electron.replace(/\^|~/g, '')} --target_arch=${_arch} --dist-url=https://atom.io/download/electron`,
+    `npm install --production --no-save --build-from-source --runtime=electron --target=${pkg.devDependencies.electron.replace(/\^|~/, '')} --target_arch=${_arch} --dist-url=https://atom.io/download/electron`,
     { cwd: path.join(appPaths[0], './resources/app') }
   ).then(() => {
-    fs.removeSync(path.join(appPaths[0], './resources/app/node_modules/nan'))
-    console.log(appPaths[0], ' -> ', newPath)
-    fs.moveSync(appPaths[0], newPath)
+    ilog(`[${new Date().toLocaleString()}] Resolving 'sqlite3' production code...`)
+    const sqlite3AddonDir = fs.readdirSync(path.join(appPaths[0], './resources/app/node_modules/sqlite3/lib/binding'))[0]
+    const lines = fs.readFileSync(path.join(appPaths[0], './resources/app/node_modules/sqlite3/lib/sqlite3.js'), 'utf8').split(/\r?\n/)
+    lines[3] = `var binding = require('./binding/${sqlite3AddonDir}/node_sqlite3.node');`
+    lines.splice(0, 1)
+    lines.splice(1, 1)
+    fs.writeFileSync(path.join(appPaths[0], './resources/app/node_modules/sqlite3/lib/sqlite3.js'), lines.join('\r\n'), 'utf8')
+
+    ilog(`[${new Date().toLocaleString()}] Clean 'node_modules'...`)
+    const removeList: string[] = [
+      'nan',
+      'sqlite3/node_modules',
+      'sqlite3/build',
+      'sqlite3/deps',
+      'sqlite3/src',
+      'sqlite3/appveyor.yml',
+      'sqlite3/binding.gyp',
+      'sqlite3/CHANGELOG.md',
+      'sqlite3/CONTRIBUTING.md',
+      'sqlite3/electron.sh',
+      'sqlite3/README.md'
+    ]
+    return Promise.all(removeList.map(p => fs.remove(path.join(appPaths[0], 'resources/app/node_modules', p))))
+  }).then(() => {
+    if (fs.existsSync(newPath)) {
+      wlog(`[${new Date().toLocaleString()}] Target exists. Overwriting... `)
+      fs.removeSync(newPath)
+    }
+    fs.renameSync(appPaths[0], newPath)
+    ilog(`[${new Date().toLocaleString()}] Zip ${newPath}`)
+    return zip(newPath, newPath + '.zip')
+  }).then((size: number) => {
+    ilog(`[${new Date().toLocaleString()}] Size: ${size} Bytes`)
   })
-}).catch(err => console.log(err))
+}).catch(err => elog(err))

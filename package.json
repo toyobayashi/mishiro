@@ -1,23 +1,20 @@
 {
   "name": "mishiro",
-  "productName": "mishiro",
-  "companyName": "Toyo",
   "version": "1.3.3",
   "description": "mishiro",
   "main": "./public/mishiro.main.js",
   "scripts": {
-    "install": "if not exist \"./node_modules/sqlite3\" npm run sql64&&if not exist \"./src/cpp/hca/build/Release/hca.node\" npm run reb:hca-x64",
+    "install": "npm run native",
+    "native": "if not exist \"./node_modules/sqlite3\" npm run sql&&if not exist \"./src/cpp/hca/build/Release/hca.node\" npm run hca",
     "start": "electron . --enable-logging",
-    "dev": "ts-node -P ./build/tsconfig.json ./build/webpack.ts",
-    "prod": "set NODE_ENV=production&&ts-node -P ./build/tsconfig.json ./build/webpack.ts",
-    "pkg32": "set NODE_ENV=production&&ts-node -P ./build/tsconfig.json ./build/packager.ts ia32",
-    "pkg64": "set NODE_ENV=production&&ts-node -P ./build/tsconfig.json ./build/packager.ts x64",
+    "dll": "ts-node -P ./build/tsconfig.json ./build/webpack.ts dll",
+    "dev": "ts-node -P ./build/tsconfig.json ./build/webpack.ts webpack",
+    "prod": "set NODE_ENV=production&&ts-node -P ./build/tsconfig.json ./build/webpack.ts webpack",
+    "pkg": "set NODE_ENV=production&&ts-node -P ./build/tsconfig.json ./build/packager.ts",
     "count": "ts-node -P ./build/tsconfig.json ./build/source-count.ts",
     "dlc": "ts-node -P ./build/tsconfig.json ./build/release-download-count.ts",
-    "reb:hca-ia32": "cd ./src/cpp/hca&&node-gyp rebuild --target=%npm_package_devDependencies_electron% --arch=ia32 --dist-url=https://atom.io/download/electron",
-    "reb:hca-x64": "cd ./src/cpp/hca&&node-gyp rebuild --target=%npm_package_devDependencies_electron% --arch=x64 --dist-url=https://atom.io/download/electron",
-    "sql32": "npm install sqlite3 --no-save --build-from-source --runtime=electron --target=%npm_package_devDependencies_electron% --target_arch=ia32 --dist-url=https://atom.io/download/electron",
-    "sql64": "npm install sqlite3 --no-save --build-from-source --runtime=electron --target=%npm_package_devDependencies_electron% --target_arch=x64 --dist-url=https://atom.io/download/electron"
+    "hca": "cd ./src/cpp/hca&&node-gyp rebuild --target=%npm_package_devDependencies_electron% --dist-url=https://atom.io/download/electron",
+    "sql": "npm install sqlite3 --no-save --build-from-source --runtime=electron --target=%npm_package_devDependencies_electron% --dist-url=https://atom.io/download/electron"
   },
   "repository": {
     "type": "git",
@@ -64,7 +61,8 @@
     "uglifyjs-webpack-plugin": "^1.2.4",
     "vue-loader": "^15.0.9",
     "vue-template-compiler": "^2.5.16",
-    "webpack": "^4.8.1"
+    "webpack": "^4.8.1",
+    "zauz": "^1.0.0"
   },
   "dependencies": {
     "marked": "^0.3.14",

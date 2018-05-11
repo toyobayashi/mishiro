@@ -6,14 +6,12 @@ import { main, renderer, dll, mode, manifest } from './webpack.config'
 const arg: string | undefined = process.argv.slice(2)[0]
 if (arg === 'dll') {
   checkAndBundleDll()
-} else if (arg === 'ia32' || arg === 'x64') {
-  module.exports = prod
-} else {
+} else if (arg === 'webpack') {
   if (mode === 'production') prod()
   else dev()
 }
 
-function dev () {
+export function dev () {
 
   webpackWatch()
 
@@ -47,7 +45,7 @@ function dev () {
   }
 }
 
-function prod () {
+export function prod (callback?: Function) {
   return new Promise((resolve, reject) => {
     checkAndBundleDll(() => webpack([main, renderer(manifest)], (err, stats: any) => {
       if (err) {
@@ -55,16 +53,20 @@ function prod () {
         reject(err)
         return
       }
-      console.log(stats.toString({
-        modules: false,
-        colors: true
-      }) + '\n')
+      if (callback) {
+        callback(stats)
+      } else {
+        console.log(stats.toString({
+          modules: false,
+          colors: true
+        }) + '\n')
+      }
       resolve()
     }))
   })
 }
 
-function checkAndBundleDll (callback?: Function) {
+export function checkAndBundleDll (callback?: Function) {
   const dllContent = getDllBundle()
   if (dllContent) {
     if (mode === 'production') {

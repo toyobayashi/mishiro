@@ -277,10 +277,14 @@ export default class extends Vue {
     dler.stop()
     if (Number(card.rarity) > 4) {
       if (!fs.existsSync(getPath(`./public/img/card/bg_${card.id}.png`))) {
-        let result = await this.downloadCard(card.id)
-        this.imgProgress = 0
-        if (result) {
-          this.event.$emit('idolSelect', card.id)
+        try {
+          let result = await this.downloadCard(card.id)
+          this.imgProgress = 0
+          if (result) {
+            this.event.$emit('idolSelect', card.id)
+          }
+        } catch (errorPath) {
+          this.event.$emit('alert', this.$t('home.errorTitle'), this.$t('home.downloadFailed') + '<br/>' + errorPath)
         }
       } else {
         this.event.$emit('idolSelect', card.id)
@@ -364,15 +368,11 @@ export default class extends Vue {
   }
   async downloadCard (id: number | string, progressing?: (prog: ProgressInfo) => void) {
     let downloadResult: string | boolean = false
-    try {
-      downloadResult = await dler.download(
-        this.getCardUrl(id),
-        getPath(`./public/img/card/bg_${id}.png`),
-        (progressing || (prog => { this.imgProgress = prog.loading }))
-      )
-    } catch (errorPath) {
-      this.event.$emit('alert', this.$t('home.errorTitle'), this.$t('home.downloadFailed') + '<br/>' + errorPath)
-    }
+    downloadResult = await dler.download(
+      this.getCardUrl(id),
+      getPath(`./public/img/card/bg_${id}.png`),
+      (progressing || (prog => { this.imgProgress = prog.loading }))
+    )
     return downloadResult
   }
   toggle (practice: string) {
