@@ -1,8 +1,10 @@
 node_modules/
-build/manifest.json
+cache/
+script/manifest.json
 download/
 data/
 dist/
+build/
 release/
 public/addon/
 public/*.js
@@ -25,5 +27,4 @@ public/asset/sound/bgm/*.mp3
 !public/asset/sound/bgm/bgm_event_rail.mp3
 config.json
 .vscode/
-src/cpp/*/build/
 src/res/img.asar

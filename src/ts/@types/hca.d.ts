@@ -1,9 +1,9 @@
-declare module '*hca.node' {
-  interface hca {
-    dec(hca: string, callback: Function): void
-    decSync(hca: string): string
-  }
-  export function dec(hca: string, callback: Function): void
-  export function decSync(hca: string): string
-  export default hca
+declare interface hca {
+  dec: (hca: string, callback: (wavPath: string) => void) => void
+  decSync: (hca: string) => string
+}
+
+declare namespace hca {
+  type dec = (hca: string, callback: (wavPath: string) => void) => void
+  type decSync = (hca: string) => string
 }

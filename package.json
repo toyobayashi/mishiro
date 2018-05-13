@@ -5,15 +5,15 @@
   "main": "./public/mishiro.main.js",
   "scripts": {
     "install": "npm run native",
-    "native": "if not exist \"./node_modules/sqlite3\" npm run sql&&if not exist \"./src/cpp/hca/build/Release/hca.node\" npm run hca",
+    "native": "if not exist \"./node_modules/sqlite3\" npm run sql&&if not exist \"./public/addon/hca.node\" npm run hca",
     "start": "electron . --enable-logging",
-    "dll": "ts-node -P ./build/tsconfig.json ./build/webpack.ts dll",
-    "dev": "ts-node -P ./build/tsconfig.json ./build/webpack.ts webpack",
-    "prod": "set NODE_ENV=production&&ts-node -P ./build/tsconfig.json ./build/webpack.ts webpack",
-    "pkg": "set NODE_ENV=production&&ts-node -P ./build/tsconfig.json ./build/packager.ts",
-    "count": "ts-node -P ./build/tsconfig.json ./build/source-count.ts",
-    "dlc": "ts-node -P ./build/tsconfig.json ./build/release-download-count.ts",
-    "hca": "cd ./src/cpp/hca&&node-gyp rebuild --target=%npm_package_devDependencies_electron% --dist-url=https://atom.io/download/electron",
+    "dll": "ts-node -P ./script/tsconfig.json ./script/webpack.ts dll",
+    "dev": "ts-node -P ./script/tsconfig.json ./script/webpack.ts webpack",
+    "prod": "set NODE_ENV=production&&ts-node -P ./script/tsconfig.json ./script/webpack.ts webpack",
+    "pkg": "set NODE_ENV=production&&ts-node -P ./script/tsconfig.json ./script/packager.ts",
+    "count": "ts-node -P ./script/tsconfig.json ./script/source-count.ts",
+    "dlc": "ts-node -P ./script/tsconfig.json ./script/release-download-count.ts",
+    "hca": "node-gyp rebuild -target=%npm_package_devDependencies_electron% --dist-url=https://atom.io/download/electron",
     "sql": "npm install sqlite3 --no-save --build-from-source --runtime=electron --target=%npm_package_devDependencies_electron% --dist-url=https://atom.io/download/electron"
   },
   "repository": {

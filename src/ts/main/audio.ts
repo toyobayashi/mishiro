@@ -5,7 +5,8 @@ import getPath from '../common/get-path'
 import { remove } from '../common/fse'
 import extractACB from './acb'
 // import { dec } from '../../@types/hca/'
-import { dec } from '../../cpp/hca/build/Release/hca.node'
+// import { dec } from '../../cpp/hca/build/Release/hca.node'
+const dec: hca.dec = __non_webpack_require__('./addon/hca.node').dec
 
 const FFMPEG = getPath('./public/bin/ffmpeg.exe')
 
