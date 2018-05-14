@@ -65,14 +65,6 @@ export const main: webpack.Configuration = {
       test: /\.ts$/,
       exclude: /node_modules/,
       loader: 'ts-loader'
-    }, {
-      test: /\.node$/,
-      use: [{
-        loader: 'native-addon-loader',
-        options: {
-          path: './addon'
-        }
-      }]
     }]
   },
   resolve: {
