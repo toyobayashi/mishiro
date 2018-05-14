@@ -1,6 +1,4 @@
 import request, { ProgressInfo } from '../common/request'
-import * as fs from 'fs'
-import getPath from '../common/get-path'
 import configurer from '../common/config'
 import { remote } from 'electron'
 import { ApiClient } from '../main/client'
@@ -47,9 +45,6 @@ function httpGetVersion (resVer: number, progressing: (prog: ProgressInfo) => vo
 }
 
 async function check (progressing: (prog: ProgressInfo) => void) {
-  if (!fs.existsSync(getPath('./data'))) {
-    fs.mkdirSync(getPath('./data'))
-  }
   let config = remote.getGlobal('config')
   if (config.resVer) {
     return config.resVer

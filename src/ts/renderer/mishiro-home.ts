@@ -30,9 +30,6 @@ export default class extends Vue {
 
   opendir () {
     this.playSe(this.enterSe)
-    if (!fs.existsSync(getPath('./download'))) {
-      fs.mkdirSync(getPath('./download'))
-    }
     shell.openExternal(getPath('./download'))
   }
   query () {
@@ -58,9 +55,6 @@ export default class extends Vue {
   }
   async downloadSelectedItem () {
     this.playSe(this.enterSe)
-    if (!fs.existsSync(getPath('./download'))) {
-      fs.mkdirSync(getPath('./download'))
-    }
     if (!navigator.onLine) {
       this.event.$emit('alert', this.$t('home.errorTitle'), this.$t('home.noNetwork'))
       return

@@ -395,9 +395,6 @@ export default class extends Vue {
   }
   opendir () {
     this.playSe(this.enterSe)
-    if (!fs.existsSync(getPath('./public/img/card'))) {
-      fs.mkdirSync(getPath('./public/img/card'))
-    }
     shell.openExternal(getPath('./public/img/card'))
   }
 

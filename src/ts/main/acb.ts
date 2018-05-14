@@ -1,5 +1,5 @@
-import * as fs from 'fs'
-import { read, write } from '../common/fse'
+import { existsSync } from 'fs'
+import { read, write, mdSync } from '../common/fse'
 import * as path from 'path'
 
 function UTFTable (acb: Buffer) {
@@ -204,7 +204,7 @@ async function extractACB (acbPath: string, outputDir: string = path.join(path.p
   let awb = utftable[0].AwbFile
   let hcaFiles = getHCAFromAWB(awb, /* utftable[0].Name,  */cueNameTable)
 
-  if (!fs.existsSync(outputDir)) fs.mkdirSync(outputDir)
+  if (!existsSync(outputDir)) mdSync(outputDir)
   let promiseArr = []
   for (const f of hcaFiles) {
     promiseArr.push(write(path.join(outputDir, f.name), f.buf))
