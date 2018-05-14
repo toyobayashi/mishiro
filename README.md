@@ -20,7 +20,7 @@ Require __Node.js 8+__, __Python 2.7__, __Visual Studio 2015/2017__, __.Net 4.5.
 2. Install dependencies. If you are in Chinese mainland, maybe you should run ```npm config set ELECTRON_MIRROR=https://npm.taobao.org/mirrors/electron/```before your installing.  
 ``` bash
 > cd mishiro
-> npm run i
+> npm install
 ```
 3. Run building command.  
 ``` bash

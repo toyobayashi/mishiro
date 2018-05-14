@@ -4,8 +4,7 @@
   "description": "mishiro",
   "main": "./public/mishiro.main.js",
   "scripts": {
-    "i": "set npm_config_build_from_source=true&&set npm_config_runtime=electron&&set npm_config_target=%npm_package_devDependencies_electron%&&set npm_config_dist_url=https://atom.io/download/electron&&npm install",
-    "install": "if not exist \"./public/addon/hca.node\" npm run hca",
+    "install": "if not exist \"./public/addon/hca.node\" node-gyp rebuild",
     "start": "electron . --enable-logging",
     "dll": "ts-node -P ./script/tsconfig.json ./script/webpack.ts dll",
     "dev": "ts-node -P ./script/tsconfig.json ./script/webpack.ts webpack",
@@ -13,7 +12,7 @@
     "pkg": "set NODE_ENV=production&&ts-node -P ./script/tsconfig.json ./script/packager.ts",
     "count": "ts-node -P ./script/tsconfig.json ./script/source-count.ts",
     "dlc": "ts-node -P ./script/tsconfig.json ./script/release-download-count.ts",
-    "hca": "node-gyp rebuild --target=%npm_package_devDependencies_electron% --dist-url=https://atom.io/download/electron"
+    "hca": "node-gyp rebuild"
   },
   "repository": {
     "type": "git",
@@ -42,7 +41,7 @@
     "@types/uglifyjs-webpack-plugin": "^1.1.0",
     "@types/webpack": "^4.1.3",
     "css-loader": "^0.28.11",
-    "electron": "^2.0.0",
+    "electron": "2.0.0",
     "electron-packager": "^12.0.2",
     "fs-extra": "^6.0.0",
     "mini-css-extract-plugin": "^0.4.0",

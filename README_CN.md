@@ -21,7 +21,7 @@
 > cd mishiro
 > npm config set registry http://registry.npm.taobao.org/
 > npm config set ELECTRON_MIRROR https://npm.taobao.org/mirrors/electron/
-> npm run i
+> npm install
 ```
 3. 打包生产环境代码。  
 ``` bash 
