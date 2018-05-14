@@ -44,7 +44,7 @@ export const packagerOptions: packageManager.Options = {
   platform: 'win32',
   arch: arch,
   icon: path.join(__dirname, '../src/res/icon/mishiro.ico'),
-  ignore: /node_modules|build|cache|data|release|download|dist|src|script|public\/img\/card|public\/asset\/sound\/live|public\/asset\/sound\/voice|public\/asset\/score|README|tslint\.json|tsconfig\.json|config\.json|package\.json|package-lock\.json|\.git|\.vscode|binding\.gyp/,
+  ignore: /node_modules|build|cache|data|release|download|dist|src|script|public\/img\/card|public\/asset\/sound\/live|public\/asset\/sound\/voice|public\/asset\/score|README|tslint\.json|tsconfig\.json|config\.json|package\.json|package-lock\.json|\.git|\.vscode|binding\.gyp|\.npmrc/,
   appCopyright: 'Copyright (C) 2017 Toyobayashi',
   download: {
     cache: path.join(os.homedir(), '.electron'),
