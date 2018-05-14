@@ -45,7 +45,7 @@ export function dev () {
   }
 }
 
-export function prod (callback?: Function) {
+export function prod (callback?: Function): Promise<void> {
   return new Promise((resolve, reject) => {
     checkAndBundleDll(() => webpack([main, renderer(manifest)], (err, stats: any) => {
       if (err) {
