@@ -95,6 +95,7 @@ export function checkAndBundleDll (callback?: Function) {
   }
 
   function getDllBundle (): string | null {
+    if (!fs.existsSync(manifest)) return null
     if (!dll.output) throw new Error('Empty output.')
     if (!dll.output.path || !dll.output.filename) throw new Error('Empty output.path or output.filename.')
     const dllFile = path.join(dll.output.path, dll.output.filename)

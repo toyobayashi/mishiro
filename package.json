@@ -13,7 +13,7 @@
     "pkg": "set NODE_ENV=production&&ts-node -P ./script/tsconfig.json ./script/packager.ts",
     "count": "ts-node -P ./script/tsconfig.json ./script/source-count.ts",
     "dlc": "ts-node -P ./script/tsconfig.json ./script/release-download-count.ts",
-    "hca": "node-gyp rebuild -target=%npm_package_devDependencies_electron% --dist-url=https://atom.io/download/electron"
+    "hca": "node-gyp rebuild --target=%npm_package_devDependencies_electron% --dist-url=https://atom.io/download/electron"
   },
   "repository": {
     "type": "git",
