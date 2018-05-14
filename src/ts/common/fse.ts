@@ -99,4 +99,11 @@ function write (file: string, data: any, option?: any): Promise<string> {
   })
 }
 
-export { copy, remove, read, write }
+function mdSync (p: string) {
+  const dir = path.dirname(p)
+  if (!fs.existsSync(dir)) mdSync(dir)
+  else if (!fs.statSync(dir).isDirectory()) throw new Error(`"${path.resolve(dir)}" is not a dictory.`)
+  fs.mkdirSync(p)
+}
+
+export { copy, remove, read, write, mdSync }

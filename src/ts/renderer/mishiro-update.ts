@@ -124,18 +124,6 @@ export default class extends Vue {
     this.$nextTick(() => {
       this.text = this.$t('update.check') as string
       this.event.$on('enter', async () => { // 已从入口进入
-        if (!fs.existsSync(getPath('./public/asset/sound/bgm'))) {
-          fs.mkdirSync(getPath('./public/asset/sound/bgm'))
-        }
-        if (!fs.existsSync(getPath('./public/asset/sound/live'))) {
-          fs.mkdirSync(getPath('./public/asset/sound/live'))
-        }
-        if (!fs.existsSync(getPath('./public/asset/sound/voice'))) {
-          fs.mkdirSync(getPath('./public/asset/sound/voice'))
-        }
-        if (!fs.existsSync(getPath('./public/asset/score'))) {
-          fs.mkdirSync(getPath('./public/asset/score'))
-        }
         ipcRenderer.on('readManifest', async (_event: Event, masterHash: string, resVer: number) => {
           const masterFile = await this.getMaster(resVer, masterHash)
           if (masterFile) ipcRenderer.send('readMaster', masterFile)
@@ -195,10 +183,6 @@ export default class extends Vue {
             }
           }
 
-          if (!fs.existsSync(getPath('./public/img/card'))) {
-            fs.mkdirSync(getPath('./public/img/card'))
-          }
-
           const eventAvailable = masterData.eventAvailable
           const cardId = this.getEventCardId(eventAvailable)
 
@@ -234,9 +218,6 @@ export default class extends Vue {
           }
           if (masterData.eventHappening) this.event.$emit('eventRewardCard', cardId)
 
-          if (!fs.existsSync(getPath('./public/img/icon'))) {
-            fs.mkdirSync(getPath('./public/img/icon'))
-          }
           let iconId = []
           for (let index = 0; index < masterData.gachaAvailable.length; index++) {
             iconId.push(masterData.gachaAvailable[index].reward_id)
