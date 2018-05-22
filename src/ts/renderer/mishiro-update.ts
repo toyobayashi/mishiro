@@ -42,11 +42,13 @@ export default class extends Vue {
   @Prop() value!: any
   @Prop() isTouched!: boolean
 
-  getEventCardId (eventAvailable: any[]): number[] {
-    eventAvailable.sort(function (a, b) {
-      return a.recommend_order - b.recommend_order
-    })
-    return [eventAvailable[0].reward_id, eventAvailable[eventAvailable.length - 1].reward_id]
+  getEventCardId (/* eventAvailable: any[] */eventData: any): number[] {
+    // eventAvailable.sort(function (a, b) {
+    //   return a.recommend_order - b.recommend_order
+    // })
+    // console.log(eventAvailable)
+    // return [eventAvailable[0].reward_id, eventAvailable[eventAvailable.length - 1].reward_id]
+    return [Number(eventData.bg_id) - 1]
   }
 
   @Emit('ready')
@@ -183,8 +185,9 @@ export default class extends Vue {
             }
           }
 
-          const eventAvailable = masterData.eventAvailable
-          const cardId = this.getEventCardId(eventAvailable)
+          // const eventAvailable = masterData.eventAvailable
+          // const cardId = this.getEventCardId(eventAvailable)
+          const cardId = this.getEventCardId(masterData.eventData)
 
           if (masterData.eventHappening) {
             localStorage.setItem('msrEvent', `{"id":${masterData.eventData.id},"card":${Number(cardId[0]) + 1}}`)
