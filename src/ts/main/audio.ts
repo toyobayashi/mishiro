@@ -3,7 +3,7 @@ import * as path from 'path'
 import * as fs from 'fs'
 import getPath from '../common/get-path'
 import { remove } from '../common/fse'
-import extractACB from './acb'
+import * as Acb from 'acb'
 // import { dec } from '../../@types/hca/'
 // import { dec } from '../../cpp/hca/build/Release/hca.node'
 const dec: hca.dec = __non_webpack_require__('./addon/hca.node').dec
@@ -30,10 +30,8 @@ function readdirAsync (dir: string): Promise<string[]> {
 
 async function acb2hca (acb: string) {
   try {
-    // await execAsync(`"${ACB}" "${acb}"`)
-    // return path.join(path.parse(acb).dir, `_acb_${path.parse(acb).base}`)
-    let hcadir = await extractACB(acb)
-    return hcadir
+    await Acb.extract(acb)
+    return path.join(path.dirname(acb), `_acb_${path.basename(acb)}`)
   } catch (err) {
     throw err
   }

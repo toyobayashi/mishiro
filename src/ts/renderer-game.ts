@@ -31,7 +31,8 @@ ipcRenderer.on('start', (_event: Event, song: any, fromWindowId: number) => {
     fromWindow.webContents.send('liveEnd', liveResult, isCompleted)
   })
   let music = new Audio(song.src)
-
+  const msbp = 60 / song.bpm * 1000
+  const DELAY = Note.DISTANCE / Note.PX_SPEED
   music.addEventListener('play', () => {
     for (let i = 0; i < song.score.length; i++) {
       const note = song.score[i]
@@ -39,8 +40,8 @@ ipcRenderer.on('start', (_event: Event, song: any, fromWindowId: number) => {
         // tslint:disable-next-line:no-unused-expression
         if (!note[2]) new ShortNote(note[1])
         // tslint:disable-next-line:no-unused-expression
-        else new LongNote(note[1], note[2] * 60 / song.bpm * 1000 * Note.PX_SPEED)
-      }, note[0] * 60 / song.bpm * 1000 - Note.DISTANCE / Note.PX_SPEED)
+        else new LongNote(note[1], note[2] * msbp * Note.PX_SPEED)
+      }, note[0] * msbp - DELAY)
     }
   }, false)
 
