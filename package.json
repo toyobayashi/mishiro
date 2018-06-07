@@ -4,15 +4,13 @@
   "description": "mishiro",
   "main": "./public/mishiro.main.js",
   "scripts": {
-    "install": "if not exist \"./public/addon/hca.node\" node-gyp rebuild",
     "start": "electron . --enable-logging",
     "dll": "ts-node -P ./script/tsconfig.json ./script/webpack.ts dll",
     "dev": "ts-node -P ./script/tsconfig.json ./script/webpack.ts webpack",
     "prod": "set NODE_ENV=production&&ts-node -P ./script/tsconfig.json ./script/webpack.ts webpack",
     "pkg": "set NODE_ENV=production&&ts-node -P ./script/tsconfig.json ./script/packager.ts",
     "count": "ts-node -P ./script/tsconfig.json ./script/source-count.ts",
-    "dlc": "ts-node -P ./script/tsconfig.json ./script/release-download-count.ts",
-    "hca": "node-gyp rebuild"
+    "dlc": "ts-node -P ./script/tsconfig.json ./script/release-download-count.ts"
   },
   "repository": {
     "type": "git",
@@ -45,9 +43,9 @@
     "electron": "2.0.1",
     "electron-packager": "^12.0.2",
     "fs-extra": "^6.0.0",
+    "hca-decoder": "^1.0.0",
     "mini-css-extract-plugin": "^0.4.0",
     "msgpack-lite": "^0.1.26",
-    "node-gyp": "^3.6.2",
     "optimize-css-assets-webpack-plugin": "^4.0.0",
     "rijndael-js": "^1.0.0",
     "sqlite3": "^4.0.0",

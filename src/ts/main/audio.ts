@@ -4,9 +4,12 @@ import * as fs from 'fs'
 import getPath from '../common/get-path'
 import { remove } from '../common/fse'
 import * as Acb from 'acb'
+// import { HCADecoder } from 'hca-decoder';
 // import { dec } from '../../@types/hca/'
 // import { dec } from '../../cpp/hca/build/Release/hca.node'
-const dec: hca.dec = __non_webpack_require__('./addon/hca.node').dec
+// const dec: hca.dec = __non_webpack_require__('./addon/hca.node').dec
+const { HCADecoder } = __non_webpack_require__('hca-decoder')
+const decoder: HCADecoder = new HCADecoder()
 
 const FFMPEG = getPath('./public/bin/ffmpeg.exe')
 
@@ -39,9 +42,9 @@ async function acb2hca (acb: string) {
 
 function hca2wav (hca: string): Promise<string> {
   return new Promise((resolve, reject) => {
-    dec(hca, (wav: string) => {
+    decoder.decodeToWaveFile(hca, (err, wav) => {
       if (wav) resolve(wav)
-      else reject(new Error(`Failed to decode ${path.parse(hca).base}`))
+      else reject(err)
     })
   })
 }

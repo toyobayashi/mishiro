@@ -49,6 +49,6 @@ const getPath = (r: string) => path.join(__dirname, '..', r)
 
 console.log(count(
   getPath('.'),
-  ['.ts', '.css', '.cpp', '.vue', '.json', '.html'],
+  ['.ts', '.css', '.vue', '.json', '.html'],
   /node_modules|\.vscode|\.git|data|dist|cache|download|public\\.*\..+s|release|package-lock\.json/
 ))
