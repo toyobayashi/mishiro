@@ -1,7 +1,6 @@
 import packageManager from 'electron-packager'
 import path from 'path'
 import os from 'os'
-import fs from 'fs-extra'
 import pkg from '../package.json'
 
 if (process.argv.slice(2)[0] !== 'ia32' && process.argv.slice(2)[0] !== 'x64') {
@@ -18,25 +17,7 @@ export const productionPackage = {
   license: pkg.license
 }
 
-function nativeCache (modules: string[], cacheRoot: string) {
-  const cache: {
-    [moduleName: string]: {
-      path: string,
-      exist: boolean
-    }
-  } = {}
-  for (const moduleName of modules) {
-    const modulePath = path.join(cacheRoot, moduleName)
-    cache[moduleName] = {
-      path: modulePath,
-      exist: fs.existsSync(modulePath)
-    }
-  }
-  return cache
-}
-
-export const cache = nativeCache(['hca-decoder', 'sqlite3'],
-  path.join(__dirname, `../cache/electron-v${pkg.devDependencies.electron.match(/[0-9]+\.[0-9]+/)}-win32-${arch}`))
+export const cache = ['hca-decoder', 'sqlite3', 'lame']
 
 export const packagerOptions: packageManager.Options = {
   dir: path.join(__dirname, '..'),

@@ -1,26 +1,10 @@
-import { exec } from 'child_process'
 import * as path from 'path'
 import * as fs from 'fs'
-import getPath from '../common/get-path'
 import { remove } from '../common/fse'
 import * as Acb from 'acb'
-// import { HCADecoder } from 'hca-decoder';
-// import { dec } from '../../@types/hca/'
-// import { dec } from '../../cpp/hca/build/Release/hca.node'
-// const dec: hca.dec = __non_webpack_require__('./addon/hca.node').dec
+const { Reader } = require('wav')
+const { Encoder } = __non_webpack_require__('lame')
 const { HCADecoder } = __non_webpack_require__('hca-decoder')
-const decoder: HCADecoder = new HCADecoder()
-
-const FFMPEG = getPath('./public/bin/ffmpeg.exe')
-
-function execAsync (cmd: string) {
-  return new Promise((resolve, reject) => {
-    exec(cmd, (err, stdout, stderr) => {
-      if (err) reject(err)
-      else resolve({ stdout, stderr })
-    })
-  })
-}
 
 function readdirAsync (dir: string): Promise<string[]> {
   return new Promise((resolve, reject) => {
@@ -42,6 +26,7 @@ async function acb2hca (acb: string) {
 
 function hca2wav (hca: string): Promise<string> {
   return new Promise((resolve, reject) => {
+    const decoder: HCADecoder = new HCADecoder()
     decoder.decodeToWaveFile(hca, (err, wav) => {
       if (wav) resolve(wav)
       else reject(err)
@@ -49,14 +34,31 @@ function hca2wav (hca: string): Promise<string> {
   })
 }
 
-async function wav2mp3 (wav: string, mp3: string) {
+function wav2mp3 (wav: string, mp3: string) {
   if (!mp3) mp3 = path.parse(wav).name + '.mp3'
-  try {
-    await execAsync(`"${FFMPEG}" -i "${wav}" "${mp3}" -v quiet`)
-    return mp3
-  } catch (err) {
-    throw err
-  }
+
+  return new Promise((resolve, reject) => {
+    let input = fs.createReadStream(wav)
+    let output = fs.createWriteStream(mp3)
+
+    output.on('close', () => {
+      resolve(mp3)
+    })
+
+    let reader = new Reader()
+
+    reader.on('format', (format: any) => {
+      let encoder = new Encoder(format)
+      reader.pipe(encoder).pipe(output)
+    })
+
+    reader.on('error', (err: Error) => {
+      reject(err)
+    })
+
+    input.pipe(reader)
+  })
+
 }
 
 async function hca2mp3 (hca: string, mp3: string) {

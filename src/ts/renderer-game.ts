@@ -4,6 +4,7 @@ import { parse } from 'path'
 import { Note, ShortNote, LongNote, newImage, keyBind, liveResult } from './renderer/game'
 /* import Vue from 'vue'
 import Game from '../vue/MishiroGame.vue' */
+const prefix = 60
 
 window.addEventListener('load', () => {
   keyBind()
@@ -41,7 +42,7 @@ ipcRenderer.on('start', (_event: Event, song: any, fromWindowId: number) => {
         if (!note[2]) new ShortNote(note[1])
         // tslint:disable-next-line:no-unused-expression
         else new LongNote(note[1], note[2] * msbp * Note.PX_SPEED)
-      }, note[0] * msbp - DELAY)
+      }, note[0] * msbp - DELAY + prefix)
     }
   }, false)
 
