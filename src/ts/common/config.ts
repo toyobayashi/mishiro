@@ -1,5 +1,4 @@
-import * as fs from 'fs'
-import { read, write } from './fse'
+import * as fs from 'fs-extra'
 import getPath from './get-path'
 
 export class Configurer {
@@ -9,14 +8,14 @@ export class Configurer {
   }
   getConfigSync () {
     if (fs.existsSync(this.configFile)) {
-      return JSON.parse(fs.readFileSync(this.configFile, 'utf8'))
+      return fs.readJsonSync(this.configFile)
     } else {
       return {}
     }
   }
   async getConfig () {
     if (fs.existsSync(this.configFile)) {
-      return JSON.parse(await read(this.configFile, 'utf8'))
+      return fs.readJson(this.configFile)
     } else {
       return {}
     }
@@ -36,13 +35,13 @@ export class Configurer {
         }
       }
     }
-    fs.writeFileSync(this.configFile, JSON.stringify(config, null, '  '))
+    fs.writeJsonSync(this.configFile, config, { spaces: 2 })
     return config
   }
   async remove (key: string) {
     let config = await this.getConfig()
     delete config[key]
-    await write(this.configFile, JSON.stringify(config, null, '  '))
+    await fs.writeJson(this.configFile, config, { spaces: 2 })
     return config
   }
 }

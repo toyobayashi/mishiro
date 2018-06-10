@@ -1,19 +1,9 @@
 import * as path from 'path'
-import * as fs from 'fs'
-import { remove } from '../common/fse'
+import * as fs from 'fs-extra'
 import * as Acb from 'acb'
 const { Reader } = require('wav')
 const { Encoder } = __non_webpack_require__('lame')
 const { HCADecoder } = __non_webpack_require__('hca-decoder')
-
-function readdirAsync (dir: string): Promise<string[]> {
-  return new Promise((resolve, reject) => {
-    fs.readdir(dir, (err, files) => {
-      if (err) reject(err)
-      else resolve(files)
-    })
-  })
-}
 
 async function acb2hca (acb: string) {
   try {
@@ -76,7 +66,7 @@ async function acb2mp3 (acb: string, singleComplete?: Function) {
   const acbdir = path.parse(acb).dir
   try {
     let hcadir = await acb2hca(acb)
-    let hcas = await readdirAsync(hcadir)
+    let hcas = await fs.readdir(hcadir)
     let task = []
     for (let i = 0; i < hcas.length; i++) {
       const hca = path.join(hcadir, hcas[i])
@@ -86,11 +76,11 @@ async function acb2mp3 (acb: string, singleComplete?: Function) {
       if (singleComplete) singleComplete(task.length, hcas.length)
     }
     // let result = await Promise.all(task)
-    await remove(hcadir)
+    await fs.remove(hcadir)
     return true
   } catch (err) {
     throw err
   }
 }
 
-export { acb2mp3, hca2mp3, acb2hca, readdirAsync }
+export { acb2mp3, hca2mp3, acb2hca }

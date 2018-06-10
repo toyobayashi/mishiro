@@ -3,7 +3,7 @@ import TabSmall from '../../vue/component/TabSmall.vue'
 import InputText from '../../vue/component/InputText.vue'
 import Downloader from './downloader'
 import getPath from '../common/get-path'
-import * as fs from 'fs'
+import * as fs from 'fs-extra'
 import * as path from 'path'
 import { ipcRenderer, shell, Event } from 'electron'
 import { MasterData } from '../main/on-master-read'
@@ -21,6 +21,7 @@ const dler = new Downloader()
 export default class extends Vue {
 
   voice: HTMLAudioElement = new Audio()
+  voiceDisable: boolean = false
   queryString: string = ''
   searchResult: any[] = []
   activeCard: any = {}
@@ -307,10 +308,10 @@ export default class extends Vue {
       let cardExist = fs.existsSync(cardDir)
       let charaExist = fs.existsSync(charaDir)
       if (!charaExist) {
-        fs.mkdirSync(charaDir)
+        fs.mkdirsSync(charaDir)
         let hash = charaVoice[0].hash
         try {
-          (this.$refs.voiceBtn as HTMLElement).setAttribute('disabled', 'disabled')
+          this.voiceDisable = true
           charaDl = await dler.download(
             this.getVoiceUrl(hash),
             getPath(`./public/asset/sound/voice/chara_${cid}/chara_${cid}.acb`),
@@ -323,10 +324,9 @@ export default class extends Vue {
         }
       }
       if (!cardExist) {
-        fs.mkdirSync(cardDir)
+        fs.mkdirsSync(cardDir)
         let hash = cardVoice[0].hash
         try {
-          // this.$refs.voiceBtn.setAttribute('disabled', 'disabled')
           cardDl = await dler.download(
             this.getVoiceUrl(hash),
             getPath(`./public/asset/sound/voice/card_${id}/card_${id}.acb`),
@@ -336,7 +336,7 @@ export default class extends Vue {
           this.imgProgress = 50
           // }
         } catch (errorPath) {
-          (this.$refs.voiceBtn as HTMLElement).removeAttribute('disabled')
+          this.voiceDisable = false
           this.event.$emit('alert', this.$t('home.errorTitle'), this.$t('home.downloadFailed') + '<br/>' + errorPath)
         }
       }
@@ -439,8 +439,8 @@ export default class extends Vue {
         }
       })
       ipcRenderer.on('voiceEnd', () => {
-        this.imgProgress = 0;
-        (this.$refs.voiceBtn as HTMLElement).removeAttribute('disabled')
+        this.imgProgress = 0
+        this.voiceDisable = false
       })
       ipcRenderer.on('singleHca', (_event: Event, cur: number, total: number) => {
         this.imgProgress = 50 + 50 * cur / total

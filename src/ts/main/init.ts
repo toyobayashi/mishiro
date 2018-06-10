@@ -1,5 +1,4 @@
-import { existsSync } from 'fs'
-import { mdSync } from '../common/fse'
+import { existsSync, mkdirsSync } from 'fs-extra'
 import getPath from '../common/get-path'
 import ipc from './ipc'
 
@@ -15,7 +14,7 @@ export default function () {
     './data'
   ]
   for (const dir of dirs) {
-    if (!existsSync(getPath(dir))) mdSync(getPath(dir))
+    if (!existsSync(getPath(dir))) mkdirsSync(getPath(dir))
   }
   ipc()
 }

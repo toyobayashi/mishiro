@@ -18,6 +18,7 @@ const dler = new Downloader()
 })
 export default class extends Vue {
 
+  downloadBtnDisable: boolean = false
   queryString: string = ''
   text: string = ''
   data: any[] = []
@@ -46,8 +47,8 @@ export default class extends Vue {
     this.selectedItem = val
   }
   stopDownload () {
-    this.playSe(this.cancelSe);
-    (this.$refs.downloadBtn as HTMLElement).removeAttribute('disabled')
+    this.playSe(this.cancelSe)
+    this.downloadBtnDisable = false
     this.total = 0
     this.current = 0
     this.text = ''
@@ -62,7 +63,7 @@ export default class extends Vue {
     const task = this.selectedItem.slice(0)
 
     if (task.length > 0) {
-      (this.$refs.downloadBtn as HTMLElement).setAttribute('disabled', 'disabled')
+      this.downloadBtnDisable = true
       let taskArr: string[][] = []
       for (let i = 0; i < task.length; i++) {
         if (task[i].name.split('.')[1] === 'acb') {
@@ -110,8 +111,8 @@ export default class extends Vue {
         this.current = 0
         this.text = ''
       })
-      this.total = 0;
-      (this.$refs.downloadBtn as HTMLElement).removeAttribute('disabled')
+      this.total = 0
+      this.downloadBtnDisable = false
       if (failedList.length) this.event.$emit('alert', this.$t('home.download'), `Failed: ${failedList.length}`)
     } else {
       this.event.$emit('alert', this.$t('home.errorTitle'), this.$t('home.noEmptyDownload'))
