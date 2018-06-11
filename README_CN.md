@@ -1,5 +1,5 @@
 # mishiro
-[戳这里下载](https://github.com/toyobayashi/mishiro/releases) __（只提供Windwos的发布版，MacOS请按照下面的步骤自行编译打包__  
+[戳这里下载](https://github.com/toyobayashi/mishiro/releases) __（只提供Windwos的发布版，MacOS请按照下面的步骤和[Electron分发应用](http://electronjs.org/docs/tutorial/application-distribution)自行编译打包）__  
 
 ## 用法
 
@@ -22,7 +22,7 @@
 需要 
 * __Node.js 8+__
 * __Python 2.7__
-* __Xcode__ （终端运行 ```xcode-select --install```安装Command Line Toos）
+* __Xcode__ （终端运行 ```xcode-select --install```安装Command Line Tools）
 ### 开始构建
 1. 克隆这个git仓库。  
 ``` bash 

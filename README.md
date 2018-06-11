@@ -32,7 +32,7 @@ Require
 Require 
 * __Node.js 8+__
 * __Python 2.7__
-* __Xcode__ (install Command Line Toos by running ```xcode-select --install``` in your Terminal)
+* __Xcode__ (install Command Line Tools by running ```xcode-select --install``` in your Terminal)
 
 ### Start Building
 1. Clone.  
