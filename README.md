@@ -7,7 +7,7 @@
 [![Webpack](https://img.shields.io/badge/dynamic/json.svg?label=webpack&url=https%3A%2F%2Fraw.githubusercontent.com%2Ftoyobayashi%2Fmishiro%2Fmaster%2Fpackage.json&query=%24.devDependencies.webpack&colorB=55a7dd)](https://webpack.js.org/)
 [![GitHub repo size in bytes](https://img.shields.io/github/repo-size/toyobayashi/mishiro.svg)](https://github.com/toyobayashi/mishiro/archive/master.zip)
 
-[Release Download](https://github.com/toyobayashi/mishiro/releases)  
+[Release Download](https://github.com/toyobayashi/mishiro/releases) __(Windows Release Only)__  
 [中文](https://github.com/toyobayashi/mishiro/blob/master/README_CN.md)
 
 
@@ -21,23 +21,42 @@
 * [ MENU ] Event PT calculator, options...
 
 ## Build
-Require __Node.js 8+__, __Python 2.7__, __Visual Studio 2015/2017__, __.Net 4.5.1 (Windows 7 only)__.  
+
+### Windows
+Require 
+* __Node.js 8+__
+* __Python 2.7__
+* __Visual Studio 2015/2017__
+* __.Net 4.5.1 (Windows 7 only)__  
+### MacOS
+Require 
+* __Node.js 8+__
+* __Python 2.7__
+* __Xcode__ (install Command Line Toos by running ```xcode-select --install``` in your Terminal)
+
+### Start Building
 1. Clone.  
 ``` bash 
-> git clone https://github.com/toyobayashi/mishiro.git
+$ git clone https://github.com/toyobayashi/mishiro.git
 ```
-2. Install dependencies. If you are in Chinese mainland, maybe you should run ```npm config set ELECTRON_MIRROR=https://npm.taobao.org/mirrors/electron/```before your installing.  
+2. Install dependencies. 
 ``` bash
-> cd mishiro
-> npm install
+$ cd mishiro
+
+# if mainland Chinese, recommend
+$ npm config set registry http://registry.npm.taobao.org/
+$ npm config set ELECTRON_MIRROR https://npm.taobao.org/mirrors/electron/
+# endif
+
+$ npm install
 ```
-3. Run building command.  
+3. Bundle production code.  
 ``` bash
-> npm run prod
+$ npm run prod
 ```
 4. Start!  
 ``` bash
-> npm start
+$ npm start
 ```
 
 ## Reference

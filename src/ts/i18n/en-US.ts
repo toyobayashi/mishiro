@@ -166,7 +166,7 @@ export default {
     appname: 'APP name',
     appver: 'version',
     description: 'description',
-    descCon: 'CGSS Window desktop application.',
+    descCon: 'CGSS desktop application.',
     exit: 'EXIT',
     calculator: 'CALC',
     cacheClear: 'CACHEC',
