@@ -1,0 +1,64 @@
+import packager from 'electron-packager'
+import path from 'path'
+import fs from 'fs-extra'
+// import { exec, ExecOptions } from 'child_process'
+import pkg from '../package.json'
+import { prod } from './webpack'
+import { ilog, wlog, elog } from './rainbow'
+import { zip } from 'zauz'
+import { productionPackage, packagerOptions } from './packager.config'
+
+function bundleProductionCode () {
+  ilog(`[${new Date().toLocaleString()}] Bundle production code...`)
+  return prod()
+}
+
+function packageApp () {
+  process.stdout.write(`[${new Date().toLocaleString()}] `)
+  return packager(packagerOptions)
+}
+
+function writePackageJson (root: string) {
+  return fs.writeFile(path.join(root, 'package.json'), JSON.stringify(productionPackage), 'utf8')
+}
+
+function copyExtra (root: string) {
+  return Promise.all([
+    path.join(__dirname, '../../asset/bgm'),
+    path.join(__dirname, '../../asset/icon')
+  ].map(p => fs.copy(p, path.join(root, '../asset', path.basename(p)))))
+}
+
+async function rename (appPath: string) {
+  let dirName: string | string[] = path.basename(appPath).split('-')
+  dirName.splice(1, 0, `v${pkg.version}`)
+  dirName = dirName.join('-')
+  const newPath = path.join(path.dirname(appPath), dirName)
+  if (fs.existsSync(newPath)) {
+    wlog(`[${new Date().toLocaleString()}] Overwriting... `)
+    await fs.remove(newPath)
+  }
+  await fs.rename(appPath, newPath)
+  return newPath
+}
+
+function zipApp (p: string) {
+  ilog(`[${new Date().toLocaleString()}] Zip ${p}`)
+  return zip(p, p + '.zip')
+}
+
+async function main () {
+  const start = new Date().getTime()
+  // await reInstall()
+  await bundleProductionCode()
+  const [appPath] = await packageApp()
+  const root = process.platform === 'darwin' ? path.join(appPath, 'Electron.app/Contents/Resources/app') : path.join(appPath, 'resources/app')
+  await writePackageJson(root)
+  await copyExtra(root)
+  const newPath = await rename(appPath)
+  const size = await zipApp(newPath)
+  ilog(`[${new Date().toLocaleString()}] Size: ${size} Bytes`)
+  return (new Date().getTime() - start) / 1000
+}
+
+main().then(s => console.log(`\n  Done in ${s} seconds.`)).catch(e => elog(e))

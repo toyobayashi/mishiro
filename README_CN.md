@@ -34,7 +34,7 @@ $ cd mishiro
 
 # 如果你在中国大陆，由于众所周知的原因，建议
 $ npm config set registry http://registry.npm.taobao.org/
-$ npm config set ELECTRON_MIRROR https://npm.taobao.org/mirrors/electron/
+$ npm config set electron_mirror https://npm.taobao.org/mirrors/electron/
 # 建议结束
 
 $ npm install
