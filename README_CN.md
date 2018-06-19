@@ -30,7 +30,7 @@ $ git clone https://github.com/toyobayashi/mishiro.git
 ```
 2. 安装依赖。  
 ``` bash 
-$ cd mishiro
+$ cd mishiro/app
 
 # 如果你在中国大陆，由于众所周知的原因，建议
 $ npm config set registry http://registry.npm.taobao.org/
