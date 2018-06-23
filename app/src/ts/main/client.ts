@@ -87,7 +87,7 @@ class ApiClient {
     let key = b64encode($xFFFF32()).substring(0, 32)
     let bodyIV = this.udid.replace(/-/g, '')
     let body = b64encode(ApiClient.cryptAES.encryptRJ256(plain, bodyIV, key) + key)
-    let sid = this.sid ? this.sid : this.viewer + this.udid
+    let sid = this.sid || (this.viewer + this.udid)
     let headers = {
       'PARAM': sha1(this.udid + this.viewer + path + plain),
       'KEYCHAIN': '',
@@ -178,7 +178,7 @@ class ApiClient {
 
 function b64encode (s: string | Buffer) {
   if (typeof s === 'string') return Buffer.from(s, 'ascii').toString('base64')
-  else if (s.constructor === Buffer) return s.toString('base64')
+  else if (Buffer.isBuffer(s)) return s.toString('base64')
   throw new TypeError('b64encode (s: string | Buffer)')
 }
 
