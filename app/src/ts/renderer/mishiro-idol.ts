@@ -1,16 +1,15 @@
 import ProgressBar from '../../vue/component/ProgressBar.vue'
 import TabSmall from '../../vue/component/TabSmall.vue'
 import InputText from '../../vue/component/InputText.vue'
-import Downloader from './downloader'
+
 import { cardDir, voiceDir } from '../common/get-path'
-import * as fs from 'fs-extra'
+import fs from './fs-extra'
 import * as path from 'path'
 import { ipcRenderer, shell, Event } from 'electron'
 import { MasterData } from '../main/on-master-read'
 import { Vue, Component, Prop } from 'vue-property-decorator'
-import { ProgressInfo } from '../common/request'
+import { ProgressInfo } from 'mishiro-core'
 
-const dler = new Downloader()
 @Component({
   components: {
     ProgressBar,
@@ -19,7 +18,7 @@ const dler = new Downloader()
   }
 })
 export default class extends Vue {
-
+  dler = new this.core.Downloader()
   voice: HTMLAudioElement = new Audio()
   voiceDisable: boolean = false
   queryString: string = ''
@@ -275,7 +274,7 @@ export default class extends Vue {
   }
   async changeBackground (card: any) {
     this.imgProgress = 0
-    dler.stop()
+    this.dler.stop()
     if (Number(card.rarity) > 4) {
       if (!fs.existsSync(cardDir(`bg_${card.id}.png`))) {
         try {
@@ -312,8 +311,14 @@ export default class extends Vue {
         let hash = charaVoice[0].hash
         try {
           this.voiceDisable = true
-          charaDl = await dler.download(
-            this.getVoiceUrl(hash),
+          // charaDl = await this.dler.downloadOne(
+          //   this.getVoiceUrl(hash),
+          //   voiceDir(`chara_${cid}`, `chara_${cid}.acb`),
+          //   prog => { this.imgProgress = prog.loading / 4 }
+          // )
+          charaDl = await this.dler.downloadSound(
+            'v',
+            hash,
             voiceDir(`chara_${cid}`, `chara_${cid}.acb`),
             prog => { this.imgProgress = prog.loading / 4 }
           )
@@ -327,10 +332,16 @@ export default class extends Vue {
         fs.mkdirsSync(cardDir)
         let hash = cardVoice[0].hash
         try {
-          cardDl = await dler.download(
-            this.getVoiceUrl(hash),
+          // cardDl = await this.dler.downloadOne(
+          //   this.getVoiceUrl(hash),
+          //   voiceDir(`card_${id}`, `card_${id}.acb`),
+          //   prog => { this.imgProgress = prog.loading / 4 + 25 }
+          // )
+          cardDl = await this.dler.downloadSound(
+            'v',
+            hash,
             voiceDir(`card_${id}`, `card_${id}.acb`),
-            prog => { this.imgProgress = prog.loading / 4 + 25 }
+            prog => { this.imgProgress = prog.loading / 4 }
           )
           // if (cardDl) {
           this.imgProgress = 50
@@ -367,9 +378,14 @@ export default class extends Vue {
     }
   }
   async downloadCard (id: number | string, progressing?: (prog: ProgressInfo) => void) {
-    let downloadResult: string | boolean = false
-    downloadResult = await dler.download(
-      this.getCardUrl(id),
+    let downloadResult: string = ''
+    // downloadResult = await this.dler.downloadOne(
+    //   this.getCardUrl(id),
+    //   cardDir(`bg_${id}.png`),
+    //   (progressing || (prog => { this.imgProgress = prog.loading }))
+    // )
+    downloadResult = await this.dler.downloadSpread(
+      id.toString(),
       cardDir(`bg_${id}.png`),
       (progressing || (prog => { this.imgProgress = prog.loading }))
     )

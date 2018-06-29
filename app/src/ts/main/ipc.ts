@@ -1,11 +1,13 @@
 import { ipcMain, Event } from 'electron'
-import { config } from './client'
+
 import onManifestRead from './on-manifest-read'
 import onMasterRead from './on-master-read'
 import onManifestQuery from './on-manifest-query'
 import onAcb from './on-acb'
 import onVoiceDecode from './on-voice-decode'
 import onGame from './on-game'
+
+// import { configurer } from '*global';
 // import onTitleVoiceDecode from './on-title-voice-decode.js'
 
 export default function () {
@@ -23,7 +25,7 @@ export default function () {
   })
 
   ipcMain.on('readMaster', (event: Event, masterFile: string) => {
-    onMasterRead(event, masterFile, manifestData, config)
+    onMasterRead(event, masterFile, manifestData, configurer.getConfig())
   })
 
   ipcMain.on('acb', (event: Event, acbPath: string, arg: string = '') => {

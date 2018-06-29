@@ -1,9 +1,8 @@
 import { remote } from 'electron'
 import { Vue, Component, Prop } from 'vue-property-decorator'
 import * as marked from 'marked'
-import request from '../common/request'
 import getPath, { dataDir } from '../common/get-path'
-import * as fs from 'fs-extra'
+import fs from './fs-extra'
 
 @Component
 export default class extends Vue {
@@ -46,7 +45,7 @@ export default class extends Vue {
       url: 'https://api.github.com/repos/toyobayashi/mishiro/tags',
       headers
     }
-    request(releases, (err, body) => {
+    this.core.util.request(releases, (err, body) => {
       if (!err) {
         const latest = JSON.parse(body as string)[0]
         const version = latest.tag_name.substr(1)
@@ -56,7 +55,7 @@ export default class extends Vue {
         const zipUrl = zip ? zip.browser_download_url : null
         const exeUrl = exe ? exe.browser_download_url : null
 
-        request(tags, (err, body) => {
+        this.core.util.request(tags, (err, body) => {
           this.$emit('checked')
           if (!err) {
             const latestTag = JSON.parse(body as string).filter((tag: any) => tag.name === latest.tag_name)[0]

@@ -1,5 +1,5 @@
 import { Event } from 'electron'
-import { MishiroConfig } from '../common/config'
+import { MishiroConfig } from '../main/config'
 import getEventData from './get-event-data'
 import getGachaData from './get-gacha-data'
 import getLimitedCard from './get-limited-card'

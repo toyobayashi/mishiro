@@ -1,4 +1,4 @@
-import { MishiroConfig } from '../common/config'
+import { MishiroConfig } from '../main/config'
 export default function getEventData (eventAll: any[], config: MishiroConfig, now: number, timeOffset: number) {
   eventAll.sort((a, b) => new Date(b.event_start).getTime() - new Date(a.event_start).getTime())
 

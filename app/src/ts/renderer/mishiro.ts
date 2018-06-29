@@ -1,4 +1,3 @@
-import { remote } from 'electron'
 import { Vue, Component } from 'vue-property-decorator'
 
 import MishiroEntry from '../../vue/view/MishiroEntry.vue'
@@ -67,7 +66,7 @@ export default class extends Vue {
   show: boolean = true
   currentBlock: string = 'home'
   checking: boolean = false
-  currentLanguage: boolean = i18nTabs[remote.getGlobal('config').language]
+  currentLanguage: boolean = i18nTabs[this.configurer.getConfig().language as string]
   i18nTabs = i18nTabs
   appData: any = {
     resVer: 'Unknown',

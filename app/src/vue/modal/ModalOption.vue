@@ -62,7 +62,7 @@ import { MasterData } from '../../ts/main/on-master-read'
 })
 export default class extends mixins(modalMixin) {
 
-  lang: string = ''
+  lang: 'zh' | 'ja' | 'en' = 'zh'
   resVer: string = ''
   gachaId: string = ''
   eventId: string = ''
@@ -90,11 +90,11 @@ export default class extends mixins(modalMixin) {
 
   save () {
     this.playSe(this.enterSe)
-    let resVer
-    let gachaId
-    let eventId
-    let backgroundId
-    let account
+    let resVer: number | ''
+    let gachaId: number | ''
+    let eventId: number | ''
+    let backgroundId: number | ''
+    let account: string
     if (this.resVer) {
       if (
         Number(this.resVer) < 10012760 ||
@@ -107,7 +107,7 @@ export default class extends mixins(modalMixin) {
         resVer = Number(this.resVer)
       }
     } else {
-      resVer = this.resVer
+      resVer = ''
     }
 
     if (this.gachaId) {
@@ -126,7 +126,7 @@ export default class extends mixins(modalMixin) {
         gachaId = Number(this.gachaId)
       }
     } else {
-      gachaId = this.gachaId
+      gachaId = ''
     }
 
     if (this.eventId) {
@@ -141,7 +141,7 @@ export default class extends mixins(modalMixin) {
         eventId = Number(this.eventId)
       }
     } else {
-      eventId = this.eventId
+      eventId = ''
     }
 
     if (this.backgroundId) {
@@ -156,7 +156,7 @@ export default class extends mixins(modalMixin) {
         backgroundId = Number(this.backgroundId)
       }
     } else {
-      backgroundId = this.backgroundId
+      backgroundId = ''
     }
 
     if (this.account) {
@@ -178,10 +178,10 @@ export default class extends mixins(modalMixin) {
     this._i18n._vm.locale = this.lang
     this.configurer.configure({
       language: this.lang,
-      resVer,
-      gacha: gachaId,
-      event: eventId,
-      background: backgroundId,
+      resVer: Number(resVer),
+      gacha: Number(gachaId),
+      event: Number(eventId),
+      background: Number(backgroundId),
       account: account
     })
     this.visible = false
@@ -190,12 +190,12 @@ export default class extends mixins(modalMixin) {
   mounted () {
     this.$nextTick(() => {
       this.event.$on('option', async () => {
-        let config = await this.configurer.getConfig()
-        this.lang = config.language ? config.language : ''
-        this.resVer = config.resVer ? config.resVer : ''
-        this.gachaId = config.gacha ? config.gacha : ''
-        this.eventId = config.event ? config.event : ''
-        this.backgroundId = config.background ? config.background : ''
+        let config = this.configurer.getConfig()
+        this.lang = config.language || 'zh'
+        this.resVer = config.resVer ? config.resVer.toString() : ''
+        this.gachaId = config.gacha ? config.gacha.toString() : ''
+        this.eventId = config.event ? config.event.toString() : ''
+        this.backgroundId = config.background ? config.background.toString() : ''
         this.account = config.account ? config.account : ''
         this.show = true
         this.visible = true

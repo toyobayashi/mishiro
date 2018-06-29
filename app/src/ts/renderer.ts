@@ -1,4 +1,5 @@
 import '../css/mishiro.css'
+import './renderer/fs-extra'
 import Vue from 'vue'
 import VueI18n from 'vue-i18n'
 import Mishiro from '../vue/Mishiro.vue'
@@ -15,7 +16,7 @@ Vue.use(vueGlobal)
 new Vue({
   el: '#app',
   i18n: new VueI18n({
-    locale: remote.getGlobal('config').language,
+    locale: remote.getGlobal('configurer').getConfig().language,
     messages: {
       zh,
       ja,

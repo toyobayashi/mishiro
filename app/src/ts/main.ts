@@ -1,9 +1,10 @@
 import { app, BrowserWindow, ipcMain } from 'electron'
 import * as url from 'url'
 import getPath from './common/get-path'
-import init from './main/init'
+import './main/core'
+import ipc from './main/ipc'
 
-init()
+ipc()
 
 let mainWindow: BrowserWindow | null
 

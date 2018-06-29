@@ -1,6 +1,6 @@
 import webpack from 'webpack'
 import path from 'path'
-import fs from 'fs'
+import fs from 'fs-extra'
 import { main, renderer, dll, mode, manifest } from './webpack.config'
 
 const arg: string | undefined = process.argv.slice(2)[0]

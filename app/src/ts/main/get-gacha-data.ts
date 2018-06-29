@@ -1,4 +1,4 @@
-import { MishiroConfig } from '../common/config'
+import { MishiroConfig } from '../main/config'
 export default function (gachaAll: any[], config: MishiroConfig, now: number, timeOffset: number) {
   gachaAll.sort((a, b) => new Date(b.start_date).getTime() - new Date(a.start_date).getTime())
 

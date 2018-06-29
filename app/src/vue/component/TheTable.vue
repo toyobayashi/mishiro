@@ -8,9 +8,7 @@
   </thead>
   <tbody>
     <tr v-for="row in data" :key="row.hash">
-      <td class="flex-center"><input type="checkbox" :id="row.hash" :value="row" v-model="selected" @change="change(selected)" 
-      :disabled="isDisabled(row)"
-      /><label :for="row.hash"></label></td>
+      <td class="flex-center"><input type="checkbox" :id="row.hash" :value="row" v-model="selected" @change="change(selected)" :disabled="isDisabled(row)" /><label :for="row.hash"></label></td>
       <td v-for="item in row" :key="item">{{item}}</td>
     </tr>
   </tbody>

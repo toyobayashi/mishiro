@@ -1,6 +1,6 @@
-import * as fs from 'fs'
 import { cardDir } from '../common/get-path'
 import { Vue, Component } from 'vue-property-decorator'
+import fs from './fs-extra'
 
 @Component
 export default class extends Vue {

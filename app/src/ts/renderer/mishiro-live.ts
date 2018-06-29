@@ -1,13 +1,12 @@
 import { ipcRenderer, shell, Event } from 'electron'
 import { Vue, Component, Prop } from 'vue-property-decorator'
-import * as fs from 'fs'
+import fs from './fs-extra'
+import * as path from 'path'
 import TaskLoading from '../../vue/component/TaskLoading.vue'
 import InputText from '../../vue/component/InputText.vue'
-import Downloader from './downloader'
+
 import { scoreDir, bgmDir, liveDir } from '../common/get-path'
 import { MasterData } from '../main/on-master-read'
-const dler = new Downloader()
-const scoreDownloader = new Downloader()
 
 @Component({
   components: {
@@ -29,7 +28,8 @@ const scoreDownloader = new Downloader()
   }
 })
 export default class extends Vue {
-
+  dler = new this.core.Downloader()
+  scoreDownloader = new this.core.Downloader()
   queryString: string = ''
   total: number = 0
   current: number = 0
@@ -64,13 +64,23 @@ export default class extends Vue {
       if (audio.name.split('/')[0] === 'b') {
         if (!fs.existsSync(bgmDir(audio.fileName))) {
           if (navigator.onLine) {
-            dler.stop()
+            this.dler.stop()
             this.activeAudio = audio
             let result: string | boolean = false
             try {
-              result = await dler.download(
-                this.getBgmUrl(audio.hash),
-                bgmDir(audio.name.split('/')[1]),
+              // result = await this.dler.downloadOne(
+              //   this.getBgmUrl(audio.hash),
+              //   bgmDir(audio.name.split('/')[1]),
+              //   (prog) => {
+              //     this.text = prog.name as string
+              //     this.current = prog.loading
+              //     this.total = prog.loading
+              //   }
+              // )
+              result = await this.dler.downloadSound(
+                'b',
+                audio.hash,
+                bgmDir(path.basename(audio.name)),
                 (prog) => {
                   this.text = prog.name as string
                   this.current = prog.loading
@@ -96,13 +106,23 @@ export default class extends Vue {
       } else if (audio.name.split('/')[0] === 'l') {
         if (!fs.existsSync(liveDir(audio.fileName))) {
           if (navigator.onLine) {
-            dler.stop()
+            this.dler.stop()
             this.activeAudio = audio
             let result: string | boolean = false
             try {
-              result = await dler.download(
-                this.getLiveUrl(audio.hash),
-                liveDir(audio.name.split('/')[1]),
+              // result = await this.dler.downloadOne(
+              //   this.getLiveUrl(audio.hash),
+              //   liveDir(audio.name.split('/')[1]),
+              //   (prog) => {
+              //     this.text = prog.name as string
+              //     this.current = prog.loading
+              //     this.total = prog.loading
+              //   }
+              // )
+              result = await this.dler.downloadSound(
+                'l',
+                audio.hash,
+                liveDir(path.basename(audio.name)),
                 (prog) => {
                   this.text = prog.name as string
                   this.current = prog.loading
@@ -165,13 +185,17 @@ export default class extends Vue {
       let isContinue = true
       if (!fs.existsSync(scoreDir(this.activeAudio.score))) {
         try {
-          let scoreBdb = await scoreDownloader.download(
-            this.getDbUrl(this.activeAudio.scoreHash),
+          // let scoreBdb = await this.scoreDownloader.downloadOne(
+          //   this.getDbUrl(this.activeAudio.scoreHash),
+          //   scoreDir(this.activeAudio.score.split('.')[0])
+          // )
+          let scoreBdb = await this.scoreDownloader.downloadDatabase(
+            this.activeAudio.scoreHash,
             scoreDir(this.activeAudio.score.split('.')[0])
           )
           if (scoreBdb) {
-            this.lz4dec(scoreBdb as string, 'bdb')
-            fs.unlinkSync(scoreDir(this.activeAudio.score.split('.')[0]))
+            // this.core.util.lz4dec(scoreBdb as string, 'bdb')
+            fs.removeSync(scoreDir(this.activeAudio.score.split('.')[0]))
           } else {
             isContinue = false
             this.event.$emit('alert', this.$t('home.errorTitle'), 'Error!')

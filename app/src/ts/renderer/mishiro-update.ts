@@ -1,27 +1,15 @@
-import * as fs from 'fs'
+import fs from './fs-extra'
 import * as path from 'path'
 import { Vue, Component, Prop, Emit } from 'vue-property-decorator'
-import { ProgressInfo } from '../common/request'
+import { ProgressInfo } from 'mishiro-core'
 import { MasterData } from '../main/on-master-read'
 import ProgressBar from '../../vue/component/ProgressBar.vue'
 import check from './check'
-import Downloader from './downloader'
-import { ipcRenderer, remote, Event } from 'electron'
+
+import { ipcRenderer, Event } from 'electron'
 import getPath, { manifestPath, masterPath, bgmDir } from '../common/get-path'
 import MishiroIdol from './mishiro-idol'
 import ThePlayer from './the-player'
-
-const downloadMaster = (resVer: number, hash: string, progressing: (prog: ProgressInfo) => void) => new Downloader().download(
-  `http://storage.game.starlight-stage.jp/dl/resources/Generic/${hash}`,
-  masterPath(resVer),
-  progressing
-)
-
-const downloadManifest = (resVer: number, progressing: (prog: ProgressInfo) => void) => new Downloader().download(
-  `http://storage.game.starlight-stage.jp/dl/${resVer}/manifests/Android_AHigh_SHigh`,
-  manifestPath(resVer),
-  progressing
-)
 
 @Component({
   components: {
@@ -29,7 +17,7 @@ const downloadManifest = (resVer: number, progressing: (prog: ProgressInfo) => v
   }
 })
 export default class extends Vue {
-
+  dler = new this.core.Downloader()
   loading: number = 0
   isReady: boolean = false
   text: string = ''
@@ -42,13 +30,13 @@ export default class extends Vue {
   @Prop() value!: any
   @Prop() isTouched!: boolean
 
-  getEventCardId (/* eventAvailable: any[] */eventData: any): number[] {
-    // eventAvailable.sort(function (a, b) {
-    //   return a.recommend_order - b.recommend_order
-    // })
+  getEventCardId (eventAvailable: any[], eventData: any): number[] {
+    if (!eventAvailable.length) return [Number(eventData.bg_id) - 1]
+    eventAvailable.sort(function (a, b) {
+      return a.recommend_order - b.recommend_order
+    })
     // console.log(eventAvailable)
-    // return [eventAvailable[0].reward_id, eventAvailable[eventAvailable.length - 1].reward_id]
-    return [Number(eventData.bg_id) - 1]
+    return [eventAvailable[0].reward_id, eventAvailable[eventAvailable.length - 1].reward_id]
   }
 
   @Emit('ready')
@@ -57,7 +45,7 @@ export default class extends Vue {
   }
 
   async getResVer () {
-    let resVer = await check((prog: ProgressInfo) => { // 检查资源版本，回调更新进度条
+    let resVer = await check(prog => { // 检查资源版本，回调更新进度条
       this.text = (this.$t('update.check') as string) + prog.current + ' / ' + prog.max
       this.loading = prog.loading
     })
@@ -74,13 +62,12 @@ export default class extends Vue {
       return manifestFile
     }
     try {
-      const manifestLz4File = await downloadManifest(resVer, (prog: ProgressInfo) => {
+      const manifestFile = await this.dler.downloadManifest(resVer, manifestPath(resVer), prog => {
         this.text = (this.$t('update.manifest') as string) + Math.ceil(prog.current / 1024) + '/' + Math.ceil(prog.max / 1024) + ' KB'
         this.loading = prog.loading
       })
-      if (manifestLz4File) {
-        manifestFile = this.lz4dec(manifestLz4File as string, 'db')
-        fs.unlinkSync(manifestLz4File)
+      if (manifestFile) {
+        fs.unlinkSync(manifestPath(resVer))
         return manifestFile
       } else throw new Error('Download failed.')
     } catch (errorPath) {
@@ -88,6 +75,16 @@ export default class extends Vue {
       return false
     }
   }
+
+  downloadMaster (resVer: number, hash: string, progressing: (prog: ProgressInfo) => void) {
+    let downloader = new this.core.Downloader()
+    return downloader.downloadOne(
+      `http://storage.game.starlight-stage.jp/dl/resources/Generic/${hash}`,
+      masterPath(resVer),
+      progressing
+    )
+  }
+
   async getMaster (resVer: number, masterHash: string) {
     this.loading = 0
     this.text = this.$t('update.master') as string
@@ -99,12 +96,12 @@ export default class extends Vue {
       return masterFile
     }
     try {
-      const masterLz4File = await downloadMaster(resVer, masterHash, (prog: ProgressInfo) => {
+      const masterLz4File = await this.downloadMaster(resVer, masterHash, prog => {
         this.text = (this.$t('update.master') as string) + Math.ceil(prog.current / 1024) + '/' + Math.ceil(prog.max / 1024) + ' KB'
         this.loading = prog.loading
       })
       if (masterLz4File) {
-        masterFile = this.lz4dec(masterLz4File as string, 'db')
+        masterFile = this.core.util.lz4dec(masterLz4File as string, '.db')
         fs.unlinkSync(masterLz4File)
         return masterFile
       } else throw new Error('Download failed.')
@@ -132,12 +129,12 @@ export default class extends Vue {
         })
         ipcRenderer.on('readMaster', async (_event: Event, masterData: MasterData) => {
           // console.log(masterData);
-          let config = this.configurer.getConfigSync()
+          let config = this.configurer.getConfig()
           const bgmList = new ThePlayer().bgmList
-          const downloader = new Downloader()
+          const downloader = new this.core.Downloader()
           const toName = (p: string) => path.parse(p).name
           this.appData.master = masterData
-          this.appData.latestResVer = config.latestResVer
+          this.appData.latestResVer = config.latestResVer as number
           this.$emit('input', this.appData)
 
           const bgmManifest = masterData.bgmManifest
@@ -146,10 +143,19 @@ export default class extends Vue {
               let acbName = `b/${toName(bgmList[k].src)}.acb`
               let hash: string = bgmManifest.filter(row => row.name === acbName)[0].hash
               try {
-                let result = await downloader.download(
-                  this.getBgmUrl(hash),
+                // let result = await downloader.downloadOne(
+                //   this.getBgmUrl(hash),
+                //   bgmDir(`${toName(bgmList[k].src)}.acb`),
+                //   (prog: ProgressInfo) => {
+                //     this.text = prog.name + '　' + Math.ceil(prog.current / 1024) + '/' + Math.ceil(prog.max / 1024) + ' KB'
+                //     this.loading = prog.loading
+                //   }
+                // )
+                let result = await downloader.downloadSound(
+                  'b',
+                  hash,
                   bgmDir(`${toName(bgmList[k].src)}.acb`),
-                  (prog: ProgressInfo) => {
+                  prog => {
                     this.text = prog.name + '　' + Math.ceil(prog.current / 1024) + '/' + Math.ceil(prog.max / 1024) + ' KB'
                     this.loading = prog.loading
                   }
@@ -167,10 +173,19 @@ export default class extends Vue {
             if (Number(masterData.eventData.type) !== 2 && Number(masterData.eventData.type) !== 6 && !fs.existsSync(bgmDir(`bgm_event_${masterData.eventData.id}.mp3`))) {
               const eventBgmHash = bgmManifest.filter(row => row.name === `b/bgm_event_${masterData.eventData.id}.acb`)[0].hash
               try {
-                let result = await downloader.download(
-                  this.getBgmUrl(eventBgmHash),
+                // let result = await downloader.download(
+                //   this.getBgmUrl(eventBgmHash),
+                //   bgmDir(`bgm_event_${masterData.eventData.id}.acb`),
+                //   (prog: ProgressInfo) => {
+                //     this.text = prog.name + '　' + Math.ceil(prog.current / 1024) + '/' + Math.ceil(prog.max / 1024) + ' KB'
+                //     this.loading = prog.loading
+                //   }
+                // )
+                let result = await downloader.downloadSound(
+                  'b',
+                  eventBgmHash,
                   bgmDir(`bgm_event_${masterData.eventData.id}.acb`),
-                  (prog: ProgressInfo) => {
+                  prog => {
                     this.text = prog.name + '　' + Math.ceil(prog.current / 1024) + '/' + Math.ceil(prog.max / 1024) + ' KB'
                     this.loading = prog.loading
                   }
@@ -185,9 +200,7 @@ export default class extends Vue {
             }
           }
 
-          // const eventAvailable = masterData.eventAvailable
-          // const cardId = this.getEventCardId(eventAvailable)
-          const cardId = this.getEventCardId(masterData.eventData)
+          const cardId = this.getEventCardId(masterData.eventAvailable, masterData.eventData)
 
           if (masterData.eventHappening) {
             localStorage.setItem('msrEvent', `{"id":${masterData.eventData.id},"card":${Number(cardId[0]) + 1}}`)
@@ -226,23 +239,31 @@ export default class extends Vue {
             iconId.push(masterData.gachaAvailable[index].reward_id)
           }
           const iconTask = this.createCardIconTask(iconId)
-          await downloader.batchDl(iconTask, (name: string) => {
+          await downloader.download(iconTask, ([_url, filepath]) => {
+            const name = path.basename(filepath)
             this.text = name + '　' + downloader.index + '/' + iconTask.length
             this.loading = 100 * downloader.index / iconTask.length
-          }, (prog: ProgressInfo) => {
+          }, prog => {
             this.loading = 100 * downloader.index / iconTask.length + prog.loading / iconTask.length
           })
           // console.log(failedList)
           this.emitReady()
         })
         if (navigator.onLine) { // 判断网络是否连接
-          const resVer = await this.getResVer()
+          let resVer: number
+          try {
+            resVer = await this.getResVer()
+          } catch (err) {
+            console.log(err)
+            resVer = this.configurer.getConfig().latestResVer as number
+          }
+
           this.appData.resVer = Number(resVer)
           this.$emit('input', this.appData)
           const manifestFile = await this.getManifest(resVer)
           if (manifestFile) ipcRenderer.send('readManifest', manifestFile, resVer)
         } else { // 如果网络未连接则直接触发ready事件
-          let resVer = remote.getGlobal('config').latestResVer
+          let resVer = this.configurer.getConfig().latestResVer as number
           this.appData.resVer = Number(resVer)
           this.$emit('input', this.appData)
           if (fs.existsSync(manifestPath(resVer, '.db')) && fs.existsSync(masterPath(resVer, '.db'))) {

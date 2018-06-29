@@ -1,9 +1,9 @@
-import request, { ProgressInfo } from '../common/request'
-import configurer from '../common/config'
+import { ProgressInfo } from 'mishiro-core'
 import { remote } from 'electron'
-import { ApiClient } from '../main/client'
 
-let client: ApiClient = remote.getGlobal('client')
+let configurerR: typeof configurer = remote.getGlobal('configurer')
+let clientR: typeof client = remote.getGlobal('client')
+const core: typeof mishiroCore = remote.getGlobal('mishiroCore')
 
 let current = 0
 let max = 20
@@ -19,7 +19,7 @@ function httpGetVersion (resVer: number, progressing: (prog: ProgressInfo) => vo
     }
   }
   return new Promise((resolve) => {
-    request(option, (err) => {
+    core.util.request(option, (err) => {
       if (err) {
         resolve({ version: resVer, isExisting: false })
       } else {
@@ -45,15 +45,25 @@ function httpGetVersion (resVer: number, progressing: (prog: ProgressInfo) => vo
 }
 
 async function check (progressing: (prog: ProgressInfo) => void) {
-  let config = remote.getGlobal('config')
+  let config = configurerR.getConfig()
   if (config.resVer) {
     return config.resVer
   }
-  let res = await client.check()
-  if (typeof res === 'number') return res
+  let res = await clientR.check()
+  if (res !== 0) {
+    if (res > (configurerR.getConfig().latestResVer as number)) {
+      console.log(`/load/check [New Version] ${configurerR.getConfig().latestResVer as number} => ${res}`)
+    } else {
+      console.log(`/load/check [Latest Version] ${res}`)
+    }
+    configurerR.configure('latestResVer', res)
+    return res
+  } else {
+    console.log('/load/check failed')
+  }
 
-  let versionFrom = config.latestResVer
-  // ipcRenderer.send('api', 'check')
+  let versionFrom = config.latestResVer as number
+
   return new Promise((resolve) => {
     let resVer = versionFrom
 
@@ -79,12 +89,12 @@ async function check (progressing: (prog: ProgressInfo) => void) {
           }
         }
         if (!isContinue) {
-          configurer.configure('latestResVer', resVer)
+          configurerR.configure('latestResVer', resVer)
           resolve(resVer)
         }
       })
     }
     checkVersion(versionFrom)
-  })
+  }) as Promise<number>
 }
 export default check
