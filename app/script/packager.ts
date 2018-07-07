@@ -1,7 +1,6 @@
 import packager from 'electron-packager'
 import path from 'path'
 import fs from 'fs-extra'
-// import { exec, ExecOptions } from 'child_process'
 import pkg from '../package.json'
 import { prod } from './webpack'
 import { ilog, wlog, elog } from './rainbow'
@@ -19,7 +18,7 @@ function packageApp () {
 }
 
 function writePackageJson (root: string) {
-  return fs.writeFile(path.join(root, 'package.json'), JSON.stringify(productionPackage), 'utf8')
+  return fs.writeJson(path.join(root, 'package.json'), productionPackage)
 }
 
 function copyExtra (root: string) {
