@@ -1,4 +1,4 @@
-import { app, BrowserWindow, ipcMain } from 'electron'
+import { app, BrowserWindow, ipcMain, Event } from 'electron'
 import * as url from 'url'
 import getPath from './common/get-path'
 import './main/core'
@@ -51,4 +51,8 @@ app.on('activate', function () {
 
 ipcMain.on('flash', () => {
   mainWindow && mainWindow.flashFrame(true)
+})
+
+ipcMain.on('mainWindowId', (event: Event) => {
+  event.returnValue = mainWindow && mainWindow.id
 })

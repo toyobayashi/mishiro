@@ -22,7 +22,7 @@ declare module 'vue/types/vue' {
     // getDbUrl: (hash: string) => string
     // getCardUrl: (id: string | number) => string
     getIconUrl: (id: string | number) => string
-
+    mainWindowId: number
     // Downloader: typeof Downloader
   }
 }

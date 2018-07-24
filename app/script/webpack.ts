@@ -1,11 +1,11 @@
 import webpack from 'webpack'
-import path from 'path'
-import fs from 'fs-extra'
-import { main, renderer, dll, mode, manifest } from './webpack.config'
+// import path from 'path'
+// import fs from 'fs-extra'
+import { main, renderer, mode } from './webpack.config'
 
 const arg: string | undefined = process.argv.slice(2)[0]
 if (arg === 'dll') {
-  checkAndBundleDll()
+  // checkAndBundleDll()
 } else if (arg === 'webpack') {
   if (mode === 'production') prod()
   else dev()
@@ -16,38 +16,36 @@ export function dev () {
   webpackWatch()
 
   function webpackWatch () {
-    checkAndBundleDll(() => {
-      const mainCompiler = webpack(main)
-      const rendererCompiler = webpack(renderer(manifest))
-      const watchOptions = {
-        aggregateTimeout: 300,
-        poll: undefined
-      }
+    const mainCompiler = webpack(main)
+    const rendererCompiler = webpack(renderer)
+    const watchOptions = {
+      aggregateTimeout: 300,
+      poll: undefined
+    }
 
-      mainCompiler.watch(watchOptions, watchHandler())
-      rendererCompiler.watch(watchOptions, watchHandler())
+    mainCompiler.watch(watchOptions, watchHandler())
+    rendererCompiler.watch(watchOptions, watchHandler())
 
-      function watchHandler () {
-        return (err: Error, stats: webpack.Stats) => {
-          if (err) {
-            console.log(err)
-            return
-          }
-          console.log(stats.toString({
-            colors: true,
-            children: false,
-            entrypoints: false,
-            modules: false
-          }) + '\n')
+    function watchHandler () {
+      return (err: Error, stats: webpack.Stats) => {
+        if (err) {
+          console.log(err)
+          return
         }
+        console.log(stats.toString({
+          colors: true,
+          children: false,
+          entrypoints: false,
+          modules: false
+        }) + '\n')
       }
-    })
+    }
   }
 }
 
 export function prod (callback?: Function): Promise<void> {
   return new Promise((resolve, reject) => {
-    checkAndBundleDll(() => webpack([main, renderer(manifest)], (err, stats: any) => {
+    webpack([main, renderer], (err, stats: any) => {
       if (err) {
         console.log(err)
         reject(err)
@@ -62,11 +60,11 @@ export function prod (callback?: Function): Promise<void> {
         }) + '\n')
       }
       resolve()
-    }))
+    })
   })
 }
 
-export function checkAndBundleDll (callback?: Function) {
+/* export function checkAndBundleDll (callback?: Function) {
   const dllContent = getDllBundle()
   if (dllContent) {
     if (mode === 'production') {
@@ -102,4 +100,4 @@ export function checkAndBundleDll (callback?: Function) {
     if (!fs.existsSync(dllFile)) return null
     return fs.readFileSync(dllFile, 'utf8')
   }
-}
+} */

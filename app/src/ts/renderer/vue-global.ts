@@ -1,4 +1,4 @@
-import { remote } from 'electron'
+import { remote, ipcRenderer } from 'electron'
 import { iconDir/* , cardDir */ } from '../common/get-path'
 // import Downloader from './downloader'
 import { PluginFunction } from 'Vue'
@@ -52,7 +52,7 @@ const install: PluginFunction<undefined> = function (Vue) {
   // Vue.prototype.getDbUrl = getDbUrl
   // Vue.prototype.getCardUrl = getCardUrl
   Vue.prototype.getIconUrl = getIconUrl
-
+  Vue.prototype.mainWindowId = ipcRenderer.sendSync('mainWindowId')
   // 全局类
   // Vue.prototype.Downloader = Downloader
 }

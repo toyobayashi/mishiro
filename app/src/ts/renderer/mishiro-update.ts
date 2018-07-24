@@ -7,9 +7,10 @@ import ProgressBar from '../../vue/component/ProgressBar.vue'
 import check from './check'
 
 import { ipcRenderer, Event } from 'electron'
-import getPath, { manifestPath, masterPath, bgmDir } from '../common/get-path'
+import getPath, { manifestPath, masterPath, bgmDir, iconDir } from '../common/get-path'
 import MishiroIdol from './mishiro-idol'
 import ThePlayer from './the-player'
+import win from './win'
 
 @Component({
   components: {
@@ -119,6 +120,24 @@ export default class extends Vue {
     })
   }
 
+  getGachaIcon (icons: { name: string; hash: string; [x: string]: any }[]) {
+    return new Promise(async (resolve, _reject) => {
+      for (let i = 0; i < icons.length; i++) {
+        let cacheName = iconDir(path.parse(icons[i].name).name)
+        this.text = icons[i].name + '　' + i + '/' + icons.length
+        this.loading = 100 * i / icons.length
+        if (!fs.existsSync(cacheName + '.png')) {
+          let asset = await this.dler.downloadAsset(icons[i].hash, cacheName)
+          if (asset) {
+            fs.removeSync(cacheName)
+            if (win) win.webContents.send('texture2d', asset, { data: null }, this.mainWindowId)
+          }
+        }
+      }
+      resolve()
+    })
+  }
+
   mounted () {
     this.$nextTick(() => {
       this.text = this.$t('update.check') as string
@@ -210,13 +229,23 @@ export default class extends Vue {
 
           let downloadCard = new MishiroIdol().downloadCard
 
+          const tmpawait = () => new Promise((resolve) => {
+            this.event.$once('_eventBgReady', () => {
+              resolve()
+            })
+          })
+
+          let getBackgroundResult: string = ''
+
           const getBackground = async (id: string | number) => {
             try {
-              let result = await downloadCard.call(this, id, (prog: ProgressInfo) => {
+              getBackgroundResult = await downloadCard.call(this, id, 'eventBgReady', (prog: ProgressInfo) => {
                 this.text = prog.name || ''
                 this.loading = prog.loading
               })
-              if (result) {
+
+              this.loading = 99.99
+              if (getBackgroundResult && getBackgroundResult !== 'await ipc') {
                 this.event.$emit('eventBgReady', id)
               }
             } catch (err) {
@@ -232,9 +261,12 @@ export default class extends Vue {
               await getBackground(Number(cardId[0]) + 1)
             }
           }
+
+          if (getBackgroundResult === 'await ipc') await tmpawait()
+
           if (masterData.eventHappening) this.event.$emit('eventRewardCard', cardId)
 
-          let iconId = []
+          /* let iconId = []
           for (let index = 0; index < masterData.gachaAvailable.length; index++) {
             iconId.push(masterData.gachaAvailable[index].reward_id)
           }
@@ -245,7 +277,9 @@ export default class extends Vue {
             this.loading = 100 * downloader.index / iconTask.length
           }, prog => {
             this.loading = 100 * downloader.index / iconTask.length + prog.loading / iconTask.length
-          })
+          }) */
+
+          await this.getGachaIcon(masterData.gachaIcon)
           // console.log(failedList)
           this.emitReady()
         })

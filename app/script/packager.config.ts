@@ -6,7 +6,7 @@ import pkg from '../package.json'
 if (process.argv.slice(2)[0] !== 'ia32' && process.argv.slice(2)[0] !== 'x64') {
   throw new Error('ARCH requrie "ia32" or "x64"')
 }
-const arch = process.argv.slice(2)[0] as packageManager.arch
+export const arch = process.argv.slice(2)[0] as packageManager.arch
 
 export const productionPackage = {
   name: pkg.name,
@@ -14,7 +14,8 @@ export const productionPackage = {
   main: pkg.main,
   author: pkg.author,
   repository: pkg.repository,
-  license: pkg.license
+  license: pkg.license,
+  dependencies: pkg.dependencies
 }
 
 export const packagerOptions: packageManager.Options = {

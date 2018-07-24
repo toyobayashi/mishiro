@@ -10,7 +10,7 @@ import resolveGachaAvailable from './resolve-gacha-available'
 import resolveUserLevel from './resolve-user-level'
 import { openSqlite } from './sqlite3'
 
-export default async function (event: Event, masterFile: string, manifestData: any, config: MishiroConfig) {
+export default async function (event: Event, masterFile: string, manifestData: any, config: MishiroConfig, manifests: { name: string; hash: string; [x: string]: any }[]) {
   const timeOffset = (9 - (-(new Date().getTimezoneOffset() / 60))) * 60 * 60 * 1000
   const now = new Date().getTime()
 
@@ -63,6 +63,10 @@ export default async function (event: Event, masterFile: string, manifestData: a
 
   userLevel = resolveUserLevel(userLevel)
 
+  let gachaIcon: { name: string; hash: string; [x: string]: any }[] = gachaAvailable.map((o: any) => {
+    return manifests.filter(m => m.name === `card_${o.reward_id}_m.unity3d`)[0]
+  })
+
   event.sender.send('readMaster', {
     eventAll,
     eventData,
@@ -75,6 +79,7 @@ export default async function (event: Event, masterFile: string, manifestData: a
     gachaData,
     gachaAvailable,
     gachaNow,
+    gachaIcon,
     userLevel,
     timeOffset
   })
@@ -92,6 +97,7 @@ export interface MasterData {
   gachaData: any[]
   gachaAvailable: any[]
   gachaNow: any
+  gachaIcon: { name: string; hash: string; [x: string]: any }[]
   userLevel: any[]
   timeOffset: number
 }

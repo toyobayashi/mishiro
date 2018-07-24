@@ -9,6 +9,7 @@ import { ipcRenderer, shell, Event } from 'electron'
 import { MasterData } from '../main/on-master-read'
 import { Vue, Component, Prop } from 'vue-property-decorator'
 import { ProgressInfo } from 'mishiro-core'
+import win from './win'
 
 @Component({
   components: {
@@ -278,9 +279,9 @@ export default class extends Vue {
     if (Number(card.rarity) > 4) {
       if (!fs.existsSync(cardDir(`bg_${card.id}.png`))) {
         try {
-          let result = await this.downloadCard(card.id)
-          this.imgProgress = 0
-          if (result) {
+          let result = await this.downloadCard(card.id, 'idolSelect')
+          if (result && result !== 'await ipc') {
+            this.imgProgress = 0
             this.event.$emit('idolSelect', card.id)
           }
         } catch (errorPath) {
@@ -341,7 +342,7 @@ export default class extends Vue {
             'v',
             hash,
             voiceDir(`card_${id}`, `card_${id}.acb`),
-            prog => { this.imgProgress = prog.loading / 4 }
+            prog => { this.imgProgress = 25 + prog.loading / 4 }
           )
           // if (cardDl) {
           this.imgProgress = 50
@@ -377,19 +378,42 @@ export default class extends Vue {
       this.event.$emit('alert', this.$t('home.errorTitle'), this.$t('idol.noVoice'))
     }
   }
-  async downloadCard (id: number | string, progressing?: (prog: ProgressInfo) => void) {
+  async downloadCard (id: number | string, data?: any, progressing?: (prog: ProgressInfo) => void) {
+
     let downloadResult: string = ''
-    // downloadResult = await this.dler.downloadOne(
-    //   this.getCardUrl(id),
-    //   cardDir(`bg_${id}.png`),
-    //   (progressing || (prog => { this.imgProgress = prog.loading }))
-    // )
-    downloadResult = await this.dler.downloadSpread(
-      id.toString(),
-      cardDir(`bg_${id}.png`),
-      (progressing || (prog => { this.imgProgress = prog.loading }))
-    )
-    return downloadResult
+
+    try {
+      if (!fs.existsSync(cardDir(`bg_${id}.png`))) {
+        let hash: string = ipcRenderer.sendSync('searchManifest', `card_bg_${id}.unity3d`)[0].hash
+        downloadResult = await this.dler.downloadAsset(
+          hash,
+          cardDir(`card_bg_${id}`),
+          (progressing || (prog => { this.imgProgress = prog.loading }))
+        )
+        if (downloadResult) {
+          this.imgProgress = 99.99
+          fs.removeSync(cardDir(`card_bg_${id}`))
+          if (win) win.webContents.send('texture2d', cardDir(`card_bg_${id}.unity3d`), { data, id, asset: cardDir(`card_bg_${id}.unity3d`) }, this.mainWindowId)
+          return 'await ipc'
+          // await this.core.util.unpackTexture2D(cardDir(`card_bg_${id}.unity3d`))
+        } else {
+          throw new Error('downloadAsset() failed')
+        }
+      }
+      return cardDir(`card_bg_${id}`)
+    } catch (_err) {
+      // downloadResult = await this.dler.downloadOne(
+      //   this.getCardUrl(id),
+      //   cardDir(`bg_${id}.png`),
+      //   (progressing || (prog => { this.imgProgress = prog.loading }))
+      // )
+      downloadResult = await this.dler.downloadSpread(
+        id.toString(),
+        cardDir(`bg_${id}.png`),
+        (progressing || (prog => { this.imgProgress = prog.loading }))
+      )
+      return downloadResult
+    }
   }
   toggle (practice: string) {
     switch (practice) {
@@ -460,6 +484,20 @@ export default class extends Vue {
       })
       ipcRenderer.on('singleHca', (_event: Event, cur: number, total: number) => {
         this.imgProgress = 50 + 50 * cur / total
+      })
+      ipcRenderer.on('texture2d', (_event: Event, err: Error | null, _pngs: string[] | null, data: any) => {
+        this.imgProgress = 0
+        if (err) {
+          this.event.$emit('alert', this.$t('home.errorTitle'), err && err.message)
+          return
+        }
+
+        if (data.data) {
+          this.event.$emit(data.data, data.id)
+          if (data.data === 'eventBgReady') {
+            this.event.$emit('_eventBgReady')
+          }
+        }
       })
     })
   }
