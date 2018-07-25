@@ -127,10 +127,15 @@ export default class extends Vue {
         this.text = icons[i].name + '　' + i + '/' + icons.length
         this.loading = 100 * i / icons.length
         if (!fs.existsSync(cacheName + '.png')) {
-          let asset = await this.dler.downloadAsset(icons[i].hash, cacheName)
-          if (asset) {
-            fs.removeSync(cacheName)
-            if (win) win.webContents.send('texture2d', asset, { data: null }, this.mainWindowId)
+          try {
+            let asset = await this.dler.downloadAsset(icons[i].hash, cacheName)
+            if (asset) {
+              fs.removeSync(cacheName)
+              if (win) win.webContents.send('texture2d', asset, { data: null }, this.mainWindowId)
+            }
+          } catch (err) {
+            console.log(err)
+            continue
           }
         }
       }
