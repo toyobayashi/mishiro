@@ -10,7 +10,7 @@ import { ipcRenderer, Event } from 'electron'
 import getPath, { manifestPath, masterPath, bgmDir, iconDir } from '../common/get-path'
 import MishiroIdol from './mishiro-idol'
 import ThePlayer from './the-player'
-import win from './win'
+import { unpackTexture2D } from './win'
 
 @Component({
   components: {
@@ -131,7 +131,7 @@ export default class extends Vue {
             let asset = await this.dler.downloadAsset(icons[i].hash, cacheName)
             if (asset) {
               fs.removeSync(cacheName)
-              if (win) win.webContents.send('texture2d', asset, { data: null }, this.mainWindowId)
+              await unpackTexture2D(asset)
             }
           } catch (err) {
             console.log(err)
@@ -234,11 +234,11 @@ export default class extends Vue {
 
           let downloadCard = new MishiroIdol().downloadCard
 
-          const tmpawait = () => new Promise((resolve) => {
-            this.event.$once('_eventBgReady', () => {
-              resolve()
-            })
-          })
+          // const tmpawait = () => new Promise((resolve) => {
+          //   this.event.$once('_eventBgReady', () => {
+          //     resolve()
+          //   })
+          // })
 
           let getBackgroundResult: string = ''
 
@@ -250,7 +250,7 @@ export default class extends Vue {
               })
 
               this.loading = 99.99
-              if (getBackgroundResult && getBackgroundResult !== 'await ipc') {
+              if (getBackgroundResult/*  && getBackgroundResult !== 'await ipc' */) {
                 this.event.$emit('eventBgReady', id)
               }
             } catch (err) {
@@ -267,7 +267,7 @@ export default class extends Vue {
             }
           }
 
-          if (getBackgroundResult === 'await ipc') await tmpawait()
+          // if (getBackgroundResult === 'await ipc') await tmpawait()
 
           if (masterData.eventHappening) this.event.$emit('eventRewardCard', cardId)
 

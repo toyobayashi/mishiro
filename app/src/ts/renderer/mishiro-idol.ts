@@ -9,7 +9,7 @@ import { ipcRenderer, shell, Event } from 'electron'
 import { MasterData } from '../main/on-master-read'
 import { Vue, Component, Prop } from 'vue-property-decorator'
 import { ProgressInfo } from 'mishiro-core'
-import win from './win'
+import { unpackTexture2D } from './win'
 
 @Component({
   components: {
@@ -280,7 +280,7 @@ export default class extends Vue {
       if (!fs.existsSync(cardDir(`bg_${card.id}.png`))) {
         try {
           let result = await this.downloadCard(card.id, 'idolSelect')
-          if (result && result !== 'await ipc') {
+          if (result/*  && result !== 'await ipc' */) {
             this.imgProgress = 0
             this.event.$emit('idolSelect', card.id)
           }
@@ -326,7 +326,10 @@ export default class extends Vue {
           this.imgProgress = 25
           // ipcRenderer.send('acb', voiceDir(`chara_${cid}`, `chara_${cid}.acb`))
         } catch (errorPath) {
+          fs.removeSync(charaDir)
+          this.voiceDisable = false
           this.event.$emit('alert', this.$t('home.errorTitle'), this.$t('home.downloadFailed') + '<br/>' + errorPath)
+          return
         }
       }
       if (!cardExist) {
@@ -348,8 +351,10 @@ export default class extends Vue {
           this.imgProgress = 50
           // }
         } catch (errorPath) {
+          fs.removeSync(cardDir)
           this.voiceDisable = false
           this.event.$emit('alert', this.$t('home.errorTitle'), this.$t('home.downloadFailed') + '<br/>' + errorPath)
+          return
         }
       }
 
@@ -376,9 +381,10 @@ export default class extends Vue {
       }
     } else {
       this.event.$emit('alert', this.$t('home.errorTitle'), this.$t('idol.noVoice'))
+      return
     }
   }
-  async downloadCard (id: number | string, data?: any, progressing?: (prog: ProgressInfo) => void) {
+  async downloadCard (id: number | string, _data?: any, progressing?: (prog: ProgressInfo) => void) {
 
     let downloadResult: string = ''
 
@@ -393,14 +399,16 @@ export default class extends Vue {
         if (downloadResult) {
           this.imgProgress = 99.99
           fs.removeSync(cardDir(`card_bg_${id}`))
-          if (win) win.webContents.send('texture2d', cardDir(`card_bg_${id}.unity3d`), { data, id, asset: cardDir(`card_bg_${id}.unity3d`) }, this.mainWindowId)
-          return 'await ipc'
+          await unpackTexture2D(cardDir(`card_bg_${id}.unity3d`))
+          return cardDir(`bg_${id}.png`)
+          // if (win) win.webContents.send('texture2d', cardDir(`card_bg_${id}.unity3d`), { data, id, asset: cardDir(`card_bg_${id}.unity3d`) }, this.mainWindowId)
+          // return 'await ipc'
           // await this.core.util.unpackTexture2D(cardDir(`card_bg_${id}.unity3d`))
         } else {
           throw new Error('downloadAsset() failed')
         }
       }
-      return cardDir(`card_bg_${id}`)
+      return cardDir(`bg_${id}.png`)
     } catch (_err) {
       // downloadResult = await this.dler.downloadOne(
       //   this.getCardUrl(id),
@@ -485,20 +493,20 @@ export default class extends Vue {
       ipcRenderer.on('singleHca', (_event: Event, cur: number, total: number) => {
         this.imgProgress = 50 + 50 * cur / total
       })
-      ipcRenderer.on('texture2d', (_event: Event, err: Error | null, _pngs: string[] | null, data: any) => {
-        this.imgProgress = 0
-        if (err) {
-          this.event.$emit('alert', this.$t('home.errorTitle'), err && err.message)
-          return
-        }
+      // ipcRenderer.on('texture2d', (_event: Event, err: Error | null, _pngs: string[] | null, data: any) => {
+      //   this.imgProgress = 0
+      //   if (err) {
+      //     this.event.$emit('alert', this.$t('home.errorTitle'), err && err.message)
+      //     return
+      //   }
 
-        if (data.data) {
-          this.event.$emit(data.data, data.id)
-          if (data.data === 'eventBgReady') {
-            this.event.$emit('_eventBgReady')
-          }
-        }
-      })
+      //   if (data.data) {
+      //     this.event.$emit(data.data, data.id)
+      //     if (data.data === 'eventBgReady') {
+      //       this.event.$emit('_eventBgReady')
+      //     }
+      //   }
+      // })
     })
   }
 }
