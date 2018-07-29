@@ -2,6 +2,8 @@ import { remote, ipcRenderer } from 'electron'
 import { iconDir/* , cardDir */ } from '../common/get-path'
 // import Downloader from './downloader'
 import { PluginFunction } from 'Vue'
+import fs from './fs-extra'
+import * as path from 'path'
 
 // const gameHostBase = 'http://storage.game.starlight-stage.jp/dl/resources'
 const imgHostBase = 'https://truecolor.kirara.ca'
@@ -53,8 +55,17 @@ const install: PluginFunction<undefined> = function (Vue) {
   // Vue.prototype.getCardUrl = getCardUrl
   Vue.prototype.getIconUrl = getIconUrl
   Vue.prototype.mainWindowId = ipcRenderer.sendSync('mainWindowId')
-  // 全局类
-  // Vue.prototype.Downloader = Downloader
+  Vue.prototype.acb2mp3 = async function (acbPath: string, rename?: string) {
+    let mp3list = await this.core.audio.acb2mp3(acbPath)
+    let mp3 = mp3list[0]
+    let dest = path.join(path.dirname(acbPath), rename || path.basename(mp3))
+    await fs.move(mp3, dest)
+    await Promise.all([
+      fs.remove(path.dirname(mp3)),
+      fs.remove(acbPath)
+    ])
+    return dest
+  }
 }
 
 export default {

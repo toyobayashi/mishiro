@@ -5,7 +5,7 @@ import InputText from '../../vue/component/InputText.vue'
 import { cardDir, voiceDir } from '../common/get-path'
 import fs from './fs-extra'
 import * as path from 'path'
-import { ipcRenderer, shell, Event } from 'electron'
+import { ipcRenderer, shell } from 'electron'
 import { MasterData } from '../main/on-master-read'
 import { Vue, Component, Prop } from 'vue-property-decorator'
 import { ProgressInfo } from 'mishiro-core'
@@ -324,7 +324,6 @@ export default class extends Vue {
             prog => { this.imgProgress = prog.loading / 4 }
           )
           this.imgProgress = 25
-          // ipcRenderer.send('acb', voiceDir(`chara_${cid}`, `chara_${cid}.acb`))
         } catch (errorPath) {
           fs.removeSync(charaDir)
           this.voiceDisable = false
@@ -359,11 +358,11 @@ export default class extends Vue {
       }
 
       if (charaDl && cardDl) {
-        ipcRenderer.send('voiceDec', [charaDl, cardDl])
+        await this.voiceDecode([charaDl, cardDl])
       } else if (!charaDl && cardDl) {
-        ipcRenderer.send('voiceDec', [cardDl])
+        await this.voiceDecode([cardDl])
       } else if (charaDl && !cardDl) {
-        ipcRenderer.send('voiceDec', [charaDl])
+        await this.voiceDecode([charaDl])
       } else {
         if (charaDl === null && cardDl === null) {
           let cardVoiceFiles = fs.readdirSync(cardDir)
@@ -384,44 +383,64 @@ export default class extends Vue {
       return
     }
   }
+  async voiceDecode (acbs: string[]) {
+    let hcaFiles: string[] = []
+    let hcaDirs: string[] = []
+    for (let i = 0; i < acbs.length; i++) {
+      let acb = acbs[i]
+      let files = await this.core.audio.acb2hca(acb)
+      hcaDirs.push(files.dirname || path.dirname(files[0]))
+      hcaFiles = [...hcaFiles, ...files]
+    }
+    for (let i = 0; i < hcaFiles.length; i++) {
+      await this.core.audio.hca2mp3(hcaFiles[i], path.join(path.dirname(hcaFiles[i]), '..', path.parse(hcaFiles[i]).name + '.mp3'))
+      this.imgProgress = 50 + 50 * (i + 1) / hcaFiles.length
+    }
+    Promise.all([Promise.all(acbs.map(acb => fs.remove(acb))), Promise.all(hcaDirs.map(hcaDir => fs.remove(hcaDir)))]).then(() => {
+      this.imgProgress = 0
+      this.voiceDisable = false
+    })
+  }
   async downloadCard (id: number | string, _data?: any, progressing?: (prog: ProgressInfo) => void) {
 
     let downloadResult: string = ''
 
-    try {
-      if (!fs.existsSync(cardDir(`bg_${id}.png`))) {
-        let hash: string = ipcRenderer.sendSync('searchManifest', `card_bg_${id}.unity3d`)[0].hash
-        downloadResult = await this.dler.downloadAsset(
-          hash,
-          cardDir(`card_bg_${id}`),
-          (progressing || (prog => { this.imgProgress = prog.loading }))
-        )
-        if (downloadResult) {
-          this.imgProgress = 99.99
-          fs.removeSync(cardDir(`card_bg_${id}`))
-          await unpackTexture2D(cardDir(`card_bg_${id}.unity3d`))
-          return cardDir(`bg_${id}.png`)
-          // if (win) win.webContents.send('texture2d', cardDir(`card_bg_${id}.unity3d`), { data, id, asset: cardDir(`card_bg_${id}.unity3d`) }, this.mainWindowId)
-          // return 'await ipc'
-          // await this.core.util.unpackTexture2D(cardDir(`card_bg_${id}.unity3d`))
-        } else {
-          throw new Error('downloadAsset() failed')
-        }
-      }
-      return cardDir(`bg_${id}.png`)
-    } catch (_err) {
-      // downloadResult = await this.dler.downloadOne(
-      //   this.getCardUrl(id),
-      //   cardDir(`bg_${id}.png`),
-      //   (progressing || (prog => { this.imgProgress = prog.loading }))
-      // )
-      downloadResult = await this.dler.downloadSpread(
-        id.toString(),
-        cardDir(`bg_${id}.png`),
+    // try {
+    if (!fs.existsSync(cardDir(`bg_${id}.png`))) {
+      let hash: string = ipcRenderer.sendSync('searchManifest', `card_bg_${id}.unity3d`)[0].hash
+      downloadResult = await this.dler.downloadAsset(
+        hash,
+        cardDir(`card_bg_${id}`),
         (progressing || (prog => { this.imgProgress = prog.loading }))
       )
-      return downloadResult
+      if (downloadResult) {
+        this.imgProgress = 99.99
+        fs.removeSync(cardDir(`card_bg_${id}`))
+        await unpackTexture2D(cardDir(`card_bg_${id}.unity3d`))
+        return cardDir(`bg_${id}.png`)
+      } else {
+        // throw new Error('abort')
+        return ''
+      }
     }
+    return cardDir(`bg_${id}.png`)
+    // } catch (_err) {
+    //   // downloadResult = await this.dler.downloadOne(
+    //   //   this.getCardUrl(id),
+    //   //   cardDir(`bg_${id}.png`),
+    //   //   (progressing || (prog => { this.imgProgress = prog.loading }))
+    //   // )
+    //   if (_err.message !== 'abort') {
+    //     downloadResult = await this.dler.downloadSpread(
+    //       id.toString(),
+    //       cardDir(`bg_${id}.png`),
+    //       (progressing || (prog => { this.imgProgress = prog.loading }))
+    //     )
+    //     return downloadResult
+    //   } else {
+    //     throw _err
+    //   }
+    // }
   }
   toggle (practice: string) {
     switch (practice) {
@@ -486,27 +505,6 @@ export default class extends Vue {
           this.query()
         }
       })
-      ipcRenderer.on('voiceEnd', () => {
-        this.imgProgress = 0
-        this.voiceDisable = false
-      })
-      ipcRenderer.on('singleHca', (_event: Event, cur: number, total: number) => {
-        this.imgProgress = 50 + 50 * cur / total
-      })
-      // ipcRenderer.on('texture2d', (_event: Event, err: Error | null, _pngs: string[] | null, data: any) => {
-      //   this.imgProgress = 0
-      //   if (err) {
-      //     this.event.$emit('alert', this.$t('home.errorTitle'), err && err.message)
-      //     return
-      //   }
-
-      //   if (data.data) {
-      //     this.event.$emit(data.data, data.id)
-      //     if (data.data === 'eventBgReady') {
-      //       this.event.$emit('_eventBgReady')
-      //     }
-      //   }
-      // })
     })
   }
 }

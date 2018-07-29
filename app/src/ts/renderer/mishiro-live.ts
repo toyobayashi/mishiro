@@ -1,4 +1,4 @@
-import { ipcRenderer, shell, Event } from 'electron'
+import { shell } from 'electron'
 import { Vue, Component, Prop } from 'vue-property-decorator'
 import fs from './fs-extra'
 import * as path from 'path'
@@ -94,7 +94,11 @@ export default class extends Vue {
               this.total = 99.99
               this.current = 99.99
               this.text += this.$t('live.decoding')
-              ipcRenderer.send('acb', bgmDir(audio.name.split('/')[1]), `../../asset/bgm/${audio.fileName}`)
+              await this.acb2mp3(bgmDir(path.basename(audio.name)), audio.fileName)
+              this.total = 0
+              this.current = 0
+              this.text = ''
+              this.event.$emit('liveSelect', { src: `../../asset/bgm/${audio.fileName}` })
             }
           } else {
             this.event.$emit('alert', this.$t('home.errorTitle'), this.$t('home.noNetwork'))
@@ -136,7 +140,11 @@ export default class extends Vue {
               this.total = 99.99
               this.current = 99.99
               this.text += this.$t('live.decoding')
-              ipcRenderer.send('acb', liveDir(audio.name.split('/')[1]), `../../asset/live/${audio.fileName}`)
+              await this.acb2mp3(liveDir(path.basename(audio.name)), audio.fileName)
+              this.total = 0
+              this.current = 0
+              this.text = ''
+              this.event.$emit('liveSelect', { src: `../../asset/live/${audio.fileName}` })
             }
           } else {
             this.event.$emit('alert', this.$t('home.errorTitle'), this.$t('home.noNetwork'))
@@ -235,17 +243,6 @@ export default class extends Vue {
         if (block === 'live') {
           this.query()
         }
-      })
-      ipcRenderer.on('acb', (_event: Event, url: string) => {
-        this.total = 0
-        this.current = 0
-        this.text = ''
-        this.event.$emit('liveSelect', { src: url })
-      })
-      ipcRenderer.on('liveEnd', (_event: Event, liveResult: any, isCompleted: boolean) => {
-        this.isGameRunning = false
-        if (isCompleted) this.playSe(new Audio('./se.asar/se_live_wow.mp3'))
-        this.event.$emit('showLiveResult', liveResult)
       })
     })
   }

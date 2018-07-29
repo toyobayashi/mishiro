@@ -23,6 +23,7 @@ declare module 'vue/types/vue' {
     // getCardUrl: (id: string | number) => string
     getIconUrl: (id: string | number) => string
     mainWindowId: number
+    acb2mp3: (acbPath: string, rename?: string) => Promise<string>
     // Downloader: typeof Downloader
   }
 }

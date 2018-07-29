@@ -5,7 +5,7 @@
 
 * 跑一下，就知道。
 * [ HOME ] 拿资源。(unity3d, acb, bdb, mdb)
-* [ IDOL ] 查卡，从[starlight.kirara.ca](https://starlight.kirara.ca/)拿卡面，拿角色语音。
+* [ IDOL ] 查卡，拿卡面，拿角色语音。
 * [ LIVE ] 拿音乐，玩。
 * [ GACHA ] 同步卡池抽到爽。
 * [ MENU ] 活动算分，设置等

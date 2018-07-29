@@ -185,8 +185,7 @@ export default class extends Vue {
                   }
                 )
                 if (result) {
-                  ipcRenderer.send('acb', bgmDir(`${toName(bgmList[k].src)}.acb`))
-                  await this.sleep(2000)
+                  await this.acb2mp3(bgmDir(`${toName(bgmList[k].src)}.acb`))
                 }
               } catch (errorPath) {
                 this.event.$emit('alert', this.$t('home.errorTitle'), this.$t('home.downloadFailed') + '<br/>' + errorPath)
@@ -215,8 +214,7 @@ export default class extends Vue {
                   }
                 )
                 if (result) {
-                  ipcRenderer.send('acb', bgmDir(`bgm_event_${masterData.eventData.id}.acb`))
-                  await this.sleep(2000)
+                  await this.acb2mp3(bgmDir(`bgm_event_${masterData.eventData.id}.acb`))
                 }
               } catch (errorPath) {
                 this.event.$emit('alert', this.$t('home.errorTitle'), this.$t('home.downloadFailed') + '<br/>' + errorPath)
