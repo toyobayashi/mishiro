@@ -1,7 +1,7 @@
 import { remote, ipcRenderer } from 'electron'
 import { iconDir/* , cardDir */ } from '../common/get-path'
 // import Downloader from './downloader'
-import { PluginFunction } from 'Vue'
+import { PluginFunction } from 'vue'
 import fs from './fs-extra'
 import * as path from 'path'
 
