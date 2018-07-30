@@ -62,7 +62,7 @@
   "dependencies": {
     "fs-extra": "^7.0.0",
     "marked": "^0.3.14",
-    "mishiro-core": "^1.1.0",
+    "mishiro-core": "^1.1.1",
     "sqlite3": "^4.0.2"
   }
 }
