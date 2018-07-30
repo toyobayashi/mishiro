@@ -1,4 +1,4 @@
-import https from 'https'
+import { get } from 'https'
 
 const repeat = (s: string, n: number) => {
   if (n < 0) throw new Error('repeat(s, n < 0)')
@@ -9,7 +9,7 @@ const repeat = (s: string, n: number) => {
   return str
 }
 
-https.get({
+get({
   host: 'api.github.com',
   path: '/repos/toyobayashi/mishiro/releases',
   headers: {

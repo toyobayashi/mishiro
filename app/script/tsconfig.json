@@ -5,7 +5,6 @@
     "moduleResolution": "node",
     "module": "commonjs",
     "target": "es6",
-    "esModuleInterop": true,
     "noUnusedLocals": true,
     "noUnusedParameters": true
   },

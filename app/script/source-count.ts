@@ -1,5 +1,5 @@
-import fs from 'fs-extra'
-import path from 'path'
+import * as fs from 'fs-extra'
+import * as path from 'path'
 
 function countFile (filePath: string): number {
   const data = fs.readFileSync(filePath, 'utf8')

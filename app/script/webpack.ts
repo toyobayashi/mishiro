@@ -1,6 +1,4 @@
-import webpack from 'webpack'
-// import path from 'path'
-// import fs from 'fs-extra'
+import * as webpack from 'webpack'
 import { main, renderer, mode } from './webpack.config'
 
 const arg: string | undefined = process.argv.slice(2)[0]

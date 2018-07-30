@@ -1,6 +1,6 @@
-import packager from 'electron-packager'
-import path from 'path'
-import fs from 'fs-extra'
+import * as packager from 'electron-packager'
+import * as path from 'path'
+import * as fs from 'fs-extra'
 import { exec } from 'child_process'
 import pkg from '../package.json'
 import { prod } from './webpack'
@@ -10,10 +10,12 @@ import { productionPackage, packagerOptions, arch } from './packager.config'
 
 function _exec (cmd: string, opt: any) {
   return new Promise((resolve, reject) => {
-    exec(cmd, opt, (err) => {
+    let cp = exec(cmd, opt, (err) => {
       if (err) return reject(err)
       resolve()
     })
+    cp.stdout.pipe(process.stdout)
+    cp.stderr.pipe(process.stderr)
   })
 }
 

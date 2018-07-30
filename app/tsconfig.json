@@ -1,14 +1,10 @@
 {
+  "extends": "./script/tsconfig.json",
   "compilerOptions": {
-    "strict": true,
-    "noImplicitReturns": true,
-    "moduleResolution": "node",
     "experimentalDecorators": true,
     "strictPropertyInitialization": false,
-    "noUnusedLocals": true,
-    "noUnusedParameters": true,
-    "target": "ES2017",
     "module": "es6",
+    "target": "es2017",
     "typeRoots": [
       "./node_modules/@types",
       "./src/ts/@types"

@@ -1,12 +1,10 @@
-﻿import webpack from 'webpack'
-import MiniCssExtractPlugin from 'mini-css-extract-plugin'
-import OptimizeCSSAssetsPlugin from 'optimize-css-assets-webpack-plugin'
-import UglifyJSPlugin from 'uglifyjs-webpack-plugin'
+﻿import * as webpack from 'webpack'
+import * as MiniCssExtractPlugin from 'mini-css-extract-plugin'
+import * as OptimizeCSSAssetsPlugin from 'optimize-css-assets-webpack-plugin'
+import * as UglifyJSPlugin from 'uglifyjs-webpack-plugin'
 import { VueLoaderPlugin } from 'vue-loader'
-import path from 'path'
-// import fs from 'fs-extra'
-import webpackNodeExternals from 'webpack-node-externals'
-// import pkg from '../package.json'
+import * as path from 'path'
+import * as webpackNodeExternals from 'webpack-node-externals'
 
 export const mode = process.env.NODE_ENV === 'production' ? 'production' : 'development'
 const uglify = new UglifyJSPlugin({
@@ -86,8 +84,6 @@ export const main: webpack.Configuration = {
 export const manifest: any = path.join(__dirname, 'manifest.json')
 
 export const renderer: webpack.Configuration = {
-  // const manifestJson = fs.readJsonSync(manifestPath)
-  // console.log('Global variable name: ' + manifestJson.name)
   mode,
   target: 'electron-renderer',
   entry: {
@@ -155,5 +151,4 @@ export const renderer: webpack.Configuration = {
       }
     }
   }
-
 }

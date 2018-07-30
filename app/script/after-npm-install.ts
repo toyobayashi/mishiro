@@ -1,5 +1,5 @@
-import fs from 'fs-extra'
-import path from 'path'
+import * as fs from 'fs-extra'
+import * as path from 'path'
 import { ilog } from './rainbow'
 
 const nodeModules = path.join(__dirname, '../node_modules')
