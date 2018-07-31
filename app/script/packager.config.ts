@@ -11,7 +11,7 @@ export const arch = process.argv.slice(2)[0] as packagerArch
 export const productionPackage = {
   name: pkg.name,
   version: pkg.version,
-  main: './public/mishiro.main.js',
+  main: pkg.main,
   author: pkg.author,
   repository: pkg.repository,
   license: pkg.license,

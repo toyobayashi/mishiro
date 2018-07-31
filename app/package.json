@@ -2,6 +2,7 @@
   "name": "mishiro",
   "version": "1.4.0-pre",
   "description": "mishiro",
+  "main": "./public/mishiro.main.js",
   "scripts": {
     "start": "ts-node -P ./script/tsconfig.json ./script/start.ts",
     "dev": "ts-node -P ./script/tsconfig.json ./script/webpack.ts webpack",

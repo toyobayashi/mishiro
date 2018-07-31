@@ -7,7 +7,7 @@ function getRarity (id: number, cardData: any[]): number {
   return -1
 }
 
-export default function (gachaAvailable: any[], cardData: any[], gachaData: any) {
+export default async function (gachaAvailable: any[], cardData: any[], gachaData: any) {
   let R = 0
   let SR = 0
   let SSR = 0
@@ -40,6 +40,28 @@ export default function (gachaAvailable: any[], cardData: any[], gachaData: any)
   if (new RegExp('シンデレラフェス').test(gachaData.dicription)) fes = true
 
   if (gachaAvailable[0]['relative_odds'] === 0) {
+    let gachaResponse = await client.getGachaRate(gachaData.id)
+    if (gachaResponse.data_headers.result_code === 1) {
+      let idolList = (gachaResponse.data as any).idol_list
+      let totalList = [...idolList.r, ...idolList.sr, ...idolList.ssr]
+      if (totalList.length === gachaAvailable.length) {
+        for (let i = 0; i < totalList.length; i++) {
+          for (let j = 0; j < gachaAvailable.length; j++) {
+            if (totalList[i].card_id === gachaAvailable[j].reward_id) {
+              gachaAvailable[j].relative_odds = Number(totalList[i].charge_odds) * 10000
+              gachaAvailable[j].relative_sr_odds = totalList[i].sr_odds ? (Number(totalList[i].sr_odds) * 10000) : gachaAvailable[j].relative_sr_odds
+              break
+            }
+          }
+        }
+        console.log('gachaAvailable: ' + totalList.length)
+        return {
+          gachaAvailable,
+          count: { R, SR, SSR, fes }
+        }
+      }
+    }
+
     let R_ODDS = 850000
     let SR_ODDS = 120000
     let SSR_ODDS = 30000
@@ -115,6 +137,7 @@ export default function (gachaAvailable: any[], cardData: any[], gachaData: any)
       }
     }
   }
+
   return {
     gachaAvailable,
     count: { R, SR, SSR, fes }

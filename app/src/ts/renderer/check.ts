@@ -14,7 +14,7 @@ function httpGetVersion (resVer: number, progressing: (prog: ProgressInfo) => vo
     url: `http://storage.game.starlight-stage.jp/dl/${resVer}/manifests/all_dbmanifest`,
     headers: {
       'User-Agent': 'Dalvik/2.1.0 (Linux; U; Android 7.0; Nexus 42 Build/XYZZ1Y)',
-      'X-Unity-Version': '5.1.2f1',
+      'X-Unity-Version': '5.4.5p1',
       'Accept-Encoding': 'gzip'
     }
   }
@@ -57,6 +57,7 @@ async function check (progressing: (prog: ProgressInfo) => void) {
       console.log(`/load/check [Latest Version] ${res}`)
     }
     configurerR.configure('latestResVer', res)
+    clientR.resVer = res.toString()
     return res
   } else {
     console.log('/load/check failed')
@@ -90,6 +91,7 @@ async function check (progressing: (prog: ProgressInfo) => void) {
         }
         if (!isContinue) {
           configurerR.configure('latestResVer', resVer)
+          clientR.resVer = resVer.toString()
           resolve(resVer)
         }
       })

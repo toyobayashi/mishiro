@@ -57,7 +57,7 @@ export default async function (event: Event, masterFile: string, manifestData: a
   bgmManifest = audioManifest.bgmManifest
   liveManifest = audioManifest.liveManifest
 
-  let resolvedGacha = resolveGachaAvailable(gachaAvailable, cardData, gachaData)
+  let resolvedGacha = await resolveGachaAvailable(gachaAvailable, cardData, gachaData)
   gachaAvailable = resolvedGacha.gachaAvailable
   gachaData.count = resolvedGacha.count
 
