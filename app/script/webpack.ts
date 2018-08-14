@@ -1,13 +1,8 @@
 import * as webpack from 'webpack'
 import { main, renderer, mode } from './webpack.config'
 
-const arg: string | undefined = process.argv.slice(2)[0]
-if (arg === 'dll') {
-  // checkAndBundleDll()
-} else if (arg === 'webpack') {
-  if (mode === 'production') prod()
-  else dev()
-}
+if (mode === 'production') prod()
+else dev()
 
 export function dev () {
 

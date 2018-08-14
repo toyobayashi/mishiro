@@ -6,10 +6,12 @@
     "module": "commonjs",
     "target": "es6",
     "noUnusedLocals": true,
-    "noUnusedParameters": true
+    "noUnusedParameters": true,
+    "resolveJsonModule": true
   },
   "include": [
     "../src/ts/@types/**/*",
-    "./**/*"
+    "./**/*",
+    "../package.json"
   ]
 }

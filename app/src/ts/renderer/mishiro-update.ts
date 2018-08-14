@@ -160,7 +160,7 @@ export default class extends Vue {
           this.appData.master = masterData
           this.appData.latestResVer = config.latestResVer as number
           this.$emit('input', this.appData)
-          console.log(masterData.gachaAvailable)
+
           const bgmManifest = masterData.bgmManifest
           for (let k in bgmList) {
             if (!fs.existsSync(path.join(getPath('./public'), bgmList[k].src))) {

@@ -1,7 +1,7 @@
 import { arch as packagerArch, Options } from 'electron-packager'
 import { join } from 'path'
 import { homedir } from 'os'
-import pkg from '../package.json'
+import * as pkg from '../package.json'
 
 if (process.argv.slice(2)[0] !== 'ia32' && process.argv.slice(2)[0] !== 'x64') {
   throw new Error('ARCH requrie "ia32" or "x64"')

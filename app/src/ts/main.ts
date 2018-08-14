@@ -1,3 +1,4 @@
+import './asar'
 import { app, BrowserWindow, ipcMain, Event } from 'electron'
 import * as url from 'url'
 import getPath from './common/get-path'

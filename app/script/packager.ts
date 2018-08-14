@@ -2,7 +2,7 @@ import * as packager from 'electron-packager'
 import * as path from 'path'
 import * as fs from 'fs-extra'
 import { exec } from 'child_process'
-import pkg from '../package.json'
+import * as pkg from '../package.json'
 import { prod } from './webpack'
 import { ilog, wlog, elog } from './rainbow'
 // import { zip } from 'zauz'
@@ -65,7 +65,9 @@ async function main () {
   const [appPath] = await packageApp()
   const root = process.platform === 'darwin' ? path.join(appPath, 'Electron.app/Contents/Resources/app') : path.join(appPath, 'resources/app')
   await writePackageJson(root)
-  await _exec(`npm install --production --arch=${arch} --target_arch=${arch} --build-from-source --runtime=electron --target=2.0.5 --dist-url=https://atom.io/download/electron`, { cwd: root })
+  if (process.argv.slice(2)[1] === 'install') {
+    await _exec(`npm install --production --arch=${arch} --target_arch=${arch} --build-from-source --runtime=electron --target=2.0.5 --dist-url=https://atom.io/download/electron`, { cwd: root })
+  }
   await copyExtra(root)
   await rename(appPath)
   // const size = await zipApp(newPath)

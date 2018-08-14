@@ -64,24 +64,24 @@ export const main: webpack.Configuration = {
       test: /\.ts$/,
       exclude: /node_modules/,
       loader: 'ts-loader'
-    }, {
+    }/* , {
       test: /\.node$/,
       loader: 'native-addon-loader',
       options: {
         name: './node/[name].[ext]'
       }
-    }]
+    } */]
   },
   externals: [webpackNodeExternals()],
   resolve: {
-    extensions: ['.ts', '.js', '.json', '.node']
+    extensions: ['.ts', '.js', '.json'/* , '.node' */]
   },
   optimization: {
     minimizer: [uglify]
   }
 }
 
-export const manifest: any = path.join(__dirname, 'manifest.json')
+// export const manifest: any = path.join(__dirname, 'manifest.json')
 
 export const renderer: webpack.Configuration = {
   mode,
