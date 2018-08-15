@@ -5,6 +5,7 @@
     "strictPropertyInitialization": false,
     "module": "es6",
     "target": "es2017",
+    "resolveJsonModule": false,
     "typeRoots": [
       "./node_modules/@types",
       "./src/ts/@types"

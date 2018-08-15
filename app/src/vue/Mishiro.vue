@@ -17,7 +17,7 @@
     <TheVersion :resVer="appData.resVer"/>
     <ThePlayer :master="appData.master"/>
     <TabSmall :tab="i18nTabs" v-model="currentLanguage" id="i18nTab" @tabClicked="changeLanguage"/>
-    <TheNavigationBar :current-block="currentBlock" @changeBlock="changeBlock"/>
+    <TheFooter v-model="currentBlock"/>
   </div>
   <ModalCalculator :master="appData.master" :time="time"/>
   <ModalVersion/>
@@ -29,7 +29,7 @@
   <ModalGachaCard :master="appData.master"/>
   <ModalOption :master="appData.master" :latestResVer="appData.latestResVer" v-model="currentLanguage"/>
   <ModalAlert/>
-  <img v-show="checking" :src="'./img.asar/spinner.gif'" class="spinner" />
+  <img v-if="checking" :src="'./img.asar/spinner.gif'" class="spinner" />
 </div>
 </template>
 

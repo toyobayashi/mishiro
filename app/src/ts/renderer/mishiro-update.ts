@@ -112,13 +112,13 @@ export default class extends Vue {
     }
   }
 
-  sleep (ms: number): Promise<undefined> {
-    return new Promise(resolve => {
-      setTimeout(() => {
-        resolve()
-      }, ms)
-    })
-  }
+  // sleep (ms: number): Promise<undefined> {
+  //   return new Promise(resolve => {
+  //     setTimeout(() => {
+  //       resolve()
+  //     }, ms)
+  //   })
+  // }
 
   getGachaIcon (icons: { name: string; hash: string; [x: string]: any }[]) {
     return new Promise(async (resolve, _reject) => {

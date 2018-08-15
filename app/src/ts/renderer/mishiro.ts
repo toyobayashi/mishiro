@@ -12,7 +12,7 @@ import ThePlayer from '../../vue/component/ThePlayer.vue'
 import TheBackground from '../../vue/component/TheBackground.vue'
 import TabSmall from '../../vue/component/TabSmall.vue'
 import TheToggleButton from '../../vue/component/TheToggleButton.vue'
-import TheNavigationBar from '../../vue/component/TheNavigationBar.vue'
+import TheFooter from '../../vue/component/TheFooter.vue'
 import TheVersion from '../../vue/component/TheVersion.vue'
 
 import ModalAlert from '../../vue/modal/ModalAlert.vue'
@@ -40,7 +40,7 @@ const i18nTabs: any = {
     TheBackground,
     TabSmall,
     TheToggleButton,
-    TheNavigationBar,
+    TheFooter,
     TheVersion,
     MishiroHome,
     MishiroIdol,
@@ -99,12 +99,7 @@ export default class extends Vue {
     }, 0)
   }
   afterEnter () {
-    // console.log("[event] enter");
     this.event.$emit('enter')
-  }
-  changeBlock (block: string) {
-    this.currentBlock = block
-    this.event.$emit('changeBgm', block)
   }
 
   mounted () {
