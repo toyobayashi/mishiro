@@ -1,4 +1,4 @@
-<!DOCTYPE html>
+export default `<!DOCTYPE html>
 <html>
   <head>
     <title>mishiro</title>
@@ -11,3 +11,4 @@
     <script src="./mishiro.renderer.js"></script>
   </body>
 </html>
+`

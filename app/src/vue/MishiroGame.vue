@@ -1,14 +1,18 @@
 <template>
-<div>
+<div style="position:fixed;width:100%;height:100%">
+  <img :src="'./img.asar/bg_live_4004.png'" class="img-middle">
+  <div style="background: rgba(0,0,0,0.5);position:fixed;width:100%;height:100%"></div>
   <TheLiveGauge :hp="liveResult.hp"/>
   <TheCombo :combo="liveResult.combo"/>
+  <canvas class="canvas canvas-center" id="iconBar" width="1280" height="720"></canvas>
+  <canvas class="canvas canvas-center" id="live" width="1280" height="720"></canvas>
 </div>
 </template>
 
 <script>
 import TheCombo from './component/TheCombo.vue'
 import TheLiveGauge from './component/TheLiveGauge.vue'
-import { liveResult } from '../ts/renderer/game.js'
+import { liveResult } from '../ts/renderer/game'
 export default {
   components: {
     TheCombo,

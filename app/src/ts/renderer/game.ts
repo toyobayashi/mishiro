@@ -4,75 +4,81 @@ let liveResult: any = {
   nice: 0,
   bad: 0,
   miss: 0,
-  maxCombo: 0
-  // combo: 0,
-  // hp: 100
-}
-
-let comboDom = document.getElementById('combo')
-if (comboDom === null) throw new Error('#comboDom null')
-let numberDom = comboDom.getElementsByClassName('combo-number')[0]
-let hpDom = document.getElementById('hp')
-
-let model: any = {
+  maxCombo: 0,
   combo: 0,
   hp: 100
 }
 
-Object.defineProperties(liveResult, {
-  combo: {
-    configurable: true,
-    enumerable: true,
-    get () {
-      return model.combo
-    },
-    set (n) {
-      model.combo = n
-      if (comboDom !== null) {
-        if (n > 0) {
-          comboDom.style.display = 'flex'
-          numberDom.innerHTML = n
-        } else {
-          comboDom.style.display = 'none'
-        }
-      }
-    }
-  },
-  hp: {
-    configurable: true,
-    enumerable: true,
-    get () {
-      return model.hp
-    },
-    set (h) {
-      model.hp = h
-      if (hpDom !== null) {
-        hpDom.style.width = h + '%'
-        if (h <= 40 && h > 20) {
-          hpDom.className = 'hp warning'
-        } else if (h <= 20) {
-          hpDom.className = 'hp dangerous'
-        } else {
-          hpDom.className = 'hp'
-        }
-      }
-    }
-  }
-})
+// let comboDom = document.getElementById('combo')
+// if (comboDom === null) throw new Error('#comboDom null')
+// let numberDom = comboDom.getElementsByClassName('combo-number')[0]
+// let hpDom = document.getElementById('hp')
+
+// let model: any = {
+//   combo: 0,
+//   hp: 100
+// }
+
+// Object.defineProperties(liveResult, {
+//   combo: {
+//     configurable: true,
+//     enumerable: true,
+//     get () {
+//       return model.combo
+//     },
+//     set (n) {
+//       model.combo = n
+//       if (comboDom !== null) {
+//         if (n > 0) {
+//           comboDom.style.display = 'flex'
+//           numberDom.innerHTML = n
+//         } else {
+//           comboDom.style.display = 'none'
+//         }
+//       }
+//     }
+//   },
+//   hp: {
+//     configurable: true,
+//     enumerable: true,
+//     get () {
+//       return model.hp
+//     },
+//     set (h) {
+//       model.hp = h
+//       if (hpDom !== null) {
+//         hpDom.style.width = h + '%'
+//         if (h <= 40 && h > 20) {
+//           hpDom.className = 'hp warning'
+//         } else if (h <= 20) {
+//           hpDom.className = 'hp dangerous'
+//         } else {
+//           hpDom.className = 'hp'
+//         }
+//       }
+//     }
+//   }
+// })
+
+function createAudio (src: string) {
+  const audio = new Audio(src)
+  audio.preload = 'auto'
+  return audio
+}
 
 let se = {
-  clap: new Audio('./se.asar/se_live_clap.mp3'),
-  fullcombo: new Audio('./se.asar/se_live_fullcombo.mp3'),
-  longLoop: new Audio('./se.asar/se_live_long_loop.mp3'),
-  tapGreat: new Audio('./se.asar/se_live_tap_great.mp3'),
-  tapNice: new Audio('./se.asar/se_live_tap_nice.mp3'),
-  tapPerfect: new Audio('./se.asar/se_live_tap_perfect.mp3')
+  clap: createAudio('./se.asar/se_live_clap.mp3'),
+  fullcombo: createAudio('./se.asar/se_live_fullcombo.mp3'),
+  longLoop: createAudio('./se.asar/se_live_long_loop.mp3'),
+  tapGreat: createAudio('./se.asar/se_live_tap_great.mp3'),
+  tapNice: createAudio('./se.asar/se_live_tap_nice.mp3'),
+  tapPerfect: createAudio('./se.asar/se_live_tap_perfect.mp3')
 }
 
 const rankImg = newImage('./img.asar/rank.png')
 
 function playSe (se: HTMLAudioElement) {
-  se.currentTime = 0
+  if (se.currentTime !== 0) se.currentTime = 0
   se.play()
 }
 

@@ -2,8 +2,8 @@ import '../css/game.css'
 import { remote, ipcRenderer, Event } from 'electron'
 import { parse } from 'path'
 import { Note, ShortNote, LongNote, newImage, keyBind, liveResult } from './renderer/game'
-/* import Vue from 'vue'
-import Game from '../vue/MishiroGame.vue' */
+import Vue from 'vue'
+import Game from '../vue/MishiroGame.vue'
 const prefix = 60
 
 window.addEventListener('load', () => {
@@ -54,7 +54,8 @@ ipcRenderer.on('start', (_event: Event, song: any, fromWindowId: number) => {
   music.play()
 })
 
-/* window.app = new Vue({
+// tslint:disable-next-line:no-unused-expression
+new Vue({
   el: '#app',
   render: h => h(Game)
-}) */
+})

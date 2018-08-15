@@ -2,6 +2,7 @@
 import * as MiniCssExtractPlugin from 'mini-css-extract-plugin'
 import * as OptimizeCSSAssetsPlugin from 'optimize-css-assets-webpack-plugin'
 import * as UglifyJSPlugin from 'uglifyjs-webpack-plugin'
+import * as HtmlWebpackPlugin from 'html-webpack-plugin'
 import { VueLoaderPlugin } from 'vue-loader'
 import * as path from 'path'
 import * as webpackNodeExternals from 'webpack-node-externals'
@@ -134,7 +135,17 @@ export const renderer: webpack.Configuration = {
       manifest: manifestJson,
       context: __dirname
     }), */
-    new VueLoaderPlugin()
+    new VueLoaderPlugin(),
+    new HtmlWebpackPlugin({
+      inject: false,
+      template: path.join(__dirname, '../src/ts/template/index.template.ts'),
+      filename: 'index.html'
+    }),
+    new HtmlWebpackPlugin({
+      inject: false,
+      template: path.join(__dirname, '../src/ts/template/game.template.ts'),
+      filename: 'game.html'
+    })
   ],
   optimization: {
     minimizer: [

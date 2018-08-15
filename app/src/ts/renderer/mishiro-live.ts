@@ -1,4 +1,4 @@
-import { shell } from 'electron'
+import { shell, ipcRenderer } from 'electron'
 import { Vue, Component, Prop } from 'vue-property-decorator'
 import fs from './fs-extra'
 import * as path from 'path'
@@ -243,6 +243,11 @@ export default class extends Vue {
         if (block === 'live') {
           this.query()
         }
+      })
+      ipcRenderer.on('liveEnd', (_event: Event, liveResult: any, isCompleted: boolean) => {
+        this.isGameRunning = false
+        if (isCompleted) this.playSe(new Audio('./se.asar/se_live_wow.mp3'))
+        this.event.$emit('showLiveResult', liveResult)
       })
     })
   }
