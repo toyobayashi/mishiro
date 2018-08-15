@@ -89,7 +89,8 @@ export const renderer: webpack.Configuration = {
   target: 'electron-renderer',
   entry: {
     'mishiro.renderer': path.join(__dirname, '../src/ts/renderer.ts'),
-    'mishiro.live': path.join(__dirname, '../src/ts/renderer-game.ts')
+    'mishiro.live': path.join(__dirname, '../src/ts/renderer-game.ts'),
+    'mishiro.back': path.join(__dirname, '../src/ts/renderer-back.ts')
   },
   output: {
     path: path.join(__dirname, '../public'),
@@ -145,6 +146,11 @@ export const renderer: webpack.Configuration = {
       inject: false,
       template: path.join(__dirname, '../src/ts/template/game.template.ts'),
       filename: 'game.html'
+    }),
+    new HtmlWebpackPlugin({
+      inject: false,
+      template: path.join(__dirname, '../src/ts/template/back.template.ts'),
+      filename: 'back.html'
     })
   ],
   optimization: {

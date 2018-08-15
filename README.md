@@ -7,7 +7,7 @@
 [![Webpack](https://img.shields.io/badge/dynamic/json.svg?label=webpack&url=https%3A%2F%2Fraw.githubusercontent.com%2Ftoyobayashi%2Fmishiro%2Fmaster%2Fapp%2Fpackage.json&query=%24.devDependencies.webpack&colorB=55a7dd)](https://webpack.js.org/) -->
 
 
-[Release Download](https://github.com/toyobayashi/mishiro/releases) __(Windows Release Only)__  
+[Release Download](https://github.com/toyobayashi/mishiro/releases) __(Windows Release Only. Do not install mishiro in a path which includes Chinese or Japanese characters)__  
 [中文](https://github.com/toyobayashi/mishiro/blob/master/README_CN.md)
 
 

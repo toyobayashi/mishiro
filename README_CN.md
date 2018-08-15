@@ -1,5 +1,5 @@
 # mishiro
-[戳这里下载](https://github.com/toyobayashi/mishiro/releases) __（只提供Windwos的发布版，MacOS请按照下面的步骤和[Electron分发应用](http://electronjs.org/docs/tutorial/application-distribution)自行编译打包）__  
+[戳这里下载](https://github.com/toyobayashi/mishiro/releases) __（只提供Windwos的发布版，MacOS请按照下面的步骤和[Electron分发应用](http://electronjs.org/docs/tutorial/application-distribution)自行编译打包。请不要安装在有汉字的目录下）__  
 
 ## 用法
 
