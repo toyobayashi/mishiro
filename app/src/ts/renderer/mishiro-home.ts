@@ -30,6 +30,7 @@ export default class extends Vue {
   recordPerPage: number = 10
 
   get totalPage () {
+    if (!this.data.length) return 0
     return this.data.length / this.recordPerPage === Math.floor(this.data.length / this.recordPerPage) ? this.data.length / this.recordPerPage - 1 : Math.floor(this.data.length / this.recordPerPage)
   }
 
@@ -44,7 +45,7 @@ export default class extends Vue {
   query () {
     if (this.queryString === '') {
       this.page = 0
-      this.data.length = 0
+      this.data = []
       // this.event.$emit('alert', this.$t('home.errorTitle'), this.$t('home.noEmptyString'))
     } else if (this.queryString === 'dev') {
       remote.getCurrentWindow().webContents.openDevTools()
