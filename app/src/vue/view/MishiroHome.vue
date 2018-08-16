@@ -8,9 +8,18 @@
     <button class="cgss-btn cgss-btn-ok pull-right margin-left-10" @click="query">{{$t("home.search")}}</button>
   </div>
   <div class="black-bg db-query-result margin-top-10">
-    <TheTable :data="data" @change="tableChange" :is-disabled="isDisabled"/>
+    <div style="position: absolute; top: 0; width: calc(100% - 20px);">
+      <div class="page-head">
+        <span @click="page !== 0 ? page -= 1 : page = totalPage">previos</span>
+        <span>{{(page + 1) + ' / ' + (totalPage + 1)}}</span>
+        <span @click="page !== totalPage ? page += 1 : page = 0">next</span>
+      </div>
+      <ProgressBar class="cgss-progress-event" :percent="current"/>
+      <ProgressBar class="cgss-progress-event" :percent="total"/>
+    </div>
+    <TheTable :data="data.slice(page * recordPerPage, (page + 1) * recordPerPage)" @change="tableChange" :is-disabled="isDisabled"/>
   </div>
-  <TaskLoading :total-loading="total" :current-loading="current" :text="text" class="margin-top-20" :color="'event'"/>
+  <!-- <TaskLoading :total-loading="total" :current-loading="current" :text="text" class="margin-top-20" :color="'event'"/> -->
 </div>
 </template>
 
@@ -18,6 +27,10 @@
 </script>
 
 <style>
+.page-head {
+  display: flex;
+  justify-content: space-around;
+}
 .manifest-query{
   margin: 12px 0;
   width: calc(100% - 690px);
@@ -31,6 +44,9 @@
   overflow: hidden;
 }
 .db-query-result{
-  height: calc(100% - 270px);
+  overflow: hidden;
+  position: relative;
+  padding-top: 80px;
+  height: calc(100% - 130px);
 }
 </style>

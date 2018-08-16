@@ -1,6 +1,7 @@
 import TheTable from '../../vue/component/TheTable.vue'
-import TaskLoading from '../../vue/component/TaskLoading.vue'
+// import TaskLoading from '../../vue/component/TaskLoading.vue'
 import InputText from '../../vue/component/InputText.vue'
+import ProgressBar from '../../vue/component/ProgressBar.vue'
 
 import * as path from 'path'
 import fs from './fs-extra'
@@ -12,7 +13,7 @@ import { Vue, Component } from 'vue-property-decorator'
 @Component({
   components: {
     TheTable,
-    TaskLoading,
+    ProgressBar,
     InputText
   }
 })
@@ -25,6 +26,13 @@ export default class extends Vue {
   selectedItem: any[] = []
   current: number = 0
   total: number = 0
+  page: number = 0
+  recordPerPage: number = 10
+
+  get totalPage () {
+    return this.data.length / this.recordPerPage === Math.floor(this.data.length / this.recordPerPage) ? this.data.length / this.recordPerPage - 1 : Math.floor(this.data.length / this.recordPerPage)
+  }
+
   isDisabled (row: any) {
     return fs.existsSync(downloadDir(path.basename(row.name)))
   }
@@ -35,7 +43,9 @@ export default class extends Vue {
   }
   query () {
     if (this.queryString === '') {
-      this.event.$emit('alert', this.$t('home.errorTitle'), this.$t('home.noEmptyString'))
+      this.page = 0
+      this.data.length = 0
+      // this.event.$emit('alert', this.$t('home.errorTitle'), this.$t('home.noEmptyString'))
     } else if (this.queryString === 'dev') {
       remote.getCurrentWindow().webContents.openDevTools()
     } else {
@@ -79,6 +89,7 @@ export default class extends Vue {
           this.total = 100 * this.dler.index / tasks.length + prog.loading / tasks.length
         },
         (row, filepath) => {
+          console.log(row.name)
           const name = path.basename(filepath)
           const suffix = path.extname(row.name)
 
@@ -160,6 +171,7 @@ export default class extends Vue {
         }
       })
       ipcRenderer.on('queryManifest', (_event: Event, manifestArr: any[]) => {
+        this.page = 0
         this.data = manifestArr
       })
     })

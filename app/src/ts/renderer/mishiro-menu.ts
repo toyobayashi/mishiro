@@ -49,30 +49,33 @@ export default class extends Vue {
       if (!err) {
         const latest = JSON.parse(body as string)[0]
         const version = latest.tag_name.substr(1)
-        const description = marked(latest.body)
-        const zip = latest.assets.filter((a: any) => a.content_type === 'application/x-zip-compressed')[0]
-        const exe = latest.assets.filter((a: any) => a.content_type === 'application/x-msdownload')[0]
-        const zipUrl = zip ? zip.browser_download_url : null
-        const exeUrl = exe ? exe.browser_download_url : null
-
-        this.core.util.request(tags, (err, body) => {
+        if (remote.app.getVersion() >= version) {
           this.$emit('checked')
-          if (!err) {
-            const latestTag = JSON.parse(body as string).filter((tag: any) => tag.name === latest.tag_name)[0]
-            const commit = latestTag.commit.sha
-            const versionData = { version, commit, description, zipUrl, exeUrl }
-            // console.log(versionData)
-            if (remote.app.getVersion() < version) {
+          this.event.$emit('alert', this.$t('menu.update'), this.$t('menu.noUpdate'))
+        } else {
+          const description = marked(latest.body)
+          const zip = latest.assets.filter((a: any) => ((a.content_type === 'application/x-zip-compressed' || a.content_type === 'application/zip') && (a.name.indexOf(`${process.platform}-${process.arch}`) !== -1)))[0]
+          const exe = latest.assets.filter((a: any) => ((a.content_type === 'application/x-msdownload') && (a.name.indexOf(`${process.platform}-${process.arch}`) !== -1)))[0]
+          const patch = latest.assets.filter((a: any) => (a.name.indexOf('patch.zip') !== -1))[0]
+          const zipUrl = zip ? zip.browser_download_url : null
+          const exeUrl = exe ? exe.browser_download_url : null
+          const patchUrl = patch ? patch.browser_download_url : null
+
+          this.core.util.request(tags, (err, body) => {
+            this.$emit('checked')
+            if (!err) {
+              const latestTag = JSON.parse(body as string).filter((tag: any) => tag.name === latest.tag_name)[0]
+              const commit = latestTag.commit.sha
+              const versionData = { version, commit, description, zipUrl, exeUrl, patchUrl }
+              console.log(versionData)
               this.event.$emit('versionCheck', versionData)
             } else {
-              this.event.$emit('alert', this.$t('menu.update'), this.$t('menu.noUpdate'))
+              this.event.$emit('alert', this.$t('home.errorTitle'), err.message)
             }
-          } else {
-            throw err
-          }
-        })
+          })
+        }
       } else {
-        throw err
+        this.event.$emit('alert', this.$t('home.errorTitle'), err.message)
       }
     })
   }
