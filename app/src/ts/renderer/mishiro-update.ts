@@ -146,10 +146,10 @@ export default class extends Vue {
   mounted () {
     this.$nextTick(() => {
       this.text = this.$t('update.check') as string
-      this.event.$on('enter', async () => { // 已从入口进入
+      this.event.$on('enter', async ($resver?: number) => { // 已从入口进入
         ipcRenderer.on('readManifest', async (_event: Event, masterHash: string, resVer: number) => {
           const masterFile = await this.getMaster(resVer, masterHash)
-          if (masterFile) ipcRenderer.send('readMaster', masterFile)
+          if (masterFile) ipcRenderer.send('readMaster', masterFile, resVer)
         })
         ipcRenderer.on('readMaster', async (_event: Event, masterData: MasterData) => {
           // console.log(masterData);
@@ -289,7 +289,7 @@ export default class extends Vue {
         if (navigator.onLine) { // 判断网络是否连接
           let resVer: number
           try {
-            resVer = await this.getResVer()
+            resVer = $resver || await this.getResVer()
           } catch (err) {
             console.log(err)
             resVer = this.configurer.getConfig().latestResVer as number

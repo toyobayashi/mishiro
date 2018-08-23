@@ -60,8 +60,8 @@ const i18nTabs: any = {
   }
 })
 export default class extends Vue {
-  isEntered: boolean = false
-  isTouched: boolean = false
+  isEntered: boolean = process.env.NODE_ENV !== 'production'
+  isTouched: boolean = process.env.NODE_ENV !== 'production'
   isReady: boolean = false
   show: boolean = true
   currentBlock: string = 'home'
@@ -98,12 +98,13 @@ export default class extends Vue {
       }
     }, 0)
   }
-  afterEnter () {
-    this.event.$emit('enter')
+  afterEnter (devResVer?: number) {
+    this.event.$emit('enter', devResVer)
   }
 
   mounted () {
     this.$nextTick(() => {
+      if (process.env.NODE_ENV !== 'production') this.afterEnter(10043310)
       setInterval(() => {
         this.time = new Date().getTime()
       }, 1000)

@@ -1,4 +1,3 @@
-import { Event } from 'electron'
 import { MishiroConfig } from '../main/config'
 import getEventData from './get-event-data'
 import getGachaData from './get-gacha-data'
@@ -10,7 +9,7 @@ import resolveGachaAvailable from './resolve-gacha-available'
 import resolveUserLevel from './resolve-user-level'
 import { openSqlite } from './sqlite3'
 
-export default async function (event: Event, masterFile: string, manifestData: any, config: MishiroConfig, manifests: { name: string; hash: string; [x: string]: any }[]) {
+export default async function (masterFile: string, manifestData: any, config: MishiroConfig, manifests: { name: string; hash: string; [x: string]: any }[]) {
   const timeOffset = (9 - (-(new Date().getTimezoneOffset() / 60))) * 60 * 60 * 1000
   const now = new Date().getTime()
 
@@ -67,7 +66,7 @@ export default async function (event: Event, masterFile: string, manifestData: a
     return manifests.filter(m => m.name === `card_${o.reward_id}_m.unity3d`)[0]
   })
 
-  event.sender.send('readMaster', {
+  return {
     eventAll,
     eventData,
     eventAvailable,
@@ -82,7 +81,7 @@ export default async function (event: Event, masterFile: string, manifestData: a
     gachaIcon,
     userLevel,
     timeOffset
-  })
+  }
 }
 
 export interface MasterData {

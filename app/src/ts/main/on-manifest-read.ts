@@ -1,7 +1,6 @@
 import { openSqlite } from './sqlite3'
-import { Event } from 'electron'
 
-export default async function (event: Event, manifestFile: string, resVer: number) {
+export default async function (manifestFile: string) {
   let manifest: any = await openSqlite(manifestFile)
   let manifests: any[] = []
   let manifestData: any = {}
@@ -26,6 +25,5 @@ export default async function (event: Event, manifestFile: string, resVer: numbe
   console.log(`manifest: ${manifests.length}`)
   console.log(`bgm: ${manifestData.bgmManifest.length}`)
   console.log(`live: ${manifestData.liveManifest.length}`)
-  event.sender.send('readManifest', masterHash, resVer)
-  return { manifests, manifestData }
+  return { manifests, manifestData, masterHash }
 }
