@@ -1,4 +1,4 @@
-import './asar'
+import './common/asar'
 import { ipcRenderer, remote, Event } from 'electron'
 import { util } from 'mishiro-core'
 import { removeSync } from 'fs-extra'

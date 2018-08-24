@@ -23,7 +23,7 @@ export const packagerOptions: Options = {
   out: join(__dirname, '../..', 'dist'),
   // platform: 'win32',
   arch: arch,
-  icon: join(__dirname, '../src/res/icon/mishiro.ico'),
+  icon: join(__dirname, '../src/res/icon', process.platform === 'win32' ? 'mishiro.ico' : 'mishiro.icns'),
   ignore: /node_modules|src|script|README|tslint\.json|tsconfig\.json|package-lock\.json|\.git|\.vscode|\.npmrc/,
   appCopyright: 'Copyright (C) 2017 Toyobayashi',
   download: {

@@ -90,7 +90,7 @@ export default class extends Vue {
           this.total = 100 * this.dler.index / tasks.length + prog.loading / tasks.length
         },
         (row, filepath) => {
-          console.log(row.name)
+          // console.log(row.name)
           const name = path.basename(filepath)
           const suffix = path.extname(row.name)
 

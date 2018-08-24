@@ -1,6 +1,6 @@
 <template>
 <div style="position: absolute;width: 100%;height: 100%;">
-  <transition name="fade" @after-leave="afterEnter">
+  <transition name="fade" @after-leave="afterEnter(null)">
     <MishiroEntry v-if="!isEntered" @enter="isEntered = !isEntered" @touch="isTouched = true"/>
   </transition>
   <transition name="fade">

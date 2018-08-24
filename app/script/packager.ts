@@ -1,23 +1,12 @@
 import * as packager from 'electron-packager'
 import * as path from 'path'
 import * as fs from 'fs-extra'
-import { exec } from 'child_process'
+import { execSync } from 'child_process'
 import * as pkg from '../package.json'
 import { prod } from './webpack'
 import { ilog, wlog, elog } from './rainbow'
 // import { zip } from 'zauz'
 import { productionPackage, packagerOptions, arch } from './packager.config'
-
-function _exec (cmd: string, opt: any) {
-  return new Promise((resolve, reject) => {
-    let cp = exec(cmd, opt, (err) => {
-      if (err) return reject(err)
-      resolve()
-    })
-    cp.stdout.pipe(process.stdout)
-    cp.stderr.pipe(process.stderr)
-  })
-}
 
 function bundleProductionCode () {
   ilog(`[${new Date().toLocaleString()}] Bundle production code...`)
@@ -63,10 +52,10 @@ async function main () {
   // await reInstall()
   await bundleProductionCode()
   const [appPath] = await packageApp()
-  const root = process.platform === 'darwin' ? path.join(appPath, 'Electron.app/Contents/Resources/app') : path.join(appPath, 'resources/app')
+  const root = process.platform === 'darwin' ? path.join(appPath, 'mishiro.app/Contents/Resources/app') : path.join(appPath, 'resources/app')
   await writePackageJson(root)
   if (process.argv.slice(2)[1] === 'install') {
-    await _exec(`npm install --production --arch=${arch} --target_arch=${arch} --build-from-source --runtime=electron --target=2.0.5 --dist-url=https://atom.io/download/electron`, { cwd: root })
+    execSync(`npm install --production --arch=${arch} --target_arch=${arch} --build-from-source --runtime=electron --target=2.0.5 --dist-url=https://atom.io/download/electron`, { cwd: root, stdio: 'inherit' })
   }
   await copyExtra(root)
   await rename(appPath)

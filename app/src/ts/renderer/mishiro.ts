@@ -104,7 +104,7 @@ export default class extends Vue {
 
   mounted () {
     this.$nextTick(() => {
-      if (process.env.NODE_ENV !== 'production') this.afterEnter(10043310)
+      if (process.env.NODE_ENV !== 'production') this.afterEnter(require('electron').remote.getGlobal('configurer').getConfig().latestResVer)
       setInterval(() => {
         this.time = new Date().getTime()
       }, 1000)

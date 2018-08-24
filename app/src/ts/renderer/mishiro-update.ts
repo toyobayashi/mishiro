@@ -288,11 +288,15 @@ export default class extends Vue {
         })
         if (navigator.onLine) { // 判断网络是否连接
           let resVer: number
-          try {
-            resVer = $resver || await this.getResVer()
-          } catch (err) {
-            console.log(err)
-            resVer = this.configurer.getConfig().latestResVer as number
+          if ($resver) {
+            resVer = $resver
+          } else {
+            try {
+              resVer = await this.getResVer()
+            } catch (err) {
+              console.log(err)
+              resVer = this.configurer.getConfig().latestResVer as number
+            }
           }
 
           this.appData.resVer = Number(resVer)
