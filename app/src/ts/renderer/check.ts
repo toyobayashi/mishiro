@@ -10,7 +10,6 @@ let max = 20
 
 function httpGetVersion (resVer: number, progressing: (prog: ProgressInfo) => void): Promise<{ version: number; isExisting: boolean}> {
   const option = {
-    // method: 'GET',
     url: `http://storage.game.starlight-stage.jp/dl/${resVer}/manifests/all_dbmanifest`,
     headers: {
       'User-Agent': 'Dalvik/2.1.0 (Linux; U; Android 7.0; Nexus 42 Build/XYZZ1Y)',
