@@ -39,15 +39,17 @@ export default class extends Vue {
     }
     const releases = {
       url: 'https://api.github.com/repos/toyobayashi/mishiro/releases',
+      json: true,
       headers
     }
     const tags = {
       url: 'https://api.github.com/repos/toyobayashi/mishiro/tags',
+      json: true,
       headers
     }
-    this.core.util.request(releases, (err, body) => {
+    this.core.util.request(releases, (err, _res, body) => {
       if (!err) {
-        const latest = JSON.parse(body as string)[0]
+        const latest = body[0]
         const version = latest.tag_name.substr(1)
         if (remote.app.getVersion() >= version) {
           this.$emit('checked')
@@ -61,10 +63,10 @@ export default class extends Vue {
           const exeUrl = exe ? exe.browser_download_url : null
           const patchUrl = patch ? patch.browser_download_url : null
 
-          this.core.util.request(tags, (err, body) => {
+          this.core.util.request(tags, (err, _res, body) => {
             this.$emit('checked')
             if (!err) {
-              const latestTag = JSON.parse(body as string).filter((tag: any) => tag.name === latest.tag_name)[0]
+              const latestTag = body.filter((tag: any) => tag.name === latest.tag_name)[0]
               const commit = latestTag.commit.sha
               const versionData = { version, commit, description, zipUrl, exeUrl, patchUrl }
               console.log(versionData)
