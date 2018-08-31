@@ -51,10 +51,13 @@ const uglify = new UglifyJSPlugin({
 export const main: webpack.Configuration = {
   mode,
   target: 'electron-main',
-  entry: path.join(__dirname, '../src/ts/main.ts'),
+  devtool: mode === 'production' ? void 0 : 'inline-source-map',
+  entry: {
+    'mishiro.main': [path.join(__dirname, '../src/ts/main.ts')]
+  },
   output: {
     path: path.join(__dirname, '../public'),
-    filename: 'mishiro.main.js'
+    filename: '[name].js'
   },
   node: {
     __dirname: false,
@@ -87,10 +90,11 @@ export const main: webpack.Configuration = {
 export const renderer: webpack.Configuration = {
   mode,
   target: 'electron-renderer',
+  devtool: mode === 'production' ? void 0 : 'inline-source-map',
   entry: {
-    'mishiro.renderer': path.join(__dirname, '../src/ts/renderer.ts'),
-    'mishiro.live': path.join(__dirname, '../src/ts/renderer-game.ts'),
-    'mishiro.back': path.join(__dirname, '../src/ts/renderer-back.ts')
+    'mishiro.renderer': [path.join(__dirname, '../src/ts/renderer.ts')],
+    'mishiro.live': [path.join(__dirname, '../src/ts/renderer-game.ts')],
+    'mishiro.back': [path.join(__dirname, '../src/ts/renderer-back.ts')]
   },
   output: {
     path: path.join(__dirname, '../public'),

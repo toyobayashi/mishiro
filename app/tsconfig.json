@@ -6,6 +6,7 @@
     "module": "es6",
     "target": "es2017",
     "resolveJsonModule": false,
+    "sourceMap": true,
     "typeRoots": [
       "./node_modules/@types",
       "./src/ts/@types"
