@@ -1,6 +1,6 @@
 {
   "name": "mishiro",
-  "version": "1.4.1",
+  "version": "1.4.2",
   "description": "mishiro",
   "main": "./public/mishiro.main.js",
   "scripts": {
@@ -64,7 +64,7 @@
   "dependencies": {
     "fs-extra": "^7.0.0",
     "marked": "^0.3.14",
-    "mishiro-core": "^1.2.0",
+    "mishiro-core": "^1.2.1",
     "sqlite3": "^4.0.2",
     "zauz": "^1.0.2"
   }

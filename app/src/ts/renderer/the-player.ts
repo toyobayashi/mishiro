@@ -5,7 +5,7 @@ import { MasterData } from '../main/on-master-read'
 
 const bgmList: any = {
   anni: {
-    src: '../../asset/bgm/bgm_event_3017.mp3',
+    src: '../../asset/bgm/bgm_event_3023.mp3',
     start: 31.35,
     end: 86.95
   },

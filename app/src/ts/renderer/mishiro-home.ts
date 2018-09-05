@@ -92,7 +92,7 @@ export default class extends Vue {
         (row, filepath) => {
           // console.log(row.name)
           const name = path.basename(filepath)
-          const suffix = path.extname(row.name)
+          const suffix = path.extname((row && row.name) || (tasks[this.dler.index] && tasks[this.dler.index].name) || '')
 
           this.current = 0
           this.text = ''

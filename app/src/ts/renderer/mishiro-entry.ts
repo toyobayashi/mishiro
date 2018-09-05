@@ -7,7 +7,7 @@ export default class extends Vue {
 
   bg: boolean | null = null
   isTouched: boolean = false
-  coverSrc: string = './img.asar/2ndAnniversary.jpg'
+  coverSrc: string = './img.asar/3rd_anniversary.png'
 
   enter () {
     if (!this.isTouched) {

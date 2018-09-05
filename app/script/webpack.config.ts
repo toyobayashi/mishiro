@@ -51,7 +51,7 @@ const uglify = new UglifyJSPlugin({
 export const main: webpack.Configuration = {
   mode,
   target: 'electron-main',
-  devtool: mode === 'production' ? void 0 : 'inline-source-map',
+  devtool: mode === 'production' ? void 0 : 'eval-source-map',
   entry: {
     'mishiro.main': [path.join(__dirname, '../src/ts/main.ts')]
   },
@@ -90,7 +90,7 @@ export const main: webpack.Configuration = {
 export const renderer: webpack.Configuration = {
   mode,
   target: 'electron-renderer',
-  devtool: mode === 'production' ? void 0 : 'inline-source-map',
+  devtool: mode === 'production' ? void 0 : 'eval-source-map',
   entry: {
     'mishiro.renderer': [path.join(__dirname, '../src/ts/renderer.ts')],
     'mishiro.live': [path.join(__dirname, '../src/ts/renderer-game.ts')],
