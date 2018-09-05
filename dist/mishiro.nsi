@@ -1,5 +1,5 @@
 !define PRODUCT_NAME "mishiro"
-!define PRODUCT_VERSION "1.3.6"
+!define PRODUCT_VERSION "1.4.2"
 !define PRODUCT_PUBLISHER "Toyobayashi"
 !define PRODUCT_WEB_SITE "https://github.com/toyobayashi/mishiro"
 !define PRODUCT_UNINST_KEY "Software\Microsoft\Windows\CurrentVersion\Uninstall\${PRODUCT_NAME}"
