@@ -1,12 +1,14 @@
 import { shell, ipcRenderer } from 'electron'
 import { Vue, Component, Prop } from 'vue-property-decorator'
-import fs from './fs-extra'
+import * as fs from 'fs-extra'
 import * as path from 'path'
 import TaskLoading from '../../vue/component/TaskLoading.vue'
 import InputText from '../../vue/component/InputText.vue'
 
-import { scoreDir, bgmDir, liveDir } from '../common/get-path'
+import getPath from './get-path'
 import { MasterData } from '../main/on-master-read'
+
+const { scoreDir, bgmDir, liveDir } = getPath
 
 @Component({
   components: {
@@ -55,7 +57,7 @@ export default class extends Vue {
   }
   async selectAudio (audio: any) {
     if (this.activeAudio.hash !== audio.hash) {
-      await this.playSe(this.enterSe)
+      this.playSe(this.enterSe)
 
       this.total = 0
       this.current = 0
@@ -178,7 +180,7 @@ export default class extends Vue {
     shell.openExternal(liveDir())
   }
   async startGame () {
-    await this.playSe(this.enterSe)
+    this.playSe(this.enterSe)
 
     if (this.isGameRunning) {
       this.event.$emit('alert', this.$t('home.errorTitle'), this.$t('live.gameRunning'))

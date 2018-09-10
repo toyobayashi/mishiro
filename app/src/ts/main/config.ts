@@ -1,12 +1,9 @@
 import * as fs from 'fs-extra'
-import { configPath } from '../common/get-path'
+import getPath from './get-path'
 
 declare namespace global {
   export let configurer: Configurer
-  export let fsExtra: typeof fs
 }
-
-global.fsExtra = fs
 
 export interface MishiroConfig {
   latestResVer?: number
@@ -44,7 +41,7 @@ export class Configurer {
     if (typeof obj === 'string') {
       this.config[obj] = value
       fs.writeJsonSync(this.configFile, this.config, { spaces: 2 })
-    } else if (typeof obj === 'object') {
+    } else {
       for (let k in obj) {
         let mishiroConfigKey = k as MishiroConfigKey
         if (obj[mishiroConfigKey]) {
@@ -68,6 +65,6 @@ export class Configurer {
   }
 }
 
-global.configurer = new Configurer(configPath)
+global.configurer = new Configurer(getPath.configPath)
 
 export default global.configurer

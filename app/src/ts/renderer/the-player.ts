@@ -1,7 +1,9 @@
-import fs from './fs-extra'
-import getPath, { bgmDir } from '../common/get-path'
+import * as fs from 'fs-extra'
+import getPath from './get-path'
 import { Vue, Component, Prop } from 'vue-property-decorator'
 import { MasterData } from '../main/on-master-read'
+
+const { bgmDir } = getPath
 
 const bgmList: any = {
   anni: {
@@ -107,21 +109,21 @@ export default class extends Vue {
     setTimeout(() => {
       clearInterval(this.bgmTimer as NodeJS.Timer)
       this.bgm.volume = 1
-      this.bgm.play()
+      this.bgm.play().catch(err => console.log(err))
       this.isPlaying = true
       if (this.startTime && this.endTime) {
         (this.bgm.onended as any) = null
         this.bgmTimer = setInterval(() => {
           if (this.bgm.currentTime >= this.endTime) {
             this.bgm.currentTime = this.startTime
-            this.bgm.play()
+            this.bgm.play().catch(err => console.log(err))
           }
         }, 1)
       } else {
         let windowbgm = this.bgm
         this.bgm.onended = function () {
           windowbgm.currentTime = 0
-          windowbgm.play()
+          windowbgm.play().catch(err => console.log(err))
         }
       }
     }, 0)

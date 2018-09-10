@@ -1,9 +1,9 @@
 import { ProgressInfo } from 'mishiro-core'
 import { remote } from 'electron'
+import * as request from 'request'
 
 let configurerR: typeof configurer = remote.getGlobal('configurer')
 let clientR: typeof client = remote.getGlobal('client')
-const core: typeof mishiroCore = remote.getGlobal('mishiroCore')
 
 let current = 0
 let max = 20
@@ -18,7 +18,7 @@ function httpGetVersion (resVer: number, progressing: (prog: ProgressInfo) => vo
     }
   }
   return new Promise((resolve) => {
-    core.util.request(option, (err) => {
+    request(option, (err) => {
       if (err) {
         resolve({ version: resVer, isExisting: false })
       } else {
@@ -64,7 +64,7 @@ async function check (progressing: (prog: ProgressInfo) => void) {
 
   let versionFrom = config.latestResVer as number
 
-  return new Promise((resolve) => {
+  return new Promise<number>((resolve, reject) => {
     let resVer = versionFrom
 
     function checkVersion (versionFrom: number) {
@@ -93,9 +93,9 @@ async function check (progressing: (prog: ProgressInfo) => void) {
           clientR.resVer = resVer.toString()
           resolve(resVer)
         }
-      })
+      }).catch(err => reject(err))
     }
     checkVersion(versionFrom)
-  }) as Promise<number>
+  })
 }
 export default check

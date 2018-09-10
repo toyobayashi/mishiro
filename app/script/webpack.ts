@@ -56,23 +56,27 @@ export function dev () {
 }
 
 export function prod (callback?: Function): Promise<void> {
-  return new Promise((resolve, reject) => {
-    webpack([main, renderer], (err, stats: any) => {
+  const webpackPromise = (option: webpack.Configuration) => new Promise<void>((resolve, reject) => {
+    webpack(option, (err, stats) => {
       if (err) {
         console.log(err)
-        reject(err)
-        return
+        return reject(err)
       }
-      if (callback) {
-        callback(stats)
-      } else {
-        console.log(stats.toString({
-          modules: false,
-          colors: true
-        }) + '\n')
-      }
+      console.log(stats.toString({
+        colors: true,
+        children: false,
+        entrypoints: false,
+        modules: false
+      }) + '\n')
       resolve()
     })
+  })
+
+  return Promise.all([
+    webpackPromise(main),
+    webpackPromise(renderer)
+  ]).then(() => {
+    if (callback) callback()
   })
 }
 

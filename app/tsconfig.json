@@ -1,11 +1,10 @@
 {
-  "extends": "./script/tsconfig.json",
+  "extends": "./tsconfig.base.json",
   "compilerOptions": {
     "experimentalDecorators": true,
     "strictPropertyInitialization": false,
     "module": "es6",
     "target": "es2017",
-    "resolveJsonModule": false,
     "sourceMap": true,
     "typeRoots": [
       "./node_modules/@types",

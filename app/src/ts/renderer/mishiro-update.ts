@@ -1,4 +1,4 @@
-import fs from './fs-extra'
+import * as fs from 'fs-extra'
 import * as path from 'path'
 import { Vue, Component, Prop, Emit } from 'vue-property-decorator'
 import { ProgressInfo } from 'mishiro-core'
@@ -7,10 +7,12 @@ import ProgressBar from '../../vue/component/ProgressBar.vue'
 import check from './check'
 
 import { ipcRenderer, Event } from 'electron'
-import getPath, { manifestPath, masterPath, bgmDir, iconDir } from '../common/get-path'
+import getPath from './get-path'
 import MishiroIdol from './mishiro-idol'
 import ThePlayer from './the-player'
 import { unpackTexture2D } from './win'
+
+const { manifestPath, masterPath, bgmDir, iconDir } = getPath
 
 @Component({
   components: {
@@ -102,7 +104,7 @@ export default class extends Vue {
         this.loading = prog.loading
       })
       if (masterLz4File) {
-        masterFile = this.core.util.lz4dec(masterLz4File as string, '.db')
+        masterFile = this.core.util.lz4dec(masterLz4File, '.db')
         fs.unlinkSync(masterLz4File)
         return masterFile
       } else throw new Error('Download failed.')

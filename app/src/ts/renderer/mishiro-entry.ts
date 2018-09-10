@@ -1,6 +1,6 @@
-import { cardDir } from '../common/get-path'
 import { Vue, Component } from 'vue-property-decorator'
-import fs from './fs-extra'
+import * as fs from 'fs-extra'
+import getPath from './get-path'
 
 @Component
 export default class extends Vue {
@@ -25,7 +25,7 @@ export default class extends Vue {
       let msrEvent = localStorage.getItem('msrEvent')
       if (msrEvent) {
         let o = JSON.parse(msrEvent)
-        if (fs.existsSync(cardDir(`bg_${o.card}.png`))) {
+        if (fs.existsSync(getPath.cardDir(`bg_${o.card}.png`))) {
           this.coverSrc = `../../asset/card/bg_${o.card}.png`
         }
       }

@@ -1,8 +1,11 @@
 import { remote } from 'electron'
 import { Vue, Component, Prop } from 'vue-property-decorator'
 import * as marked from 'marked'
-import getPath, { dataDir } from '../common/get-path'
-import fs from './fs-extra'
+import getPath from './get-path'
+import * as fs from 'fs-extra'
+import * as request from 'request'
+
+const { dataDir } = getPath
 
 @Component
 export default class extends Vue {
@@ -47,7 +50,7 @@ export default class extends Vue {
       json: true,
       headers
     }
-    this.core.util.request(releases, (err, _res, body) => {
+    request(releases, (err, _res, body) => {
       if (!err) {
         const latest = body[0]
         const version = latest.tag_name.substr(1)
@@ -63,7 +66,7 @@ export default class extends Vue {
           const exeUrl = exe ? exe.browser_download_url : null
           const patchUrl = patch ? patch.browser_download_url : null
 
-          this.core.util.request(tags, (err, _res, body) => {
+          request(tags, (err, _res, body) => {
             this.$emit('checked')
             if (!err) {
               const latestTag = body.filter((tag: any) => tag.name === latest.tag_name)[0]
@@ -94,7 +97,7 @@ export default class extends Vue {
     remote.app.exit(0)
     this.playSe(this.cancelSe)
   }
-  async cacheClear () {
+  cacheClear () {
     this.playSe(this.enterSe)
     const files = fs.readdirSync(dataDir())
     const deleteItem = []
@@ -104,7 +107,7 @@ export default class extends Vue {
     if (deleteItem.length) {
       Promise.all(deleteItem.map(item => fs.remove(item))).then(() => {
         this.event.$emit('alert', this.$t('menu.cacheClear'), this.$t('menu.cacheClearSuccess'))
-      })
+      }).catch(err => this.event.$emit('alert', this.$t('home.errorTitle'), err && err.message))
     } else this.event.$emit('alert', this.$t('menu.cacheClear'), this.$t('menu.noCache'))
   }
 

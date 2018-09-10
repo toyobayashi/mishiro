@@ -39,6 +39,6 @@ export default function () {
   })
 
   ipcMain.on('game', (event: Event, scoreFile: string, difficulty: string, bpm: number, audioFile: string) => {
-    onGame(event, scoreFile, difficulty, bpm, audioFile)
+    onGame(event, scoreFile, difficulty, bpm, audioFile).catch(err => console.log(err))
   })
 }

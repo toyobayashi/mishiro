@@ -79,7 +79,7 @@ const rankImg = newImage('./img.asar/rank.png')
 
 function playSe (se: HTMLAudioElement) {
   if (se.currentTime !== 0) se.currentTime = 0
-  se.play()
+  se.play().catch(err => console.log(err))
 }
 
 function newImage (src: string) {
@@ -284,7 +284,7 @@ function down (note: LongNote) {
       note.status = 1
       note.length = note.length - (note.y - Note.TOP_TO_BOTTOM)
       se.longLoop.loop = true
-      se.longLoop.play()
+      se.longLoop.play().catch(err => console.log(err))
     } else {
       playSe(se.clap)
     }
@@ -462,23 +462,23 @@ function keyup (path: number) {
 
 function keyBind () {
   window.addEventListener('keydown', (e) => {
-    switch (e.keyCode) {
-      case 67: keydown(1); break
-      case 86: keydown(2); break
-      case 66: keydown(3); break
-      case 78: keydown(4); break
-      case 77: keydown(5); break
+    switch (e.key) {
+      case 'c': keydown(1); break
+      case 'v': keydown(2); break
+      case 'b': keydown(3); break
+      case 'n': keydown(4); break
+      case 'm': keydown(5); break
       default: break
     }
   }, false)
 
   window.addEventListener('keyup', (e) => {
-    switch (e.keyCode) {
-      case 67: keyup(1); break
-      case 86: keyup(2); break
-      case 66: keyup(3); break
-      case 78: keyup(4); break
-      case 77: keyup(5); break
+    switch (e.key) {
+      case 'c': keyup(1); break
+      case 'v': keyup(2); break
+      case 'b': keyup(3); break
+      case 'n': keyup(4); break
+      case 'm': keyup(5); break
       default: break
     }
   }, false)

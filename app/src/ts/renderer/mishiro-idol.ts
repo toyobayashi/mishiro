@@ -2,14 +2,16 @@ import ProgressBar from '../../vue/component/ProgressBar.vue'
 import TabSmall from '../../vue/component/TabSmall.vue'
 import InputText from '../../vue/component/InputText.vue'
 
-import { cardDir, voiceDir } from '../common/get-path'
-import fs from './fs-extra'
+import getPath from './get-path'
+import * as fs from 'fs-extra'
 import * as path from 'path'
 import { ipcRenderer, shell } from 'electron'
 import { MasterData } from '../main/on-master-read'
 import { Vue, Component, Prop } from 'vue-property-decorator'
 import { ProgressInfo } from 'mishiro-core'
 import { unpackTexture2D } from './win'
+
+const { cardDir, voiceDir } = getPath
 
 @Component({
   components: {
@@ -269,7 +271,7 @@ export default class extends Vue {
 
       this.currentPractice = 'idol.before'
       if (navigator.onLine) {
-        this.changeBackground(card)
+        this.changeBackground(card).catch(err => console.log(err))
       }
     }
   }
@@ -286,6 +288,7 @@ export default class extends Vue {
           }
         } catch (errorPath) {
           this.event.$emit('alert', this.$t('home.errorTitle'), this.$t('home.downloadFailed') + '<br/>' + errorPath)
+          throw errorPath
         }
       } else {
         this.event.$emit('idolSelect', card.id)
@@ -375,7 +378,7 @@ export default class extends Vue {
           }
           let voiceFiles = charaVoiceFiles.concat(cardVoiceFiles)
           this.voice.src = voiceFiles[Math.floor(voiceFiles.length * Math.random())]
-          this.voice.play()
+          this.voice.play().catch(err => console.log(err))
         }
       }
     } else {
@@ -399,7 +402,7 @@ export default class extends Vue {
     Promise.all([Promise.all(acbs.map(acb => fs.remove(acb))), Promise.all(hcaDirs.map(hcaDir => fs.remove(hcaDir)))]).then(() => {
       this.imgProgress = 0
       this.voiceDisable = false
-    })
+    }).catch(err => console.log(err))
   }
   async downloadCard (id: number | string, _data?: any, progressing?: (prog: ProgressInfo) => void) {
 
@@ -447,13 +450,13 @@ export default class extends Vue {
       case 'idol.before':
         this.information = this.activeCard
         if (navigator.onLine) {
-          this.changeBackground(this.activeCard)
+          this.changeBackground(this.activeCard).catch(err => console.log(err))
         }
         break
       case 'idol.after':
         this.information = this.activeCardPlus
         if (navigator.onLine) {
-          this.changeBackground(this.activeCardPlus)
+          this.changeBackground(this.activeCardPlus).catch(err => console.log(err))
         }
         break
       default:

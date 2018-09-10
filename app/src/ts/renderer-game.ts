@@ -9,17 +9,17 @@ const prefix = 60
 window.addEventListener('load', () => {
   keyBind()
   let canvasLive = document.getElementById('live') as HTMLCanvasElement
-  if (canvasLive === null) return
 
   Note.CTX = canvasLive.getContext('2d') as CanvasRenderingContext2D
   let canvasIconBar = document.getElementById('iconBar') as HTMLCanvasElement
-  if (canvasIconBar === null) return
+
   Note.BACK_CTX = canvasIconBar.getContext('2d') as CanvasRenderingContext2D
   let ctxIconBar = Note.BACK_CTX
   let liveIcon = newImage('./img.asar/live_icon_857x114.png')
   liveIcon.addEventListener('load', function () {
     ctxIconBar.drawImage(this, 211.5, 586)
   }, false)
+
 }, false)
 
 ipcRenderer.on('start', (_event: Event, song: any, fromWindowId: number) => {
@@ -51,7 +51,7 @@ ipcRenderer.on('start', (_event: Event, song: any, fromWindowId: number) => {
     window.close()
   }, false)
 
-  music.play()
+  music.play().catch(err => console.log(err))
 })
 
 // tslint:disable-next-line:no-unused-expression

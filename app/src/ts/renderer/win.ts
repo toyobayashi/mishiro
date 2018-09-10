@@ -1,5 +1,5 @@
 import { remote, BrowserWindow, ipcRenderer } from 'electron'
-import getPath from '../common/get-path'
+import getPath from './get-path'
 import { format } from 'url'
 
 let id = ipcRenderer.sendSync('mainWindowId')

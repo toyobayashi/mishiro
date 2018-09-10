@@ -1,7 +1,8 @@
 import { shell } from 'electron'
-import { iconDir } from '../common/get-path'
 import { Vue, Component, Prop } from 'vue-property-decorator'
 import { MasterData } from '../main/on-master-read'
+import getPath from './get-path'
+
 @Component
 export default class extends Vue {
 
@@ -185,6 +186,6 @@ export default class extends Vue {
   }
   opendir () {
     this.playSe(this.enterSe)
-    shell.openExternal(iconDir())
+    shell.openExternal(getPath.iconDir())
   }
 }

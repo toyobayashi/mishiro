@@ -6,6 +6,7 @@ import * as HtmlWebpackPlugin from 'html-webpack-plugin'
 import { VueLoaderPlugin } from 'vue-loader'
 import * as path from 'path'
 import * as webpackNodeExternals from 'webpack-node-externals'
+import ForkTsCheckerWebpackPlugin = require('fork-ts-checker-webpack-plugin')
 
 export const mode = process.env.NODE_ENV === 'production' ? 'production' : 'development'
 const uglify = new UglifyJSPlugin({
@@ -51,6 +52,7 @@ const uglify = new UglifyJSPlugin({
 export const main: webpack.Configuration = {
   mode,
   target: 'electron-main',
+  context: path.join(__dirname, '..'),
   devtool: mode === 'production' ? void 0 : 'eval-source-map',
   entry: {
     'mishiro.main': [path.join(__dirname, '../src/ts/main.ts')]
@@ -67,7 +69,10 @@ export const main: webpack.Configuration = {
     rules: [{
       test: /\.ts$/,
       exclude: /node_modules/,
-      loader: 'ts-loader'
+      loader: 'ts-loader',
+      options: {
+        transpileOnly: true
+      }
     }/* , {
       test: /\.node$/,
       loader: 'native-addon-loader',
@@ -80,6 +85,11 @@ export const main: webpack.Configuration = {
   resolve: {
     extensions: ['.ts', '.js', '.json'/* , '.node' */]
   },
+  plugins: [
+    new ForkTsCheckerWebpackPlugin({
+      tslint: true
+    })
+  ],
   optimization: {
     minimizer: [uglify]
   }
@@ -90,6 +100,7 @@ export const main: webpack.Configuration = {
 export const renderer: webpack.Configuration = {
   mode,
   target: 'electron-renderer',
+  context: path.join(__dirname, '..'),
   devtool: mode === 'production' ? void 0 : 'eval-source-map',
   entry: {
     'mishiro.renderer': [path.join(__dirname, '../src/ts/renderer.ts')],
@@ -121,7 +132,8 @@ export const renderer: webpack.Configuration = {
       exclude: /node_modules/,
       loader: 'ts-loader',
       options: {
-        appendTsSuffixTo: [/\.vue$/]
+        appendTsSuffixTo: [/\.vue$/],
+        transpileOnly: true
       }
     }]
   },
@@ -132,6 +144,10 @@ export const renderer: webpack.Configuration = {
     whitelist: [/vue/]
   })],
   plugins: [
+    new ForkTsCheckerWebpackPlugin({
+      vue: true,
+      tslint: true
+    }),
     new MiniCssExtractPlugin({
       filename: '[name].css',
       chunkFilename: '[id].css'

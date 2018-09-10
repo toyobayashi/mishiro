@@ -1,9 +1,11 @@
 import { remote, ipcRenderer } from 'electron'
-import { iconDir/* , cardDir */ } from '../common/get-path'
+import getPath from './get-path'
 // import Downloader from './downloader'
 import { PluginFunction } from 'vue'
-import fs from './fs-extra'
+import * as fs from 'fs-extra'
 import * as path from 'path'
+
+const { iconDir } = getPath
 
 // const gameHostBase = 'http://storage.game.starlight-stage.jp/dl/resources'
 const imgHostBase = 'https://truecolor.kirara.ca'
@@ -29,7 +31,7 @@ const install: PluginFunction<undefined> = function (Vue) {
   Vue.prototype.playSe = function (se: HTMLAudioElement) { // 播放音效
     se.currentTime = 0
     setTimeout(() => {
-      se.play()
+      se.play().catch(err => console.log(err))
     }, 0)
   }
   // Vue.prototype.createCardBackgroundTask = function (cardIdArr: number[]) {

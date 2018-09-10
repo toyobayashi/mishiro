@@ -33,10 +33,12 @@
 import * as url from 'url'
 import InputRadio from '../component/InputRadio.vue'
 import { ipcRenderer, remote, Event } from 'electron'
-import getPath, { scoreDir, liveDir } from '../../ts/common/get-path'
+import getPath from '../../ts/renderer/get-path'
 import modalMixin from '../../ts/renderer/modal-mixin'
 import Component, { mixins } from 'vue-class-component'
 const BrowserWindow = remote.BrowserWindow
+const { scoreDir, liveDir } = getPath
+
 @Component({
   components: {
     InputRadio

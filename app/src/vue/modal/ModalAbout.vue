@@ -8,7 +8,7 @@
       </div>
       <div class="modal-body" :style="{ maxHeight: bodyMaxHeight }">
         <table class="table-bordered" border="1">
-          <tr v-for="line in lines">
+          <tr v-for="line in lines" :key="line.key">
             <td width="25%">{{line.key}}</td>
             <td width="75%">{{line.value}}</td>
           </tr>
@@ -60,4 +60,3 @@ export default class extends mixins(modalMixin) {
   }
 }
 </script>
-

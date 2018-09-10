@@ -1,6 +1,5 @@
 import '../css/mishiro.css'
 import './common/asar'
-import './renderer/fs-extra'
 import Vue from 'vue'
 import VueI18n from 'vue-i18n'
 import Mishiro from '../vue/Mishiro.vue'

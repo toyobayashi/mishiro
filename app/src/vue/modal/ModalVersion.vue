@@ -37,12 +37,14 @@ import { createWriteStream, existsSync } from 'fs-extra'
 import { shell, remote } from 'electron'
 import modalMixin from '../../ts/renderer/modal-mixin'
 import ProgressBar from '../component/ProgressBar.vue'
-import getPath, { downloadDir } from '../../ts/common/get-path'
+import getPath from '../../ts/renderer/get-path'
 import { ProgressInfo } from 'mishiro-core'
 import { unzip } from 'zauz'
 import * as http from 'http'
 import * as https from 'https'
 import Component, { mixins } from 'vue-class-component'
+
+const { downloadDir } = getPath
 
 function download (url: string, p: string, onData?: (prog: any) => void): Promise<void> {
   return new Promise((resolve, reject) => {

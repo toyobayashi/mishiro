@@ -109,11 +109,11 @@ export default class extends Vue {
         this.time = new Date().getTime()
       }, 1000)
       document.addEventListener('keyup', (e) => {
-        switch (e.keyCode) {
-          case 13:
+        switch (e.key) {
+          case 'Enter':
             this.event.$emit('enterKey', this.currentBlock)
             break
-          case 27:
+          case 'Escape':
             this.event.$emit('escKey')
             break
           default:
