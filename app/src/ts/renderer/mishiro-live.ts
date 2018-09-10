@@ -176,6 +176,8 @@ export default class extends Vue {
   }
   opendir () {
     this.playSe(this.enterSe)
+    if (!fs.existsSync(bgmDir())) fs.mkdirsSync(bgmDir())
+    if (!fs.existsSync(liveDir())) fs.mkdirsSync(liveDir())
     shell.openExternal(bgmDir())
     shell.openExternal(liveDir())
   }

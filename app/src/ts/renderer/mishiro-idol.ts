@@ -465,6 +465,7 @@ export default class extends Vue {
   }
   opendir () {
     this.playSe(this.enterSe)
+    if (!fs.existsSync(cardDir())) fs.mkdirsSync(cardDir())
     shell.openExternal(cardDir())
   }
 

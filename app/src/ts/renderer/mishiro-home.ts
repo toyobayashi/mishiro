@@ -42,6 +42,7 @@ export default class extends Vue {
 
   opendir () {
     this.playSe(this.enterSe)
+    if (!fs.existsSync(downloadDir())) fs.mkdirsSync(downloadDir())
     shell.openExternal(downloadDir())
   }
   query () {

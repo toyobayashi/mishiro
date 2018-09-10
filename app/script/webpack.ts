@@ -2,8 +2,10 @@ import * as webpack from 'webpack'
 import { main, renderer, mode } from './webpack.config'
 import { createServer, Socket } from 'net'
 
-if (mode === 'production') prod()
-else dev()
+if (require.main === module) {
+  if (mode === 'production') prod()
+  else dev()
+}
 
 export function dev () {
   let client: Socket | null = null
