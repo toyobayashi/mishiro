@@ -28,7 +28,9 @@ function copyExtra (root: string) {
   return Promise.all([
     path.join(__dirname, '../../asset/bgm'),
     path.join(__dirname, '../../asset/icon')
-  ].map(p => fs.copy(p, path.join(root, '../asset', path.basename(p)))))
+  ].map(p => {
+    return fs.existsSync(p) ? fs.copy(p, path.join(root, '../asset', path.basename(p))) : void 0
+  }))
 }
 
 function removeBuild (root: string) {
