@@ -20,8 +20,15 @@ window.addEventListener('beforeunload', () => {
 export function unpackTexture2D (assetbundle: string): Promise<string[]> {
   return new Promise((resolve, reject) => {
     let randomId = (Math.round(Math.random() * 346346) + new Date().getTime()).toString()
-    ipcRenderer.once(randomId, (_event: Event, err: Error | null, pngs: string[]) => {
-      if (err) return reject(err)
+    ipcRenderer.once(randomId, (_event: Event, err: { message: string; stack?: string } | null, pngs: string[]) => {
+      console.log(err)
+
+      if (err) {
+        const newErr = new Error()
+        newErr.message = err.message
+        newErr.stack = err.stack
+        return reject(newErr)
+      }
       resolve(pngs)
     });
 

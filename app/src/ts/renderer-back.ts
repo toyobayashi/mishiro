@@ -10,6 +10,9 @@ ipcRenderer.on('texture2d', (_event: Event, assetbundle: string, randomId: strin
     removeSync(assetbundle)
     fromWindow.webContents.send(randomId, null, result)
   }).catch(e => {
-    fromWindow.webContents.send(randomId, e, [])
+    fromWindow.webContents.send(randomId, {
+      message: e.message,
+      stack: e.stack
+    }, [])
   })
 })
