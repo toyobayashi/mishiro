@@ -1,5 +1,6 @@
 import '../css/mishiro.css'
 import './common/asar'
+import './renderer/developer-api'
 import Vue from 'vue'
 import VueI18n from 'vue-i18n'
 import Mishiro from '../vue/Mishiro.vue'
@@ -25,5 +26,5 @@ new Vue({
       en
     }
   }),
-  render: (h: Function) => h(Mishiro)
+  render: (h) => h(Mishiro)
 })

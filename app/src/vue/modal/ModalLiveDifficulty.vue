@@ -62,9 +62,11 @@ export default class extends mixins(modalMixin) {
   mounted () {
     this.$nextTick(() => {
       ipcRenderer.on('game', (_event: Event, obj: { src: string; bpm: number; score: any[][]; fullCombo: number;}) => {
+        const focusedWindow = BrowserWindow.getFocusedWindow()
+        if (!focusedWindow) return
         this.event.$emit('gameStart')
         this.event.$emit('pauseBgm')
-        const windowID = BrowserWindow.getFocusedWindow().id
+        const windowID = focusedWindow.id
 
         let win = new BrowserWindow({
           width: 1296,

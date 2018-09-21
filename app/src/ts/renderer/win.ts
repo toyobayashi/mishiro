@@ -4,7 +4,7 @@ import { format } from 'url'
 
 let id = ipcRenderer.sendSync('mainWindowId')
 
-let win: BrowserWindow | null = new remote.BrowserWindow({ width: 346, height: 346, show: false, parent: remote.BrowserWindow.fromId(id) })
+let win: BrowserWindow | null = new remote.BrowserWindow({ width: 346, height: 346, show: process.env.NODE_ENV !== 'production', parent: remote.BrowserWindow.fromId(id) })
 
 win.loadURL(format({
   pathname: getPath('./public/back.html'),

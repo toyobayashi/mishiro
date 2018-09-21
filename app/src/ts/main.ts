@@ -5,6 +5,8 @@ import './main/get-path'
 import './main/core'
 import ipc from './main/ipc'
 
+app.commandLine.appendSwitch('autoplay-policy', 'no-user-gesture-required')
+
 ipc()
 
 let mainWindow: BrowserWindow | null
@@ -36,7 +38,8 @@ function createWindow () {
   })
 }
 
-app.on('ready', createWindow)
+app.whenReady().then(createWindow).catch(err => console.log(err))
+// app.on('ready', createWindow)
 
 app.on('window-all-closed', function () {
   if (process.platform !== 'darwin') {
