@@ -42,8 +42,9 @@ export default class extends Vue {
 
   opendir () {
     this.playSe(this.enterSe)
-    if (!fs.existsSync(downloadDir())) fs.mkdirsSync(downloadDir())
-    shell.openExternal(downloadDir())
+    const dir = downloadDir()
+    if (!fs.existsSync(dir)) fs.mkdirsSync(dir)
+    process.platform === 'win32' ? shell.openExternal(dir) : shell.showItemInFolder(dir + '/.')
   }
   query () {
     if (this.queryString === '') {

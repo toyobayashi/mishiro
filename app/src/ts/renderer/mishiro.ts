@@ -32,6 +32,9 @@ const i18nTabs: any = {
   en: 'i18n.english'
 }
 
+const useResVer = require('electron').remote.getGlobal('configurer').getConfig().latestResVer
+// const useResVer = void 0
+
 @Component({
   components: {
     MishiroEntry,
@@ -104,7 +107,7 @@ export default class extends Vue {
 
   mounted () {
     this.$nextTick(() => {
-      if (process.env.NODE_ENV !== 'production') this.afterEnter(require('electron').remote.getGlobal('configurer').getConfig().latestResVer)
+      if (process.env.NODE_ENV !== 'production') this.afterEnter(useResVer)
       setInterval(() => {
         this.time = new Date().getTime()
       }, 1000)

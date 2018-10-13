@@ -108,7 +108,7 @@ async function main () {
   const root = process.platform === 'darwin' ? path.join(appPath, 'mishiro.app/Contents/Resources/app') : path.join(appPath, 'resources/app')
   await writePackageJson(root)
   if (process.argv.slice(2)[1] === 'install') {
-    execSync(`npm install --production --arch=${arch} --target_arch=${arch} --build-from-source --runtime=electron --target=3.0.0 --dist-url=https://atom.io/download/electron`, { cwd: root, stdio: 'inherit' })
+    execSync(`npm install --production --arch=${arch} --target_arch=${arch} --build-from-source --runtime=electron --target=3.0.4 --dist-url=https://atom.io/download/electron`, { cwd: root, stdio: 'inherit' })
     removeBuild(root)
     await packNodeModules(root)
   }

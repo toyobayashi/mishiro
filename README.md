@@ -23,44 +23,81 @@
 
 <!-- * [ IDOL ] Search idol card and download card background png from [starlight.kirara.ca](https://starlight.kirara.ca/) or character voice from game server. -->
 
-## Build
+## Develop & Build
 
-### Windows
-Require 
+### Windows Require
+ 
 * __Node.js 8+__
 * __Python 2.7__
 * __Visual Studio 2015/2017__
 * __.Net 4.5.1 (Windows 7 only)__  
-### MacOS
-Require 
+
+### MacOS Require
+ 
 * __Node.js 8+__
 * __Python 2.7__
-* __Xcode__ (install Command Line Tools by running ```xcode-select --install``` in your Terminal)
+* __Xcode__ (install Command Line Tools by running ```xcode-select --install``` in your terminal)
 
-### Start Building
-1. Clone.  
-``` bash 
-$ git clone https://github.com/toyobayashi/mishiro.git
-```
-2. Install dependencies. 
-``` bash
-$ cd mishiro/app
+### Linux Require
 
-# if mainland Chinese, recommend
-$ npm config set registry http://registry.npm.taobao.org/
-$ npm config set electron_mirror https://npm.taobao.org/mirrors/electron/
-# endif
+* __Node.js 8+__
+* __Python 2.7__
+* __gcc & g++__
+* __make__
 
-$ npm install
-```
-3. Bundle production code.  
-``` bash
-$ npm run prod
-```
-4. Start!  
-``` bash
-$ npm start
-```
+### Quick Start
+
+1. Clone  
+
+    ``` bash 
+    $ git clone https://github.com/toyobayashi/mishiro.git
+    ```
+
+2. Install  
+
+    ``` bash
+    $ cd mishiro/app
+
+    # if mainland Chinese, recommend
+    $ npm config set registry http://registry.npm.taobao.org/
+    $ npm config set electron_mirror https://npm.taobao.org/mirrors/electron/
+    # endif
+
+    # if you have not downloaded Electron's C++ header
+    $ npm install -g node-gyp
+    $ node-gyp install --target=3.0.4 --dist-url=https://atom.io/download/electron
+
+    # install dependencies
+    $ npm install
+    ```
+
+* Develop
+
+    Recommend VSCode.
+    
+    ``` bash
+    # ~/mishiro/code$ code .
+    $ npm run dev
+    $ npm start # or press [F5] in vscode
+    ```
+
+* Build  
+
+    ``` bash
+    $ npm run prod
+    ```
+
+* Launch  
+
+    ``` bash
+    $ npm start
+    ```
+
+* Pack
+
+    ``` bash
+    $ npm run pkg64 install
+    ```
 
 ## Reference
 Special thanks:   

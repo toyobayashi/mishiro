@@ -176,10 +176,17 @@ export default class extends Vue {
   }
   opendir () {
     this.playSe(this.enterSe)
-    if (!fs.existsSync(bgmDir())) fs.mkdirsSync(bgmDir())
-    if (!fs.existsSync(liveDir())) fs.mkdirsSync(liveDir())
-    shell.openExternal(bgmDir())
-    shell.openExternal(liveDir())
+    const dirb = bgmDir()
+    const dirl = liveDir()
+    if (!fs.existsSync(dirb)) fs.mkdirsSync(dirb)
+    if (!fs.existsSync(dirl)) fs.mkdirsSync(dirl)
+    if (process.platform === 'win32') {
+      shell.openExternal(dirb)
+      shell.openExternal(dirl)
+    } else {
+      shell.showItemInFolder(dirb + '/.')
+      shell.showItemInFolder(dirl + '/.')
+    }
   }
   async startGame () {
     this.playSe(this.enterSe)

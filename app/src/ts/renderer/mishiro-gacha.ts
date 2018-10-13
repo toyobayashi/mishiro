@@ -186,6 +186,7 @@ export default class extends Vue {
   }
   opendir () {
     this.playSe(this.enterSe)
-    shell.openExternal(getPath.iconDir())
+    const dir = getPath.iconDir()
+    process.platform === 'win32' ? shell.openExternal(dir) : shell.showItemInFolder(dir + '/.')
   }
 }

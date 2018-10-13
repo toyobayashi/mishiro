@@ -18,17 +18,24 @@ export const productionPackage = {
   dependencies: pkg.dependencies
 }
 
-export const packagerOptions: Options = {
+const packagerOptions: Options = {
   dir: join(__dirname, '..'),
   out: join(__dirname, '../..', 'dist'),
   // platform: 'win32',
   arch: arch,
-  icon: join(__dirname, '../src/res/icon', process.platform === 'win32' ? 'mishiro.ico' : 'mishiro.icns'),
   ignore: /node_modules|src|script|README|tslint\.json|tsconfig|package-lock\.json|\.git|\.vscode|\.npmrc/,
   appCopyright: 'Copyright (C) 2017 Toyobayashi',
   download: {
-    cache: join(homedir(), '.electron'),
+    cache: process.platform === 'win32' ? join(homedir(), '.electron') : join(homedir(), '.cache/electron'),
     mirror: process.env.npm_config_electron_mirror || 'https://npm.taobao.org/mirrors/electron/'
   },
   overwrite: true
 }
+
+if (process.platform === 'win32') {
+  packagerOptions.icon = join(__dirname, '../src/res/icon/mishiro.ico')
+} else if (process.platform === 'darwin') {
+  packagerOptions.icon = join(__dirname, '../src/res/icon/mishiro.icns')
+}
+
+export { packagerOptions }

@@ -1,5 +1,6 @@
 import './common/asar'
-import { app, BrowserWindow, ipcMain, Event } from 'electron'
+import { app, BrowserWindow, ipcMain, Event, BrowserWindowConstructorOptions, nativeImage } from 'electron'
+import { join } from 'path'
 import * as url from 'url'
 import './main/get-path'
 import './main/core'
@@ -13,13 +14,22 @@ let mainWindow: BrowserWindow | null
 
 function createWindow () {
   // Menu.setApplicationMenu(null)
-  mainWindow = new BrowserWindow({
+  const linuxIcon = require('../res/icon/mishiro.png')
+  const browerWindowOptions: BrowserWindowConstructorOptions = {
     width: 1296,
     height: 863,
     minWidth: 1080,
     minHeight: 700,
     backgroundColor: '#000000'
-  })
+  }
+  if (process.platform === 'linux') {
+    browerWindowOptions.icon = nativeImage.createFromPath(join(__dirname, linuxIcon))
+  } else {
+    if (process.env.NODE_ENV !== 'production') {
+      browerWindowOptions.icon = process.platform === 'win32' ? nativeImage.createFromPath(join(__dirname, '../src/res/mishiro.ico')) : nativeImage.createFromPath(join(__dirname, '../src/res/traveler.icns'))
+    }
+  }
+  mainWindow = new BrowserWindow(browerWindowOptions)
 
   mainWindow.loadURL(url.format({
     pathname: getPath('./public/index.html'),

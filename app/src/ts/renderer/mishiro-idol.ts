@@ -465,8 +465,9 @@ export default class extends Vue {
   }
   opendir () {
     this.playSe(this.enterSe)
-    if (!fs.existsSync(cardDir())) fs.mkdirsSync(cardDir())
-    shell.openExternal(cardDir())
+    const dir = cardDir()
+    if (!fs.existsSync(dir)) fs.mkdirsSync(dir)
+    process.platform === 'win32' ? shell.openExternal(dir) : shell.showItemInFolder(dir + '/.')
   }
 
   mounted () {

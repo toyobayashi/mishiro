@@ -10,43 +10,80 @@
 * [ GACHA ] 同步卡池抽到爽。
 * [ MENU ] 活动算分，设置等
 
-## 构建
+## 开发 & 构建
 
-### Windows
-需要 
+### Windows 需要
+
 * __Node.js 8+__
 * __Python 2.7__
 * __Visual Studio 2015/2017__
-* __.Net 4.5.1__ （只有Windows 7需要）
-### MacOS
-需要 
+* __.Net 4.5.1__ （只有 Windows 7 需要）
+
+### MacOS 需要  
+
 * __Node.js 8+__
 * __Python 2.7__
-* __Xcode__ （终端运行 ```xcode-select --install```安装Command Line Tools）
-### 开始构建
-1. 克隆这个git仓库。  
-``` bash 
-$ git clone https://github.com/toyobayashi/mishiro.git
-```
-2. 安装依赖。  
-``` bash 
-$ cd mishiro/app
+* __Xcode__ （终端运行 ```xcode-select --install``` 安装Command Line Tools）
 
-# 如果你在中国大陆，由于众所周知的原因，建议
-$ npm config set registry http://registry.npm.taobao.org/
-$ npm config set electron_mirror https://npm.taobao.org/mirrors/electron/
-# 建议结束
+### Linux 需要
 
-$ npm install
-```
-3. 打包生产环境代码。  
-``` bash 
-$ npm run prod
-```
-4. 走你！  
-``` bash 
-$ npm start
-```
+* __Node.js 8+__
+* __Python 2.7__
+* __gcc & g++__
+* __make__
+
+### 快速开始
+
+1. 拉代码  
+
+    ``` bash 
+    $ git clone https://github.com/toyobayashi/mishiro.git
+    ```
+
+2. 装依赖  
+
+    ``` bash
+    $ cd mishiro/app
+
+    # 设置国内镜像
+    $ npm config set registry http://registry.npm.taobao.org/
+    $ npm config set electron_mirror https://npm.taobao.org/mirrors/electron/
+
+    # 获取 Electron 用于编译原生模块的头文件
+    $ npm install -g node-gyp
+    $ node-gyp install --target=3.0.4 --dist-url=https://atom.io/download/electron
+
+    # 安装依赖
+    $ npm install
+    ```
+
+* 开发
+
+    推荐使用 VSCode
+    
+    ``` bash
+    # ~/mishiro/code$ code .
+    $ npm run dev
+    $ npm start # 或者直接在 VSCode 里按 [F5]
+    ```
+
+* 构建  
+
+    ``` bash
+    $ npm run prod
+    ```
+
+* 启动  
+
+    ``` bash
+    $ npm start
+    ```
+
+* 打包
+
+    ``` bash
+    $ npm run pkg64 install
+    ```
 
 ## 参考
 特别感谢：     

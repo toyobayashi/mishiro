@@ -73,6 +73,14 @@ export const main: webpack.Configuration = {
       options: {
         transpileOnly: true
       }
+    }, {
+      test: /\.(jpg|png|ico|icns)$/,
+      use: [{
+        loader: 'file-loader',
+        options: {
+          name: './[name].[ext]'
+        }
+      }]
     }/* , {
       test: /\.node$/,
       loader: 'native-addon-loader',
