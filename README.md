@@ -76,7 +76,7 @@
     Recommend VSCode.
     
     ``` bash
-    # ~/mishiro/code$ code .
+    # ~/mishiro/app$ code .
     $ npm run dev
     $ npm start # or press [F5] in vscode
     ```

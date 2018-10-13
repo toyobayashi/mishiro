@@ -62,7 +62,7 @@
     推荐使用 VSCode
     
     ``` bash
-    # ~/mishiro/code$ code .
+    # ~/mishiro/app$ code .
     $ npm run dev
     $ npm start # 或者直接在 VSCode 里按 [F5]
     ```
