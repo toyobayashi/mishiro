@@ -14,7 +14,7 @@ let mainWindow: BrowserWindow | null
 
 function createWindow () {
   // Menu.setApplicationMenu(null)
-  const linuxIcon = require('../res/icon/mishiro.png')
+  const linuxIcon = require('../res/icon/1024x1024.png')
   const browerWindowOptions: BrowserWindowConstructorOptions = {
     width: 1296,
     height: 863,

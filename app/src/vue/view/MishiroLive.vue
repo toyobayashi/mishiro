@@ -27,7 +27,7 @@
     <TaskLoading :total-loading="total" :current-loading="current" :text="text" :single="true" class="absolute-left" :color="'live'"/>
     <div class="gray-bg absolute-right flex-center timebar">
       <p>{{Math.floor(currentTime) | time}} / {{Math.floor(duration) | time}}</p>
-      <input type="range" ref="playProg" :max="duration" min="0" :value="currentTime" @input="oninput()">
+      <input type="range" ref="playProg" :max="duration" min="0" :value="currentTime" @input="oninput()" :style="{ 'background-size': 100 * (currentTime / duration) + '% 100%' }">
     </div>
   </div>
 </div>
@@ -90,9 +90,15 @@ input[type=range] {
   display: block;
   position: relative;
   width: 90%;
-  height: 30px;
+  margin-top: 10px;
+  height: 5px;
   -webkit-appearance: none;
-  background: none;
+  background-color: #aaa;
+  border-radius: 5px;
+  background-image: url("data:image/svg+xml;utf8,<svg xmlns='http://www.w3.org/2000/svg' version='1.1'><rect width='100%' height='100%' style='fill:rgb(64,208,34)' /></svg>");
+  background-repeat: no-repeat;
+  background-size: 0% 100%;
+  cursor: pointer;
   outline: none;
 }
 input[type=range]::-webkit-slider-thumb:hover {
@@ -107,30 +113,15 @@ input[type=range]::-webkit-slider-thumb {
   width: 18px;
   border-radius: 50%;
   background-color: #e0b5db;
-  cursor: pointer;
-  margin-top: -7px;
+  cursor: default;
   -webkit-box-shadow: 1px 1px 3px rgba(0, 0, 0, 0.4);
   box-shadow: 1px 1px 3px rgba(0, 0, 0, 0.4);
 }
-input[type=range]::-webkit-slider-runnable-track {
+/*input[type=range]::-webkit-slider-runnable-track {
   width: 100%;
   height: 4px;
   background-color: #aaa;
   border-radius: 4px;
   cursor: pointer;
-}
-/*
-input[type=range]::-webkit-fill-lower {
-  background-color: #85b200;
-}
-input[type=range]::-webkit-fill-upper {
-  background-color: #aaa;
-}
-
-input[type=range]::-webkit-ticks-before {
-  display: none;
-}
-input[type=range]::-webkit-ticks-after {
-  display: none;
 }*/
 </style>
