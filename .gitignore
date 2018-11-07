@@ -2,12 +2,12 @@ app/node_modules/
 app/script/manifest.json
 app/public/node/
 app/public/*
-!app/public/img.asar
-!app/public/font.asar
-!app/public/chara_title.asar
 !app/public/LICENSE.md
-!app/public/se.asar
-asset/
+asset/*
+!asset/chara_title.asar
+!asset/font.asar
+!asset/img.asar
+!asset/se.asar
 dist/*
 !dist/mishiro.nsi
 !dist/mishiro-x64.nsi

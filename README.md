@@ -23,7 +23,7 @@
 
 <!-- * [ IDOL ] Search idol card and download card background png from [starlight.kirara.ca](https://starlight.kirara.ca/) or character voice from game server. -->
 
-## Develop & Build
+## Development & Building
 
 ### Windows Require
  
@@ -42,7 +42,7 @@
 
 * __Node.js 8+__
 * __Python 2.7__
-* __gcc & g++__
+* __gcc__
 * __make__
 
 ### Quick Start
@@ -65,7 +65,7 @@
 
     # if you have not downloaded Electron's C++ header
     $ npm install -g node-gyp
-    $ node-gyp install --target=3.0.4 --dist-url=https://atom.io/download/electron
+    $ node-gyp install --target=3.0.8 --dist-url=https://atom.io/download/electron
 
     # install dependencies
     $ npm install
@@ -96,7 +96,8 @@
 * Pack
 
     ``` bash
-    $ npm run pkg64 install
+    $ npm run pkg64 # x64 
+    $ npm run pkg32 # Windows x86
     ```
 
 ## Reference

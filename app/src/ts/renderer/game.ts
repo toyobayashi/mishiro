@@ -67,15 +67,15 @@ function createAudio (src: string) {
 }
 
 let se = {
-  clap: createAudio('./se.asar/se_live_clap.mp3'),
-  fullcombo: createAudio('./se.asar/se_live_fullcombo.mp3'),
-  longLoop: createAudio('./se.asar/se_live_long_loop.mp3'),
-  tapGreat: createAudio('./se.asar/se_live_tap_great.mp3'),
-  tapNice: createAudio('./se.asar/se_live_tap_nice.mp3'),
-  tapPerfect: createAudio('./se.asar/se_live_tap_perfect.mp3')
+  clap: createAudio('../../asset/se.asar/se_live_clap.mp3'),
+  fullcombo: createAudio('../../asset/se.asar/se_live_fullcombo.mp3'),
+  longLoop: createAudio('../../asset/se.asar/se_live_long_loop.mp3'),
+  tapGreat: createAudio('../../asset/se.asar/se_live_tap_great.mp3'),
+  tapNice: createAudio('../../asset/se.asar/se_live_tap_nice.mp3'),
+  tapPerfect: createAudio('../../asset/se.asar/se_live_tap_perfect.mp3')
 }
 
-const rankImg = newImage('./img.asar/rank.png')
+const rankImg = newImage('../../asset/img.asar/rank.png')
 
 function playSe (se: HTMLAudioElement) {
   if (se.currentTime !== 0) se.currentTime = 0
@@ -91,7 +91,7 @@ function newImage (src: string) {
 class Note {
   static CTX: CanvasRenderingContext2D
   static BACK_CTX: CanvasRenderingContext2D
-  static IMG: HTMLImageElement = newImage('./img.asar/icon_notes.png')
+  static IMG: HTMLImageElement = newImage('../../asset/img.asar/icon_notes.png')
   static SPEED: number = 12 // x 60 px / s
   static PX_SPEED: number = Note.SPEED * 60 / 1000
   static TOP_TO_BOTTOM: number = 592

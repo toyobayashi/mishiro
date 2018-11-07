@@ -10,7 +10,7 @@ install:
 
     npm install -g node-gyp
 
-    node-gyp install --target=3.0.4 --dist-url=https://atom.io/download/electron
+    node-gyp install --target=3.0.8 --dist-url=https://atom.io/download/electron
 
     npm install
 build_script:

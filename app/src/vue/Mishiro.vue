@@ -29,7 +29,7 @@
   <ModalGachaCard :master="appData.master"/>
   <ModalOption :master="appData.master" :latestResVer="appData.latestResVer" v-model="currentLanguage"/>
   <ModalAlert/>
-  <img v-if="checking" :src="'./img.asar/spinner.gif'" class="spinner" />
+  <img v-if="checking" :src="'../../asset/img.asar/spinner.gif'" class="spinner" />
 </div>
 </template>
 

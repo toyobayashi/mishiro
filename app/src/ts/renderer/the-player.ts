@@ -155,11 +155,11 @@ export default class extends Vue {
     this.$nextTick(() => {
       // this.setStudioBgm();
       this.play()
-      let charaTitleVoiceArr = fs.readdirSync(getPath('./public/chara_title.asar'))
+      let charaTitleVoiceArr = fs.readdirSync(getPath('../asset/chara_title.asar'))
       for (let i = 0; i < charaTitleVoiceArr.length; i++) {
-        charaTitleVoiceArr[i] = './chara_title.asar/' + charaTitleVoiceArr[i]
+        charaTitleVoiceArr[i] = '../../asset/chara_title.asar/' + charaTitleVoiceArr[i]
       }
-      charaTitleVoiceArr.push('./se.asar/chara_title.mp3')
+      charaTitleVoiceArr.push('../../asset/se.asar/chara_title.mp3')
       this.playSe(new Audio(charaTitleVoiceArr[Math.floor(Math.random() * charaTitleVoiceArr.length)]));
       (window as any).bgm = this.bgm
       document.addEventListener('click', (e) => {

@@ -15,7 +15,7 @@ window.addEventListener('load', () => {
 
   Note.BACK_CTX = canvasIconBar.getContext('2d') as CanvasRenderingContext2D
   let ctxIconBar = Note.BACK_CTX
-  let liveIcon = newImage('./img.asar/live_icon_857x114.png')
+  let liveIcon = newImage('../../asset/img.asar/live_icon_857x114.png')
   liveIcon.addEventListener('load', function () {
     ctxIconBar.drawImage(this, 211.5, 586)
   }, false)

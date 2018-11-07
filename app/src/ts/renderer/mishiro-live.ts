@@ -257,7 +257,7 @@ export default class extends Vue {
       })
       ipcRenderer.on('liveEnd', (_event: Event, liveResult: any, isCompleted: boolean) => {
         this.isGameRunning = false
-        if (isCompleted) this.playSe(new Audio('./se.asar/se_live_wow.mp3'))
+        if (isCompleted) this.playSe(new Audio('../../asset/se.asar/se_live_wow.mp3'))
         this.event.$emit('showLiveResult', liveResult)
       })
     })

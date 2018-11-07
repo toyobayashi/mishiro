@@ -4,6 +4,7 @@ import * as marked from 'marked'
 import getPath from './get-path'
 import * as fs from 'fs-extra'
 import * as request from 'request'
+import license from './license'
 
 const { dataDir } = getPath
 
@@ -20,10 +21,10 @@ export default class extends Vue {
     this.playSe(this.enterSe)
     this.event.$emit('showAbout')
   }
-  async showLicense () {
+  showLicense () {
     this.playSe(this.enterSe)
     this.event.$emit('license')
-    this.event.$emit('alert', this.$t('menu.license'), marked(await fs.readFile(getPath('./public/LICENSE.md'), 'utf8')), 900)
+    this.event.$emit('alert', this.$t('menu.license'), marked(license), 900)
   }
   showVar () {
     this.playSe(this.enterSe)

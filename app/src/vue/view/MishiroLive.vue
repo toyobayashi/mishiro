@@ -10,15 +10,15 @@
   <div class="margin-top-10 clearfix live-middle">
     <div class="black-bg live-result absolute-left">
       <ul>
-        <li :class="{active:activeAudio.fileName === i.fileName}" v-for="i in bgmManifest" v-text="i.fileName" @click="selectAudio(i)"></li>
+        <li :class="{active:activeAudio.fileName === i.fileName}" v-for="i in bgmManifest" :key="i.hash" v-text="i.fileName" @click="selectAudio(i)"></li>
       </ul>
     </div>
     <div class="black-bg live-result absolute-right">
       <ul v-if="allLive">
-        <li :class="{active:activeAudio.fileName === i.fileName}" v-for="i in liveManifest" v-text="i.fileName" @click="selectAudio(i)"></li>
+        <li :class="{active:activeAudio.fileName === i.fileName}" v-for="i in liveManifest" :key="i.hash" v-text="i.fileName" @click="selectAudio(i)"></li>
       </ul>
       <ul v-else>
-        <li :class="{active:activeAudio.fileName === i.fileName}" v-for="i in liveQueryList" v-text="i.fileName" @click="selectAudio(i)"></li>
+        <li :class="{active:activeAudio.fileName === i.fileName}" v-for="i in liveQueryList" :key="i.hash" v-text="i.fileName" @click="selectAudio(i)"></li>
       </ul>
     </div>
   </div>

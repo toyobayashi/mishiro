@@ -21,7 +21,7 @@
   float: left;
   cursor: pointer;
   display: block;
-  background-image: url("./img.asar/tab_small.png");
+  background-image: url("../../asset/img.asar/tab_small.png");
   text-decoration:none;
   text-align: center;
   height: 32px;

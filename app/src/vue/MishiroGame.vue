@@ -1,6 +1,6 @@
 <template>
 <div style="position:fixed;width:100%;height:100%">
-  <img :src="'./img.asar/bg_live_4004.png'" class="img-middle">
+  <img :src="'../../asset/img.asar/bg_live_4004.png'" class="img-middle">
   <div style="background: rgba(0,0,0,0.5);position:fixed;width:100%;height:100%"></div>
   <TheLiveGauge :hp="liveResult.hp"/>
   <TheCombo :combo="liveResult.combo"/>
@@ -33,7 +33,7 @@ export default {
 }
 @font-face{
   font-family:'CGSS-B';
-  src:url(./font.asar/FRB.otf)
+  src:url(../../asset/font.asar/FRB.otf)
 }
 .canvas {
   position: fixed;
