@@ -1,6 +1,9 @@
 import * as webpack from 'webpack'
 import { main, renderer, mode } from './webpack.config'
-import { createServer, Socket } from 'net'
+import { Configuration } from 'webpack-dev-server'
+import * as mime from 'mime'
+import * as path from 'path'
+// import { createServer, Socket } from 'net'
 
 if (require.main === module) {
   if (mode === 'production') prod()
@@ -8,53 +11,110 @@ if (require.main === module) {
 }
 
 export function dev () {
-  let client: Socket | null = null
+  // let client: Socket | null = null
 
-  startServer()
-  webpackWatch()
+  // startServer()
+  // webpackWatch()
 
-  function webpackWatch () {
-    const mainCompiler = webpack(main)
-    const rendererCompiler = webpack(renderer)
-    const watchOptions = {
-      aggregateTimeout: 300,
-      poll: undefined
-    }
+  // function webpackWatch () {
+  //   const mainCompiler = webpack(main)
+  //   const rendererCompiler = webpack(renderer)
+  //   const watchOptions = {
+  //     aggregateTimeout: 300,
+  //     poll: undefined
+  //   }
 
-    mainCompiler.watch(watchOptions, watchHandler())
-    rendererCompiler.watch(watchOptions, watchHandler(() => {
-      if (client) client.write('reload')
-    }))
+  //   mainCompiler.watch(watchOptions, watchHandler())
+  //   rendererCompiler.watch(watchOptions, watchHandler(() => {
+  //     if (client) client.write('reload')
+  //   }))
 
-    function watchHandler (cb?: Function) {
-      return (err: Error, stats: webpack.Stats) => {
-        if (err) {
-          console.log(err)
-          return
-        }
-        if (cb) cb()
-        console.log(stats.toString({
-          colors: true,
-          children: false,
-          entrypoints: false,
-          modules: false
-        }) + '\n')
+  //   function watchHandler (cb?: Function) {
+  //     return (err: Error, stats: webpack.Stats) => {
+  //       if (err) {
+  //         console.log(err)
+  //         return
+  //       }
+  //       if (cb) cb()
+  //       console.log(stats.toString({
+  //         colors: true,
+  //         children: false,
+  //         entrypoints: false,
+  //         modules: false
+  //       }) + '\n')
+  //     }
+  //   }
+  // }
+
+  // function startServer () {
+  //   return createServer((sock) => {
+  //     sock.on('data', data => {
+  //       if (data.toString() === 'mishiro' && !client) {
+  //         client = sock
+  //       }
+  //     })
+
+  //     sock.on('close', () => (console.log('close'), client = null))
+  //     sock.on('error', (err) => console.log(err))
+  //   }).listen(3461, 'localhost', () => console.log('Socket server listening on ' + 3461))
+  // }
+  const { devServerHost, devServerPort, publicPath } = require('./config.json')
+  const toStringOptions: webpack.Stats.ToStringOptionsObject = {
+    colors: true,
+    children: false,
+    modules: false,
+    entrypoints: false
+  }
+  const mainCompiler = webpack(main)
+  mainCompiler.watch({
+    aggregateTimeout: 200,
+    poll: undefined
+  }, (err, stats) => console.log(err || (stats.toString(toStringOptions) + '\n')))
+
+  import('webpack-dev-server').then(devServer => {
+    const asar = require('asar')
+    const contentBase = path.join(__dirname, '../..')
+
+    const options: Configuration = {
+      stats: {
+        colors: true
+      },
+      host: devServerHost,
+      hotOnly: true,
+      inline: true,
+      contentBase,
+      publicPath: publicPath,
+      before (app) {
+        app.use((req, res, next) => {
+          if (req.path.includes('.asar/')) {
+            const fullPath: string = path.join(contentBase, req.path)
+            const archive = fullPath.substr(0, fullPath.indexOf('.asar' + path.sep) + 5)
+            const asarFile = fullPath.substr(fullPath.indexOf('.asar' + path.sep) + 6)
+            try {
+              const buffer = asar.extractFile(archive, asarFile)
+              res.set({
+                'Content-Type': mime.getType(asarFile),
+                'Content-Length': buffer.length
+              })
+              res.status(200)
+              res.send(buffer)
+            } catch (err) {
+              console.log(err)
+              res.status(404).send('404 Not Found.')
+            }
+          } else {
+            next()
+          }
+        })
       }
     }
-  }
+    devServer.addDevServerEntrypoints(renderer, options)
 
-  function startServer () {
-    return createServer((sock) => {
-      sock.on('data', data => {
-        if (data.toString() === 'mishiro' && !client) {
-          client = sock
-        }
-      })
-
-      sock.on('close', () => (console.log('close'), client = null))
-      sock.on('error', (err) => console.log(err))
-    }).listen(3461, 'localhost', () => console.log('Socket server listening on ' + 3461))
-  }
+    const server = new devServer(webpack(renderer), options)
+    server.listen(devServerPort, devServerHost, () => {
+      console.log('webpack server start.')
+    })
+  })
 }
 
 export function prod (callback?: Function): Promise<void> {
