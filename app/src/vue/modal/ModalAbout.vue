@@ -30,11 +30,12 @@
 
 <script lang="ts">
 import { remote, shell } from 'electron'
-import { execSync } from 'child_process'
 import modalMixin from '../../ts/renderer/modal-mixin'
 import Component, { mixins } from 'vue-class-component'
 
 declare function __non_webpack_require__ (module: string): any
+
+const execSync = remote.getGlobal('execSync')
 
 @Component
 export default class extends mixins(modalMixin) {

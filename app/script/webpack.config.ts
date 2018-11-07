@@ -1,24 +1,23 @@
 ﻿import * as webpack from 'webpack'
 import * as MiniCssExtractPlugin from 'mini-css-extract-plugin'
 import * as OptimizeCSSAssetsPlugin from 'optimize-css-assets-webpack-plugin'
-import * as UglifyJSPlugin from 'uglifyjs-webpack-plugin'
 import * as HtmlWebpackPlugin from 'html-webpack-plugin'
 import { VueLoaderPlugin } from 'vue-loader'
 import * as path from 'path'
 import * as webpackNodeExternals from 'webpack-node-externals'
 import ForkTsCheckerWebpackPlugin = require('fork-ts-checker-webpack-plugin')
+import { publicPath } from './config.json'
+const TerserWebpackPlugin = require('terser-webpack-plugin')
 
 export const mode = process.env.NODE_ENV === 'production' ? 'production' : 'development'
-const uglify = new UglifyJSPlugin({
+const uglify = new TerserWebpackPlugin({
   parallel: true,
   cache: true,
-  uglifyOptions: {
+  terserOptions: {
     ecma: 8,
     output: {
-      comments: false,
       beautify: false
-    },
-    warnings: false
+    }
   }
 })
 
@@ -58,13 +57,10 @@ export const main: webpack.Configuration = {
     'mishiro.main': [path.join(__dirname, '../src/ts/main.ts')]
   },
   output: {
-    path: path.join(__dirname, '../public'),
+    path: path.join(__dirname, '../..', publicPath),
     filename: '[name].js'
   },
-  node: {
-    __dirname: false,
-    __filename: false
-  },
+  node: false,
   module: {
     rules: [{
       test: /\.ts$/,
@@ -116,13 +112,11 @@ export const renderer: webpack.Configuration = {
     'mishiro.back': [path.join(__dirname, '../src/ts/renderer-back.ts')]
   },
   output: {
-    path: path.join(__dirname, '../public'),
+    path: path.join(__dirname, '../..', publicPath),
+    publicPath: mode !== 'production' ? publicPath : void 0,
     filename: '[name].js'
   },
-  node: {
-    __dirname: false,
-    __filename: false
-  },
+  node: false,
   module: {
     rules: [{
       test: /\.vue$/,
@@ -149,7 +143,7 @@ export const renderer: webpack.Configuration = {
     extensions: ['.ts', '.js', '.vue', '.css']
   },
   externals: [webpackNodeExternals({
-    whitelist: [/vue/]
+    whitelist: mode === 'production' ? [/vue/] : [/webpack/]
   })],
   plugins: [
     new ForkTsCheckerWebpackPlugin({
@@ -179,7 +173,8 @@ export const renderer: webpack.Configuration = {
       inject: false,
       template: path.join(__dirname, '../src/ts/template/back.template.ts'),
       filename: 'back.html'
-    })
+    }),
+    new webpack.HotModuleReplacementPlugin()
   ],
   optimization: {
     minimizer: [
