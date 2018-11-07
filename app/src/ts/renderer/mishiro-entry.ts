@@ -7,12 +7,12 @@ export default class extends Vue {
 
   bg: boolean | null = null
   isTouched: boolean = false
-  coverSrc: string = './img.asar/3rd_anniversary.png'
+  coverSrc: string = '../../asset/img.asar/3rd_anniversary.png'
 
   enter () {
     if (!this.isTouched) {
       this.isTouched = true
-      this.playSe(new Audio('./se.asar/se_title_start.mp3'))
+      this.playSe(new Audio('../../asset/se.asar/se_title_start.mp3'))
       this.$emit('touch')
       setTimeout(() => {
         this.$emit('enter')

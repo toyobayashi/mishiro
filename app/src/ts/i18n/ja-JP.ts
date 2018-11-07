@@ -171,6 +171,9 @@ export default {
     calculator: 'ｲﾍﾞﾝﾄpt計算',
     cacheClear: 'ｷｬｯｼｭクリア',
     cacheClearSuccess: 'キャッシュをクリアしました。',
-    noCache: 'キャッシュクリアの必要がありません。'
+    noCache: 'キャッシュクリアの必要がありません。',
+    commitHash: 'Commit',
+    commitDate: 'Date',
+    arch: 'Architecture'
   }
 }

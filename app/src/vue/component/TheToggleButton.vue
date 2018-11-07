@@ -12,7 +12,7 @@
   right:5px;
   width:65px;
   height:65px;
-  background-image:url('./img.asar/button_toggle.png');
+  background-image:url('../../asset/img.asar/button_toggle.png');
   background-position:0 -65px;
   cursor: pointer;
 }

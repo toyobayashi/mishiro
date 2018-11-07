@@ -164,13 +164,16 @@ export default {
     var: 'ATTENTION',
     varCon: 'The copyright of CGSS and its related content is held by BANDAI NAMCO Entertainment Inc. Do not use the resources got by this application for commercial use. The author of this application is not responsible for any legal dispute.',
     appname: 'APP name',
-    appver: 'version',
-    description: 'description',
+    appver: 'Version',
+    description: 'Description',
     descCon: 'CGSS desktop application.',
     exit: 'EXIT',
     calculator: 'CALC',
     cacheClear: 'CACHEC',
     cacheClearSuccess: 'Cache cleared.',
-    noCache: 'No cache.'
+    noCache: 'No cache.',
+    commitHash: 'Commit',
+    commitDate: 'Date',
+    arch: 'Architecture'
   }
 }

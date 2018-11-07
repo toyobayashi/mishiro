@@ -1,17 +1,22 @@
 <template>
 <div v-show="show" class="modal">
   <transition name="scale" @after-leave="afterLeave">
-    <div :style="{ width: modalWidth }" v-show="visible">
+    <div :style="{ width: '800px' }" v-show="visible">
       <div class="modal-header">
         <StaticTitleDot v-once/>
         <h4 class="modal-title">{{$t("menu.about")}}</h4>
       </div>
       <div class="modal-body" :style="{ maxHeight: bodyMaxHeight }">
         <table class="table-bordered" border="1">
-          <tr v-for="line in lines" :key="line.key">
-            <td width="25%">{{line.key}}</td>
-            <td width="75%">{{line.value}}</td>
-          </tr>
+          <tr><td width="25%">{{$t('menu.appname')}}</td><td width="75%">{{app.getName()}}</td></tr>
+          <tr><td width="25%">{{$t('menu.appver')}}</td><td width="75%">{{app.getVersion()}}</td></tr>
+          <tr><td width="25%">{{$t('menu.commitHash')}}</td><td width="75%">{{commit}}</td></tr>
+          <tr><td width="25%">{{$t('menu.commitDate')}}</td><td width="75%">{{commitDate}}</td></tr>
+          <tr><td width="25%">Electron</td><td width="75%">{{versions.electron}}</td></tr>
+          <tr><td width="25%">Chrome</td><td width="75%">{{versions.chrome}}</td></tr>
+          <tr><td width="25%">Node</td><td width="75%">{{versions.node}}</td></tr>
+          <tr><td width="25%">{{$t('menu.arch')}}</td><td width="75%">{{arch}}</td></tr>
+          <tr><td width="25%">{{$t('menu.description')}}</td><td width="75%">{{$t('menu.descCon')}}</td></tr>
         </table>
       </div>
       <div class="modal-footer">
@@ -25,25 +30,20 @@
 
 <script lang="ts">
 import { remote, shell } from 'electron'
+import { execSync } from 'child_process'
 import modalMixin from '../../ts/renderer/modal-mixin'
 import Component, { mixins } from 'vue-class-component'
+
+declare function __non_webpack_require__ (module: string): any
 
 @Component
 export default class extends mixins(modalMixin) {
 
-  data () {
-    return {
-      lines: [
-        { key: this.$t('menu.appname'), value: remote.app.getName() },
-        { key: this.$t('menu.appver'), value: remote.app.getVersion() },
-        { key: 'Electron', value: process.versions.electron },
-        { key: 'Chromium', value: process.versions.chrome },
-        { key: 'Node', value: process.versions.node },
-        { key: 'Architecture', value: process.arch },
-        { key: this.$t('menu.description'), value: this.$t('menu.descCon') }
-      ]
-    }
-  }
+  app = remote.app
+  versions = process.versions
+  arch = process.arch
+  commit = process.env.NODE_ENV === 'production' ? __non_webpack_require__('../package.json')._commit : execSync('git rev-parse HEAD', { cwd: require('path').join(__dirname, '..') }).toString().replace(/[\r\n]/g, '')
+  commitDate = process.env.NODE_ENV === 'production' ? __non_webpack_require__('../package.json')._commitDate : new Date((execSync('git log -1', { cwd: require('path').join(__dirname, '..') }).toString().match(/Date:\s*(.*?)\n/) as any)[1]).toISOString()
 
   showRepo () {
     shell.openExternal('https://github.com/toyobayashi/mishiro')

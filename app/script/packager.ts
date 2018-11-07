@@ -27,7 +27,11 @@ function writePackageJson (root: string) {
 function copyExtra (root: string) {
   return Promise.all([
     path.join(__dirname, '../../asset/bgm'),
-    path.join(__dirname, '../../asset/icon')
+    path.join(__dirname, '../../asset/icon'),
+    path.join(__dirname, '../../asset/chara_title.asar'),
+    path.join(__dirname, '../../asset/se.asar'),
+    path.join(__dirname, '../../asset/img.asar'),
+    path.join(__dirname, '../../asset/font.asar')
   ].map(p => {
     return fs.existsSync(p) ? fs.copy(p, path.join(root, '../asset', path.basename(p))) : void 0
   }))
@@ -62,6 +66,7 @@ function removeBuild (root: string) {
     'lame/binding.gyp',
     'lame/History.md',
     'lame/README.md',
+    'rijndael-js/test',
     '../package-lock.json'
   ]
   removeList.map(p => {
@@ -72,11 +77,10 @@ function removeBuild (root: string) {
   fs.writeFileSync(path.join(nodeModulesDir, 'lame/build/Release/bindings.node'), lameNode)
 }
 
-function packNodeModules (root: string) {
+function packAsar (root: string) {
   return new Promise<void>((resolve) => {
-    const nodeModulesDir = path.join(root, 'node_modules')
-    createPackageWithOptions(nodeModulesDir, path.join(root, 'node_modules.asar'), { unpack: '*.node' }, () => {
-      fs.removeSync(nodeModulesDir)
+    createPackageWithOptions(root, path.join(root, '../app.asar'), { unpack: '*.node' }, () => {
+      fs.removeSync(root)
       resolve()
     })
   })
@@ -175,11 +179,11 @@ async function main () {
   const [appPath] = await packageApp()
   const root = process.platform === 'darwin' ? path.join(appPath, 'mishiro.app/Contents/Resources/app') : path.join(appPath, 'resources/app')
   await writePackageJson(root)
-  if (process.argv.slice(2)[1] === 'install') {
-    execSync(`npm install --production --arch=${arch} --target_arch=${arch} --build-from-source --runtime=electron --target=3.0.4 --dist-url=https://atom.io/download/electron`, { cwd: root, stdio: 'inherit' })
-    removeBuild(root)
-    await packNodeModules(root)
-  }
+
+  execSync(`npm install --production --arch=${arch} --target_arch=${arch} --build-from-source --runtime=electron --target=${pkg.devDependencies.electron} --dist-url=https://atom.io/download/electron`, { cwd: root, stdio: 'inherit' })
+  removeBuild(root)
+  await packAsar(root)
+
   await copyExtra(root)
   const newPath = await rename(appPath)
   const size = await zipApp(newPath)

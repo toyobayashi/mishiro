@@ -171,6 +171,9 @@ export default {
     calculator: '活動估分',
     cacheClear: '清除緩存',
     cacheClearSuccess: '清除緩存成功。',
-    noCache: '無需清除緩存。'
+    noCache: '無需清除緩存。',
+    commitHash: '提交',
+    commitDate: '日期',
+    arch: '架構'
   }
 }

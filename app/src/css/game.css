@@ -4,7 +4,7 @@
 }
 @font-face{
   font-family:'CGSS-B';
-  src:url(./font.asar/FRB.otf)
+  src:url(../../asset/font.asar/FRB.otf)
 }
 .canvas {
   position: fixed;

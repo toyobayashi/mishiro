@@ -29,7 +29,7 @@
 
 * __Node.js 8+__
 * __Python 2.7__
-* __gcc & g++__
+* __gcc__
 * __make__
 
 ### 快速开始
@@ -51,7 +51,7 @@
 
     # 获取 Electron 用于编译原生模块的头文件
     $ npm install -g node-gyp
-    $ node-gyp install --target=3.0.4 --dist-url=https://atom.io/download/electron
+    $ node-gyp install --target=3.0.8 --dist-url=https://atom.io/download/electron
 
     # 安装依赖
     $ npm install
@@ -82,7 +82,8 @@
 * 打包
 
     ``` bash
-    $ npm run pkg64 install
+    $ npm run pkg64 # x64
+    $ npm run pkg32 # Windows x86
     ```
 
 ## 参考

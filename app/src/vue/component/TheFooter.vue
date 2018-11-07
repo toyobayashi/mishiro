@@ -30,7 +30,7 @@
   width: 116px;
   height: 66px;
   text-decoration: none;
-  background-image: url("./img.asar/footer.png");
+  background-image: url("../../asset/img.asar/footer.png");
 }
 .cgss-footer ul li:nth-child(1){
   width: 132px;

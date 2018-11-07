@@ -22,8 +22,8 @@ const install: PluginFunction<undefined> = function (Vue) {
   // 全局属性
   Vue.prototype.event = new Vue({}) // 全局事件总站
   Vue.prototype.bgm = new Audio() // 背景音乐
-  Vue.prototype.enterSe = new Audio('./se.asar/se_common_enter.mp3') // 确认音效
-  Vue.prototype.cancelSe = new Audio('./se.asar/se_common_cancel.mp3') // 取消音效
+  Vue.prototype.enterSe = new Audio('../../asset/se.asar/se_common_enter.mp3') // 确认音效
+  Vue.prototype.cancelSe = new Audio('../../asset/se.asar/se_common_cancel.mp3') // 取消音效
   Vue.prototype.configurer = remote.getGlobal('configurer')
   Vue.prototype.core = remote.getGlobal('mishiroCore')
 

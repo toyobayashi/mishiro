@@ -7,13 +7,13 @@
     }" :src="'../../asset/card/bg_' + backgroundId + '.png'" />
   </div>
   <div v-else>
-    <img :src="'./img.asar/bg_anim_icon.png'" id="symbol" />
-    <img :src="'./img.asar/bg_anim_circle.png'" id="colorCircle1" />
-    <img :src="'./img.asar/bg_anim_circle.png'" id="colorCircle2" />
-    <img :src="'./img.asar/bg_anim_circle.png'" id="colorCircle3" />
-    <img :src="'./img.asar/bg_anim_circle_01.png'" id="grayCircle1" />
-    <img :src="'./img.asar/bg_anim_circle_02.png'" id="grayCircle2" />
-    <img :src="'./img.asar/bg_anim_circle_02.png'" id="grayCircle3" />
+    <img :src="'../../asset/img.asar/bg_anim_icon.png'" id="symbol" />
+    <img :src="'../../asset/img.asar/bg_anim_circle.png'" id="colorCircle1" />
+    <img :src="'../../asset/img.asar/bg_anim_circle.png'" id="colorCircle2" />
+    <img :src="'../../asset/img.asar/bg_anim_circle.png'" id="colorCircle3" />
+    <img :src="'../../asset/img.asar/bg_anim_circle_01.png'" id="grayCircle1" />
+    <img :src="'../../asset/img.asar/bg_anim_circle_02.png'" id="grayCircle2" />
+    <img :src="'../../asset/img.asar/bg_anim_circle_02.png'" id="grayCircle3" />
   </div>
 </div>
 </template>
