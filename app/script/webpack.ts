@@ -2,6 +2,7 @@ import * as webpack from 'webpack'
 import { main, renderer, mode } from './webpack.config'
 import { Configuration } from 'webpack-dev-server'
 import * as path from 'path'
+import { removeSync } from 'fs-extra'
 // import { createServer, Socket } from 'net'
 
 const toStringOptions: webpack.Stats.ToStringOptionsObject = {
@@ -64,6 +65,7 @@ export function dev () {
   //     sock.on('error', (err) => console.log(err))
   //   }).listen(3461, 'localhost', () => console.log('Socket server listening on ' + 3461))
   // }
+  if (renderer.output && renderer.output.path) removeSync(renderer.output.path)
   const { devServerHost, devServerPort, publicPath } = require('./config.json')
 
   const mainCompiler = webpack(main)

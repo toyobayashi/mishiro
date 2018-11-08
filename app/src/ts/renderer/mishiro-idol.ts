@@ -9,7 +9,7 @@ import { ipcRenderer, shell } from 'electron'
 import { MasterData } from '../main/on-master-read'
 import { Vue, Component, Prop } from 'vue-property-decorator'
 import { ProgressInfo } from 'mishiro-core'
-import { unpackTexture2D } from './win'
+import { unpackTexture2D } from './unpack-texture-2d'
 
 const { cardDir, voiceDir } = getPath
 

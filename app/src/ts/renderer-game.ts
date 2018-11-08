@@ -1,6 +1,6 @@
 import '../css/game.css'
 import { remote, ipcRenderer, Event } from 'electron'
-import { parse } from 'path'
+import { parse, relative } from 'path'
 import { Note, ShortNote, LongNote, newImage, keyBind, liveResult } from './renderer/game'
 import Vue from 'vue'
 import Game from '../vue/MishiroGame.vue'
@@ -31,7 +31,7 @@ ipcRenderer.on('start', (_event: Event, song: any, fromWindowId: number) => {
     const fromWindow = remote.BrowserWindow.fromId(fromWindowId)
     fromWindow.webContents.send('liveEnd', liveResult, isCompleted)
   })
-  let music = new Audio(song.src)
+  let music = process.env.NODE_ENV === 'production' ? new Audio(song.src) : new Audio(relative(__dirname, song.src))
   const msbp = 60 / song.bpm * 1000
   const DELAY = Note.DISTANCE / Note.PX_SPEED
   music.addEventListener('play', () => {
