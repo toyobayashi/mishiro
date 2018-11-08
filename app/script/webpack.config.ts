@@ -10,16 +10,6 @@ import { publicPath } from './config.json'
 const TerserWebpackPlugin = require('terser-webpack-plugin')
 
 export const mode = process.env.NODE_ENV === 'production' ? 'production' : 'development'
-const uglify = new TerserWebpackPlugin({
-  parallel: true,
-  cache: true,
-  terserOptions: {
-    ecma: 8,
-    output: {
-      beautify: false
-    }
-  }
-})
 
 /* export const dll: webpack.Configuration = {
   mode,
@@ -52,7 +42,6 @@ export const main: webpack.Configuration = {
   mode,
   target: 'electron-main',
   context: path.join(__dirname, '..'),
-  devtool: mode === 'production' ? void 0 : 'eval-source-map',
   entry: {
     'mishiro.main': [path.join(__dirname, '../src/ts/main.ts')]
   },
@@ -65,10 +54,7 @@ export const main: webpack.Configuration = {
     rules: [{
       test: /\.ts$/,
       exclude: /node_modules/,
-      loader: 'ts-loader',
-      options: {
-        transpileOnly: true
-      }
+      loader: 'ts-loader'
     }, {
       test: /\.(jpg|png|ico|icns)$/,
       use: [{
@@ -77,25 +63,11 @@ export const main: webpack.Configuration = {
           name: './[name].[ext]'
         }
       }]
-    }/* , {
-      test: /\.node$/,
-      loader: 'native-addon-loader',
-      options: {
-        name: './node/[name].[ext]'
-      }
-    } */]
+    }]
   },
   externals: [webpackNodeExternals()],
   resolve: {
-    extensions: ['.ts', '.js', '.json'/* , '.node' */]
-  },
-  plugins: [
-    new ForkTsCheckerWebpackPlugin({
-      tslint: true
-    })
-  ],
-  optimization: {
-    minimizer: [uglify]
+    extensions: ['.ts', '.js', '.json']
   }
 }
 
@@ -105,15 +77,13 @@ export const renderer: webpack.Configuration = {
   mode,
   target: 'electron-renderer',
   context: path.join(__dirname, '..'),
-  devtool: mode === 'production' ? void 0 : 'eval-source-map',
   entry: {
     'mishiro.renderer': [path.join(__dirname, '../src/ts/renderer.ts')],
-    'mishiro.live': [path.join(__dirname, '../src/ts/renderer-game.ts')],
-    'mishiro.back': [path.join(__dirname, '../src/ts/renderer-back.ts')]
+    'mishiro.live': [path.join(__dirname, '../src/ts/renderer-game.ts')]/* ,
+    'mishiro.back': [path.join(__dirname, '../src/ts/renderer-back.ts')] */
   },
   output: {
     path: path.join(__dirname, '../..', publicPath),
-    publicPath: mode !== 'production' ? publicPath : void 0,
     filename: '[name].js'
   },
   node: false,
@@ -126,17 +96,21 @@ export const renderer: webpack.Configuration = {
       test: /\.css$/,
       exclude: /node_modules/,
       use: [
-        MiniCssExtractPlugin.loader,
+        mode === 'production' ? MiniCssExtractPlugin.loader : 'vue-style-loader',
         { loader: 'css-loader', options: { url: false } }
       ]
     }, {
       test: /\.ts$/,
       exclude: /node_modules/,
-      loader: 'ts-loader',
-      options: {
-        appendTsSuffixTo: [/\.vue$/],
-        transpileOnly: true
-      }
+      use: [
+        {
+          loader: 'ts-loader',
+          options: {
+            appendTsSuffixTo: [/\.vue$/],
+            transpileOnly: mode !== 'production'
+          }
+        }
+      ]
     }]
   },
   resolve: {
@@ -146,19 +120,11 @@ export const renderer: webpack.Configuration = {
     whitelist: mode === 'production' ? [/vue/] : [/webpack/]
   })],
   plugins: [
-    new ForkTsCheckerWebpackPlugin({
-      vue: true,
-      tslint: true
-    }),
-    new MiniCssExtractPlugin({
-      filename: '[name].css',
-      chunkFilename: '[id].css'
-    }),
+    new VueLoaderPlugin(),
     /* new webpack.DllReferencePlugin({
       manifest: manifestJson,
       context: __dirname
     }), */
-    new VueLoaderPlugin(),
     new HtmlWebpackPlugin({
       inject: false,
       template: path.join(__dirname, '../src/ts/template/index.template.ts'),
@@ -168,19 +134,14 @@ export const renderer: webpack.Configuration = {
       inject: false,
       template: path.join(__dirname, '../src/ts/template/game.template.ts'),
       filename: 'game.html'
-    }),
+    })/* ,
     new HtmlWebpackPlugin({
       inject: false,
       template: path.join(__dirname, '../src/ts/template/back.template.ts'),
       filename: 'back.html'
-    }),
-    new webpack.HotModuleReplacementPlugin()
+    }) */
   ],
   optimization: {
-    minimizer: [
-      uglify,
-      new OptimizeCSSAssetsPlugin({})
-    ],
     splitChunks: {
       cacheGroups: {
         commons: {
@@ -191,4 +152,45 @@ export const renderer: webpack.Configuration = {
       }
     }
   }
+}
+
+if (mode === 'production') {
+  const terser = () => new TerserWebpackPlugin({
+    parallel: true,
+    cache: true,
+    terserOptions: {
+      ecma: 8,
+      output: {
+        beautify: false
+      }
+    }
+  })
+  main.optimization = {
+    minimizer: [terser()]
+  }
+  renderer.plugins = [
+    ...(renderer.plugins || []),
+    new MiniCssExtractPlugin({
+      filename: '[name].css',
+      chunkFilename: '[id].css'
+    })
+  ]
+  renderer.optimization = {
+    ...(renderer.optimization || {}),
+    minimizer: [
+      terser(),
+      new OptimizeCSSAssetsPlugin({})
+    ]
+  }
+} else {
+  renderer.devtool = main.devtool = 'eval-source-map'
+  if (renderer.output) renderer.output.publicPath = publicPath
+  renderer.plugins = [
+    ...(renderer.plugins || []),
+    new ForkTsCheckerWebpackPlugin({
+      vue: true,
+      tslint: true
+    }),
+    new webpack.HotModuleReplacementPlugin()
+  ]
 }

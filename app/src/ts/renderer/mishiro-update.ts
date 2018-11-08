@@ -10,7 +10,7 @@ import { ipcRenderer, Event } from 'electron'
 import getPath from './get-path'
 import MishiroIdol from './mishiro-idol'
 import ThePlayer from './the-player'
-import { unpackTexture2D } from './win'
+import { unpackTexture2D } from './unpack-texture-2d'
 
 const { manifestPath, masterPath, bgmDir, iconDir } = getPath
 

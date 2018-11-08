@@ -78,11 +78,16 @@ export default class extends mixins(modalMixin) {
           backgroundColor: '#000000'
         })
 
-        win.loadURL(url.format({
-          pathname: getPath('./public/game.html'),
-          protocol: 'file:',
-          slashes: true
-        }))
+        if (process.env.NODE_ENV === 'production') {
+          win.loadURL(url.format({
+            pathname: getPath('./public/game.html'),
+            protocol: 'file:',
+            slashes: true
+          }))
+        } else {
+          const { devServerHost, devServerPort, publicPath } = require('../../../script/config.json')
+          win.loadURL(`http://${devServerHost}:${devServerPort}${publicPath}game.html`)
+        }
 
         win.webContents.on('did-finish-load', function () {
           win.webContents.send('start', obj, windowID)

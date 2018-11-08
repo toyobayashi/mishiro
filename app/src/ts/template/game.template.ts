@@ -3,7 +3,7 @@ export default `<!DOCTYPE html>
 <head>
   <meta charset="UTF-8">
   <title></title>
-  <link id="css" rel="stylesheet" type="text/css" href="./mishiro.live.css" />
+  ${process.env.NODE_ENV === 'production' ? '<link id="css" rel="stylesheet" type="text/css" href="./mishiro.live.css"/>' : ''}
 </head>
 <body>
   <div id="app"></div>
