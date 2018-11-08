@@ -1,9 +1,15 @@
 import * as webpack from 'webpack'
 import { main, renderer, mode } from './webpack.config'
 import { Configuration } from 'webpack-dev-server'
-import * as mime from 'mime'
 import * as path from 'path'
 // import { createServer, Socket } from 'net'
+
+const toStringOptions: webpack.Stats.ToStringOptionsObject = {
+  colors: true,
+  children: false,
+  modules: false,
+  entrypoints: false
+}
 
 if (require.main === module) {
   if (mode === 'production') prod()
@@ -59,53 +65,28 @@ export function dev () {
   //   }).listen(3461, 'localhost', () => console.log('Socket server listening on ' + 3461))
   // }
   const { devServerHost, devServerPort, publicPath } = require('./config.json')
-  const toStringOptions: webpack.Stats.ToStringOptionsObject = {
-    colors: true,
-    children: false,
-    modules: false,
-    entrypoints: false
-  }
+
   const mainCompiler = webpack(main)
   mainCompiler.watch({
     aggregateTimeout: 200,
     poll: undefined
   }, (err, stats) => console.log(err || (stats.toString(toStringOptions) + '\n')))
 
-  import('webpack-dev-server').then(devServer => {
-    const asar = require('asar')
+  Promise.all([
+    import('webpack-dev-server'),
+    import('./express-static-asar')
+  ]).then(([devServer, serveAsar]) => {
     const contentBase = path.join(__dirname, '../..')
 
     const options: Configuration = {
-      stats: {
-        colors: true
-      },
+      stats: toStringOptions,
       host: devServerHost,
       hotOnly: true,
       inline: true,
       contentBase,
-      publicPath: publicPath,
+      publicPath,
       before (app) {
-        app.use((req, res, next) => {
-          if (req.path.includes('.asar/')) {
-            const fullPath: string = path.join(contentBase, req.path)
-            const archive = fullPath.substr(0, fullPath.indexOf('.asar' + path.sep) + 5)
-            const asarFile = fullPath.substr(fullPath.indexOf('.asar' + path.sep) + 6)
-            try {
-              const buffer = asar.extractFile(archive, asarFile)
-              res.set({
-                'Content-Type': mime.getType(asarFile),
-                'Content-Length': buffer.length
-              })
-              res.status(200)
-              res.send(buffer)
-            } catch (err) {
-              console.log(err)
-              res.status(404).send('404 Not Found.')
-            }
-          } else {
-            next()
-          }
-        })
+        app.use(serveAsar(contentBase))
       }
     }
     devServer.addDevServerEntrypoints(renderer, options)
@@ -115,6 +96,49 @@ export function dev () {
       console.log('webpack server start.')
     })
   })
+
+  // import('webpack-dev-server').then(devServer => {
+  //   const asar = require('asar')
+  //   const contentBase = path.join(__dirname, '../..')
+
+  //   const options: Configuration = {
+  //     stats: toStringOptions,
+  //     host: devServerHost,
+  //     hotOnly: true,
+  //     inline: true,
+  //     contentBase,
+  //     publicPath: publicPath,
+  //     before (app) {
+  //       app.use((req, res, next) => {
+  //         if (req.path.includes('.asar/')) {
+  //           const fullPath: string = path.join(contentBase, req.path)
+  //           const archive = fullPath.substr(0, fullPath.indexOf('.asar' + path.sep) + 5)
+  //           const asarFile = fullPath.substr(fullPath.indexOf('.asar' + path.sep) + 6)
+  //           try {
+  //             const buffer = asar.extractFile(archive, asarFile)
+  //             res.set({
+  //               'Content-Type': mime.getType(asarFile),
+  //               'Content-Length': buffer.length
+  //             })
+  //             res.status(200)
+  //             res.send(buffer)
+  //           } catch (err) {
+  //             console.log(err)
+  //             res.status(404).send('404 Not Found.')
+  //           }
+  //         } else {
+  //           next()
+  //         }
+  //       })
+  //     }
+  //   }
+  //   devServer.addDevServerEntrypoints(renderer, options)
+
+  //   const server = new devServer(webpack(renderer), options)
+  //   server.listen(devServerPort, devServerHost, () => {
+  //     console.log('webpack server start.')
+  //   })
+  // })
 }
 
 export function prod (callback?: Function): Promise<void> {
@@ -124,12 +148,7 @@ export function prod (callback?: Function): Promise<void> {
         console.log(err)
         return reject(err)
       }
-      console.log(stats.toString({
-        colors: true,
-        children: false,
-        entrypoints: false,
-        modules: false
-      }) + '\n')
+      console.log(stats.toString(toStringOptions) + '\n')
       resolve()
     })
   })
