@@ -44,7 +44,7 @@ export default class extends mixins(modalMixin) {
   versions = process.versions
   arch = process.arch
   commit = process.env.NODE_ENV === 'production' ? __non_webpack_require__('../package.json')._commit : execSync('git rev-parse HEAD', { cwd: require('path').join(__dirname, '..') }).toString().replace(/[\r\n]/g, '')
-  commitDate = process.env.NODE_ENV === 'production' ? __non_webpack_require__('../package.json')._commitDate : new Date((execSync('git log -1', { cwd: require('path').join(__dirname, '..') }).toString().match(/Date:\s*(.*?)\n/) as any)[1]).toISOString()
+  commitDate = process.env.NODE_ENV === 'production' ? __non_webpack_require__('../package.json')._commitDate : new Date(execSync('git log -1', { cwd: require('path').join(__dirname, '..') }).toString().match(/Date:\s*(.*?)\n/)[1]).toISOString()
 
   showRepo () {
     shell.openExternal('https://github.com/toyobayashi/mishiro')

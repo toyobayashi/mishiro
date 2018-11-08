@@ -11,4 +11,4 @@ asset/*
 dist/*
 !dist/mishiro.nsi
 !dist/mishiro-x64.nsi
-config.json
+/config.json

@@ -1,4 +1,4 @@
-version: 1.5.1-{build}
+version: 1.5.2-{build}
 image: Visual Studio 2017
 install:
 - cmd: >-
@@ -14,5 +14,5 @@ install:
 
     npm install
 build_script:
-- cmd: npm run pkg64 install
+- cmd: npm run pkg64
 test: off

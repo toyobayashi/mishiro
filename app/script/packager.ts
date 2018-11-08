@@ -41,7 +41,6 @@ function removeBuild (root: string) {
   const nodeModulesDir = path.join(root, 'node_modules')
   const lameNode = fs.readFileSync(path.join(nodeModulesDir, 'lame/build/Release/bindings.node'))
   const removeList = [
-    '.bin',
     'nan',
     'sqlite3/build',
     'sqlite3/deps',
