@@ -74,7 +74,7 @@ export function dev () {
 
   Promise.all([
     import('webpack-dev-server'),
-    import('./express-static-asar')
+    import('express-serve-asar')
   ]).then(([devServer, serveAsar]) => {
     const contentBase = path.join(__dirname, '../..')
 
