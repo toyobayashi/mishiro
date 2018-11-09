@@ -11,6 +11,7 @@ declare module 'vue/types/vue' {
     cancelSe: HTMLAudioElement
     configurer: typeof configurer
     core: typeof mishiroCore
+    updater: import('electron-github-asar-updater')
 
     createCardIconTask: (cardIdArr: number[]) => string[][]
     playSe: (se: HTMLAudioElement) => void

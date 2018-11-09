@@ -1,11 +1,15 @@
 import configurer from './config'
 import * as core from 'mishiro-core'
 import { execSync as system } from 'child_process'
+import * as Updater from 'electron-github-asar-updater'
+
+const updater = new Updater('toyobayashi/mishiro')
 
 declare namespace global {
   export let mishiroCore: typeof core
   export let client: core.Client
   export let execSync: any
+  export let updater: Updater
 }
 
 global.mishiroCore = core
@@ -20,6 +24,8 @@ global.client = new core.Client(
 global.execSync = function (command: string) {
   return system(command)
 }
+
+global.updater = updater
 
 // @ts-ignore
 // namespace global {

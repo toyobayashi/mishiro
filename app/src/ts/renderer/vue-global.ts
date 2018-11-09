@@ -26,6 +26,7 @@ const install: PluginFunction<undefined> = function (Vue) {
   Vue.prototype.cancelSe = new Audio('../../asset/se.asar/se_common_cancel.mp3') // 取消音效
   Vue.prototype.configurer = remote.getGlobal('configurer')
   Vue.prototype.core = remote.getGlobal('mishiroCore')
+  Vue.prototype.updater = remote.getGlobal('updater')
 
   // 全局方法
   Vue.prototype.playSe = function (se: HTMLAudioElement) { // 播放音效
