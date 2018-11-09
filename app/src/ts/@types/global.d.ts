@@ -6,5 +6,6 @@ declare global {
   export const mishiroCore: typeof core
   export const client: core.Client
   export const getPath: typeof import('../main/get-path').default
+  export const updater: import('electron-github-asar-updater')
   // export const __non_webpack_require__: (module: string) => any
 }
