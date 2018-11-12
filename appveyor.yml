@@ -4,15 +4,15 @@ install:
 - cmd: >-
     node -v
 
-    npm -v
+    yarn --verison
 
     cd app
 
-    npm install -g node-gyp
+    yarn global add node-gyp
 
     node-gyp install --target=3.0.8 --dist-url=https://atom.io/download/electron
 
-    npm install
+    yarn
 build_script:
-- cmd: npm run pkg64
+- cmd: yarn run pkg64
 test: off
