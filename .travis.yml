@@ -6,6 +6,7 @@ os:
   - osx
 before_install:
   - node -v
+  - if [[ "$TRAVIS_OS_NAME" == "osx" ]]; then npm install -g yarn; fi
   - yarn --verison
   - cd app
   - yarn global add node-gyp
