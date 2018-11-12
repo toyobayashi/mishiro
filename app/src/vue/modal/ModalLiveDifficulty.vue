@@ -75,7 +75,8 @@ export default class extends mixins(modalMixin) {
           minHeight: 759,
           maxWidth: 1296,
           maxHeight: 759,
-          backgroundColor: '#000000'
+          backgroundColor: '#000000',
+          parent: focusedWindow
         })
 
         if (process.env.NODE_ENV === 'production') {
