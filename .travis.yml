@@ -6,7 +6,7 @@ os:
   - osx
 before_install:
   - node -v
-  - if [[ "$TRAVIS_OS_NAME" == "osx" ]]; then npm install -g yarn; fi
+  - if [[ "$TRAVIS_OS_NAME" == "osx" ]]; then brew install yarn --without-node; fi
   - yarn --verison
   - cd app
   - yarn global add node-gyp
@@ -14,4 +14,4 @@ before_install:
 install:
   - yarn
 script:
- - npm run pkg64
+  - yarn run pkg64
