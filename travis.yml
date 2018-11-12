@@ -1,0 +1,16 @@
+language: node_js
+node_js:
+  - '10.13.0'
+os:
+  - linux
+  - osx
+before_install:
+  - node -v
+  - yarn --verison
+  - cd app
+  - yarn global add node-gyp
+  - node-gyp install --target=3.0.8 --dist-url=https://atom.io/download/electron
+install:
+  - yarn
+script:
+ - npm run pkg64
