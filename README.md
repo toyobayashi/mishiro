@@ -66,7 +66,7 @@
 
     # if you have not downloaded Electron's C++ header
     $ npm install -g node-gyp
-    $ node-gyp install --target=3.0.8 --dist-url=https://atom.io/download/electron
+    $ node-gyp install --target=3.0.9 --dist-url=https://atom.io/download/electron
 
     # install dependencies
     $ npm install

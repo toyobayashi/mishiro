@@ -10,7 +10,7 @@ install:
 
     yarn global add node-gyp
 
-    node-gyp install --target=3.0.8 --dist-url=https://atom.io/download/electron
+    node-gyp install --target=3.0.9 --dist-url=https://atom.io/download/electron
 
     yarn
 build_script:
