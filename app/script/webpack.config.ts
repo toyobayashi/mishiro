@@ -126,14 +126,14 @@ export const renderer: webpack.Configuration = {
       context: __dirname
     }), */
     new HtmlWebpackPlugin({
-      inject: false,
       template: path.join(__dirname, '../src/ts/template/index.template.ts'),
-      filename: 'index.html'
+      filename: 'index.html',
+      chunks: ['mishiro.renderer', 'common', 'dll']
     }),
     new HtmlWebpackPlugin({
-      inject: false,
       template: path.join(__dirname, '../src/ts/template/game.template.ts'),
-      filename: 'game.html'
+      filename: 'game.html',
+      chunks: ['mishiro.live', 'common', 'dll']
     })/* ,
     new HtmlWebpackPlugin({
       inject: false,
@@ -143,11 +143,12 @@ export const renderer: webpack.Configuration = {
   ],
   optimization: {
     splitChunks: {
+      chunks: 'all',
+      name: 'common',
       cacheGroups: {
-        commons: {
+        dll: {
           test: /[\\/]node_modules[\\/]/,
-          name: 'dll',
-          chunks: 'all'
+          name: 'dll'
         }
       }
     }
@@ -171,8 +172,7 @@ if (mode === 'production') {
   renderer.plugins = [
     ...(renderer.plugins || []),
     new MiniCssExtractPlugin({
-      filename: '[name].css',
-      chunkFilename: '[id].css'
+      filename: '[name].css'
     })
   ]
   renderer.optimization = {
