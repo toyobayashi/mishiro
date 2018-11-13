@@ -47,7 +47,7 @@
     "cross-env": "^5.2.0",
     "css-loader": "^1.0.1",
     "cuint": "^0.2.2",
-    "electron": "3.0.8",
+    "electron": "3.0.9",
     "electron-packager": "^12.2.0",
     "express-serve-asar": "^1.0.1",
     "file-loader": "^2.0.0",
