@@ -1,14 +1,33 @@
+!include "MUI.nsh"
+!include "x64.nsh"
+!include "Library.nsh"
+
 !define PRODUCT_NAME "mishiro"
-!define PRODUCT_VERSION "1.4.2"
 !define PRODUCT_PUBLISHER "Toyobayashi"
 !define PRODUCT_WEB_SITE "https://github.com/toyobayashi/mishiro"
 !define PRODUCT_UNINST_KEY "Software\Microsoft\Windows\CurrentVersion\Uninstall\${PRODUCT_NAME}"
 !define PRODUCT_UNINST_ROOT_KEY "HKLM"
 !define PRODUCT_STARTMENU_REGVAL "NSIS:StartMenuDir"
 
-SetCompressor lzma
+!ifdef LIBRARY_X64
+  !define PROGRAM_FILES_MAP $PROGRAMFILES64
+  !define PRODUCT_ARCH "x64"
+!else
+  !define PROGRAM_FILES_MAP $PROGRAMFILES
+  !define PRODUCT_ARCH "ia32"
+!endif
 
-!include "MUI.nsh"
+!macro TIP_WHEN_AMD64_INSTALLER_RUNAT_X86
+  !ifdef LIBRARY_X64
+    ${If} ${RunningX64}
+    ${Else}
+      MessageBox MB_ICONINFORMATION|MB_OK "Please run this installer on x64 machines."
+      Abort
+    ${EndIf}
+  !endif
+!macroend
+
+SetCompressor lzma
 
 !define MUI_ABORTWARNING
 !define MUI_ICON "..\app\src\res\icon\mishiro.ico"
@@ -37,8 +56,8 @@ var ICONS_GROUP
 !insertmacro MUI_RESERVEFILE_INSTALLOPTIONS
 
 Name "${PRODUCT_NAME}-v${PRODUCT_VERSION}"
-OutFile "${PRODUCT_NAME}-v${PRODUCT_VERSION}-win32-ia32-setup.exe"
-InstallDir "$PROGRAMFILES\${PRODUCT_NAME}"
+OutFile "${PRODUCT_NAME}-v${PRODUCT_VERSION}-win32-${PRODUCT_ARCH}-setup.exe"
+InstallDir "${PROGRAM_FILES_MAP}\${PRODUCT_NAME}"
 ShowInstDetails show
 ShowUnInstDetails show
 BrandingText "https://github.com/toyobayashi/mishiro"
@@ -46,7 +65,7 @@ BrandingText "https://github.com/toyobayashi/mishiro"
 Section "MainSection" SEC01
   SetOutPath "$INSTDIR\*.*"
   SetOverwrite ifnewer
-  File /r "${PRODUCT_NAME}-v${PRODUCT_VERSION}-win32-ia32\*.*"
+  File /r "${PRODUCT_NAME}-v${PRODUCT_VERSION}-win32-${PRODUCT_ARCH}\*.*"
 
   !insertmacro MUI_STARTMENU_WRITE_BEGIN Application
   CreateDirectory "$SMPROGRAMS\$ICONS_GROUP"
@@ -63,12 +82,18 @@ Section -AdditionalIcons
 SectionEnd
 
 Section -Post
+  !ifdef LIBRARY_X64
+    SetRegView 64
+  !endif
   WriteUninstaller "$INSTDIR\uninst.exe"
   WriteRegStr ${PRODUCT_UNINST_ROOT_KEY} "${PRODUCT_UNINST_KEY}" "DisplayName" "$(^Name)"
   WriteRegStr ${PRODUCT_UNINST_ROOT_KEY} "${PRODUCT_UNINST_KEY}" "UninstallString" "$INSTDIR\uninst.exe"
   WriteRegStr ${PRODUCT_UNINST_ROOT_KEY} "${PRODUCT_UNINST_KEY}" "DisplayVersion" "${PRODUCT_VERSION}"
   WriteRegStr ${PRODUCT_UNINST_ROOT_KEY} "${PRODUCT_UNINST_KEY}" "URLInfoAbout" "${PRODUCT_WEB_SITE}"
   WriteRegStr ${PRODUCT_UNINST_ROOT_KEY} "${PRODUCT_UNINST_KEY}" "Publisher" "${PRODUCT_PUBLISHER}"
+  !ifdef LIBRARY_X64
+    SetRegView lastused
+  !endif
 SectionEnd
 
 Section Uninstall
@@ -78,12 +103,22 @@ Section Uninstall
   RMDir /r "$SMPROGRAMS\$ICONS_GROUP"
 
   RMDir /r "$INSTDIR"
-
+  !ifdef LIBRARY_X64
+    SetRegView 64
+  !endif
   DeleteRegKey ${PRODUCT_UNINST_ROOT_KEY} "${PRODUCT_UNINST_KEY}"
+  !ifdef LIBRARY_X64
+    SetRegView lastused
+  !endif
   SetAutoClose true
 SectionEnd
 
+Function .onInit
+  !insertmacro TIP_WHEN_AMD64_INSTALLER_RUNAT_X86
+FunctionEnd
+
 Function un.onInit
+  !insertmacro TIP_WHEN_AMD64_INSTALLER_RUNAT_X86
   MessageBox MB_ICONQUESTION|MB_YESNO|MB_DEFBUTTON2 "Do you want to uninstall $(^Name)? " IDYES +2
   Abort
 FunctionEnd
