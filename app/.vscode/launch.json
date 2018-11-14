@@ -11,10 +11,22 @@
         "runtimeExecutable": "${workspaceRoot}/node_modules/.bin/electron.cmd"
       },
       "runtimeArgs": [
+        "--remote-debugging-port=9222",
         "${workspaceRoot}"
       ],
       "sourceMaps": true,
       "protocol": "inspector"
+    },
+    {
+      "type": "chrome",
+      "request": "attach",
+      "name": "Attach to Chrome",
+      "port": 9222,
+      "webRoot": "${workspaceFolder}/..",
+      "sourceMaps": true,
+      "sourceMapPathOverrides": {
+        "webpack:///./*": "${webRoot}/app/*"
+      }
     }
   ]
 }
