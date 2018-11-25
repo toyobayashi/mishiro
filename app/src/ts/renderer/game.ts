@@ -104,6 +104,19 @@ class Game {
   public static H: number = 102
   public static DISTANCE: number = Game.TOP_TO_BOTTOM + Game.H
   public static RANGE: number = 100
+  public static init () {
+    keyBind()
+    let canvasLive = document.getElementById('live') as HTMLCanvasElement
+    Game.CTX = canvasLive.getContext('2d') as CanvasRenderingContext2D
+
+    let canvasIconBar = document.getElementById('iconBar') as HTMLCanvasElement
+    Game.BACK_CTX = canvasIconBar.getContext('2d') as CanvasRenderingContext2D
+
+    let liveIcon = newImage('../../asset/img.asar/live_icon_857x114.png')
+    liveIcon.addEventListener('load', function () {
+      Game.BACK_CTX.drawImage(this, 211.5, 586)
+    }, false)
+  }
   public static start (song: any, fromWindowId: number) {
     const prefix = 80
     let isCompleted = false

@@ -117,7 +117,7 @@ export const renderer: webpack.Configuration = {
     extensions: ['.ts', '.js', '.vue', '.css']
   },
   externals: [webpackNodeExternals({
-    whitelist: mode === 'production' ? [/vue/] : [/webpack/]
+    whitelist: mode === 'production' ? [/vue/] : [/webpack/, /vue-i18n/]
   })],
   plugins: [
     new VueLoaderPlugin(),
@@ -167,6 +167,7 @@ if (mode === 'production') {
     }
   })
   main.optimization = {
+    ...(main.optimization || {}),
     minimizer: [terser()]
   }
   renderer.plugins = [
