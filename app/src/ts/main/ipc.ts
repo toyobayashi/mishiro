@@ -4,6 +4,7 @@ import onMasterRead, { MasterData } from './on-master-read'
 import onManifestQuery from './on-manifest-query'
 import onManifestSearch from './on-manifest-search'
 import onGame from './on-game'
+import onLyrics from './on-lyrics'
 
 export default function () {
   let manifestData: any = {}
@@ -40,5 +41,9 @@ export default function () {
 
   ipcMain.on('game', (event: Event, scoreFile: string, difficulty: string, bpm: number, audioFile: string) => {
     onGame(event, scoreFile, difficulty, bpm, audioFile).catch(err => console.log(err))
+  })
+
+  ipcMain.on('lyrics', (event: Event, scoreFile: string) => {
+    onLyrics(event, scoreFile).catch(err => console.log(err))
   })
 }

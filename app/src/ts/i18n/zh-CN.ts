@@ -122,7 +122,8 @@ export default {
     noAudio: '未発現MP3文件。',
     start: '開始',
     gameRunning: 'LIVE正在進行。',
-    liveResult: 'LIVE成績'
+    liveResult: 'LIVE成績',
+    noLyrics: '無歌詞'
   },
   gacha: {
     ikkai: '単抽',

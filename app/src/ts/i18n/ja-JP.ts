@@ -122,7 +122,8 @@ export default {
     noAudio: 'MP3ファイルが見つかりませんでした。',
     start: '決定',
     gameRunning: 'ライブ進行中です。',
-    liveResult: 'ライブ成績'
+    liveResult: 'ライブ成績',
+    noLyrics: '歌詞なし'
   },
   gacha: {
     ikkai: '1回引く',

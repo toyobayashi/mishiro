@@ -25,9 +25,17 @@
   
   <div class="margin-top-20 clearfix live-bottom">
     <TaskLoading :total-loading="total" :current-loading="current" :text="text" :single="true" class="absolute-left" :color="'live'"/>
-    <div class="gray-bg absolute-right flex-center timebar">
-      <p>{{Math.floor(currentTime) | time}} / {{Math.floor(duration) | time}}</p>
-      <input type="range" ref="playProg" :max="duration" min="0" :value="currentTime" @input="oninput()" :style="{ 'background-size': 100 * (currentTime / duration) + '% 100%' }">
+    <div class="gray-bg absolute-right timebar">
+      <div style="width: 100%;">
+        <input type="range" ref="playProg" :max="duration" min="0" :value="currentTime" @input="oninput()" style="width: calc(100% - 130px);" :style="{ 'background-size': 100 * (currentTime / duration) + '% 100%' }">
+        <span style="display: inline-block; margin-left: 10px;">{{Math.floor(currentTime) | time}} / {{Math.floor(duration) | time}}</span>
+      </div>
+      <div class="lyrics" v-if="allLyrics.length">
+        <span @click="openLyrics" :style="{ color: lyrics.indexOf(l) === 0 ? '#902070' : '#000', 'font-size': lyrics.indexOf(l) === 0 ? '18px' : void 0 }" v-for="l in lyrics" :key="l.time">{{l.lyrics}}</span>
+      </div>
+      <div class="lyrics" style="justify-content: center;" v-else>
+        <span style="font-size: 25px;">{{$t('live.noLyrics')}}</span>
+      </div>
     </div>
   </div>
 </div>
@@ -39,6 +47,13 @@
 <style>
 .timebar{
   font-family: "CGSS-B";
+}
+.timebar .lyrics {
+  overflow: hidden;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  height: 65px;
 }
 .absolute-left{
   position: absolute;
