@@ -118,6 +118,7 @@ export default {
     decoding: '　解碼中...',
     input: '捜索Live曲',
     live: 'LIVE',
+    score: '譜面',
     noScore: '這首曲子没有譜面。',
     noAudio: '未発現MP3文件。',
     start: '開始',

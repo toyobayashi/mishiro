@@ -91,10 +91,19 @@ function newImage (src: string) {
   return img
 }
 
+const tapCanvas = document.createElement('canvas')
+const longLoopCanvas = document.createElement('canvas')
+tapCanvas.width = longLoopCanvas.width = tapCanvas.height = longLoopCanvas.height = 102
+const iconNotesImg = newImage('../../asset/img.asar/icon_notes.png')
+iconNotesImg.addEventListener('load', () => {
+  (tapCanvas.getContext('2d') as CanvasRenderingContext2D).drawImage(iconNotesImg, 0, 0, 102, 102, 0, 0, 102, 102);
+  (longLoopCanvas.getContext('2d') as CanvasRenderingContext2D).drawImage(iconNotesImg, 102, 0, 102, 102, 0, 0, 102, 102)
+})
+
 class Game {
   public static CTX: CanvasRenderingContext2D
   public static BACK_CTX: CanvasRenderingContext2D
-  public static IMG: HTMLImageElement = newImage('../../asset/img.asar/icon_notes.png')
+  // public static IMG: HTMLImageElement = newImage('../../asset/img.asar/icon_notes.png')
   public static SPEED: number = 12 // x 60 px / s
   public static PX_SPEED: number = Game.SPEED * 60 / 1000
   public static TOP_TO_BOTTOM: number = 592
@@ -184,7 +193,7 @@ class ShortNote extends Note {
 
   draw () {
     Game.CTX.drawImage(
-      Game.IMG,
+      tapCanvas,
       ShortNote.IMG_POSITION_X,
       ShortNote.IMG_POSITION_Y,
       Game.W,
@@ -222,7 +231,7 @@ class ShortNote extends Note {
 }
 
 class LongNote extends Note {
-  private static IMG_POSITION_X: number = 102
+  private static IMG_POSITION_X: number = 0
   private static IMG_POSITION_Y: number = 0
   status: number
   length: number
@@ -252,7 +261,7 @@ class LongNote extends Note {
     Game.CTX.fillStyle = 'rgba(255, 255, 255, 0.66)'
     Game.CTX.fill()
     Game.CTX.drawImage(
-      Game.IMG,
+      longLoopCanvas,
       LongNote.IMG_POSITION_X,
       LongNote.IMG_POSITION_Y,
       Game.W,
@@ -264,7 +273,7 @@ class LongNote extends Note {
     )
     if (this.status === 0) {
       Game.CTX.drawImage(
-        Game.IMG,
+        longLoopCanvas,
         LongNote.IMG_POSITION_X,
         LongNote.IMG_POSITION_Y,
         Game.W,

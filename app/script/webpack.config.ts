@@ -79,8 +79,8 @@ export const renderer: webpack.Configuration = {
   context: path.join(__dirname, '..'),
   entry: {
     'mishiro.renderer': [path.join(__dirname, '../src/ts/renderer.ts')],
-    'mishiro.live': [path.join(__dirname, '../src/ts/renderer-game.ts')]/* ,
-    'mishiro.back': [path.join(__dirname, '../src/ts/renderer-back.ts')] */
+    'mishiro.live': [path.join(__dirname, '../src/ts/renderer-game.ts')],
+    'mishiro.score': [path.join(__dirname, '../src/ts/renderer-score.ts')]
   },
   output: {
     path: path.join(__dirname, '../..', publicPath),
@@ -117,7 +117,7 @@ export const renderer: webpack.Configuration = {
     extensions: ['.ts', '.js', '.vue', '.css']
   },
   externals: [webpackNodeExternals({
-    whitelist: mode === 'production' ? [/vue/] : [/webpack/, /vue-i18n/]
+    whitelist: mode === 'production' ? [/vue/] : [/webpack/]
   })],
   plugins: [
     new VueLoaderPlugin(),
@@ -134,12 +134,12 @@ export const renderer: webpack.Configuration = {
       template: path.join(__dirname, '../src/ts/template/game.template.ts'),
       filename: 'game.html',
       chunks: ['mishiro.live', 'common', 'dll']
-    })/* ,
+    }),
     new HtmlWebpackPlugin({
-      inject: false,
-      template: path.join(__dirname, '../src/ts/template/back.template.ts'),
-      filename: 'back.html'
-    }) */
+      template: path.join(__dirname, '../src/ts/template/score.template.ts'),
+      filename: 'score.html',
+      chunks: mode === 'production' ? ['mishiro.score', 'common'] : ['mishiro.score', 'common', 'dll']
+    })
   ],
   optimization: {
     splitChunks: {

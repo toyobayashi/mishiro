@@ -1,4 +1,26 @@
-export default function (bgmManifest: any[], liveManifest: any[], musicData: any[], charaData: any[], liveData: any[], scoreManifest: any[]) {
+interface Manifest {
+  name: string
+  hash: string
+}
+
+interface BGM extends Manifest {
+  fileName: string
+}
+
+interface Live extends Manifest {
+  fileName: string
+  score?: string
+  scoreHash?: string
+  bpm?: number
+}
+
+interface Music {
+  id: number
+  name: string
+  bpm: number
+}
+
+export default function (bgmManifest: BGM[], liveManifest: Live[], musicData: Music[], charaData: any[], liveData: any[], scoreManifest: Manifest[]) {
   for (let i = 0; i < bgmManifest.length; i++) {
     let bgm = bgmManifest[i]
     let fileName = bgm.name.split('/')[1].split('.')[0] + '.mp3'
