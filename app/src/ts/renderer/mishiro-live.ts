@@ -309,7 +309,6 @@ export default class extends Vue {
         this.event.$emit('showLiveResult', liveResult)
       })
       ipcRenderer.on('lyrics', (_event: Event, lyrics: { time: number; lyrics: string; size: any }[]) => {
-        console.log(lyrics)
         this.allLyrics = lyrics
       })
     })
