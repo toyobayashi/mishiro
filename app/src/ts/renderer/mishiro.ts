@@ -24,6 +24,7 @@ import ModalOption from '../../vue/modal/ModalOption.vue'
 import ModalVersion from '../../vue/modal/ModalVersion.vue'
 import ModalCalculator from '../../vue/modal/ModalCalculator.vue'
 import ModalLiveDifficulty from '../../vue/modal/ModalLiveDifficulty.vue'
+import ModalScore from '../../vue/modal/ModalScore.vue'
 import ModalLiveResult from '../../vue/modal/ModalLiveResult.vue'
 
 const i18nTabs: any = {
@@ -59,6 +60,7 @@ const useResVer = require('electron').remote.getGlobal('configurer').getConfig()
     ModalOption,
     ModalCalculator,
     ModalLiveDifficulty,
+    ModalScore,
     ModalLiveResult
   }
 })

@@ -227,48 +227,59 @@ export default class extends Vue {
   openLyrics () {
     this.event.$emit('alert', path.parse(this.activeAudio.fileName).name, this.allLyrics.map(line => line.lyrics).join('<br/>'))
   }
-  async startGame () {
-    this.playSe(this.enterSe)
 
+  private async gameOrScore () {
     if (this.isGameRunning) {
       this.event.$emit('alert', this.$t('home.errorTitle'), this.$t('live.gameRunning'))
-      return
+      return false
     }
 
-    if (this.activeAudio.score) {
-      if (!fs.existsSync(liveDir(this.activeAudio.fileName))) {
-        this.event.$emit('alert', this.$t('home.errorTitle'), this.$t('live.noAudio'))
-        return
-      }
-      let isContinue = true
-      if (!fs.existsSync(scoreDir(this.activeAudio.score))) {
-        try {
-          // let scoreBdb = await this.scoreDownloader.downloadOne(
-          //   this.getDbUrl(this.activeAudio.scoreHash),
-          //   scoreDir(this.activeAudio.score.split('.')[0])
-          // )
-          let scoreBdb = await this.scoreDownloader.downloadDatabase(
-            this.activeAudio.scoreHash,
-            scoreDir(this.activeAudio.score.split('.')[0])
-          )
-          if (scoreBdb) {
-            // this.core.util.lz4dec(scoreBdb as string, 'bdb')
-            fs.removeSync(scoreDir(this.activeAudio.score.split('.')[0]))
-          } else {
-            isContinue = false
-            this.event.$emit('alert', this.$t('home.errorTitle'), 'Error!')
-          }
-        } catch (errorPath) {
-          isContinue = false
-          this.event.$emit('alert', this.$t('home.errorTitle'), this.$t('home.downloadFailed') + '<br/>' + errorPath)
-        }
-      }
-      if (isContinue) {
-        this.event.$emit('game', this.activeAudio)
-      }
-    } else {
+    if (!this.activeAudio.score) {
       this.event.$emit('alert', this.$t('home.errorTitle'), this.$t('live.noScore'))
+      return false
     }
+
+    if (!fs.existsSync(liveDir(this.activeAudio.fileName))) {
+      this.event.$emit('alert', this.$t('home.errorTitle'), this.$t('live.noAudio'))
+      return false
+    }
+
+    if (!fs.existsSync(scoreDir(this.activeAudio.score))) {
+      try {
+        // let scoreBdb = await this.scoreDownloader.downloadOne(
+        //   this.getDbUrl(this.activeAudio.scoreHash),
+        //   scoreDir(this.activeAudio.score.split('.')[0])
+        // )
+        let scoreBdb = await this.scoreDownloader.downloadDatabase(
+          this.activeAudio.scoreHash,
+          scoreDir(this.activeAudio.score.split('.')[0])
+        )
+        if (scoreBdb) {
+          // this.core.util.lz4dec(scoreBdb as string, 'bdb')
+          fs.removeSync(scoreDir(this.activeAudio.score.split('.')[0]))
+        } else {
+          this.event.$emit('alert', this.$t('home.errorTitle'), 'Error!')
+          return false
+        }
+      } catch (errorPath) {
+        this.event.$emit('alert', this.$t('home.errorTitle'), this.$t('home.downloadFailed') + '<br/>' + errorPath)
+        return false
+      }
+    }
+
+    return true
+  }
+
+  async startGame () {
+    this.playSe(this.enterSe)
+    const result = await this.gameOrScore()
+    if (result) this.event.$emit('game', this.activeAudio)
+  }
+
+  async startScore () {
+    this.playSe(this.enterSe)
+    const result = await this.gameOrScore()
+    if (result) this.event.$emit('score', this.activeAudio)
   }
 
   mounted () {
@@ -306,7 +317,8 @@ export default class extends Vue {
       ipcRenderer.on('liveEnd', (_event: Event, liveResult: any, isCompleted: boolean) => {
         this.isGameRunning = false
         if (isCompleted) this.playSe(new Audio('../../asset/se.asar/se_live_wow.mp3'))
-        this.event.$emit('showLiveResult', liveResult)
+        if (liveResult) this.event.$emit('showLiveResult', liveResult)
+        else this.event.$emit('playBgm')
       })
       ipcRenderer.on('lyrics', (_event: Event, lyrics: { time: number; lyrics: string; size: any }[]) => {
         this.allLyrics = lyrics

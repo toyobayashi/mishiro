@@ -118,6 +118,7 @@ export default {
     decoding: '　decoding...',
     input: 'SEARCH LIVE',
     live: 'LIVE',
+    score: 'SCORE',
     noScore: 'Score not found.',
     noAudio: 'MP3 file not found',
     start: 'START',

@@ -26,7 +26,7 @@ export default class extends Vue {
   liveResult = liveResult
   mounted () {
     this.$nextTick(() => {
-      ipcRenderer.on('start', (_event: Event, song: any, fromWindowId: number) => {
+      ipcRenderer.once('start', (_event: Event, song: any, fromWindowId: number) => {
         Game.start(song, fromWindowId)
       })
       Game.init()
@@ -34,45 +34,3 @@ export default class extends Vue {
   }
 }
 </script>
-
-<style>
-*{
-  margin: 0;
-  padding: 0;
-}
-@font-face{
-  font-family:'CGSS-B';
-  src:url(../../asset/font.asar/FRB.otf)
-}
-.canvas {
-  position: fixed;
-  left: 50%;
-  top: 50%;
-  transform: translate(-50%, -50%);
-}
-
-.canvas-middle {
-  width: 100%;
-}
-
-.canvas-center {
-  height: 100%;
-}
-
-.img-middle {
-  position: fixed;
-  bottom: 0;
-  left: 0;
-  width: 100%;
-  z-index: -1000;
-}
-
-.img-center {
-  position: fixed;
-  left: 50%;
-  top: 50%;
-  transform: translate(-50%, -50%);
-  height: 100%;
-  z-index: -1000;
-}
-</style>

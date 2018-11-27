@@ -23,6 +23,7 @@
   <ModalVersion/>
   <ModalAbout/>
   <ModalLiveDifficulty/>
+  <ModalScore/>
   <ModalLiveResult/>
   <ModalGachaInformation :master="appData.master"/>
   <ModalGachaHistory/>

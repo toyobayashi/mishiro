@@ -41,6 +41,7 @@ function createScore (csv: string, bpm: number) {
 export default async function (event: Event, scoreFile: string, difficulty: number | string, bpm: number, src: string) {
   let bdb = await openSqlite(scoreFile)
   let rows = await bdb._all('SELECT name, data FROM blobs')
+  bdb.close()
   let name = path.parse(scoreFile).name.split('_')
   let musicscores = name[0]
   let mxxx = name[1]
