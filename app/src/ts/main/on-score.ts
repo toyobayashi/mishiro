@@ -1,5 +1,5 @@
 import { openSqlite } from './sqlite3'
-import { Event } from 'electron'
+import { Event, ipcMain } from 'electron'
 
 export interface ScoreNote {
   sec: number // music time
@@ -33,6 +33,14 @@ function createScore (csv: string) {
   return { fullCombo, score }
 }
 
+let song: { src: string; bpm: number; score: ScoreNote[]; fullCombo: number } | null = null
+
+ipcMain.on('getSong', (event: Event) => {
+  const sync = song
+  song = null
+  event.returnValue = sync
+})
+
 export default async function (event: Event, scoreFile: string, difficulty: number | string, bpm: number, src: string) {
   let bdb = await openSqlite(scoreFile)
   let rows = await bdb._all(`SELECT data FROM blobs WHERE name LIKE "%/_${difficulty}.csv" ESCAPE '/'`)
@@ -43,6 +51,6 @@ export default async function (event: Event, scoreFile: string, difficulty: numb
 
   let { fullCombo, score } = createScore(data)
 
-  let obj = { src, bpm, score, fullCombo }
-  event.sender.send('score', obj)
+  song = { src, bpm, score, fullCombo }
+  event.sender.send('score')
 }

@@ -15,7 +15,7 @@
               <InputRadio text="Regular" value="2" v-model="difficulty" lable-id="s_2"/>
               <InputRadio text="Pro" value="3" v-model="difficulty" lable-id="s_3"/>
               <InputRadio text="Master" value="4" v-model="difficulty" lable-id="s_4"/>
-              <InputRadio text="Master+" value="5" v-model="difficulty" lable-id="s_5"/>
+              <InputRadio v-if="hasMasterPlus" text="Master+" value="5" v-model="difficulty" lable-id="s_5"/>
             </div>
           </div>
         </form>
@@ -33,11 +33,10 @@
 <script lang="ts">
 import * as url from 'url'
 import InputRadio from '../component/InputRadio.vue'
-import { ipcRenderer, remote, Event } from 'electron'
+import { ipcRenderer, remote, Event, BrowserWindow } from 'electron'
 import getPath from '../../ts/renderer/get-path'
 import modalMixin from '../../ts/renderer/modal-mixin'
 import Component, { mixins } from 'vue-class-component'
-const BrowserWindow = remote.BrowserWindow
 const { scoreDir, liveDir } = getPath
 
 @Component({
@@ -49,6 +48,7 @@ export default class extends mixins(modalMixin) {
 
   difficulty: string = '4'
   live: any = {}
+  hasMasterPlus: boolean
 
   start () {
     this.playSe(this.enterSe)
@@ -62,14 +62,13 @@ export default class extends mixins(modalMixin) {
   }
   mounted () {
     this.$nextTick(() => {
-      ipcRenderer.on('score', (_event: Event, obj: { src: string; bpm: number; score: any[]; fullCombo: number }) => {
-        const focusedWindow = BrowserWindow.getFocusedWindow()
-        if (!focusedWindow) return
+      ipcRenderer.on('score', (_event: Event) => {
+
         this.event.$emit('gameStart')
         this.event.$emit('pauseBgm')
-        const windowID = focusedWindow.id
+        const windowID = ipcRenderer.sendSync('mainWindowId')
 
-        let win = new BrowserWindow({
+        let win: BrowserWindow | null = new remote.BrowserWindow({
           width: 1296,
           height: 759,
           minWidth: 1296,
@@ -77,31 +76,33 @@ export default class extends mixins(modalMixin) {
           maxWidth: 1296,
           maxHeight: 759,
           backgroundColor: '#000000',
-          parent: focusedWindow
+          parent: remote.BrowserWindow.fromId(windowID)
         })
 
         if (process.env.NODE_ENV === 'production') {
           win.loadURL(url.format({
-            pathname: getPath('./public/score.html?from=' + windowID),
+            pathname: getPath('./public/score.html'),
             protocol: 'file:',
             slashes: true
           }))
         } else {
           const { devServerHost, devServerPort, publicPath } = require('../../../script/config.json')
-          win.loadURL(`http://${devServerHost}:${devServerPort}${publicPath}score.html?from=${windowID}`)
+          win.loadURL(`http://${devServerHost}:${devServerPort}${publicPath}score.html`)
+          win.webContents.openDevTools()
         }
 
-        win.webContents.on('did-finish-load', function () {
-          win.webContents.send('start', obj)
+        win.on('close', () => {
+          win = null
         })
 
         this.visible = false
       })
-      this.event.$on('score', (live: any) => {
+      this.event.$on('score', (live: any, hasMasterPlus: boolean) => {
         this.difficulty = '4'
         this.live = live
         this.show = true
         this.visible = true
+        this.hasMasterPlus = hasMasterPlus
       })
       this.event.$on('enterKey', (block: string) => {
         if (block === 'live' && this.visible) {

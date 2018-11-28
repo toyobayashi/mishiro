@@ -1,9 +1,10 @@
-import { shell, ipcRenderer } from 'electron'
+import { shell, ipcRenderer, Event } from 'electron'
 import { Vue, Component, Prop } from 'vue-property-decorator'
 import * as fs from 'fs-extra'
 import * as path from 'path'
 import TaskLoading from '../../vue/component/TaskLoading.vue'
 import InputText from '../../vue/component/InputText.vue'
+import { generateObjectId } from '../common/object-id'
 
 import getPath from './get-path'
 import { MasterData } from '../main/on-master-read'
@@ -279,7 +280,19 @@ export default class extends Vue {
   async startScore () {
     this.playSe(this.enterSe)
     const result = await this.gameOrScore()
-    if (result) this.event.$emit('score', this.activeAudio)
+    if (!result) return
+    const hasMasterPlus = await this.checkScore(scoreDir(this.activeAudio.score))
+    this.event.$emit('score', this.activeAudio, hasMasterPlus)
+  }
+
+  private checkScore (scoreFile: string) {
+    const id = generateObjectId()
+    return new Promise<boolean>((resolve) => {
+      ipcRenderer.once(id, (_e: Event, hasMasterPlus: boolean) => {
+        resolve(hasMasterPlus)
+      })
+      ipcRenderer.send('checkScore', id, scoreFile)
+    })
   }
 
   mounted () {

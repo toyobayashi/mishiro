@@ -15,3 +15,6 @@ install:
   - yarn
 script:
   - yarn run pkg64
+branches:
+  only:
+  - master
