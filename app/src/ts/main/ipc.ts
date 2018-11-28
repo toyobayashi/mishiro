@@ -5,6 +5,7 @@ import onManifestQuery from './on-manifest-query'
 import onManifestSearch from './on-manifest-search'
 import onGame from './on-game'
 import onScore from './on-score'
+import onCheckScore from './on-check-score'
 import onLyrics from './on-lyrics'
 
 export default function () {
@@ -42,6 +43,10 @@ export default function () {
 
   ipcMain.on('game', (event: Event, scoreFile: string, difficulty: string, bpm: number, audioFile: string) => {
     onGame(event, scoreFile, difficulty, bpm, audioFile).catch(err => console.log(err))
+  })
+
+  ipcMain.on('checkScore', (event: Event, objectId: string, scoreFile: string) => {
+    onCheckScore(event, objectId, scoreFile)
   })
 
   ipcMain.on('score', (event: Event, scoreFile: string, difficulty: string, bpm: number, audioFile: string) => {
