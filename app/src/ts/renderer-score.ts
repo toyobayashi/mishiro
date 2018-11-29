@@ -80,9 +80,22 @@ class Score {
       this.backCtx.drawImage(liveIcon, 211, Score.CANVAS_HEIGHT - Score.BOTTOM - 114)
     }, false)
 
-    // this.audio.addEventListener('play', () => {
-    //   console.log(this.audio.duration)
-    // })
+    this.audio.addEventListener('canplay', () => {
+      this._isReady = true
+      this.rangeInput.max = this.audio.duration.toString()
+    })
+
+    this.audio.addEventListener('play', () => {
+      this._isPaused = false
+      this.pauseButton.innerHTML = 'pause'
+      this.pauseButton.className = 'cgss-btn cgss-btn-star'
+    })
+
+    this.audio.addEventListener('pause', () => {
+      this._isPaused = true
+      this.pauseButton.innerHTML = 'play'
+      this.pauseButton.className = 'cgss-btn cgss-btn-ok'
+    })
 
     this.audio.addEventListener('ended', () => {
       window.close()
@@ -92,15 +105,6 @@ class Score {
       this.rangeInput.value = this.audio.currentTime.toString()
       this.rangeInput.style.backgroundSize = 100 * (this.audio.currentTime / this.audio.duration) + '% 100%'
     })
-
-    this.audio.addEventListener('canplay', () => {
-      this._isReady = true
-      this.rangeInput.max = this.audio.duration.toString()
-    })
-
-    // this.audio.addEventListener('pause', () => {
-    //   console.log(this.audio.currentTime + ' / ' + this.audio.duration)
-    // })
 
     this._init = true
   }
@@ -208,13 +212,20 @@ class Score {
     this._isClean = false
   }
 
+  private _getSyncNote (index: number): ScoreNote | undefined {
+    if (index !== this.song.score.length - 1 && this.song.score[index].sync === 1 && this.song.score[index].sec === this.song.score[index + 1].sec) {
+      return this.song.score[index + 1]
+    }
+    return undefined
+  }
+
   private _resolveNoteList () {
     let ignore: number[] = []
     for (let i = 0; i < this.song.score.length; i++) {
-      let syncNote: ScoreNote | undefined
-      if (this.song.score[i].sync === 1 && this.song.score[i].sec === (this.song.score[i + 1] && this.song.score[i + 1].sec)) {
-        syncNote = this.song.score[i + 1]
-      }
+      // let syncNote: ScoreNote | undefined
+      // if (this.song.score[i].sync === 1 && this.song.score[i].sec === (this.song.score[i + 1] && this.song.score[i + 1].sec)) {
+      //   syncNote = this.song.score[i + 1]
+      // }
       if (ignore.includes(i)) {
         continue
       }
@@ -223,17 +234,17 @@ class Score {
       switch (note.type) {
         case 1:
           if (note.status === 0) {
-            this._noteList[i] = new TapNote(note, syncNote)
+            this._noteList[i] = new TapNote(note, this._getSyncNote(i))
           } else {
             const connections = this._findSameGroup(i, note.groupId)
             if (connections.length) {
               ignore = [...ignore, ...connections]
               for (let j = connections.length - 1; j > 0; j--) {
-                this._noteList[connections[j]] = new FlipNote(this.song.score[connections[j]], this.song.score[connections[j - 1]], syncNote)
+                this._noteList[connections[j]] = new FlipNote(this.song.score[connections[j]], this.song.score[connections[j - 1]], this._getSyncNote(connections[j]))
               }
-              this._noteList[connections[0]] = new FlipNote(this.song.score[connections[0]], note, syncNote)
+              this._noteList[connections[0]] = new FlipNote(this.song.score[connections[0]], note, this._getSyncNote(connections[0]))
             }
-            this._noteList[i] = new FlipNote(note, undefined, syncNote)
+            this._noteList[i] = new FlipNote(note, undefined, this._getSyncNote(i))
           }
           break
         case 2:
@@ -245,16 +256,16 @@ class Score {
               if (connections.length) {
                 ignore = [...ignore, ...connections]
                 for (let j = connections.length - 1; j > 0; j--) {
-                  this._noteList[connections[j]] = new FlipNote(this.song.score[connections[j]], this.song.score[connections[j - 1]], syncNote)
+                  this._noteList[connections[j]] = new FlipNote(this.song.score[connections[j]], this.song.score[connections[j - 1]], this._getSyncNote(connections[j]))
                 }
-                this._noteList[connections[0]] = new FlipNote(this.song.score[connections[0]], this.song.score[connection], syncNote)
+                this._noteList[connections[0]] = new FlipNote(this.song.score[connections[0]], this.song.score[connection], this._getSyncNote(connections[0]))
               }
-              this._noteList[connection] = new FlipNote(this.song.score[connection], note, syncNote)
+              this._noteList[connection] = new FlipNote(this.song.score[connection], note, this._getSyncNote(connection))
             } else {
-              this._noteList[connection] = new LongNote(this.song.score[connection], note, syncNote)
+              this._noteList[connection] = new LongNote(this.song.score[connection], note, this._getSyncNote(connection))
             }
           }
-          this._noteList[i] = new LongNote(note, undefined, syncNote)
+          this._noteList[i] = new LongNote(note, undefined, this._getSyncNote(i))
           break
         case 3:
           const connections = this._findSameGroup(i, note.groupId)
@@ -262,18 +273,18 @@ class Score {
             ignore = [...ignore, ...connections]
             for (let j = connections.length - 1; j > 0; j--) {
               if (this.song.score[connections[j]].type === 3 && this.song.score[connections[j]].status === 0) {
-                this._noteList[connections[j]] = new LongMoveNote(this.song.score[connections[j]], this.song.score[connections[j - 1]], syncNote)
+                this._noteList[connections[j]] = new LongMoveNote(this.song.score[connections[j]], this.song.score[connections[j - 1]], this._getSyncNote(connections[j]))
               } else {
-                this._noteList[connections[j]] = new FlipNote(this.song.score[connections[j]], this.song.score[connections[j - 1]], syncNote)
+                this._noteList[connections[j]] = new FlipNote(this.song.score[connections[j]], this.song.score[connections[j - 1]], this._getSyncNote(connections[j]))
               }
             }
             if (this.song.score[connections[0]].type === 3 && this.song.score[connections[0]].status === 0) {
-              this._noteList[connections[0]] = new LongMoveNote(this.song.score[connections[0]], note, syncNote)
+              this._noteList[connections[0]] = new LongMoveNote(this.song.score[connections[0]], note, this._getSyncNote(connections[0]))
             } else {
-              this._noteList[connections[0]] = new FlipNote(this.song.score[connections[0]], note, syncNote)
+              this._noteList[connections[0]] = new FlipNote(this.song.score[connections[0]], note, this._getSyncNote(connections[0]))
             }
           }
-          this._noteList[i] = new LongMoveNote(note, undefined, syncNote)
+          this._noteList[i] = new LongMoveNote(note, undefined, this._getSyncNote(i))
           break
         default:
           break
@@ -298,12 +309,8 @@ class Score {
       se.play().catch(err => console.log(err))
       if (this._isPaused) {
         this.start()
-        this._isPaused = false
-        this.pauseButton.innerHTML = 'pause'
       } else {
         this.stop()
-        this._isPaused = true
-        this.pauseButton.innerHTML = 'play'
       }
     })
     this.pauseButton.className = 'cgss-btn cgss-btn-star'
@@ -337,7 +344,7 @@ class Score {
     this.frontCtx.fillStyle = 'rgba(255, 255, 255, 0.66)'
     this.song = song
     this._preCalculation = {
-      timeRange: 20 * (60 / this.song.bpm)
+      timeRange: 24 * (60 / this.song.bpm)
     }
 
     this._resolveNoteList()
