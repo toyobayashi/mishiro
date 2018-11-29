@@ -1,3 +1,4 @@
+import '../css/mishiro.css'
 import '../css/game.css'
 import { ipcRenderer, remote } from 'electron'
 import { parse, relative } from 'path'
@@ -21,6 +22,8 @@ iconNotesImg.addEventListener('load', () => {
   (flipLeftCanvas.getContext('2d') as CanvasRenderingContext2D).drawImage(iconNotesImg, 102 + 102 + 102 + 102, 0, 125, 102, 0, 0, 125, 102);
   (flipRightCanvas.getContext('2d') as CanvasRenderingContext2D).drawImage(iconNotesImg, 102 + 102 + 102 + 102 + 125, 0, 125, 102, 0, 0, 125, 102)
 })
+
+const se = createAudio('../../asset/se.asar/se_common_cancel.mp3')
 
 interface Song {
   src: string
@@ -52,21 +55,22 @@ class Score {
   public backCtx: CanvasRenderingContext2D
   public song: Song
   public audio: HTMLAudioElement
+  public pauseButton: HTMLButtonElement
+  public rangeInput: HTMLInputElement
   public options: Option = {
     speed: 12 // * 60 px / s
   }
   // private _isPlaying: boolean = false
   private _init: boolean = false
   private _isReady: boolean = false
+  private _isPaused: boolean = false
   private _t: number
   private _isClean = true
   private _comboDom: HTMLDivElement
 
   private _noteList: Note[] = []
 
-  private _preCalculation = {
-    timeRange: 10 * ((Score.TOP_TO_TARGET_POSITION + 102) / (this.options.speed * 60))
-  }
+  private _preCalculation: { timeRange: number }
 
   public init () {
     if (this._init) return
@@ -76,21 +80,27 @@ class Score {
       this.backCtx.drawImage(liveIcon, 211, Score.CANVAS_HEIGHT - Score.BOTTOM - 114)
     }, false)
 
-    this.audio.addEventListener('play', () => {
-      console.log(this.audio.duration)
-    })
+    // this.audio.addEventListener('play', () => {
+    //   console.log(this.audio.duration)
+    // })
 
     this.audio.addEventListener('ended', () => {
       window.close()
     }, false)
 
-    this.audio.addEventListener('canplay', () => {
-      this._isReady = true
+    this.audio.addEventListener('timeupdate', () => {
+      this.rangeInput.value = this.audio.currentTime.toString()
+      this.rangeInput.style.backgroundSize = 100 * (this.audio.currentTime / this.audio.duration) + '% 100%'
     })
 
-    this.audio.addEventListener('pause', () => {
-      console.log(this.audio.currentTime + ' / ' + this.audio.duration)
+    this.audio.addEventListener('canplay', () => {
+      this._isReady = true
+      this.rangeInput.max = this.audio.duration.toString()
     })
+
+    // this.audio.addEventListener('pause', () => {
+    //   console.log(this.audio.currentTime + ' / ' + this.audio.duration)
+    // })
 
     this._init = true
   }
@@ -103,7 +113,7 @@ class Score {
       return
     }
 
-    this.audio.play()
+    this.audio.play().catch(err => console.log(err))
 
     const self = this
 
@@ -119,7 +129,7 @@ class Score {
   public stop () {
     this.audio.pause()
     window.cancelAnimationFrame(this._t)
-    this._clear()
+    // this._clear()
   }
 
   private _clear () {
@@ -198,46 +208,32 @@ class Score {
     this._isClean = false
   }
 
-  constructor (song: Song, options?: Option) {
-    if (Score._instance) return Score._instance
-
-    if (options) this.options = Object.assign({}, this.options, options)
-
-    this.frontCanvas = document.createElement('canvas')
-    this.backCanvas = document.createElement('canvas')
-    this.frontCanvas.width = this.backCanvas.width = Score.CANVAS_WIDTH
-    this.frontCanvas.height = this.backCanvas.height = Score.CANVAS_HEIGHT
-    this.frontCanvas.className = this.backCanvas.className = 'canvas canvas-center'
-
-    document.body.appendChild(this.backCanvas)
-    document.body.appendChild(this.frontCanvas)
-    this._comboDom = document.getElementById('combo') as HTMLDivElement
-
-    this.frontCtx = this.frontCanvas.getContext('2d') as CanvasRenderingContext2D
-    this.backCtx = this.backCanvas.getContext('2d') as CanvasRenderingContext2D
-    this.frontCtx.fillStyle = 'rgba(255, 255, 255, 0.66)'
-    this.song = song
-
+  private _resolveNoteList () {
     let ignore: number[] = []
     for (let i = 0; i < this.song.score.length; i++) {
+      let syncNote: ScoreNote | undefined
+      if (this.song.score[i].sync === 1 && this.song.score[i].sec === (this.song.score[i + 1] && this.song.score[i + 1].sec)) {
+        syncNote = this.song.score[i + 1]
+      }
       if (ignore.includes(i)) {
         continue
       }
       const note = this.song.score[i]
+
       switch (note.type) {
         case 1:
           if (note.status === 0) {
-            this._noteList[i] = new TapNote(note)
+            this._noteList[i] = new TapNote(note, syncNote)
           } else {
             const connections = this._findSameGroup(i, note.groupId)
             if (connections.length) {
               ignore = [...ignore, ...connections]
               for (let j = connections.length - 1; j > 0; j--) {
-                this._noteList[connections[j]] = new FlipNote(this.song.score[connections[j]], this.song.score[connections[j - 1]])
+                this._noteList[connections[j]] = new FlipNote(this.song.score[connections[j]], this.song.score[connections[j - 1]], syncNote)
               }
-              this._noteList[connections[0]] = new FlipNote(this.song.score[connections[0]], note)
+              this._noteList[connections[0]] = new FlipNote(this.song.score[connections[0]], note, syncNote)
             }
-            this._noteList[i] = new FlipNote(note)
+            this._noteList[i] = new FlipNote(note, undefined, syncNote)
           }
           break
         case 2:
@@ -249,16 +245,16 @@ class Score {
               if (connections.length) {
                 ignore = [...ignore, ...connections]
                 for (let j = connections.length - 1; j > 0; j--) {
-                  this._noteList[connections[j]] = new FlipNote(this.song.score[connections[j]], this.song.score[connections[j - 1]])
+                  this._noteList[connections[j]] = new FlipNote(this.song.score[connections[j]], this.song.score[connections[j - 1]], syncNote)
                 }
-                this._noteList[connections[0]] = new FlipNote(this.song.score[connections[0]], this.song.score[connection])
+                this._noteList[connections[0]] = new FlipNote(this.song.score[connections[0]], this.song.score[connection], syncNote)
               }
-              this._noteList[connection] = new FlipNote(this.song.score[connection], note)
+              this._noteList[connection] = new FlipNote(this.song.score[connection], note, syncNote)
             } else {
-              this._noteList[connection] = new LongNote(this.song.score[connection], note)
+              this._noteList[connection] = new LongNote(this.song.score[connection], note, syncNote)
             }
           }
-          this._noteList[i] = new LongNote(note)
+          this._noteList[i] = new LongNote(note, undefined, syncNote)
           break
         case 3:
           const connections = this._findSameGroup(i, note.groupId)
@@ -266,24 +262,86 @@ class Score {
             ignore = [...ignore, ...connections]
             for (let j = connections.length - 1; j > 0; j--) {
               if (this.song.score[connections[j]].type === 3 && this.song.score[connections[j]].status === 0) {
-                this._noteList[connections[j]] = new LongMoveNote(this.song.score[connections[j]], this.song.score[connections[j - 1]])
+                this._noteList[connections[j]] = new LongMoveNote(this.song.score[connections[j]], this.song.score[connections[j - 1]], syncNote)
               } else {
-                this._noteList[connections[j]] = new FlipNote(this.song.score[connections[j]], this.song.score[connections[j - 1]])
+                this._noteList[connections[j]] = new FlipNote(this.song.score[connections[j]], this.song.score[connections[j - 1]], syncNote)
               }
             }
             if (this.song.score[connections[0]].type === 3 && this.song.score[connections[0]].status === 0) {
-              this._noteList[connections[0]] = new LongMoveNote(this.song.score[connections[0]], note)
+              this._noteList[connections[0]] = new LongMoveNote(this.song.score[connections[0]], note, syncNote)
             } else {
-              this._noteList[connections[0]] = new FlipNote(this.song.score[connections[0]], note)
+              this._noteList[connections[0]] = new FlipNote(this.song.score[connections[0]], note, syncNote)
             }
           }
-          this._noteList[i] = new LongMoveNote(note)
+          this._noteList[i] = new LongMoveNote(note, undefined, syncNote)
           break
         default:
           break
       }
     }
-    console.log(this._noteList)
+  }
+
+  constructor (song: Song, options?: Option) {
+    if (Score._instance) return Score._instance
+
+    if (options) this.options = Object.assign({}, this.options, options)
+
+    this.frontCanvas = document.createElement('canvas')
+    this.backCanvas = document.createElement('canvas')
+    this.frontCanvas.width = this.backCanvas.width = Score.CANVAS_WIDTH
+    this.frontCanvas.height = this.backCanvas.height = Score.CANVAS_HEIGHT
+    this.frontCanvas.className = this.backCanvas.className = 'canvas canvas-center'
+
+    this.pauseButton = document.createElement('button')
+    this.pauseButton.innerHTML = 'pause'
+    this.pauseButton.addEventListener('click', () => {
+      se.play().catch(err => console.log(err))
+      if (this._isPaused) {
+        this.start()
+        this._isPaused = false
+        this.pauseButton.innerHTML = 'pause'
+      } else {
+        this.stop()
+        this._isPaused = true
+        this.pauseButton.innerHTML = 'play'
+      }
+    })
+    this.pauseButton.className = 'cgss-btn cgss-btn-star'
+    this.pauseButton.style.position = 'absolute'
+    this.pauseButton.style.zIndex = '2000'
+    this.pauseButton.style.top = '5%'
+    this.pauseButton.style.left = '5%'
+
+    this.rangeInput = document.createElement('input')
+    this.rangeInput.type = 'range'
+    this.rangeInput.min = '0'
+    this.rangeInput.max = '100'
+    this.rangeInput.value = '0'
+    this.rangeInput.style.position = 'absolute'
+    this.rangeInput.style.zIndex = '2000'
+    this.rangeInput.style.width = '50%'
+    this.rangeInput.style.left = '25%'
+    this.rangeInput.style.bottom = '10px'
+    this.rangeInput.addEventListener('input', (ev) => {
+      this.audio.currentTime = Number((ev.target as HTMLInputElement).value)
+    })
+
+    document.body.appendChild(this.backCanvas)
+    document.body.appendChild(this.frontCanvas)
+    document.body.appendChild(this.pauseButton)
+    document.body.appendChild(this.rangeInput)
+    this._comboDom = document.getElementById('combo') as HTMLDivElement
+
+    this.frontCtx = this.frontCanvas.getContext('2d') as CanvasRenderingContext2D
+    this.backCtx = this.backCanvas.getContext('2d') as CanvasRenderingContext2D
+    this.frontCtx.fillStyle = 'rgba(255, 255, 255, 0.66)'
+    this.song = song
+    this._preCalculation = {
+      timeRange: 20 * (60 / this.song.bpm)
+    }
+
+    this._resolveNoteList()
+    // console.log(this._noteList)
 
     this.audio = process.env.NODE_ENV === 'production' ? createAudio(song.src) : createAudio(relative(__dirname, song.src))
     Score._instance = this
@@ -295,33 +353,44 @@ abstract class Note {
   public x: number
   public sec: number
   public connection: ScoreNote | null
+  public sync: ScoreNote | null
 
   constructor (note: ScoreNote) {
     this.sec = note.sec
     this.x = Score.X[note.finishPos - 1]
-    // this.y = Score.TOP_TO_TARGET_POSITION - distance
-    // this.y = -102
     this.connection = null
+    this.sync = null
+  }
+
+  protected _drawSync (score: Score) {
+    if (this.sync) {
+      const syncX = Score.X[this.sync.finishPos - 1] + 51
+      const syncY = Score.TOP_TO_TARGET_POSITION - (~~(score.options.speed * 60 * (this.sec - score.audio.currentTime))) + 51 - 10
+      const selfX = this.x + 51
+      score.frontCtx.fillRect((selfX < syncX ? selfX : syncX) + 51, syncY, (selfX < syncX ? syncX - selfX : selfX - syncX) - 102, 20)
+    }
   }
 
   abstract draw (score: Score): void
 }
 
 class TapNote extends Note {
-  constructor (note: ScoreNote) {
+  constructor (note: ScoreNote, syncNote?: ScoreNote) {
     super(note)
+    if (syncNote) this.sync = syncNote
   }
 
   public draw (score: Score) {
     const distance = ~~(score.options.speed * 60 * (this.sec - score.audio.currentTime))
     const y = Score.TOP_TO_TARGET_POSITION - distance
+    this._drawSync(score)
     score.frontCtx.drawImage(tapCanvas, this.x, y)
   }
 }
 
 class FlipNote extends Note {
   private _status: number
-  constructor (note: ScoreNote, connectionNote?: ScoreNote) {
+  constructor (note: ScoreNote, connectionNote?: ScoreNote, syncNote?: ScoreNote) {
     super(note)
     this._status = note.status
     if (this._status === 1) {
@@ -330,12 +399,15 @@ class FlipNote extends Note {
     if (connectionNote) {
       this.connection = connectionNote
     }
+    if (syncNote) {
+      this.sync = syncNote
+    }
   }
 
   public draw (score: Score) {
     const distance = ~~(score.options.speed * 60 * (this.sec - score.audio.currentTime))
     const y = Score.TOP_TO_TARGET_POSITION - distance
-
+    this._drawSync(score)
     if (this.connection) {
       const connectionX = Score.X[this.connection.finishPos - 1]
       const connectionY = Score.TOP_TO_TARGET_POSITION - (~~(score.options.speed * 60 * (this.connection.sec - score.audio.currentTime)))
@@ -374,17 +446,21 @@ class FlipNote extends Note {
 }
 
 class LongNote extends Note {
-  constructor (note: ScoreNote, connectionNote?: ScoreNote) {
+  constructor (note: ScoreNote, connectionNote?: ScoreNote, syncNote?: ScoreNote) {
     super(note)
 
     if (connectionNote) {
       this.connection = connectionNote
+    }
+    if (syncNote) {
+      this.sync = syncNote
     }
   }
 
   public draw (score: Score) {
     const distance = ~~(score.options.speed * 60 * (this.sec - score.audio.currentTime))
     const y = Score.TOP_TO_TARGET_POSITION - distance
+    this._drawSync(score)
     if (this.connection) {
       const connectionY = Score.TOP_TO_TARGET_POSITION - (~~(score.options.speed * 60 * (this.connection.sec - score.audio.currentTime)))
       score.frontCtx.beginPath()
@@ -400,17 +476,21 @@ class LongNote extends Note {
 }
 
 class LongMoveNote extends Note {
-  constructor (note: ScoreNote, connectionNote?: ScoreNote) {
+  constructor (note: ScoreNote, connectionNote?: ScoreNote, syncNote?: ScoreNote) {
     super(note)
 
     if (connectionNote) {
       this.connection = connectionNote
+    }
+    if (syncNote) {
+      this.sync = syncNote
     }
   }
 
   public draw (score: Score) {
     const distance = ~~(score.options.speed * 60 * (this.sec - score.audio.currentTime))
     const y = Score.TOP_TO_TARGET_POSITION - distance
+    this._drawSync(score)
     if (this.connection) {
       const connectionX = Score.X[this.connection.finishPos - 1]
       const connectionY = Score.TOP_TO_TARGET_POSITION - (~~(score.options.speed * 60 * (this.connection.sec - score.audio.currentTime)))
@@ -433,15 +513,6 @@ window.addEventListener('beforeunload', () => {
   mainwindow.webContents.send('liveEnd', null, false)
 })
 
-// ipcRenderer.once('start', (_e: Event, song: Song) => {
-//   console.log(song)
-//   let name = parsePath(song.src).name.split('-')[1]
-//   document.getElementsByTagName('title')[0].innerHTML = name
-//   const globalScore = Score.get(song)
-//   globalScore.init()
-//   globalScore.start()
-// })
-
 function createAudio (src: string) {
   const audio = new Audio(src)
   audio.preload = 'auto'
@@ -458,7 +529,7 @@ function main () {
   const song = ipcRenderer.sendSync('getSong')
   if (!song) return
 
-  console.log(song)
+  // console.log(song)
   let name = parse(song.src).name.split('-')[1]
   document.getElementsByTagName('title')[0].innerHTML = name
   const globalScore = Score.get(song)

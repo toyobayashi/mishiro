@@ -46,7 +46,7 @@ export default function () {
   })
 
   ipcMain.on('checkScore', (event: Event, objectId: string, scoreFile: string) => {
-    onCheckScore(event, objectId, scoreFile)
+    onCheckScore(event, objectId, scoreFile).catch(err => console.log(err))
   })
 
   ipcMain.on('score', (event: Event, scoreFile: string, difficulty: string, bpm: number, audioFile: string) => {
