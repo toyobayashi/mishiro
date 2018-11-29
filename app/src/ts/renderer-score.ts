@@ -52,8 +52,8 @@ class Score {
   public backCtx: CanvasRenderingContext2D
   public song: Song
   public audio: HTMLAudioElement
-  private _options: Option = {
-    speed: 9 // * 60 px / s
+  public options: Option = {
+    speed: 12 // * 60 px / s
   }
   // private _isPlaying: boolean = false
   private _init: boolean = false
@@ -62,8 +62,10 @@ class Score {
   private _isClean = true
   private _comboDom: HTMLDivElement
 
+  private _noteList: Note[] = []
+
   private _preCalculation = {
-    timeRange: 1.5 * ((Score.TOP_TO_TARGET_POSITION + 102) / (this._options.speed * 60))
+    timeRange: 10 * ((Score.TOP_TO_TARGET_POSITION + 102) / (this.options.speed * 60))
   }
 
   public init () {
@@ -162,32 +164,25 @@ class Score {
     return (begin !== -1 && end !== -1) ? ((begin << 16) | end) : -1
   }
 
-  // private _drawNote (note: ScoreNote, distance: number) {
-  //   switch (note.type) {
-  //     case 1:
-  //       if (note.status === 0) this.frontCtx.drawImage(tapCanvas, Score.X[note.finishPos - 1], Score.TOP_TO_TARGET_POSITION - distance)
-  //       else if (note.status === 1) this.frontCtx.drawImage(flipLeftCanvas, Score.X[note.finishPos - 1] - 23, Score.TOP_TO_TARGET_POSITION - distance)
-  //       else if (note.status === 2) this.frontCtx.drawImage(flipRightCanvas, Score.X[note.finishPos - 1], Score.TOP_TO_TARGET_POSITION - distance)
-  //       break
-  //     case 2:
-  //       this.frontCtx.drawImage(longLoopCanvas, Score.X[note.finishPos - 1], Score.TOP_TO_TARGET_POSITION - distance)
-  //       break
-  //     case 3:
-  //       this.frontCtx.drawImage(longMoveCanvas, Score.X[note.finishPos - 1], Score.TOP_TO_TARGET_POSITION - distance)
-  //       break
-  //     default:
-  //       break
-  //   }
-  // }
+  private _findLongNote (begin: number, finishPos: number): number {
+    for (let i = begin + 1; i < this.song.score.length; i++) {
+      if (this.song.score[i].finishPos === finishPos) {
+        return i
+      }
+    }
+    return -1
+  }
 
-  // private _findLongNote (begin: number, finishPos: number): number {
-  //   for (let i = begin + 1; i < this.song.score.length; i++) {
-  //     if (this.song.score[i].finishPos === finishPos) {
-  //       return i
-  //     }
-  //   }
-  //   return -1
-  // }
+  private _findSameGroup (begin: number, groupId: number): number[] {
+    if (groupId === 0) return []
+    const index = []
+    for (let i = begin + 1; i < this.song.score.length; i++) {
+      if (this.song.score[i].groupId === groupId) {
+        index.push(i)
+      }
+    }
+    return index
+  }
 
   private _renderNote (notes: number) {
 
@@ -197,52 +192,8 @@ class Score {
     const end = notes & 0xffff
     if (this._comboDom.innerHTML !== '' + begin) this._comboDom.innerHTML = '' + begin
     // console.log(begin, end)
-    const ignore: number[] = []
-    for (let i = begin; i <= end; i++) {
-      if (ignore.includes(i)) {
-        continue
-      }
-      const note = this.song.score[i]
-      const distance = ~~(this._options.speed * 60 * (note.sec - this.audio.currentTime))
-      switch (note.type) {
-        case 1:
-          ShortNote.create(note, distance).draw(this)
-          break
-        case 2:
-          // const longEnd = this._findLongNote(i, note.finishPos)
-          // if (longEnd !== -1) {
-          //   ignore.push(longEnd)
-          //   const endNote = this.song.score[longEnd]
-          //   const endDistance = ~~(this._options.speed * 60 * (endNote.sec - this.audio.currentTime))
-          //   this.frontCtx.beginPath()
-          //   this.frontCtx.arc(Score.X[note.finishPos - 1] + 102 / 2, Score.TOP_TO_TARGET_POSITION - distance + 102 / 2, 102 / 2, Math.PI, 2 * Math.PI, true)
-          //   this.frontCtx.lineTo(Score.X[note.finishPos - 1] + 102, Score.TOP_TO_TARGET_POSITION - endDistance + 102 / 2)
-          //   this.frontCtx.arc(Score.X[note.finishPos - 1] + 102 / 2, Score.TOP_TO_TARGET_POSITION - endDistance + 102 / 2, 102 / 2, 0, Math.PI, true)
-          //   this.frontCtx.lineTo(Score.X[note.finishPos - 1], Score.TOP_TO_TARGET_POSITION - distance + 102 / 2)
-          //   this.frontCtx.fill()
-          //   this.frontCtx.drawImage(longLoopCanvas, Score.X[note.finishPos - 1], Score.TOP_TO_TARGET_POSITION - distance)
-          //   switch (endNote.status) {
-          //     case 0:
-          //       this.frontCtx.drawImage(tapCanvas, Score.X[note.finishPos - 1], Score.TOP_TO_TARGET_POSITION - endDistance)
-          //       break
-          //     case 1:
-          //       this.frontCtx.drawImage(flipLeftCanvas, Score.X[note.finishPos - 1] - 23, Score.TOP_TO_TARGET_POSITION - endDistance)
-          //       break
-          //     case 2:
-          //       this.frontCtx.drawImage(flipRightCanvas, Score.X[note.finishPos - 1], Score.TOP_TO_TARGET_POSITION - distance)
-          //       break
-          //     default:
-          //       break
-          //   }
-          // }
-          this.frontCtx.drawImage(longLoopCanvas, Score.X[note.finishPos - 1], Score.TOP_TO_TARGET_POSITION - distance)
-          break
-        case 3:
-          this.frontCtx.drawImage(longMoveCanvas, Score.X[note.finishPos - 1], Score.TOP_TO_TARGET_POSITION - distance)
-          break
-        default:
-          break
-      }
+    for (let i = end; i >= begin; i--) {
+      this._noteList[i].draw(this)
     }
     this._isClean = false
   }
@@ -250,7 +201,7 @@ class Score {
   constructor (song: Song, options?: Option) {
     if (Score._instance) return Score._instance
 
-    if (options) this._options = Object.assign({}, this._options, options)
+    if (options) this.options = Object.assign({}, this.options, options)
 
     this.frontCanvas = document.createElement('canvas')
     this.backCanvas = document.createElement('canvas')
@@ -267,57 +218,213 @@ class Score {
     this.frontCtx.fillStyle = 'rgba(255, 255, 255, 0.66)'
     this.song = song
 
+    let ignore: number[] = []
+    for (let i = 0; i < this.song.score.length; i++) {
+      if (ignore.includes(i)) {
+        continue
+      }
+      const note = this.song.score[i]
+      switch (note.type) {
+        case 1:
+          if (note.status === 0) {
+            this._noteList[i] = new TapNote(note)
+          } else {
+            const connections = this._findSameGroup(i, note.groupId)
+            if (connections.length) {
+              ignore = [...ignore, ...connections]
+              for (let j = connections.length - 1; j > 0; j--) {
+                this._noteList[connections[j]] = new FlipNote(this.song.score[connections[j]], this.song.score[connections[j - 1]])
+              }
+              this._noteList[connections[0]] = new FlipNote(this.song.score[connections[0]], note)
+            }
+            this._noteList[i] = new FlipNote(note)
+          }
+          break
+        case 2:
+          const connection = this._findLongNote(i, note.finishPos)
+          if (connection !== -1) {
+            ignore = [...ignore, connection]
+            if (this.song.score[connection].type === 1) {
+              const connections = this._findSameGroup(connection, this.song.score[connection].groupId)
+              if (connections.length) {
+                ignore = [...ignore, ...connections]
+                for (let j = connections.length - 1; j > 0; j--) {
+                  this._noteList[connections[j]] = new FlipNote(this.song.score[connections[j]], this.song.score[connections[j - 1]])
+                }
+                this._noteList[connections[0]] = new FlipNote(this.song.score[connections[0]], this.song.score[connection])
+              }
+              this._noteList[connection] = new FlipNote(this.song.score[connection], note)
+            } else {
+              this._noteList[connection] = new LongNote(this.song.score[connection], note)
+            }
+          }
+          this._noteList[i] = new LongNote(note)
+          break
+        case 3:
+          const connections = this._findSameGroup(i, note.groupId)
+          if (connections.length) {
+            ignore = [...ignore, ...connections]
+            for (let j = connections.length - 1; j > 0; j--) {
+              if (this.song.score[connections[j]].type === 3 && this.song.score[connections[j]].status === 0) {
+                this._noteList[connections[j]] = new LongMoveNote(this.song.score[connections[j]], this.song.score[connections[j - 1]])
+              } else {
+                this._noteList[connections[j]] = new FlipNote(this.song.score[connections[j]], this.song.score[connections[j - 1]])
+              }
+            }
+            if (this.song.score[connections[0]].type === 3 && this.song.score[connections[0]].status === 0) {
+              this._noteList[connections[0]] = new LongMoveNote(this.song.score[connections[0]], note)
+            } else {
+              this._noteList[connections[0]] = new FlipNote(this.song.score[connections[0]], note)
+            }
+          }
+          this._noteList[i] = new LongMoveNote(note)
+          break
+        default:
+          break
+      }
+    }
+    console.log(this._noteList)
+
     this.audio = process.env.NODE_ENV === 'production' ? createAudio(song.src) : createAudio(relative(__dirname, song.src))
     Score._instance = this
     return Score._instance
   }
 }
 
-class ShortNote {
+abstract class Note {
   public x: number
-  public y: number
+  public sec: number
+  public connection: ScoreNote | null
 
-  constructor (note: ScoreNote, distance: number) {
+  constructor (note: ScoreNote) {
+    this.sec = note.sec
     this.x = Score.X[note.finishPos - 1]
-    this.y = Score.TOP_TO_TARGET_POSITION - distance
+    // this.y = Score.TOP_TO_TARGET_POSITION - distance
+    // this.y = -102
+    this.connection = null
   }
 
-  static create (note: ScoreNote, distance: number) {
-    switch (note.status) {
-      case 0:
-        return new TapNote(note, distance)
-      default:
-        return new FlipNote(note, distance)
-    }
-  }
+  abstract draw (score: Score): void
 }
 
-class TapNote extends ShortNote {
-  constructor (note: ScoreNote, distance: number) {
-    super(note, distance)
+class TapNote extends Note {
+  constructor (note: ScoreNote) {
+    super(note)
   }
 
   public draw (score: Score) {
-    score.frontCtx.drawImage(tapCanvas, this.x, this.y)
+    const distance = ~~(score.options.speed * 60 * (this.sec - score.audio.currentTime))
+    const y = Score.TOP_TO_TARGET_POSITION - distance
+    score.frontCtx.drawImage(tapCanvas, this.x, y)
   }
 }
 
-class FlipNote extends ShortNote {
+class FlipNote extends Note {
   private _status: number
-  constructor (note: ScoreNote, distance: number) {
-    super(note, distance)
+  constructor (note: ScoreNote, connectionNote?: ScoreNote) {
+    super(note)
     this._status = note.status
     if (this._status === 1) {
       this.x = this.x - 23
     }
+    if (connectionNote) {
+      this.connection = connectionNote
+    }
   }
 
   public draw (score: Score) {
-    if (this._status === 1) {
-      score.frontCtx.drawImage(flipLeftCanvas, this.x, this.y)
-    } else {
-      score.frontCtx.drawImage(flipRightCanvas, this.x, this.y)
+    const distance = ~~(score.options.speed * 60 * (this.sec - score.audio.currentTime))
+    const y = Score.TOP_TO_TARGET_POSITION - distance
+
+    if (this.connection) {
+      const connectionX = Score.X[this.connection.finishPos - 1]
+      const connectionY = Score.TOP_TO_TARGET_POSITION - (~~(score.options.speed * 60 * (this.connection.sec - score.audio.currentTime)))
+      if (this.connection.type === 1 || (this.connection.type === 3 && this.connection.status !== 0)) {
+        if (connectionY < Score.TOP_TO_TARGET_POSITION) {
+          score.frontCtx.beginPath()
+          score.frontCtx.moveTo(this._status === 1 ? this.x + 23 + 51 : this.x + 51, y)
+          score.frontCtx.lineTo(this._status === 1 ? this.x + 23 + 51 : this.x + 51, y + 102)
+          score.frontCtx.lineTo(connectionX + 51, connectionY + 102)
+          score.frontCtx.lineTo(connectionX + 51, connectionY)
+          score.frontCtx.lineTo(this._status === 1 ? this.x + 23 + 51 : this.x + 51, y)
+          score.frontCtx.fill()
+        }
+      } else if (this.connection.type === 2) {
+        score.frontCtx.beginPath()
+        score.frontCtx.arc((this._status === 1 ? this.x + 23 : this.x) + 51, y + 51, 51, 0, Math.PI, true)
+        const targetY = connectionY > Score.TOP_TO_TARGET_POSITION ? Score.TOP_TO_TARGET_POSITION + 51 : connectionY + 51
+        score.frontCtx.lineTo(this._status === 1 ? this.x + 23 : this.x, targetY)
+        score.frontCtx.arc((this._status === 1 ? this.x + 23 : this.x) + 51, targetY, 51, Math.PI, 2 * Math.PI, true)
+        score.frontCtx.lineTo((this._status === 1 ? this.x + 23 : this.x) + 102, y + 51)
+        score.frontCtx.fill()
+      } else {
+        score.frontCtx.beginPath()
+        score.frontCtx.arc(this.x + 51, y + 51, 51, 0, Math.PI, true)
+        const targetY = connectionY > Score.TOP_TO_TARGET_POSITION ? Score.TOP_TO_TARGET_POSITION + 51 : connectionY + 51
+        const targetX = connectionY > Score.TOP_TO_TARGET_POSITION ? connectionX + ((this.x - connectionX) * (-(Score.TOP_TO_TARGET_POSITION - connectionY)) / ((-(Score.TOP_TO_TARGET_POSITION - connectionY)) + distance)) : connectionX
+        score.frontCtx.lineTo(targetX, targetY)
+        score.frontCtx.arc(targetX + 51, targetY, 51, Math.PI, 2 * Math.PI, true)
+        score.frontCtx.lineTo(this.x + 102, y + 51)
+        score.frontCtx.fill()
+        if (connectionY > Score.TOP_TO_TARGET_POSITION) score.frontCtx.drawImage(longMoveWhiteCanvas, targetX, targetY - 51)
+      }
     }
+    score.frontCtx.drawImage(this._status === 1 ? flipLeftCanvas : flipRightCanvas, this.x, y)
+  }
+}
+
+class LongNote extends Note {
+  constructor (note: ScoreNote, connectionNote?: ScoreNote) {
+    super(note)
+
+    if (connectionNote) {
+      this.connection = connectionNote
+    }
+  }
+
+  public draw (score: Score) {
+    const distance = ~~(score.options.speed * 60 * (this.sec - score.audio.currentTime))
+    const y = Score.TOP_TO_TARGET_POSITION - distance
+    if (this.connection) {
+      const connectionY = Score.TOP_TO_TARGET_POSITION - (~~(score.options.speed * 60 * (this.connection.sec - score.audio.currentTime)))
+      score.frontCtx.beginPath()
+      score.frontCtx.arc(this.x + 51, y + 51, 51, 0, Math.PI, true)
+      const targetY = connectionY > Score.TOP_TO_TARGET_POSITION ? Score.TOP_TO_TARGET_POSITION + 51 : connectionY + 51
+      score.frontCtx.lineTo(this.x, targetY)
+      score.frontCtx.arc(this.x + 51, targetY, 51, Math.PI, 2 * Math.PI, true)
+      score.frontCtx.lineTo(this.x + 102, y + 51)
+      score.frontCtx.fill()
+    }
+    score.frontCtx.drawImage(longLoopCanvas, this.x, y)
+  }
+}
+
+class LongMoveNote extends Note {
+  constructor (note: ScoreNote, connectionNote?: ScoreNote) {
+    super(note)
+
+    if (connectionNote) {
+      this.connection = connectionNote
+    }
+  }
+
+  public draw (score: Score) {
+    const distance = ~~(score.options.speed * 60 * (this.sec - score.audio.currentTime))
+    const y = Score.TOP_TO_TARGET_POSITION - distance
+    if (this.connection) {
+      const connectionX = Score.X[this.connection.finishPos - 1]
+      const connectionY = Score.TOP_TO_TARGET_POSITION - (~~(score.options.speed * 60 * (this.connection.sec - score.audio.currentTime)))
+      score.frontCtx.beginPath()
+      score.frontCtx.arc(this.x + 51, y + 51, 51, 0, Math.PI, true)
+      const targetY = connectionY > Score.TOP_TO_TARGET_POSITION ? Score.TOP_TO_TARGET_POSITION + 51 : connectionY + 51
+      const targetX = connectionY > Score.TOP_TO_TARGET_POSITION ? connectionX + ((this.x - connectionX) * (-(Score.TOP_TO_TARGET_POSITION - connectionY)) / ((-(Score.TOP_TO_TARGET_POSITION - connectionY)) + distance)) : connectionX
+      score.frontCtx.lineTo(targetX, targetY)
+      score.frontCtx.arc(targetX + 51, targetY, 51, Math.PI, 2 * Math.PI, true)
+      score.frontCtx.lineTo(this.x + 102, y + 51)
+      score.frontCtx.fill()
+      if (connectionY > Score.TOP_TO_TARGET_POSITION) score.frontCtx.drawImage(longMoveWhiteCanvas, targetX, targetY - 51)
+    }
+    score.frontCtx.drawImage(longMoveCanvas, this.x, y)
   }
 }
 
