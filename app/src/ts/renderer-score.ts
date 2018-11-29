@@ -133,7 +133,6 @@ class Score {
   public stop () {
     this.audio.pause()
     window.cancelAnimationFrame(this._t)
-    // this._clear()
   }
 
   private _clear () {
@@ -222,10 +221,6 @@ class Score {
   private _resolveNoteList () {
     let ignore: number[] = []
     for (let i = 0; i < this.song.score.length; i++) {
-      // let syncNote: ScoreNote | undefined
-      // if (this.song.score[i].sync === 1 && this.song.score[i].sec === (this.song.score[i + 1] && this.song.score[i + 1].sec)) {
-      //   syncNote = this.song.score[i + 1]
-      // }
       if (ignore.includes(i)) {
         continue
       }
@@ -236,52 +231,56 @@ class Score {
           if (note.status === 0) {
             this._noteList[i] = new TapNote(note, this._getSyncNote(i))
           } else {
-            const connections = this._findSameGroup(i, note.groupId)
-            if (connections.length) {
-              ignore = [...ignore, ...connections]
-              for (let j = connections.length - 1; j > 0; j--) {
-                this._noteList[connections[j]] = new FlipNote(this.song.score[connections[j]], this.song.score[connections[j - 1]], this._getSyncNote(connections[j]))
+            const group = this._findSameGroup(i, note.groupId)
+            if (group.length) {
+              ignore = [...ignore, ...group]
+              for (let j = group.length - 1; j > 0; j--) {
+                this._noteList[group[j]] = new FlipNote(this.song.score[group[j]], this.song.score[group[j - 1]], this._getSyncNote(group[j]))
               }
-              this._noteList[connections[0]] = new FlipNote(this.song.score[connections[0]], note, this._getSyncNote(connections[0]))
+              this._noteList[group[0]] = new FlipNote(this.song.score[group[0]], note, this._getSyncNote(group[0]))
             }
             this._noteList[i] = new FlipNote(note, undefined, this._getSyncNote(i))
           }
           break
         case 2:
-          const connection = this._findLongNote(i, note.finishPos)
-          if (connection !== -1) {
-            ignore = [...ignore, connection]
-            if (this.song.score[connection].type === 1) {
-              const connections = this._findSameGroup(connection, this.song.score[connection].groupId)
-              if (connections.length) {
-                ignore = [...ignore, ...connections]
-                for (let j = connections.length - 1; j > 0; j--) {
-                  this._noteList[connections[j]] = new FlipNote(this.song.score[connections[j]], this.song.score[connections[j - 1]], this._getSyncNote(connections[j]))
+          const endIndex = this._findLongNote(i, note.finishPos)
+          if (endIndex !== -1) {
+            ignore = [...ignore, endIndex]
+            const group = this._findSameGroup(endIndex, this.song.score[endIndex].groupId)
+            if (group.length) {
+              ignore = [...ignore, ...group]
+              for (let j = group.length - 1; j > 0; j--) {
+                if (this.song.score[group[j]].type === 2 && this.song.score[group[j]].status === 0) {
+                  this._noteList[group[j]] = new LongNote(this.song.score[group[j]], this.song.score[group[j - 1]], this._getSyncNote(group[j]))
+                } else {
+                  this._noteList[group[j]] = new FlipNote(this.song.score[group[j]], this.song.score[group[j - 1]], this._getSyncNote(group[j]))
                 }
-                this._noteList[connections[0]] = new FlipNote(this.song.score[connections[0]], this.song.score[connection], this._getSyncNote(connections[0]))
               }
-              this._noteList[connection] = new FlipNote(this.song.score[connection], note, this._getSyncNote(connection))
-            } else {
-              this._noteList[connection] = new LongNote(this.song.score[connection], note, this._getSyncNote(connection))
+              if (this.song.score[group[0]].type === 2 && this.song.score[group[0]].status === 0) {
+                this._noteList[group[0]] = new LongNote(this.song.score[group[0]], this.song.score[endIndex], this._getSyncNote(group[0]))
+              } else {
+                this._noteList[group[0]] = new FlipNote(this.song.score[group[0]], this.song.score[endIndex], this._getSyncNote(group[0]))
+              }
             }
+            this._noteList[endIndex] = new FlipNote(this.song.score[endIndex], note, this._getSyncNote(endIndex))
           }
           this._noteList[i] = new LongNote(note, undefined, this._getSyncNote(i))
           break
         case 3:
-          const connections = this._findSameGroup(i, note.groupId)
-          if (connections.length) {
-            ignore = [...ignore, ...connections]
-            for (let j = connections.length - 1; j > 0; j--) {
-              if (this.song.score[connections[j]].type === 3 && this.song.score[connections[j]].status === 0) {
-                this._noteList[connections[j]] = new LongMoveNote(this.song.score[connections[j]], this.song.score[connections[j - 1]], this._getSyncNote(connections[j]))
+          const group = this._findSameGroup(i, note.groupId)
+          if (group.length) {
+            ignore = [...ignore, ...group]
+            for (let j = group.length - 1; j > 0; j--) {
+              if (this.song.score[group[j]].type === 3 && this.song.score[group[j]].status === 0) {
+                this._noteList[group[j]] = new LongMoveNote(this.song.score[group[j]], this.song.score[group[j - 1]], this._getSyncNote(group[j]))
               } else {
-                this._noteList[connections[j]] = new FlipNote(this.song.score[connections[j]], this.song.score[connections[j - 1]], this._getSyncNote(connections[j]))
+                this._noteList[group[j]] = new FlipNote(this.song.score[group[j]], this.song.score[group[j - 1]], this._getSyncNote(group[j]))
               }
             }
-            if (this.song.score[connections[0]].type === 3 && this.song.score[connections[0]].status === 0) {
-              this._noteList[connections[0]] = new LongMoveNote(this.song.score[connections[0]], note, this._getSyncNote(connections[0]))
+            if (this.song.score[group[0]].type === 3 && this.song.score[group[0]].status === 0) {
+              this._noteList[group[0]] = new LongMoveNote(this.song.score[group[0]], note, this._getSyncNote(group[0]))
             } else {
-              this._noteList[connections[0]] = new FlipNote(this.song.score[connections[0]], note, this._getSyncNote(connections[0]))
+              this._noteList[group[0]] = new FlipNote(this.song.score[group[0]], note, this._getSyncNote(group[0]))
             }
           }
           this._noteList[i] = new LongMoveNote(note, undefined, this._getSyncNote(i))
@@ -348,7 +347,6 @@ class Score {
     }
 
     this._resolveNoteList()
-    // console.log(this._noteList)
 
     this.audio = process.env.NODE_ENV === 'production' ? createAudio(song.src) : createAudio(relative(__dirname, song.src))
     Score._instance = this
@@ -418,7 +416,7 @@ class FlipNote extends Note {
     if (this.connection) {
       const connectionX = Score.X[this.connection.finishPos - 1]
       const connectionY = Score.TOP_TO_TARGET_POSITION - (~~(score.options.speed * 60 * (this.connection.sec - score.audio.currentTime)))
-      if (this.connection.type === 1 || (this.connection.type === 3 && this.connection.status !== 0)) {
+      if (this.connection.type === 1 || (this.connection.type === 2 && this.connection.status !== 0) || (this.connection.type === 3 && this.connection.status !== 0)) {
         if (connectionY < Score.TOP_TO_TARGET_POSITION) {
           score.frontCtx.beginPath()
           score.frontCtx.moveTo(this._status === 1 ? this.x + 23 + 51 : this.x + 51, y)
@@ -438,12 +436,12 @@ class FlipNote extends Note {
         score.frontCtx.fill()
       } else {
         score.frontCtx.beginPath()
-        score.frontCtx.arc(this.x + 51, y + 51, 51, 0, Math.PI, true)
+        score.frontCtx.arc(this._status === 1 ? this.x + 51 + 23 : this.x + 51, y + 51, 51, 0, Math.PI, true)
         const targetY = connectionY > Score.TOP_TO_TARGET_POSITION ? Score.TOP_TO_TARGET_POSITION + 51 : connectionY + 51
         const targetX = connectionY > Score.TOP_TO_TARGET_POSITION ? connectionX + ((this.x - connectionX) * (-(Score.TOP_TO_TARGET_POSITION - connectionY)) / ((-(Score.TOP_TO_TARGET_POSITION - connectionY)) + distance)) : connectionX
         score.frontCtx.lineTo(targetX, targetY)
         score.frontCtx.arc(targetX + 51, targetY, 51, Math.PI, 2 * Math.PI, true)
-        score.frontCtx.lineTo(this.x + 102, y + 51)
+        score.frontCtx.lineTo(this._status === 1 ? this.x + 102 + 23 : this.x + 102, y + 51)
         score.frontCtx.fill()
         if (connectionY > Score.TOP_TO_TARGET_POSITION) score.frontCtx.drawImage(longMoveWhiteCanvas, targetX, targetY - 51)
       }
