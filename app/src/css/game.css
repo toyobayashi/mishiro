@@ -41,7 +41,7 @@
 .combo {
 	position: absolute;
 	top: 5%;
-  right: 10%;
+  right: 5%;
   display: flex;
   flex-direction: column;
   justify-content: center;
