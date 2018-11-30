@@ -1,12 +1,12 @@
 # mishiro
 [戳这里下载](https://github.com/toyobayashi/mishiro/releases) __（MacOS请按照下面的步骤和[Electron分发应用](http://electronjs.org/docs/tutorial/application-distribution)自行打包。请不要安装在有汉字的目录下）__  
 
-## 用法
+## 特性
 
-* 跑一下，就知道。
+* 语言支持：中文 / 日本語 / English
 * [ HOME ] 拿资源。(unity3d, acb, bdb, mdb)
 * [ IDOL ] 查卡，拿卡面，拿角色语音。
-* [ LIVE ] 拿音乐，玩。
+* [ LIVE ] 拿背景音乐 / Live乐曲，谱面查看，玩。
 * [ GACHA ] 同步卡池抽到爽。
 * [ MENU ] 活动算分，设置等
 
