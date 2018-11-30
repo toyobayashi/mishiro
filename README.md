@@ -13,13 +13,13 @@
 [中文](https://github.com/toyobayashi/mishiro/blob/master/README_CN.md)
 
 
-## Usage
+## Feature
 
-* Run, and you see.
-* [ HOME ] Download game resources. (unity3d, acb, bdb, mdb)
-* [ IDOL ] Search idol card and download card background png or character voice from game server.
-* [ LIVE ] Download bgm or live songs from game server, or play game.
-* [ GACHA ] Gacha simulation. (the same to game)
+* Support language: Chinese / Japanese / English.
+* [ HOME ] Get game resources. (unity3d, acb, bdb, mdb)
+* [ IDOL ] Search idol card, get card background png / character voice.
+* [ LIVE ] Get BGM / live songs, view live score, play.
+* [ GACHA ] Gacha simulation. (official odds)
 * [ MENU ] Event PT calculator, options...
 
 <!-- * [ IDOL ] Search idol card and download card background png from [starlight.kirara.ca](https://starlight.kirara.ca/) or character voice from game server. -->
