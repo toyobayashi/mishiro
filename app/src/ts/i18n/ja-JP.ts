@@ -124,6 +124,7 @@ export default {
     start: '決定',
     gameRunning: 'ライブ進行中です。',
     liveResult: 'ライブ成績',
+    copy: 'コピー',
     noLyrics: '歌詞なし'
   },
   gacha: {

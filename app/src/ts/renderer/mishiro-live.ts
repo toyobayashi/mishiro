@@ -1,4 +1,4 @@
-import { shell, ipcRenderer, Event } from 'electron'
+import { shell, ipcRenderer, Event, clipboard } from 'electron'
 import { Vue, Component, Prop } from 'vue-property-decorator'
 import * as fs from 'fs-extra'
 import * as path from 'path'
@@ -226,7 +226,14 @@ export default class extends Vue {
     }
   }
   openLyrics () {
-    this.event.$emit('alert', path.parse(this.activeAudio.fileName).name, this.allLyrics.map(line => line.lyrics).join('<br/>'))
+    const self = this
+    this.event.$emit('alert', path.parse(this.activeAudio.fileName).name, this.allLyrics.map(line => line.lyrics).join('<br/>'), undefined, {
+      text: this.$t('live.copy'),
+      cb () {
+        self.playSe(self.enterSe)
+        clipboard.writeText(self.allLyrics.map(line => line.lyrics).join('\n'))
+      }
+    })
   }
 
   private async gameOrScore () {

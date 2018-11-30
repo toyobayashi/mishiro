@@ -124,6 +124,7 @@ export default {
     start: 'START',
     gameRunning: 'Live is being held。',
     liveResult: 'LIVE RESULT',
+    copy: 'COPY',
     noLyrics: 'NO LYRICS'
   },
   gacha: {
