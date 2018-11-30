@@ -8,7 +8,8 @@
       </div>
       <div class="modal-body" :style="{ maxHeight: bodyMaxHeight }" v-html="body"></div>
       <div class="modal-footer">
-        <button type="button" class="cgss-btn cgss-btn-default" @click="close">{{$t("home.close")}}</button>
+        <button v-if="additionalBtn.text" type="button" class="cgss-btn cgss-btn-ok" @click="additionalBtn.cb(title, body)">{{additionalBtn.text}}</button>
+        <button type="button" class="cgss-btn cgss-btn-default" :class="{ ' margin-left-50': !!additionalBtn.text }" @click="close">{{$t("home.close")}}</button>
       </div>
     </div>
   </transition>
@@ -18,22 +19,38 @@
 <script lang="ts">
 import modalMixin from '../../ts/renderer/modal-mixin'
 import Component, { mixins } from 'vue-class-component'
+
+interface AdditionalBtn {
+  text: string
+  cb: ((title: string, body: string) => void) | null
+}
+
 @Component
 export default class extends mixins(modalMixin) {
   title: string = ''
   body: string = ''
+  additionalBtn: AdditionalBtn = {
+    text: '',
+    cb: null
+  }
 
   afterLeave () {
     this.show = false
     this.title = ''
     this.body = ''
+    this.additionalBtn.text = ''
+    this.additionalBtn.cb = null
     this.modalWidth = '600px'
   }
 
   mounted () {
     this.$nextTick(() => {
-      this.event.$on('alert', (title: string, body: string, width: number) => {
+      this.event.$on('alert', (title: string, body: string, width?: number, additionalBtn?: AdditionalBtn) => {
         if (width) this.modalWidth = width + 'px'
+        if (additionalBtn) {
+          this.additionalBtn.text = additionalBtn.text
+          this.additionalBtn.cb = additionalBtn.cb
+        }
         this.title = title
         this.body = body
         this.show = true
