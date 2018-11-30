@@ -4,24 +4,42 @@ import { ipcRenderer, remote } from 'electron'
 import { parse, relative } from 'path'
 import { ScoreNote } from './main/on-score'
 
+const NOTE_WIDTH = 102
+const NOTE_HEIGHT = 102
+const NOTE_WIDTH_FLIP = 125
+const NOTE_WIDTH_DELTA = NOTE_WIDTH_FLIP - NOTE_WIDTH
+const NOTE_WIDTH_HALF = NOTE_WIDTH / 2
+const NOTE_HEIGHT_HALF = NOTE_HEIGHT / 2
+
 const tapCanvas = document.createElement('canvas')
 const longLoopCanvas = document.createElement('canvas')
 const longMoveCanvas = document.createElement('canvas')
 const longMoveWhiteCanvas = document.createElement('canvas')
 const flipLeftCanvas = document.createElement('canvas')
 const flipRightCanvas = document.createElement('canvas')
-tapCanvas.width = longLoopCanvas.width = longMoveCanvas.width = longMoveWhiteCanvas.width = tapCanvas.height = longLoopCanvas.height = longMoveCanvas.height = longMoveWhiteCanvas.height = flipLeftCanvas.height = flipRightCanvas.height = 102
-flipLeftCanvas.width = flipRightCanvas.width = 125
+tapCanvas.width = longLoopCanvas.width = longMoveCanvas.width = longMoveWhiteCanvas.width = tapCanvas.height = longLoopCanvas.height = longMoveCanvas.height = longMoveWhiteCanvas.height = flipLeftCanvas.height = flipRightCanvas.height = NOTE_WIDTH
+flipLeftCanvas.width = flipRightCanvas.width = NOTE_WIDTH_FLIP
 
 const iconNotesImg = newImage('../../asset/img.asar/icon_notes.png')
 iconNotesImg.addEventListener('load', () => {
-  (tapCanvas.getContext('2d') as CanvasRenderingContext2D).drawImage(iconNotesImg, 0, 0, 102, 102, 0, 0, 102, 102);
-  (longLoopCanvas.getContext('2d') as CanvasRenderingContext2D).drawImage(iconNotesImg, 102, 0, 102, 102, 0, 0, 102, 102);
-  (longMoveCanvas.getContext('2d') as CanvasRenderingContext2D).drawImage(iconNotesImg, 102 + 102, 0, 102, 102, 0, 0, 102, 102);
-  (longMoveWhiteCanvas.getContext('2d') as CanvasRenderingContext2D).drawImage(iconNotesImg, 102 + 102 + 102, 0, 102, 102, 0, 0, 102, 102);
-  (flipLeftCanvas.getContext('2d') as CanvasRenderingContext2D).drawImage(iconNotesImg, 102 + 102 + 102 + 102, 0, 125, 102, 0, 0, 125, 102);
-  (flipRightCanvas.getContext('2d') as CanvasRenderingContext2D).drawImage(iconNotesImg, 102 + 102 + 102 + 102 + 125, 0, 125, 102, 0, 0, 125, 102)
+  (tapCanvas.getContext('2d') as CanvasRenderingContext2D).drawImage(iconNotesImg, 0, 0, NOTE_WIDTH, NOTE_HEIGHT, 0, 0, NOTE_WIDTH, NOTE_HEIGHT);
+  (longLoopCanvas.getContext('2d') as CanvasRenderingContext2D).drawImage(iconNotesImg, NOTE_WIDTH, 0, NOTE_WIDTH, NOTE_HEIGHT, 0, 0, NOTE_WIDTH, NOTE_HEIGHT);
+  (longMoveCanvas.getContext('2d') as CanvasRenderingContext2D).drawImage(iconNotesImg, NOTE_WIDTH * 2, 0, NOTE_WIDTH, NOTE_HEIGHT, 0, 0, NOTE_WIDTH, NOTE_HEIGHT);
+  (longMoveWhiteCanvas.getContext('2d') as CanvasRenderingContext2D).drawImage(iconNotesImg, NOTE_WIDTH * 3, 0, NOTE_WIDTH, NOTE_HEIGHT, 0, 0, NOTE_WIDTH, NOTE_HEIGHT);
+  (flipLeftCanvas.getContext('2d') as CanvasRenderingContext2D).drawImage(iconNotesImg, NOTE_WIDTH * 4, 0, NOTE_WIDTH_FLIP, NOTE_HEIGHT, 0, 0, NOTE_WIDTH_FLIP, NOTE_HEIGHT);
+  (flipRightCanvas.getContext('2d') as CanvasRenderingContext2D).drawImage(iconNotesImg, NOTE_WIDTH * 4 + NOTE_WIDTH_FLIP, 0, NOTE_WIDTH_FLIP, NOTE_HEIGHT, 0, 0, NOTE_WIDTH_FLIP, NOTE_HEIGHT)
 })
+
+const background = document.getElementById('bg') as HTMLImageElement
+
+window.addEventListener('resize', () => {
+  const isYoko = (window.innerWidth / window.innerHeight >= 1280 / 824)
+  if (isYoko) {
+    background.className = 'img-middle'
+  } else {
+    background.className = 'img-center'
+  }
+}, false)
 
 const se = createAudio('../../asset/se.asar/se_common_cancel.mp3')
 
@@ -57,6 +75,7 @@ class Score {
   public audio: HTMLAudioElement
   public pauseButton: HTMLButtonElement
   public rangeInput: HTMLInputElement
+  public speedInput: HTMLInputElement
   public options: Option = {
     speed: 12 // * 60 px / s
   }
@@ -291,11 +310,7 @@ class Score {
     }
   }
 
-  constructor (song: Song, options?: Option) {
-    if (Score._instance) return Score._instance
-
-    if (options) this.options = Object.assign({}, this.options, options)
-
+  private _resolveDOM () {
     this.frontCanvas = document.createElement('canvas')
     this.backCanvas = document.createElement('canvas')
     this.frontCanvas.width = this.backCanvas.width = Score.CANVAS_WIDTH
@@ -315,8 +330,8 @@ class Score {
     this.pauseButton.className = 'cgss-btn cgss-btn-star'
     this.pauseButton.style.position = 'absolute'
     this.pauseButton.style.zIndex = '2000'
-    this.pauseButton.style.top = '5%'
-    this.pauseButton.style.left = '5%'
+    this.pauseButton.style.top = '2%'
+    this.pauseButton.style.left = '1%'
 
     this.rangeInput = document.createElement('input')
     this.rangeInput.type = 'range'
@@ -332,47 +347,71 @@ class Score {
       this.audio.currentTime = Number((ev.target as HTMLInputElement).value)
     })
 
+    this.speedInput = document.createElement('input')
+    this.speedInput.type = 'range'
+    this.speedInput.min = '5'
+    this.speedInput.max = '20'
+    this.speedInput.value = '12'
+    this.speedInput.style.position = 'absolute'
+    this.speedInput.style.zIndex = '2000'
+    this.speedInput.style.width = '15%'
+    this.speedInput.style.left = '2%'
+    this.speedInput.style.bottom = '10px'
+    this.speedInput.addEventListener('input', (ev) => {
+      this.options.speed = Number((ev.target as HTMLInputElement).value)
+    })
+
     document.body.appendChild(this.backCanvas)
     document.body.appendChild(this.frontCanvas)
     document.body.appendChild(this.pauseButton)
     document.body.appendChild(this.rangeInput)
+    document.body.appendChild(this.speedInput)
     this._comboDom = document.getElementById('combo') as HTMLDivElement
 
     this.frontCtx = this.frontCanvas.getContext('2d') as CanvasRenderingContext2D
     this.backCtx = this.backCanvas.getContext('2d') as CanvasRenderingContext2D
     this.frontCtx.fillStyle = 'rgba(255, 255, 255, 0.66)'
+  }
+
+  constructor (song: Song, options?: Option) {
+    if (Score._instance) return Score._instance
+
+    if (options) this.options = Object.assign({}, this.options, options)
+    this.audio = process.env.NODE_ENV === 'production' ? createAudio(song.src) : createAudio(relative(__dirname, song.src))
+
     this.song = song
     this._preCalculation = {
-      timeRange: 24 * (60 / this.song.bpm)
+      timeRange: 24 * (60 / song.bpm)
     }
 
     this._resolveNoteList()
+    this._resolveDOM()
 
-    this.audio = process.env.NODE_ENV === 'production' ? createAudio(song.src) : createAudio(relative(__dirname, song.src))
     Score._instance = this
     return Score._instance
   }
 }
 
 abstract class Note {
-  public x: number
   public sec: number
-  public connection: ScoreNote | null
-  public sync: ScoreNote | null
+  protected _x: number
+  protected _connection: ScoreNote | null
+  protected _synchronizedNote: ScoreNote | null
 
   constructor (note: ScoreNote) {
     this.sec = note.sec
-    this.x = Score.X[note.finishPos - 1]
-    this.connection = null
-    this.sync = null
+    this._x = Score.X[note.finishPos - 1]
+    this._connection = null
+    this._synchronizedNote = null
   }
 
   protected _drawSync (score: Score) {
-    if (this.sync) {
-      const syncX = Score.X[this.sync.finishPos - 1] + 51
-      const syncY = Score.TOP_TO_TARGET_POSITION - (~~(score.options.speed * 60 * (this.sec - score.audio.currentTime))) + 51 - 10
-      const selfX = this.x + 51
-      score.frontCtx.fillRect((selfX < syncX ? selfX : syncX) + 51, syncY, (selfX < syncX ? syncX - selfX : selfX - syncX) - 102, 20)
+    if (this._synchronizedNote) {
+      const connectionHeight = 20
+      const syncX = Score.X[this._synchronizedNote.finishPos - 1] + NOTE_WIDTH_HALF
+      const syncY = Score.TOP_TO_TARGET_POSITION - (~~(score.options.speed * 60 * (this.sec - score.audio.currentTime))) + NOTE_HEIGHT_HALF - connectionHeight / 2
+      const selfX = this._x + NOTE_WIDTH_HALF
+      score.frontCtx.fillRect((selfX < syncX ? selfX : syncX) + NOTE_WIDTH_HALF, syncY, (selfX < syncX ? syncX - selfX : selfX - syncX) - NOTE_WIDTH, connectionHeight)
     }
   }
 
@@ -382,14 +421,14 @@ abstract class Note {
 class TapNote extends Note {
   constructor (note: ScoreNote, syncNote?: ScoreNote) {
     super(note)
-    if (syncNote) this.sync = syncNote
+    if (syncNote) this._synchronizedNote = syncNote
   }
 
   public draw (score: Score) {
     const distance = ~~(score.options.speed * 60 * (this.sec - score.audio.currentTime))
     const y = Score.TOP_TO_TARGET_POSITION - distance
     this._drawSync(score)
-    score.frontCtx.drawImage(tapCanvas, this.x, y)
+    score.frontCtx.drawImage(tapCanvas, this._x, y)
   }
 }
 
@@ -399,13 +438,13 @@ class FlipNote extends Note {
     super(note)
     this._status = note.status
     if (this._status === 1) {
-      this.x = this.x - 23
+      this._x = this._x - NOTE_WIDTH_DELTA
     }
     if (connectionNote) {
-      this.connection = connectionNote
+      this._connection = connectionNote
     }
     if (syncNote) {
-      this.sync = syncNote
+      this._synchronizedNote = syncNote
     }
   }
 
@@ -413,40 +452,42 @@ class FlipNote extends Note {
     const distance = ~~(score.options.speed * 60 * (this.sec - score.audio.currentTime))
     const y = Score.TOP_TO_TARGET_POSITION - distance
     this._drawSync(score)
-    if (this.connection) {
-      const connectionX = Score.X[this.connection.finishPos - 1]
-      const connectionY = Score.TOP_TO_TARGET_POSITION - (~~(score.options.speed * 60 * (this.connection.sec - score.audio.currentTime)))
-      if (this.connection.type === 1 || (this.connection.type === 2 && this.connection.status !== 0) || (this.connection.type === 3 && this.connection.status !== 0)) {
+    if (this._connection) {
+      const connectionX = Score.X[this._connection.finishPos - 1]
+      const connectionY = Score.TOP_TO_TARGET_POSITION - (~~(score.options.speed * 60 * (this._connection.sec - score.audio.currentTime)))
+      if (this._connection.type === 1 || (this._connection.type === 2 && this._connection.status !== 0) || (this._connection.type === 3 && this._connection.status !== 0)) {
         if (connectionY < Score.TOP_TO_TARGET_POSITION) {
+          const xCenter = this._status === 1 ? this._x + NOTE_WIDTH_DELTA + NOTE_WIDTH_HALF : this._x + NOTE_WIDTH_HALF
           score.frontCtx.beginPath()
-          score.frontCtx.moveTo(this._status === 1 ? this.x + 23 + 51 : this.x + 51, y)
-          score.frontCtx.lineTo(this._status === 1 ? this.x + 23 + 51 : this.x + 51, y + 102)
-          score.frontCtx.lineTo(connectionX + 51, connectionY + 102)
-          score.frontCtx.lineTo(connectionX + 51, connectionY)
-          score.frontCtx.lineTo(this._status === 1 ? this.x + 23 + 51 : this.x + 51, y)
+          score.frontCtx.moveTo(xCenter, y)
+          score.frontCtx.lineTo(xCenter, y + NOTE_HEIGHT)
+          score.frontCtx.lineTo(connectionX + NOTE_WIDTH_HALF, connectionY + NOTE_HEIGHT)
+          score.frontCtx.lineTo(connectionX + NOTE_WIDTH_HALF, connectionY)
+          score.frontCtx.lineTo(xCenter, y)
           score.frontCtx.fill()
         }
-      } else if (this.connection.type === 2) {
+      } else if (this._connection.type === 2) {
+        const x = this._status === 1 ? this._x + NOTE_WIDTH_DELTA : this._x
         score.frontCtx.beginPath()
-        score.frontCtx.arc((this._status === 1 ? this.x + 23 : this.x) + 51, y + 51, 51, 0, Math.PI, true)
-        const targetY = connectionY > Score.TOP_TO_TARGET_POSITION ? Score.TOP_TO_TARGET_POSITION + 51 : connectionY + 51
-        score.frontCtx.lineTo(this._status === 1 ? this.x + 23 : this.x, targetY)
-        score.frontCtx.arc((this._status === 1 ? this.x + 23 : this.x) + 51, targetY, 51, Math.PI, 2 * Math.PI, true)
-        score.frontCtx.lineTo((this._status === 1 ? this.x + 23 : this.x) + 102, y + 51)
+        score.frontCtx.arc(x + NOTE_WIDTH_HALF, y + NOTE_HEIGHT_HALF, NOTE_WIDTH_HALF, 0, Math.PI, true)
+        const targetY = connectionY > Score.TOP_TO_TARGET_POSITION ? Score.TOP_TO_TARGET_POSITION + NOTE_HEIGHT_HALF : connectionY + NOTE_HEIGHT_HALF
+        score.frontCtx.lineTo(x, targetY)
+        score.frontCtx.arc(x + NOTE_WIDTH_HALF, targetY, NOTE_WIDTH_HALF, Math.PI, 2 * Math.PI, true)
+        score.frontCtx.lineTo(x + NOTE_WIDTH, y + NOTE_HEIGHT_HALF)
         score.frontCtx.fill()
       } else {
         score.frontCtx.beginPath()
-        score.frontCtx.arc(this._status === 1 ? this.x + 51 + 23 : this.x + 51, y + 51, 51, 0, Math.PI, true)
-        const targetY = connectionY > Score.TOP_TO_TARGET_POSITION ? Score.TOP_TO_TARGET_POSITION + 51 : connectionY + 51
-        const targetX = connectionY > Score.TOP_TO_TARGET_POSITION ? connectionX + ((this.x - connectionX) * (-(Score.TOP_TO_TARGET_POSITION - connectionY)) / ((-(Score.TOP_TO_TARGET_POSITION - connectionY)) + distance)) : connectionX
+        score.frontCtx.arc(this._status === 1 ? this._x + NOTE_WIDTH_HALF + NOTE_WIDTH_DELTA : this._x + NOTE_WIDTH_HALF, y + NOTE_HEIGHT_HALF, NOTE_WIDTH_HALF, 0, Math.PI, true)
+        const targetY = connectionY > Score.TOP_TO_TARGET_POSITION ? Score.TOP_TO_TARGET_POSITION + NOTE_HEIGHT_HALF : connectionY + NOTE_HEIGHT_HALF
+        const targetX = connectionY > Score.TOP_TO_TARGET_POSITION ? connectionX + ((this._x - connectionX) * (-(Score.TOP_TO_TARGET_POSITION - connectionY)) / ((-(Score.TOP_TO_TARGET_POSITION - connectionY)) + distance)) : connectionX
         score.frontCtx.lineTo(targetX, targetY)
-        score.frontCtx.arc(targetX + 51, targetY, 51, Math.PI, 2 * Math.PI, true)
-        score.frontCtx.lineTo(this._status === 1 ? this.x + 102 + 23 : this.x + 102, y + 51)
+        score.frontCtx.arc(targetX + NOTE_WIDTH_HALF, targetY, NOTE_WIDTH_HALF, Math.PI, 2 * Math.PI, true)
+        score.frontCtx.lineTo(this._status === 1 ? this._x + NOTE_WIDTH + NOTE_WIDTH_DELTA : this._x + NOTE_WIDTH, y + NOTE_HEIGHT_HALF)
         score.frontCtx.fill()
-        if (connectionY > Score.TOP_TO_TARGET_POSITION) score.frontCtx.drawImage(longMoveWhiteCanvas, targetX, targetY - 51)
+        if (connectionY > Score.TOP_TO_TARGET_POSITION) score.frontCtx.drawImage(longMoveWhiteCanvas, targetX, targetY - NOTE_HEIGHT_HALF)
       }
     }
-    score.frontCtx.drawImage(this._status === 1 ? flipLeftCanvas : flipRightCanvas, this.x, y)
+    score.frontCtx.drawImage(this._status === 1 ? flipLeftCanvas : flipRightCanvas, this._x, y)
   }
 }
 
@@ -455,10 +496,10 @@ class LongNote extends Note {
     super(note)
 
     if (connectionNote) {
-      this.connection = connectionNote
+      this._connection = connectionNote
     }
     if (syncNote) {
-      this.sync = syncNote
+      this._synchronizedNote = syncNote
     }
   }
 
@@ -466,17 +507,17 @@ class LongNote extends Note {
     const distance = ~~(score.options.speed * 60 * (this.sec - score.audio.currentTime))
     const y = Score.TOP_TO_TARGET_POSITION - distance
     this._drawSync(score)
-    if (this.connection) {
-      const connectionY = Score.TOP_TO_TARGET_POSITION - (~~(score.options.speed * 60 * (this.connection.sec - score.audio.currentTime)))
+    if (this._connection) {
+      const connectionY = Score.TOP_TO_TARGET_POSITION - (~~(score.options.speed * 60 * (this._connection.sec - score.audio.currentTime)))
       score.frontCtx.beginPath()
-      score.frontCtx.arc(this.x + 51, y + 51, 51, 0, Math.PI, true)
-      const targetY = connectionY > Score.TOP_TO_TARGET_POSITION ? Score.TOP_TO_TARGET_POSITION + 51 : connectionY + 51
-      score.frontCtx.lineTo(this.x, targetY)
-      score.frontCtx.arc(this.x + 51, targetY, 51, Math.PI, 2 * Math.PI, true)
-      score.frontCtx.lineTo(this.x + 102, y + 51)
+      score.frontCtx.arc(this._x + NOTE_WIDTH_HALF, y + NOTE_HEIGHT_HALF, NOTE_WIDTH_HALF, 0, Math.PI, true)
+      const targetY = connectionY > Score.TOP_TO_TARGET_POSITION ? Score.TOP_TO_TARGET_POSITION + NOTE_HEIGHT_HALF : connectionY + NOTE_HEIGHT_HALF
+      score.frontCtx.lineTo(this._x, targetY)
+      score.frontCtx.arc(this._x + NOTE_WIDTH_HALF, targetY, NOTE_WIDTH_HALF, Math.PI, 2 * Math.PI, true)
+      score.frontCtx.lineTo(this._x + NOTE_WIDTH, y + NOTE_HEIGHT_HALF)
       score.frontCtx.fill()
     }
-    score.frontCtx.drawImage(longLoopCanvas, this.x, y)
+    score.frontCtx.drawImage(longLoopCanvas, this._x, y)
   }
 }
 
@@ -485,10 +526,10 @@ class LongMoveNote extends Note {
     super(note)
 
     if (connectionNote) {
-      this.connection = connectionNote
+      this._connection = connectionNote
     }
     if (syncNote) {
-      this.sync = syncNote
+      this._synchronizedNote = syncNote
     }
   }
 
@@ -496,20 +537,20 @@ class LongMoveNote extends Note {
     const distance = ~~(score.options.speed * 60 * (this.sec - score.audio.currentTime))
     const y = Score.TOP_TO_TARGET_POSITION - distance
     this._drawSync(score)
-    if (this.connection) {
-      const connectionX = Score.X[this.connection.finishPos - 1]
-      const connectionY = Score.TOP_TO_TARGET_POSITION - (~~(score.options.speed * 60 * (this.connection.sec - score.audio.currentTime)))
+    if (this._connection) {
+      const connectionX = Score.X[this._connection.finishPos - 1]
+      const connectionY = Score.TOP_TO_TARGET_POSITION - (~~(score.options.speed * 60 * (this._connection.sec - score.audio.currentTime)))
       score.frontCtx.beginPath()
-      score.frontCtx.arc(this.x + 51, y + 51, 51, 0, Math.PI, true)
-      const targetY = connectionY > Score.TOP_TO_TARGET_POSITION ? Score.TOP_TO_TARGET_POSITION + 51 : connectionY + 51
-      const targetX = connectionY > Score.TOP_TO_TARGET_POSITION ? connectionX + ((this.x - connectionX) * (-(Score.TOP_TO_TARGET_POSITION - connectionY)) / ((-(Score.TOP_TO_TARGET_POSITION - connectionY)) + distance)) : connectionX
+      score.frontCtx.arc(this._x + NOTE_WIDTH_HALF, y + NOTE_HEIGHT_HALF, NOTE_WIDTH_HALF, 0, Math.PI, true)
+      const targetY = connectionY > Score.TOP_TO_TARGET_POSITION ? Score.TOP_TO_TARGET_POSITION + NOTE_HEIGHT_HALF : connectionY + NOTE_HEIGHT_HALF
+      const targetX = connectionY > Score.TOP_TO_TARGET_POSITION ? connectionX + ((this._x - connectionX) * (-(Score.TOP_TO_TARGET_POSITION - connectionY)) / ((-(Score.TOP_TO_TARGET_POSITION - connectionY)) + distance)) : connectionX
       score.frontCtx.lineTo(targetX, targetY)
-      score.frontCtx.arc(targetX + 51, targetY, 51, Math.PI, 2 * Math.PI, true)
-      score.frontCtx.lineTo(this.x + 102, y + 51)
+      score.frontCtx.arc(targetX + NOTE_WIDTH_HALF, targetY, NOTE_WIDTH_HALF, Math.PI, 2 * Math.PI, true)
+      score.frontCtx.lineTo(this._x + NOTE_WIDTH, y + NOTE_HEIGHT_HALF)
       score.frontCtx.fill()
-      if (connectionY > Score.TOP_TO_TARGET_POSITION) score.frontCtx.drawImage(longMoveWhiteCanvas, targetX, targetY - 51)
+      if (connectionY > Score.TOP_TO_TARGET_POSITION) score.frontCtx.drawImage(longMoveWhiteCanvas, targetX, targetY - NOTE_HEIGHT_HALF)
     }
-    score.frontCtx.drawImage(longMoveCanvas, this.x, y)
+    score.frontCtx.drawImage(longMoveCanvas, this._x, y)
   }
 }
 

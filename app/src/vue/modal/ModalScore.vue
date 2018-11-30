@@ -66,17 +66,17 @@ export default class extends mixins(modalMixin) {
 
         this.event.$emit('gameStart')
         this.event.$emit('pauseBgm')
-        const windowID = ipcRenderer.sendSync('mainWindowId')
+        // const windowID = ipcRenderer.sendSync('mainWindowId')
 
         let win: BrowserWindow | null = new remote.BrowserWindow({
           width: 1296,
           height: 759,
-          minWidth: 1296,
-          minHeight: 759,
-          maxWidth: 1296,
-          maxHeight: 759,
-          backgroundColor: '#000000',
-          parent: remote.BrowserWindow.fromId(windowID)
+          // minWidth: 1296,
+          // minHeight: 759,
+          // maxWidth: 1296,
+          // maxHeight: 759,
+          // parent: remote.BrowserWindow.fromId(windowID),
+          backgroundColor: '#000000'
         })
 
         if (process.env.NODE_ENV === 'production') {
