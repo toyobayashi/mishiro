@@ -4,7 +4,7 @@
     <div :style="{ width: modalWidth }" v-if="visible">
       <div class="modal-header">
         <StaticTitleDot v-once/>
-        <h4 class="modal-title">{{live.fileName.split('-')[1].split('.')[0]}}</h4>
+        <h4 class="modal-title">{{live.fileName.substr(live.fileName.indexOf('-') + 1).split('.')[0]}}</h4>
       </div>
       <div class="modal-body" :style="{ maxHeight: bodyMaxHeight }">
         <form>

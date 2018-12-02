@@ -11,6 +11,7 @@ export default `<!DOCTYPE html>
     <span class="combo-number" id="combo">0</span>
     <span class="combo-text">combo</span>
   </div>
+  ${process.env.NODE_ENV === 'production' ? '' : '<button id="debug" style="position: absolute; top: 0; left: 0; z-index: 2000;">debug</button>'}
 </body>
 </html>
 `

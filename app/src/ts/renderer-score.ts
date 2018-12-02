@@ -3,13 +3,18 @@ import '../css/game.css'
 import { ipcRenderer, remote } from 'electron'
 import { parse, relative } from 'path'
 import { ScoreNote } from './main/on-score'
+import getPath from './renderer/get-path'
+import { writeFile } from 'fs-extra'
 
-const NOTE_WIDTH = 102
-const NOTE_HEIGHT = 102
-const NOTE_WIDTH_FLIP = 125
-const NOTE_WIDTH_DELTA = NOTE_WIDTH_FLIP - NOTE_WIDTH
-const NOTE_WIDTH_HALF = NOTE_WIDTH / 2
-const NOTE_HEIGHT_HALF = NOTE_HEIGHT / 2
+let NOTE_WIDTH = 102
+let NOTE_HEIGHT = 102
+let NOTE_WIDTH_FLIP = 125
+let NOTE_WIDTH_DELTA = NOTE_WIDTH_FLIP - NOTE_WIDTH
+let NOTE_WIDTH_HALF = NOTE_WIDTH / 2
+let NOTE_HEIGHT_HALF = NOTE_HEIGHT / 2
+
+let SCALE = 3
+let SAVE_SPEED = 12
 
 const tapCanvas = document.createElement('canvas')
 const longLoopCanvas = document.createElement('canvas')
@@ -42,12 +47,14 @@ window.addEventListener('resize', () => {
 }, false)
 
 const se = createAudio('../../asset/se.asar/se_common_cancel.mp3')
+const seOk = createAudio('../../asset/se.asar/se_common_enter.mp3')
 
 interface Song<ScoreType> {
   src: string
   bpm: number
   score: ScoreType[]
   fullCombo: number
+  difficulty: string
 }
 
 interface Option {
@@ -65,19 +72,30 @@ class ScoreViewer {
     return new ScoreViewer(song, el, options)
   }
 
-  private static CANVAS_WIDTH = 1280
+  public static calY (speed: number, sec: number, currentTime: number): number {
+    return ScoreViewer.TOP_TO_TARGET_POSITION - (~~(speed * 60 * (sec - currentTime)))
+  }
+
+  public static saveCalY (sv: ScoreViewer, sec: number): number {
+    return sv.saveCanvas.height - ((~~(SAVE_SPEED * 60 * (sec)))) / SCALE
+  }
+
+  private static CANVAS_WIDTH = 867
   private static CANVAS_HEIGHT = 720
-  public static X: number[] = [238, 414, 589, 764, 937]
+  public static X: number[] = [238 - 206, 414 - 206, 589 - 206, 764 - 206, 937 - 206]
   private static BOTTOM = 20
   public static TOP_TO_TARGET_POSITION = ScoreViewer.CANVAS_HEIGHT - ScoreViewer.BOTTOM - 114 + 6
 
   public frontCanvas: HTMLCanvasElement
   public backCanvas: HTMLCanvasElement
+  public saveCanvas: HTMLCanvasElement
   public frontCtx: CanvasRenderingContext2D
   public backCtx: CanvasRenderingContext2D
+  public saveCtx: CanvasRenderingContext2D
   public song: Song<ScoreNoteWithNoteInstance>
   public audio: HTMLAudioElement
   public pauseButton: HTMLButtonElement
+  public saveButton: HTMLButtonElement
   public rangeInput: HTMLInputElement
   public speedInput: HTMLInputElement
   public options: Option = {
@@ -85,6 +103,7 @@ class ScoreViewer {
   }
 
   private _isReady: boolean = false
+  private _isReadyToSave: boolean = false
   private _isPaused: boolean = false
   private _t: number
   private _isClean = true
@@ -217,7 +236,7 @@ class ScoreViewer {
 
   private _clear () {
     if (!this._isClean) {
-      this.frontCtx.clearRect(211, 0, 857, ScoreViewer.CANVAS_HEIGHT - 15)
+      this.frontCtx.clearRect(0, 0, ScoreViewer.CANVAS_WIDTH, ScoreViewer.CANVAS_HEIGHT - 15)
       this._isClean = true
     }
   }
@@ -230,14 +249,14 @@ class ScoreViewer {
         combo = i
         break
       }
-      (this.song.score[i]._instance as Note).setY(ScoreViewer.TOP_TO_TARGET_POSITION - (~~(this.options.speed * 60 * (this.song.score[i].sec - this.audio.currentTime))))
+      (this.song.score[i]._instance as Note).setY(ScoreViewer.calY(this.options.speed, this.song.score[i].sec, this.audio.currentTime))
     }
 
     if (combo === -1) combo = this.song.score.length
     if (this._comboDom.innerHTML !== '' + combo) this._comboDom.innerHTML = '' + combo
 
     for (let i = combo; i < this.song.score.length; i++) {
-      (this.song.score[i]._instance as Note).setY(ScoreViewer.TOP_TO_TARGET_POSITION - (~~(this.options.speed * 60 * (this.song.score[i].sec - this.audio.currentTime))))
+      (this.song.score[i]._instance as Note).setY(ScoreViewer.calY(this.options.speed, this.song.score[i].sec, this.audio.currentTime))
     }
   }
 
@@ -277,11 +296,111 @@ class ScoreViewer {
     return undefined
   }
 
+  private _saveScore () {
+    if (!this._isReady) {
+      setTimeout(() => {
+        this._saveScore()
+      }, 100)
+      return
+    }
+
+    let name = parse(this.song.src).name.substr(parse(this.song.src).name.indexOf('-') + 1)
+
+    const _drawAndSave = (filename: string) => {
+      if (!this._isReadyToSave) {
+        this.stop()
+        this.saveCanvas.height = SAVE_SPEED * 60 * this.audio.duration / SCALE
+        this.saveCtx = this.saveCanvas.getContext('2d') as CanvasRenderingContext2D
+        this.saveCtx.fillStyle = 'rgba(255, 255, 255, 0.66)'
+        this.saveCtx.save()
+        this.saveCtx.fillStyle = 'rgb(39, 40, 34)'
+        this.saveCtx.font = '12px Consolas'
+        this.saveCtx.fillRect(0, 0, this.saveCanvas.width, this.saveCanvas.height)
+        this.saveCtx.strokeStyle = '#e070d0'
+        this.saveCtx.fillStyle = '#e070d0'
+        const b = Math.round(this.audio.duration * this.song.bpm / 60)
+        for (let i = 0; i < b; i += 4) {
+          const y = this.saveCanvas.height - ((i * 60 / this.song.bpm * SAVE_SPEED * 60)) / SCALE - (60 / this.song.bpm * SAVE_SPEED * 60) / 2 / SCALE + 102 / 2 / SCALE
+          this.saveCtx.fillText('' + i, 1, y - 2)
+
+          this.saveCtx.beginPath()
+          this.saveCtx.moveTo(0, y)
+          this.saveCtx.lineTo(this.saveCanvas.width, y)
+          this.saveCtx.stroke()
+          this.saveCtx.closePath()
+        }
+        const firstY = this.saveCanvas.height - (60 / this.song.bpm * SAVE_SPEED * 60) / 2 / SCALE + 102 / 2 / SCALE
+        this.saveCtx.font = '14px -apple-system, BlinkMacSystemFont, Segoe WPC,Segoe UI, HelveticaNeue-Light, Noto Sans, Microsoft YaHei, PingFang SC, Hiragino Sans GB, Source Han Sans SC, Source Han Sans CN, Source Han Sans, sans-serif'
+        this.saveCtx.fillStyle = '#fff'
+        this.saveCtx.textAlign = 'center'
+        this.saveCtx.fillText('https://github.com/toyobayashi/mishiro', this.saveCanvas.width / 2, firstY - 7)
+        this.saveCtx.fillText(name, this.saveCanvas.width / 2, firstY - 7 - 16 * 3)
+        this.saveCtx.fillText(this.song.difficulty, this.saveCanvas.width / 2, firstY - 7 - 16 * 4)
+        this.saveCtx.restore()
+        NOTE_WIDTH = 102 / SCALE
+        NOTE_HEIGHT = 102 / SCALE
+        NOTE_WIDTH_FLIP = 125 / SCALE
+        NOTE_WIDTH_DELTA = NOTE_WIDTH_FLIP - NOTE_WIDTH
+        NOTE_WIDTH_HALF = NOTE_WIDTH / 2
+        NOTE_HEIGHT_HALF = NOTE_HEIGHT / 2
+        const OLD_TOP_TO_TARGET_POSITION = ScoreViewer.TOP_TO_TARGET_POSITION
+        const oldX = ScoreViewer.X
+        ScoreViewer.X = [238 - 206, 414 - 206, 589 - 206, 764 - 206, 937 - 206].map(v => v / SCALE)
+        ScoreViewer.TOP_TO_TARGET_POSITION = this.saveCanvas.height
+        for (let i = 0; i < this.song.score.length; i++) {
+          (this.song.score[i]._instance as Note).setX((this.song.score[i]._instance as Note).getX() / SCALE);
+          (this.song.score[i]._instance as Note).setY(ScoreViewer.saveCalY(this, this.song.score[i].sec))
+        }
+        for (let i = this.song.score.length - 1; i >= 0; i--) {
+          (this.song.score[i]._instance as Note).saveDraw(this)
+        }
+
+        for (let i = 0; i < this.song.score.length; i++) {
+          (this.song.score[i]._instance as Note).setX((this.song.score[i]._instance as Note).getX() * SCALE)
+        }
+        NOTE_WIDTH = 102
+        NOTE_HEIGHT = 102
+        NOTE_WIDTH_FLIP = 125
+        NOTE_WIDTH_DELTA = NOTE_WIDTH_FLIP - NOTE_WIDTH
+        NOTE_WIDTH_HALF = NOTE_WIDTH / 2
+        NOTE_HEIGHT_HALF = NOTE_HEIGHT / 2
+        ScoreViewer.TOP_TO_TARGET_POSITION = OLD_TOP_TO_TARGET_POSITION
+        ScoreViewer.X = oldX
+
+      }
+
+      const base64str = this.saveCanvas.toDataURL('image/png')
+      if (base64str === 'data:,') {
+        const OLD_SAVE_SPEED = SAVE_SPEED
+        SAVE_SPEED--
+        _drawAndSave(filename)
+        SAVE_SPEED = OLD_SAVE_SPEED
+        return
+      }
+
+      this._isReadyToSave = true
+      this.start()
+
+      writeFile(filename, Buffer.from(base64str.substr(22), 'base64'), (err) => {
+        if (err) alert(err.message)
+      })
+    }
+
+    remote.dialog.showSaveDialog({
+      title: 'Save Score - ' + name + '-' + this.song.difficulty,
+      defaultPath: getPath.scoreDir(name + '-' + this.song.difficulty + '.png')
+    }, _drawAndSave)
+  }
+
   private _resolveDOM (el: HTMLElement) {
     this.frontCanvas = document.createElement('canvas')
     this.backCanvas = document.createElement('canvas')
+    this.saveCanvas = document.createElement('canvas')
     this.frontCanvas.width = this.backCanvas.width = ScoreViewer.CANVAS_WIDTH
     this.frontCanvas.height = this.backCanvas.height = ScoreViewer.CANVAS_HEIGHT
+
+    this.saveCanvas.width = ScoreViewer.CANVAS_WIDTH / SCALE
+
     this.frontCanvas.className = this.backCanvas.className = 'canvas canvas-center'
 
     this.pauseButton = document.createElement('button')
@@ -299,6 +418,24 @@ class ScoreViewer {
     this.pauseButton.style.zIndex = '2000'
     this.pauseButton.style.top = '2%'
     this.pauseButton.style.left = '1%'
+
+    this.saveButton = document.createElement('button')
+    this.saveButton.innerHTML = 'save'
+    this.saveButton.addEventListener('click', () => {
+      seOk.play().catch(err => console.log(err))
+      this._saveScore()
+      // se.play().catch(err => console.log(err))
+      // if (this._isPaused) {
+      //   this.start()
+      // } else {
+      //   this.stop()
+      // }
+    })
+    this.saveButton.className = 'cgss-btn cgss-btn-ok'
+    this.saveButton.style.position = 'absolute'
+    this.saveButton.style.zIndex = '2000'
+    this.saveButton.style.top = 'calc(2% + 84px)'
+    this.saveButton.style.left = '1%'
 
     this.rangeInput = document.createElement('input')
     this.rangeInput.type = 'range'
@@ -331,6 +468,7 @@ class ScoreViewer {
     el.appendChild(this.backCanvas)
     el.appendChild(this.frontCanvas)
     el.appendChild(this.pauseButton)
+    el.appendChild(this.saveButton)
     el.appendChild(this.rangeInput)
     el.appendChild(this.speedInput)
     this._comboDom = document.getElementById('combo') as HTMLDivElement
@@ -341,7 +479,7 @@ class ScoreViewer {
 
     const liveIcon = newImage('../../asset/img.asar/live_icon_857x114.png')
     liveIcon.addEventListener('load', () => {
-      this.backCtx.drawImage(liveIcon, 211, ScoreViewer.CANVAS_HEIGHT - ScoreViewer.BOTTOM - 114)
+      this.backCtx.drawImage(liveIcon, 5, ScoreViewer.CANVAS_HEIGHT - ScoreViewer.BOTTOM - 114)
     }, false)
 
     this.audio.addEventListener('canplay', () => {
@@ -373,11 +511,12 @@ class ScoreViewer {
 }
 
 abstract class Note {
-  private _sec: number
+  protected _sec: number
   protected _x: number
   protected _y: number
   protected _connection: ScoreNoteWithNoteInstance | null
   protected _synchronizedNote: ScoreNoteWithNoteInstance | null
+  private _connectionHeight = 10
 
   constructor (note: ScoreNote) {
     this._sec = note.sec
@@ -391,15 +530,36 @@ abstract class Note {
     this._y = y
   }
 
+  public getX () {
+    return this._x
+  }
+
+  public setX (x: number) {
+    this._x = x
+  }
+
+  protected _saveDrawSync (sv: ScoreViewer) {
+    if (!this._synchronizedNote) return
+
+    const syncX = ScoreViewer.X[this._synchronizedNote.finishPos - 1] + NOTE_WIDTH_HALF
+    const syncY = ScoreViewer.saveCalY(sv, this._sec) + NOTE_HEIGHT_HALF - this._connectionHeight / 2 / SCALE
+    const selfX = this._x + NOTE_WIDTH_HALF
+    sv.saveCtx.save()
+    sv.saveCtx.fillStyle = '#fff'
+    sv.saveCtx.fillRect((selfX < syncX ? selfX : syncX) + NOTE_WIDTH_HALF, syncY, (selfX < syncX ? syncX - selfX : selfX - syncX) - NOTE_WIDTH, this._connectionHeight / SCALE)
+    sv.saveCtx.restore()
+  }
+
   protected _drawSync (sv: ScoreViewer) {
     if (!this._synchronizedNote) return
 
-    const connectionHeight = 20
     const syncX = ScoreViewer.X[this._synchronizedNote.finishPos - 1] + NOTE_WIDTH_HALF
-    const syncY = ScoreViewer.TOP_TO_TARGET_POSITION - (~~(sv.options.speed * 60 * (this._sec - sv.audio.currentTime))) + NOTE_HEIGHT_HALF - connectionHeight / 2
+    const syncY = ScoreViewer.calY(sv.options.speed, this._sec, sv.audio.currentTime) + NOTE_HEIGHT_HALF - this._connectionHeight / 2
     const selfX = this._x + NOTE_WIDTH_HALF
-    sv.frontCtx.fillRect((selfX < syncX ? selfX : syncX) + NOTE_WIDTH_HALF, syncY, (selfX < syncX ? syncX - selfX : selfX - syncX) - NOTE_WIDTH, connectionHeight)
-
+    sv.frontCtx.save()
+    sv.frontCtx.fillStyle = '#fff'
+    sv.frontCtx.fillRect((selfX < syncX ? selfX : syncX) + NOTE_WIDTH_HALF, syncY, (selfX < syncX ? syncX - selfX : selfX - syncX) - NOTE_WIDTH, this._connectionHeight)
+    sv.frontCtx.restore()
   }
 
   protected _isNeedDraw (): boolean {
@@ -410,7 +570,8 @@ abstract class Note {
     return this._y < ScoreViewer.TOP_TO_TARGET_POSITION
   }
 
-  abstract draw (sv: ScoreViewer): void
+  public abstract saveDraw (sv: ScoreViewer): void
+  public abstract draw (sv: ScoreViewer): void
 }
 
 class TapNote extends Note {
@@ -424,6 +585,11 @@ class TapNote extends Note {
 
     this._drawSync(sv)
     sv.frontCtx.drawImage(tapCanvas, this._x, this._y)
+  }
+
+  public saveDraw (sv: ScoreViewer) {
+    this._saveDrawSync(sv)
+    sv.saveCtx.drawImage(tapCanvas, 0, 0, tapCanvas.width, tapCanvas.height, this._x, this._y, tapCanvas.width / SCALE, tapCanvas.height / SCALE/* ScoreViewer.calY(sv.options.speed, this._sec, 0) */)
   }
 }
 
@@ -443,39 +609,42 @@ class FlipNote extends Note {
     }
   }
 
-  private _drawFlipConnection (sv: ScoreViewer, connectionX: number, connectionY: number) {
+  private _drawFlipConnection (ctx: CanvasRenderingContext2D, connectionX: number, connectionY: number) {
     if (connectionY >= ScoreViewer.TOP_TO_TARGET_POSITION) return
     const xCenter = this._status === 1 ? this._x + NOTE_WIDTH_DELTA + NOTE_WIDTH_HALF : this._x + NOTE_WIDTH_HALF
-    sv.frontCtx.beginPath()
-    sv.frontCtx.moveTo(xCenter, this._y)
-    sv.frontCtx.lineTo(xCenter, this._y + NOTE_HEIGHT)
-    sv.frontCtx.lineTo(connectionX + NOTE_WIDTH_HALF, connectionY + NOTE_HEIGHT)
-    sv.frontCtx.lineTo(connectionX + NOTE_WIDTH_HALF, connectionY)
-    sv.frontCtx.lineTo(xCenter, this._y)
-    sv.frontCtx.fill()
+    ctx.beginPath()
+    ctx.moveTo(xCenter, this._y)
+    ctx.lineTo(xCenter, this._y + NOTE_HEIGHT)
+    ctx.lineTo(connectionX + NOTE_WIDTH_HALF, connectionY + NOTE_HEIGHT)
+    ctx.lineTo(connectionX + NOTE_WIDTH_HALF, connectionY)
+    ctx.lineTo(xCenter, this._y)
+    ctx.fill()
   }
 
-  private _drawLongConnection (sv: ScoreViewer, connectionY: number) {
+  private _drawLongConnection (ctx: CanvasRenderingContext2D, connectionY: number) {
     const x = this._status === 1 ? this._x + NOTE_WIDTH_DELTA : this._x
-    sv.frontCtx.beginPath()
-    sv.frontCtx.arc(x + NOTE_WIDTH_HALF, this._y + NOTE_HEIGHT_HALF, NOTE_WIDTH_HALF, 0, Math.PI, true)
+    ctx.beginPath()
+    ctx.arc(x + NOTE_WIDTH_HALF, this._y + NOTE_HEIGHT_HALF, NOTE_WIDTH_HALF, 0, Math.PI, true)
     const targetY = connectionY > ScoreViewer.TOP_TO_TARGET_POSITION ? ScoreViewer.TOP_TO_TARGET_POSITION + NOTE_HEIGHT_HALF : connectionY + NOTE_HEIGHT_HALF
-    sv.frontCtx.lineTo(x, targetY)
-    sv.frontCtx.arc(x + NOTE_WIDTH_HALF, targetY, NOTE_WIDTH_HALF, Math.PI, 2 * Math.PI, true)
-    sv.frontCtx.lineTo(x + NOTE_WIDTH, this._y + NOTE_HEIGHT_HALF)
-    sv.frontCtx.fill()
+    ctx.lineTo(x, targetY)
+    ctx.arc(x + NOTE_WIDTH_HALF, targetY, NOTE_WIDTH_HALF, Math.PI, 2 * Math.PI, true)
+    ctx.lineTo(x + NOTE_WIDTH, this._y + NOTE_HEIGHT_HALF)
+    ctx.fill()
   }
 
-  private _drawMoveConnection (sv: ScoreViewer, connectionX: number, connectionY: number) {
-    sv.frontCtx.beginPath()
-    sv.frontCtx.arc(this._status === 1 ? this._x + NOTE_WIDTH_HALF + NOTE_WIDTH_DELTA : this._x + NOTE_WIDTH_HALF, this._y + NOTE_HEIGHT_HALF, NOTE_WIDTH_HALF, 0, Math.PI, true)
+  private _drawMoveConnection (ctx: CanvasRenderingContext2D, connectionX: number, connectionY: number, SCALE?: number) {
+    ctx.beginPath()
+    ctx.arc(this._status === 1 ? this._x + NOTE_WIDTH_HALF + NOTE_WIDTH_DELTA : this._x + NOTE_WIDTH_HALF, this._y + NOTE_HEIGHT_HALF, NOTE_WIDTH_HALF, 0, Math.PI, true)
     const targetY = connectionY > ScoreViewer.TOP_TO_TARGET_POSITION ? ScoreViewer.TOP_TO_TARGET_POSITION + NOTE_HEIGHT_HALF : connectionY + NOTE_HEIGHT_HALF
     const targetX = connectionY > ScoreViewer.TOP_TO_TARGET_POSITION ? connectionX + ((this._x - connectionX) * (-(ScoreViewer.TOP_TO_TARGET_POSITION - connectionY)) / ((-(ScoreViewer.TOP_TO_TARGET_POSITION - connectionY)) + (ScoreViewer.TOP_TO_TARGET_POSITION - this._y))) : connectionX
-    sv.frontCtx.lineTo(targetX, targetY)
-    sv.frontCtx.arc(targetX + NOTE_WIDTH_HALF, targetY, NOTE_WIDTH_HALF, Math.PI, 2 * Math.PI, true)
-    sv.frontCtx.lineTo(this._status === 1 ? this._x + NOTE_WIDTH + NOTE_WIDTH_DELTA : this._x + NOTE_WIDTH, this._y + NOTE_HEIGHT_HALF)
-    sv.frontCtx.fill()
-    if (connectionY > ScoreViewer.TOP_TO_TARGET_POSITION) sv.frontCtx.drawImage(longMoveWhiteCanvas, targetX, targetY - NOTE_HEIGHT_HALF)
+    ctx.lineTo(targetX, targetY)
+    ctx.arc(targetX + NOTE_WIDTH_HALF, targetY, NOTE_WIDTH_HALF, Math.PI, 2 * Math.PI, true)
+    ctx.lineTo(this._status === 1 ? this._x + NOTE_WIDTH + NOTE_WIDTH_DELTA : this._x + NOTE_WIDTH, this._y + NOTE_HEIGHT_HALF)
+    ctx.fill()
+    if (connectionY > ScoreViewer.TOP_TO_TARGET_POSITION) {
+      if (!SCALE) ctx.drawImage(longMoveWhiteCanvas, targetX, targetY - NOTE_HEIGHT_HALF)
+      else ctx.drawImage(longMoveWhiteCanvas, 0, 0, longMoveWhiteCanvas.width, longMoveWhiteCanvas.height, targetX, targetY - NOTE_HEIGHT_HALF, longMoveWhiteCanvas.width / SCALE, longMoveWhiteCanvas.height / SCALE)
+    }
   }
 
   public draw (sv: ScoreViewer) {
@@ -484,24 +653,53 @@ class FlipNote extends Note {
     this._drawSync(sv)
     if (this._connection) {
       const connectionX = ScoreViewer.X[this._connection.finishPos - 1]
-      const connectionY = ScoreViewer.TOP_TO_TARGET_POSITION - (~~(sv.options.speed * 60 * (this._connection.sec - sv.audio.currentTime)))
+      const connectionY = ScoreViewer.calY(sv.options.speed, this._connection.sec, sv.audio.currentTime)
       if (this._connection.type === 1) {
-        this._drawFlipConnection(sv, connectionX, connectionY)
+        this._drawFlipConnection(sv.frontCtx, connectionX, connectionY)
       } else if (this._connection.type === 2) {
         if (this._connection.status === 0) {
-          this._drawLongConnection(sv, connectionY)
+          this._drawLongConnection(sv.frontCtx, connectionY)
         } else {
-          this._drawFlipConnection(sv, connectionX, connectionY)
+          this._drawFlipConnection(sv.frontCtx, connectionX, connectionY)
         }
       } else if (this._connection.type === 3) {
         if (this._connection.status === 0) {
-          this._drawMoveConnection(sv, connectionX, connectionY)
+          this._drawMoveConnection(sv.frontCtx, connectionX, connectionY)
         } else {
-          this._drawFlipConnection(sv, connectionX, connectionY)
+          this._drawFlipConnection(sv.frontCtx, connectionX, connectionY)
         }
       }
     }
     sv.frontCtx.drawImage(this._status === 1 ? flipLeftCanvas : flipRightCanvas, this._x, this._y)
+  }
+
+  public saveDraw (sv: ScoreViewer) {
+    this._saveDrawSync(sv)
+    if (this._connection) {
+      const connectionX = ScoreViewer.X[this._connection.finishPos - 1]
+      const connectionY = ScoreViewer.saveCalY(sv, this._connection.sec)
+      if (this._connection.type === 1) {
+        this._drawFlipConnection(sv.saveCtx, connectionX, connectionY)
+      } else if (this._connection.type === 2) {
+        if (this._connection.status === 0) {
+          this._drawLongConnection(sv.saveCtx, connectionY)
+        } else {
+          this._drawFlipConnection(sv.saveCtx, connectionX, connectionY)
+        }
+      } else if (this._connection.type === 3) {
+        if (this._connection.status === 0) {
+          this._drawMoveConnection(sv.saveCtx, connectionX, connectionY, SCALE)
+        } else {
+          this._drawFlipConnection(sv.saveCtx, connectionX, connectionY)
+        }
+      }
+    }
+
+    if (this._status === 1) {
+      sv.saveCtx.drawImage(flipLeftCanvas, 0, 0, flipLeftCanvas.width, flipLeftCanvas.height, this._x, this._y, flipLeftCanvas.width / SCALE, flipLeftCanvas.height / SCALE)
+    } else {
+      sv.saveCtx.drawImage(flipRightCanvas, 0, 0, flipRightCanvas.width, flipRightCanvas.height, this._x, this._y, flipRightCanvas.width / SCALE, flipRightCanvas.height / SCALE)
+    }
   }
 }
 
@@ -522,7 +720,7 @@ class LongNote extends Note {
 
     this._drawSync(sv)
     if (this._connection) {
-      const connectionY = ScoreViewer.TOP_TO_TARGET_POSITION - (~~(sv.options.speed * 60 * (this._connection.sec - sv.audio.currentTime)))
+      const connectionY = ScoreViewer.calY(sv.options.speed, this._connection.sec, sv.audio.currentTime)
       sv.frontCtx.beginPath()
       sv.frontCtx.arc(this._x + NOTE_WIDTH_HALF, this._y + NOTE_HEIGHT_HALF, NOTE_WIDTH_HALF, 0, Math.PI, true)
       const targetY = connectionY > ScoreViewer.TOP_TO_TARGET_POSITION ? ScoreViewer.TOP_TO_TARGET_POSITION + NOTE_HEIGHT_HALF : connectionY + NOTE_HEIGHT_HALF
@@ -532,6 +730,23 @@ class LongNote extends Note {
       sv.frontCtx.fill()
     }
     sv.frontCtx.drawImage(longLoopCanvas, this._x, this._y)
+  }
+
+  public saveDraw (sv: ScoreViewer) {
+    this._saveDrawSync(sv)
+    if (this._connection) {
+      const connectionY = ScoreViewer.saveCalY(sv, this._connection.sec)
+      sv.saveCtx.beginPath()
+      sv.saveCtx.arc(this._x + NOTE_WIDTH_HALF, this._y + NOTE_HEIGHT_HALF, NOTE_WIDTH_HALF, 0, Math.PI, true)
+      const targetY = connectionY > ScoreViewer.TOP_TO_TARGET_POSITION ? ScoreViewer.TOP_TO_TARGET_POSITION + NOTE_HEIGHT_HALF : connectionY + NOTE_HEIGHT_HALF
+      sv.saveCtx.lineTo(this._x, targetY)
+      sv.saveCtx.arc(this._x + NOTE_WIDTH_HALF, targetY, NOTE_WIDTH_HALF, Math.PI, 2 * Math.PI, true)
+      sv.saveCtx.lineTo(this._x + NOTE_WIDTH, this._y + NOTE_HEIGHT_HALF)
+      sv.saveCtx.fill()
+    }
+    // sv.saveCtx.drawImage(longLoopCanvas, this._x, this._y)
+    sv.saveCtx.drawImage(longLoopCanvas, 0, 0, longLoopCanvas.width, longLoopCanvas.height, this._x, this._y, longLoopCanvas.width / SCALE, longLoopCanvas.height / SCALE)
+
   }
 }
 
@@ -553,7 +768,7 @@ class LongMoveNote extends Note {
     this._drawSync(sv)
     if (this._connection) {
       const connectionX = ScoreViewer.X[this._connection.finishPos - 1]
-      const connectionY = ScoreViewer.TOP_TO_TARGET_POSITION - (~~(sv.options.speed * 60 * (this._connection.sec - sv.audio.currentTime)))
+      const connectionY = ScoreViewer.calY(sv.options.speed, this._connection.sec, sv.audio.currentTime)
       sv.frontCtx.beginPath()
       sv.frontCtx.arc(this._x + NOTE_WIDTH_HALF, this._y + NOTE_HEIGHT_HALF, NOTE_WIDTH_HALF, 0, Math.PI, true)
       const targetY = connectionY > ScoreViewer.TOP_TO_TARGET_POSITION ? ScoreViewer.TOP_TO_TARGET_POSITION + NOTE_HEIGHT_HALF : connectionY + NOTE_HEIGHT_HALF
@@ -565,6 +780,24 @@ class LongMoveNote extends Note {
       if (connectionY > ScoreViewer.TOP_TO_TARGET_POSITION) sv.frontCtx.drawImage(longMoveWhiteCanvas, targetX, targetY - NOTE_HEIGHT_HALF)
     }
     sv.frontCtx.drawImage(longMoveCanvas, this._x, this._y)
+  }
+
+  public saveDraw (sv: ScoreViewer) {
+    this._saveDrawSync(sv)
+    if (this._connection) {
+      const connectionX = ScoreViewer.X[this._connection.finishPos - 1]
+      const connectionY = ScoreViewer.saveCalY(sv, this._connection.sec)
+      sv.saveCtx.beginPath()
+      sv.saveCtx.arc(this._x + NOTE_WIDTH_HALF, this._y + NOTE_HEIGHT_HALF, NOTE_WIDTH_HALF, 0, Math.PI, true)
+      const targetY = connectionY > ScoreViewer.TOP_TO_TARGET_POSITION ? ScoreViewer.TOP_TO_TARGET_POSITION + NOTE_HEIGHT_HALF : connectionY + NOTE_HEIGHT_HALF
+      const targetX = connectionY > ScoreViewer.TOP_TO_TARGET_POSITION ? connectionX + ((this._x - connectionX) * (-(ScoreViewer.TOP_TO_TARGET_POSITION - connectionY)) / ((-(ScoreViewer.TOP_TO_TARGET_POSITION - connectionY)) + (ScoreViewer.TOP_TO_TARGET_POSITION - this._y))) : connectionX
+      sv.saveCtx.lineTo(targetX, targetY)
+      sv.saveCtx.arc(targetX + NOTE_WIDTH_HALF, targetY, NOTE_WIDTH_HALF, Math.PI, 2 * Math.PI, true)
+      sv.saveCtx.lineTo(this._x + NOTE_WIDTH, this._y + NOTE_HEIGHT_HALF)
+      sv.saveCtx.fill()
+      if (connectionY > ScoreViewer.TOP_TO_TARGET_POSITION) sv.saveCtx.drawImage(longMoveWhiteCanvas, 0, 0, longMoveWhiteCanvas.width, longMoveWhiteCanvas.height, targetX, targetY - NOTE_HEIGHT_HALF, longMoveWhiteCanvas.width / SCALE, longMoveWhiteCanvas.height / SCALE)
+    }
+    sv.saveCtx.drawImage(longMoveCanvas, 0, 0, longMoveCanvas.width, longMoveCanvas.height, this._x, this._y, longMoveCanvas.width / SCALE, longMoveCanvas.height / SCALE)
   }
 }
 
@@ -590,9 +823,17 @@ function main () {
   if (!song) return
 
   // console.log(song)
-  let name = parse(song.src).name.split('-')[1]
+  let name = parse(song.src).name.substr(parse(song.src).name.indexOf('-') + 1)
   document.getElementsByTagName('title')[0].innerHTML = name
-  ScoreViewer.init(song, document.body).start()
+  const sv = ScoreViewer.init(song, document.body)
+  sv.start()
+  // if (process.env.NODE_ENV !== 'production') {
+  //   (document.getElementById('debug') as HTMLButtonElement).addEventListener('click', () => {
+  //     const base64str = sv.frontCanvas.toDataURL('image/png').substr(22)
+  //     writeFile(getPath.scoreDir(name + '.png'), Buffer.from(base64str, 'base64'))
+  //     // console.log(sv.frontCanvas.toDataURL('image/png').substr(22))
+  //   }, false)
+  // }
 }
 
 main()

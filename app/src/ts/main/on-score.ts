@@ -33,13 +33,21 @@ function createScore (csv: string) {
   return { fullCombo, score }
 }
 
-let song: { src: string; bpm: number; score: ScoreNote[]; fullCombo: number } | null = null
+let song: { src: string; bpm: number; score: ScoreNote[]; fullCombo: number; difficulty: string } | null = null
 
 ipcMain.on('getSong', (event: Event) => {
   const sync = song
   song = null
   event.returnValue = sync
 })
+
+const difficultyMap: any = {
+  1: 'DEBUT',
+  2: 'REGULAR',
+  3: 'PRO',
+  4: 'MASTER',
+  5: 'MASTER+'
+}
 
 export default async function (event: Event, scoreFile: string, difficulty: number | string, bpm: number, src: string) {
   let bdb = await openSqlite(scoreFile)
@@ -51,6 +59,6 @@ export default async function (event: Event, scoreFile: string, difficulty: numb
 
   let { fullCombo, score } = createScore(data)
 
-  song = { src, bpm, score, fullCombo }
+  song = { src, bpm, score, fullCombo, difficulty: difficultyMap[difficulty] }
   event.sender.send('score')
 }
