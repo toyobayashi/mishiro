@@ -180,7 +180,11 @@ class ScoreViewer {
                 this._setNoteInstance(group[0], new FlipNote(this.song.score[group[0]], this.song.score[endIndex], this._getSyncNote(group[0])))
               }
             }
-            this._setNoteInstance(endIndex, new FlipNote(this.song.score[endIndex], note, this._getSyncNote(endIndex)))
+            if (this.song.score[endIndex].type === 2 && this.song.score[endIndex].status === 0) {
+              this._setNoteInstance(endIndex, new LongNote(this.song.score[endIndex], note, this._getSyncNote(endIndex)))
+            } else {
+              this._setNoteInstance(endIndex, new FlipNote(this.song.score[endIndex], note, this._getSyncNote(endIndex)))
+            }
           }
           this._setNoteInstance(i, new LongNote(note, undefined, this._getSyncNote(i)))
           break
@@ -283,8 +287,20 @@ class ScoreViewer {
   private _renderNote () {
 
     this._clear()
+
     for (let i = this.song.score.length - 1; i >= 0; i--) {
-      (this.song.score[i]._instance as Note).draw(this)
+      if ((this.song.score[i]._instance as Note).isNeedDraw()) (this.song.score[i]._instance as Note).drawConnection(this)
+    }
+
+    this.frontCtx.save()
+    this.frontCtx.fillStyle = '#fff'
+    for (let i = this.song.score.length - 1; i >= 0; i--) {
+      if ((this.song.score[i]._instance as Note).isNeedDraw()) (this.song.score[i]._instance as Note).drawSync(this)
+    }
+    this.frontCtx.restore()
+
+    for (let i = this.song.score.length - 1; i >= 0; i--) {
+      if ((this.song.score[i]._instance as Note).isNeedDraw()) (this.song.score[i]._instance as Note).drawNote(this)
     }
     this._isClean = false
   }
@@ -351,8 +367,20 @@ class ScoreViewer {
           (this.song.score[i]._instance as Note).setX((this.song.score[i]._instance as Note).getX() / SCALE);
           (this.song.score[i]._instance as Note).setY(ScoreViewer.saveCalY(this, this.song.score[i].sec))
         }
+
         for (let i = this.song.score.length - 1; i >= 0; i--) {
-          (this.song.score[i]._instance as Note).saveDraw(this)
+          (this.song.score[i]._instance as Note).saveDrawConnection(this)
+        }
+
+        this.saveCtx.save()
+        this.saveCtx.fillStyle = '#fff'
+        for (let i = this.song.score.length - 1; i >= 0; i--) {
+          (this.song.score[i]._instance as Note).saveDrawSync(this)
+        }
+        this.saveCtx.restore()
+
+        for (let i = this.song.score.length - 1; i >= 0; i--) {
+          (this.song.score[i]._instance as Note).saveDrawNote(this)
         }
 
         for (let i = 0; i < this.song.score.length; i++) {
@@ -516,7 +544,7 @@ abstract class Note {
   protected _y: number
   protected _connection: ScoreNoteWithNoteInstance | null
   protected _synchronizedNote: ScoreNoteWithNoteInstance | null
-  private _connectionHeight = 10
+  private _connectionHeight = 12
 
   constructor (note: ScoreNote) {
     this._sec = note.sec
@@ -538,31 +566,25 @@ abstract class Note {
     this._x = x
   }
 
-  protected _saveDrawSync (sv: ScoreViewer) {
+  public saveDrawSync (sv: ScoreViewer) {
     if (!this._synchronizedNote) return
 
     const syncX = ScoreViewer.X[this._synchronizedNote.finishPos - 1] + NOTE_WIDTH_HALF
     const syncY = ScoreViewer.saveCalY(sv, this._sec) + NOTE_HEIGHT_HALF - this._connectionHeight / 2 / SCALE
-    const selfX = this._x + NOTE_WIDTH_HALF
-    sv.saveCtx.save()
-    sv.saveCtx.fillStyle = '#fff'
+    const selfX = this._x + NOTE_WIDTH_HALF + (ScoreViewer.X.includes(this._x) ? 0 : NOTE_WIDTH_DELTA)
     sv.saveCtx.fillRect((selfX < syncX ? selfX : syncX) + NOTE_WIDTH_HALF, syncY, (selfX < syncX ? syncX - selfX : selfX - syncX) - NOTE_WIDTH, this._connectionHeight / SCALE)
-    sv.saveCtx.restore()
   }
 
-  protected _drawSync (sv: ScoreViewer) {
+  public drawSync (sv: ScoreViewer) {
     if (!this._synchronizedNote) return
 
     const syncX = ScoreViewer.X[this._synchronizedNote.finishPos - 1] + NOTE_WIDTH_HALF
     const syncY = ScoreViewer.calY(sv.options.speed, this._sec, sv.audio.currentTime) + NOTE_HEIGHT_HALF - this._connectionHeight / 2
-    const selfX = this._x + NOTE_WIDTH_HALF
-    sv.frontCtx.save()
-    sv.frontCtx.fillStyle = '#fff'
+    const selfX = this._x + NOTE_WIDTH_HALF + (ScoreViewer.X.includes(this._x) ? 0 : NOTE_WIDTH_DELTA)
     sv.frontCtx.fillRect((selfX < syncX ? selfX : syncX) + NOTE_WIDTH_HALF, syncY, (selfX < syncX ? syncX - selfX : selfX - syncX) - NOTE_WIDTH, this._connectionHeight)
-    sv.frontCtx.restore()
   }
 
-  protected _isNeedDraw (): boolean {
+  public isNeedDraw (): boolean {
     if (this._y < -NOTE_HEIGHT) {
       if (!this._connection) return false
       return (this._connection._instance as Note)._y >= -NOTE_HEIGHT
@@ -570,8 +592,10 @@ abstract class Note {
     return this._y < ScoreViewer.TOP_TO_TARGET_POSITION
   }
 
-  public abstract saveDraw (sv: ScoreViewer): void
-  public abstract draw (sv: ScoreViewer): void
+  public abstract saveDrawConnection (sv: ScoreViewer): void
+  public abstract saveDrawNote (sv: ScoreViewer): void
+  public abstract drawConnection (sv: ScoreViewer): void
+  public abstract drawNote (sv: ScoreViewer): void
 }
 
 class TapNote extends Note {
@@ -580,15 +604,19 @@ class TapNote extends Note {
     if (syncNote) this._synchronizedNote = syncNote
   }
 
-  public draw (sv: ScoreViewer) {
-    if (!this._isNeedDraw()) return
+  public drawConnection (_sv: ScoreViewer) {
+    return
+  }
 
-    this._drawSync(sv)
+  public drawNote (sv: ScoreViewer) {
     sv.frontCtx.drawImage(tapCanvas, this._x, this._y)
   }
 
-  public saveDraw (sv: ScoreViewer) {
-    this._saveDrawSync(sv)
+  public saveDrawConnection (_sv: ScoreViewer) {
+    return
+  }
+
+  public saveDrawNote (sv: ScoreViewer) {
     sv.saveCtx.drawImage(tapCanvas, 0, 0, tapCanvas.width, tapCanvas.height, this._x, this._y, tapCanvas.width / SCALE, tapCanvas.height / SCALE/* ScoreViewer.calY(sv.options.speed, this._sec, 0) */)
   }
 }
@@ -647,10 +675,7 @@ class FlipNote extends Note {
     }
   }
 
-  public draw (sv: ScoreViewer) {
-    if (!this._isNeedDraw()) return
-
-    this._drawSync(sv)
+  public drawConnection (sv: ScoreViewer) {
     if (this._connection) {
       const connectionX = ScoreViewer.X[this._connection.finishPos - 1]
       const connectionY = ScoreViewer.calY(sv.options.speed, this._connection.sec, sv.audio.currentTime)
@@ -670,11 +695,13 @@ class FlipNote extends Note {
         }
       }
     }
+  }
+
+  public drawNote (sv: ScoreViewer) {
     sv.frontCtx.drawImage(this._status === 1 ? flipLeftCanvas : flipRightCanvas, this._x, this._y)
   }
 
-  public saveDraw (sv: ScoreViewer) {
-    this._saveDrawSync(sv)
+  public saveDrawConnection (sv: ScoreViewer) {
     if (this._connection) {
       const connectionX = ScoreViewer.X[this._connection.finishPos - 1]
       const connectionY = ScoreViewer.saveCalY(sv, this._connection.sec)
@@ -694,7 +721,9 @@ class FlipNote extends Note {
         }
       }
     }
+  }
 
+  public saveDrawNote (sv: ScoreViewer) {
     if (this._status === 1) {
       sv.saveCtx.drawImage(flipLeftCanvas, 0, 0, flipLeftCanvas.width, flipLeftCanvas.height, this._x, this._y, flipLeftCanvas.width / SCALE, flipLeftCanvas.height / SCALE)
     } else {
@@ -715,10 +744,7 @@ class LongNote extends Note {
     }
   }
 
-  public draw (sv: ScoreViewer) {
-    if (!this._isNeedDraw()) return
-
-    this._drawSync(sv)
+  public drawConnection (sv: ScoreViewer) {
     if (this._connection) {
       const connectionY = ScoreViewer.calY(sv.options.speed, this._connection.sec, sv.audio.currentTime)
       sv.frontCtx.beginPath()
@@ -729,11 +755,13 @@ class LongNote extends Note {
       sv.frontCtx.lineTo(this._x + NOTE_WIDTH, this._y + NOTE_HEIGHT_HALF)
       sv.frontCtx.fill()
     }
+  }
+
+  public drawNote (sv: ScoreViewer) {
     sv.frontCtx.drawImage(longLoopCanvas, this._x, this._y)
   }
 
-  public saveDraw (sv: ScoreViewer) {
-    this._saveDrawSync(sv)
+  public saveDrawConnection (sv: ScoreViewer) {
     if (this._connection) {
       const connectionY = ScoreViewer.saveCalY(sv, this._connection.sec)
       sv.saveCtx.beginPath()
@@ -744,9 +772,10 @@ class LongNote extends Note {
       sv.saveCtx.lineTo(this._x + NOTE_WIDTH, this._y + NOTE_HEIGHT_HALF)
       sv.saveCtx.fill()
     }
-    // sv.saveCtx.drawImage(longLoopCanvas, this._x, this._y)
-    sv.saveCtx.drawImage(longLoopCanvas, 0, 0, longLoopCanvas.width, longLoopCanvas.height, this._x, this._y, longLoopCanvas.width / SCALE, longLoopCanvas.height / SCALE)
+  }
 
+  public saveDrawNote (sv: ScoreViewer) {
+    sv.saveCtx.drawImage(longLoopCanvas, 0, 0, longLoopCanvas.width, longLoopCanvas.height, this._x, this._y, longLoopCanvas.width / SCALE, longLoopCanvas.height / SCALE)
   }
 }
 
@@ -762,10 +791,7 @@ class LongMoveNote extends Note {
     }
   }
 
-  public draw (sv: ScoreViewer) {
-    if (!this._isNeedDraw()) return
-
-    this._drawSync(sv)
+  public drawConnection (sv: ScoreViewer) {
     if (this._connection) {
       const connectionX = ScoreViewer.X[this._connection.finishPos - 1]
       const connectionY = ScoreViewer.calY(sv.options.speed, this._connection.sec, sv.audio.currentTime)
@@ -779,11 +805,13 @@ class LongMoveNote extends Note {
       sv.frontCtx.fill()
       if (connectionY > ScoreViewer.TOP_TO_TARGET_POSITION) sv.frontCtx.drawImage(longMoveWhiteCanvas, targetX, targetY - NOTE_HEIGHT_HALF)
     }
+  }
+
+  public drawNote (sv: ScoreViewer): void {
     sv.frontCtx.drawImage(longMoveCanvas, this._x, this._y)
   }
 
-  public saveDraw (sv: ScoreViewer) {
-    this._saveDrawSync(sv)
+  public saveDrawConnection (sv: ScoreViewer) {
     if (this._connection) {
       const connectionX = ScoreViewer.X[this._connection.finishPos - 1]
       const connectionY = ScoreViewer.saveCalY(sv, this._connection.sec)
@@ -797,6 +825,9 @@ class LongMoveNote extends Note {
       sv.saveCtx.fill()
       if (connectionY > ScoreViewer.TOP_TO_TARGET_POSITION) sv.saveCtx.drawImage(longMoveWhiteCanvas, 0, 0, longMoveWhiteCanvas.width, longMoveWhiteCanvas.height, targetX, targetY - NOTE_HEIGHT_HALF, longMoveWhiteCanvas.width / SCALE, longMoveWhiteCanvas.height / SCALE)
     }
+  }
+
+  public saveDrawNote (sv: ScoreViewer): void {
     sv.saveCtx.drawImage(longMoveCanvas, 0, 0, longMoveCanvas.width, longMoveCanvas.height, this._x, this._y, longMoveCanvas.width / SCALE, longMoveCanvas.height / SCALE)
   }
 }
