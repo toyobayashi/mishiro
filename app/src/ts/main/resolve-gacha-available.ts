@@ -11,10 +11,52 @@ export default async function (gachaAvailable: any[], cardData: any[], gachaData
   let R = 0
   let SR = 0
   let SSR = 0
-  let fes = false
+  let fes = new RegExp('シンデレラフェス').test(gachaData.dicription)
   let SSR_UP = 0
   let SR_UP = 0
   let REC = 0
+
+  // 数据库没有数据时，直接从接口获取数据，不做数据统计
+  if (!gachaAvailable.length) {
+    try {
+      let gachaResponse = await client.getGachaRate(gachaData.id)
+      if (gachaResponse.data_headers.result_code !== 1) {
+        console.log('Get gacha odds failed. Code: ' + gachaResponse.data_headers.result_code)
+        return {
+          gachaAvailable,
+          count: { R, SR, SSR, fes }
+        }
+      }
+
+      let idolList = (gachaResponse.data as any).idol_list
+      let totalList = [...idolList.r, ...idolList.sr, ...idolList.ssr]
+
+      for (let i = 0; i < totalList.length; i++) {
+        const rarity = getRarity(totalList[i].card_id, cardData)
+        gachaAvailable.push({
+          rarity,
+          reward_id: totalList[i].card_id,
+          relative_odds: Number(totalList[i].charge_odds) * 10000,
+          relative_sr_odds: totalList[i].sr_odds ? (Number(totalList[i].sr_odds) * 10000) : 0
+        })
+
+        if (rarity === 3) {
+          R++
+        } else if (rarity === 5) {
+          SR++
+        } else if (rarity === 7) {
+          SSR++
+        }
+      }
+      console.log('gachaAvailable: ' + totalList.length)
+      return {
+        gachaAvailable,
+        count: { R, SR, SSR, fes }
+      }
+    } catch (err) {
+      console.log(err)
+    }
+  }
 
   for (let i = 0; i < gachaAvailable.length; i++) {
     let v = gachaAvailable[i]
@@ -36,8 +78,6 @@ export default async function (gachaAvailable: any[], cardData: any[], gachaData
       }
     }
   }
-
-  if (new RegExp('シンデレラフェス').test(gachaData.dicription)) fes = true
 
   if (gachaAvailable.length && gachaAvailable[0]['relative_odds'] === 0) {
     try {
