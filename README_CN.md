@@ -10,6 +10,8 @@
 * [ GACHA ] 同步卡池抽到爽。
 * [ MENU ] 活动算分，设置等
 
+谱面查看演示: [https://toyobayashi.github.io/mishiro-score-viewer/](https://toyobayashi.github.io/mishiro-score-viewer/)
+
 ## 开发 & 构建
 
 ### Windows 需要

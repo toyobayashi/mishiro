@@ -23,14 +23,18 @@ get({
 
     let res = JSON.parse(body)
     let total = 0
-    for (const release of res) {
-      for (const asset of release.assets) {
-        total += asset.download_count
-        let line = asset.name + repeat(' ', 40 - asset.name.length) + asset.download_count
-        console.log(line)
+    try {
+      for (const release of res) {
+        for (const asset of release.assets) {
+          total += asset.download_count
+          let line = asset.name + repeat(' ', 40 - asset.name.length) + asset.download_count
+          console.log(line)
+        }
       }
+      console.log('\nTotal' + repeat(' ', 40 - 5) + total)
+    } catch (err) {
+      console.log(res)
     }
-    console.log('\nTotal' + repeat(' ', 40 - 5) + total)
   })
   response.on('error', err => console.log(err))
 })

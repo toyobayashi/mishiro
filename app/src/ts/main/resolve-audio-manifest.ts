@@ -44,7 +44,21 @@ export default function (bgmManifest: BGM[], liveManifest: Live[], musicData: Mu
       } else {
         fileName = arr[1] + '-' + musicData.filter(row => Number(row.id) === Number(arr[1]))[0].name.replace(/\\n|\\|\/|<|>|\*|\?|:|"|\|/g, '') + '.mp3'
       }
-      let id = liveData.filter(row => Number(row.music_data_id) === Number(arr[1]))[0].id
+      const liveDataArr = liveData.filter(row => Number(row.music_data_id) === Number(arr[1]))
+      let id: any = null
+      if (liveDataArr.length === 1) {
+        id = liveDataArr[0].id
+      } else {
+        for (let j = 0; j < liveDataArr.length; j++) {
+          if (Number(liveDataArr[j].event_type) !== 0 && Number(liveDataArr[j].difficulty_5) !== 0) {
+            id = liveDataArr[j].id
+          }
+        }
+        if (id === null) {
+          id = liveDataArr[0].id
+        }
+      }
+
       let scoreId = id.toString().length >= 3 ? id : (id.toString().length === 2 ? '0' + id : '00' + id)
       let scoreExists = scoreManifest.filter(row => row.name === `musicscores_m${scoreId}.bdb`)
       if (scoreExists.length) {
