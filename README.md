@@ -22,7 +22,8 @@
 * [ GACHA ] Gacha simulation. (official odds)
 * [ MENU ] Event PT calculator, options...
 
-Score viewer demo: [https://toyobayashi.github.io/mishiro-score-viewer/](https://toyobayashi.github.io/mishiro-score-viewer/)
+Score viewer demo: [https://toyobayashi.github.io/mishiro-score-viewer/](https://toyobayashi.github.io/mishiro-score-viewer/)  
+Repo: [mishiro-score-viewer](https://github.com/toyobayashi/mishiro-score-viewer)
 
 <!-- * [ IDOL ] Search idol card and download card background png from [starlight.kirara.ca](https://starlight.kirara.ca/) or character voice from game server. -->
 
