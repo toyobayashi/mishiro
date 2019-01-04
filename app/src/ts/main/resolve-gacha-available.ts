@@ -39,7 +39,7 @@ export default async function (gachaAvailable: any[], cardData: any[], gachaData
 
   if (new RegExp('シンデレラフェス').test(gachaData.dicription)) fes = true
 
-  if (gachaAvailable[0]['relative_odds'] === 0) {
+  if (gachaAvailable.length && gachaAvailable[0]['relative_odds'] === 0) {
     try {
       let gachaResponse = await client.getGachaRate(gachaData.id)
       if (gachaResponse.data_headers.result_code === 1) {
