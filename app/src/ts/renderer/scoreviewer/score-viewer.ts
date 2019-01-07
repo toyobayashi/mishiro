@@ -25,16 +25,6 @@ interface Option {
 class ScoreViewer {
 
   public static main (): void {
-    const background = document.getElementById('bg') as HTMLImageElement
-
-    window.addEventListener('resize', () => {
-      const isYoko = (window.innerWidth / window.innerHeight >= 1280 / 824)
-      if (isYoko) {
-        background.className = 'img-middle'
-      } else {
-        background.className = 'img-center'
-      }
-    }, false)
 
     window.addEventListener('beforeunload', () => {
       const mainwindow = remote.BrowserWindow.fromId(ipcRenderer.sendSync('mainWindowId'))
@@ -408,6 +398,7 @@ class ScoreViewer {
   }
 
   private _resolveDOM (el: HTMLElement) {
+    const background = document.getElementById('bg') as HTMLImageElement
     this.frontCanvas = document.createElement('canvas')
     this.backCanvas = document.createElement('canvas')
     this.saveCanvas = document.createElement('canvas')
@@ -516,6 +507,21 @@ class ScoreViewer {
       this.rangeInput.value = this.audio.currentTime.toString()
       this.rangeInput.style.backgroundSize = 100 * (this.audio.currentTime / this.audio.duration) + '% 100%'
     })
+
+    window.addEventListener('resize', () => {
+      if (window.innerWidth / window.innerHeight >= 1280 / 824) {
+        background.className = 'img-middle'
+      } else {
+        background.className = 'img-center'
+      }
+      if (window.innerWidth / window.innerHeight >= ScoreViewer.CANVAS_WIDTH / ScoreViewer.CANVAS_HEIGHT) {
+        this.frontCanvas.className = 'canvas canvas-center'
+        if (this.backCanvas) this.backCanvas.className = 'canvas canvas-center'
+      } else {
+        this.frontCanvas.className = 'canvas canvas-middle'
+        if (this.backCanvas) this.backCanvas.className = 'canvas canvas-middle'
+      }
+    }, false)
   }
 }
 
