@@ -76,7 +76,10 @@ export default class extends mixins(modalMixin) {
           // maxWidth: 1296,
           // maxHeight: 759,
           // parent: remote.BrowserWindow.fromId(windowID),
-          backgroundColor: '#000000'
+          backgroundColor: '#000000',
+          webPreferences: {
+            nodeIntegration: true
+          }
         })
 
         if (process.env.NODE_ENV === 'production') {

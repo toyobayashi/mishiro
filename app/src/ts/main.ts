@@ -21,7 +21,10 @@ function createWindow () {
     minWidth: 1080,
     minHeight: 700,
     show: false,
-    backgroundColor: '#000000'
+    backgroundColor: '#000000',
+    webPreferences: {
+      nodeIntegration: true
+    }
   }
   if (process.platform === 'linux') {
     browerWindowOptions.icon = nativeImage.createFromPath(join(__dirname, linuxIcon))
@@ -67,8 +70,7 @@ function createWindow () {
   })
 }
 
-// app.whenReady().then(createWindow).catch(err => console.log(err))
-app.on('ready', createWindow)
+app.whenReady().then(createWindow).catch(err => console.log(err))
 
 app.on('window-all-closed', function () {
   if (process.platform !== 'darwin') {
