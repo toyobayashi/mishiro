@@ -8,9 +8,13 @@
 <!-- [![Vue](https://img.shields.io/badge/dynamic/json.svg?label=vue&url=https%3A%2F%2Fraw.githubusercontent.com%2Ftoyobayashi%2Fmishiro%2Fmaster%2Fapp%2Fpackage.json&query=%24.dependencies.vue&colorB=41b883)](https://vuejs.org/)
 [![Webpack](https://img.shields.io/badge/dynamic/json.svg?label=webpack&url=https%3A%2F%2Fraw.githubusercontent.com%2Ftoyobayashi%2Fmishiro%2Fmaster%2Fapp%2Fpackage.json&query=%24.devDependencies.webpack&colorB=55a7dd)](https://webpack.js.org/) -->
 
+<font color="green" size=5>**Available >= [1.8.2](https://github.com/toyobayashi/mishiro/releases/tag/v1.8.2)**</font>
+
+<font color="red" size=5>**Unavailable < [1.8.2](https://github.com/toyobayashi/mishiro/releases/tag/v1.8.2)**</font>
 
 [Release Download](https://github.com/toyobayashi/mishiro/releases) __(Do not install mishiro in a path which includes Chinese or Japanese characters)__  
 [中文](https://github.com/toyobayashi/mishiro/blob/master/README_CN.md)
+
 
 
 ## Feature
