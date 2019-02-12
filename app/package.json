@@ -1,6 +1,6 @@
 {
   "name": "mishiro",
-  "version": "1.8.0",
+  "version": "1.8.1",
   "description": "mishiro",
   "main": "./public/mishiro.main.js",
   "scripts": {
@@ -76,7 +76,7 @@
     "electron-github-asar-updater": "^2.0.0",
     "fs-extra": "^7.0.1",
     "marked": "^0.5.2",
-    "mishiro-core": "^1.4.0",
+    "mishiro-core": "^1.4.1",
     "request": "^2.88.0",
     "sqlite3": "^4.0.6"
   }

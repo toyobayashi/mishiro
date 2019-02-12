@@ -6,7 +6,7 @@ os:
   - osx
 before_install:
   - node -v
-  - if [[ "$TRAVIS_OS_NAME" == "osx" ]]; then brew install yarn --without-node; fi
+  - if [[ "$TRAVIS_OS_NAME" == "osx" ]]; then brew install yarn --ignore-dependencies; fi
   - yarn --verison
   - cd app
   - yarn global add node-gyp
