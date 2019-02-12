@@ -54,7 +54,7 @@
 
     # 获取 Electron 用于编译原生模块的头文件
     $ npm install -g node-gyp
-    $ node-gyp install --target=4.0.1 --dist-url=https://atom.io/download/electron
+    $ node-gyp install --target=4.0.4 --dist-url=https://atom.io/download/electron
 
     # 安装依赖
     $ npm install
