@@ -81,11 +81,12 @@ export default class extends Vue {
 
   downloadMaster (resVer: number, hash: string, progressing: (prog: ProgressInfo) => void) {
     let downloader = new this.core.Downloader()
-    return downloader.downloadOne(
-      `http://storage.game.starlight-stage.jp/dl/resources/Generic/${hash}`,
-      masterPath(resVer),
-      progressing
-    )
+    return downloader.downloadDatabase(hash, masterPath(resVer), progressing, '.db')
+    // return downloader.downloadOne(
+    //   `http://storage.game.starlight-stage.jp/dl/resources/Generic/${hash}`,
+    //   masterPath(resVer),
+    //   progressing
+    // )
   }
 
   async getMaster (resVer: number, masterHash: string) {
@@ -99,15 +100,16 @@ export default class extends Vue {
       return masterFile
     }
     try {
-      const masterLz4File = await this.downloadMaster(resVer, masterHash, prog => {
+      const masterFile = await this.downloadMaster(resVer, masterHash, prog => {
         this.text = (this.$t('update.master') as string) + Math.ceil(prog.current / 1024) + '/' + Math.ceil(prog.max / 1024) + ' KB'
         this.loading = prog.loading
       })
-      if (masterLz4File) {
-        masterFile = this.core.util.lz4dec(masterLz4File, '.db')
-        fs.unlinkSync(masterLz4File)
+      if (masterFile) {
+        // masterFile = this.core.util.lz4dec(masterLz4File, '.db')
+        fs.unlinkSync(masterPath(resVer))
+        // return masterFile
         return masterFile
-      } else throw new Error('Download failed.')
+      } else throw new Error('Download master.mdb failed.')
     } catch (errorPath) {
       this.event.$emit('alert', this.$t('home.errorTitle'), this.$t('home.downloadFailed') + '<br/>' + errorPath)
       return false
