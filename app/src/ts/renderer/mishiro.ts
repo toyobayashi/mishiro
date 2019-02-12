@@ -33,8 +33,8 @@ const i18nTabs: any = {
   en: 'i18n.english'
 }
 
-const useResVer = require('electron').remote.getGlobal('configurer').getConfig().latestResVer
-// const useResVer = void 0
+// const useResVer = require('electron').remote.getGlobal('configurer').getConfig().latestResVer
+const useResVer = void 0
 
 @Component({
   components: {

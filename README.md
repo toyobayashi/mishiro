@@ -69,7 +69,7 @@ Repo: [mishiro-score-viewer](https://github.com/toyobayashi/mishiro-score-viewer
 
     # if you have not downloaded Electron's C++ header
     $ npm install -g node-gyp
-    $ node-gyp install --target=4.0.1 --dist-url=https://atom.io/download/electron
+    $ node-gyp install --target=4.0.4 --dist-url=https://atom.io/download/electron
 
     # install dependencies
     $ npm install
