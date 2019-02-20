@@ -78,7 +78,7 @@ function removeBuild (root: string) {
 
 function packAsar (root: string) {
   return new Promise<void>((resolve) => {
-    createPackageWithOptions(root, path.join(root, '../app.asar'), { unpack: '*.node' }, () => {
+    createPackageWithOptions(root, path.join(root, '../app.asar'), { unpack: process.platform === 'linux' ? '{*.node,**/public/*.png}' : '*.node' }, () => {
       fs.removeSync(root)
       resolve()
     })

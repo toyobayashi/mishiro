@@ -23,12 +23,14 @@ get({
 
     let res = JSON.parse(body)
     let total = 0
+    let lineCount = 0
     try {
       for (const release of res) {
         for (const asset of release.assets) {
           total += asset.download_count
           let line = asset.name + repeat(' ', 40 - asset.name.length) + asset.download_count
-          console.log(line)
+          if (lineCount < 20) console.log(line)
+          lineCount++
         }
       }
       console.log('\nTotal' + repeat(' ', 40 - 5) + total)
