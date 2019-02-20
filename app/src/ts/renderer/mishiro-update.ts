@@ -299,6 +299,10 @@ export default class extends Vue {
               resVer = await this.getResVer()
             } catch (err) {
               console.log(err)
+              if (Number(err.message) === 203) {
+                this.event.$emit('alert', this.$t('home.errorTitle'), 'Current account has been banned. Please use another account.')
+                return
+              }
               resVer = this.configurer.getConfig().latestResVer as number
             }
           }
