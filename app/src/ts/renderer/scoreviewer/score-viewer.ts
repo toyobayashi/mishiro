@@ -79,6 +79,7 @@ class ScoreViewer {
   public saveButton: HTMLButtonElement
   public rangeInput: HTMLInputElement
   public speedInput: HTMLInputElement
+  public progressTime: HTMLSpanElement
   public options: Option = {
     speed: 12 // * 60 px / s
   }
@@ -397,6 +398,18 @@ class ScoreViewer {
     }, _drawAndSave)
   }
 
+  private _formatTime (second: number) {
+    let min: string | number = Math.floor(second / 60)
+    let sec: string | number = Math.floor(second % 60)
+    if (min < 10) {
+      min = '0' + min
+    }
+    if (sec < 10) {
+      sec = '0' + sec
+    }
+    return `${min}:${sec}`
+  }
+
   private _resolveDOM (el: HTMLElement) {
     const background = document.getElementById('bg') as HTMLImageElement
     this.frontCanvas = document.createElement('canvas')
@@ -449,6 +462,7 @@ class ScoreViewer {
     this.rangeInput.style.bottom = '10px'
     this.rangeInput.addEventListener('input', (ev) => {
       this.audio.currentTime = Number((ev.target as HTMLInputElement).value)
+      this.progressTime.innerHTML = `${this._formatTime(Number((ev.target as HTMLInputElement).value))} / ${this._formatTime(this.audio.duration)}`
     })
 
     this.speedInput = document.createElement('input')
@@ -465,12 +479,23 @@ class ScoreViewer {
       this.options.speed = Number((ev.target as HTMLInputElement).value)
     })
 
+    this.progressTime = document.createElement('span')
+    this.progressTime.innerHTML = '00:00 / 00:00'
+    this.progressTime.style.position = 'absolute'
+    this.progressTime.style.zIndex = '2000'
+    this.progressTime.style.width = '15%'
+    this.progressTime.style.right = '2%'
+    this.progressTime.style.bottom = '2px'
+    this.progressTime.style.color = '#fff'
+    this.progressTime.style.fontFamily = 'CGSS-B'
+
     el.appendChild(this.backCanvas)
     el.appendChild(this.frontCanvas)
     el.appendChild(this.pauseButton)
     el.appendChild(this.saveButton)
     el.appendChild(this.rangeInput)
     el.appendChild(this.speedInput)
+    el.appendChild(this.progressTime)
     this._comboDom = document.getElementById('combo') as HTMLDivElement
 
     this.frontCtx = this.frontCanvas.getContext('2d') as CanvasRenderingContext2D
@@ -505,6 +530,7 @@ class ScoreViewer {
 
     this.audio.addEventListener('timeupdate', () => {
       this.rangeInput.value = this.audio.currentTime.toString()
+      this.progressTime.innerHTML = `${this._formatTime(this.audio.currentTime)} / ${this._formatTime(this.audio.duration)}`
       this.rangeInput.style.backgroundSize = 100 * (this.audio.currentTime / this.audio.duration) + '% 100%'
     })
 
