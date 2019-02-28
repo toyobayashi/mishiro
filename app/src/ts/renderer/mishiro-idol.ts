@@ -5,11 +5,11 @@ import InputText from '../../vue/component/InputText.vue'
 import getPath from './get-path'
 import * as fs from 'fs-extra'
 import * as path from 'path'
-import { ipcRenderer, shell } from 'electron'
+import { /* ipcRenderer, */ shell } from 'electron'
 import { MasterData } from '../main/on-master-read'
 import { Vue, Component, Prop } from 'vue-property-decorator'
 import { ProgressInfo } from 'mishiro-core'
-import { unpackTexture2D } from './unpack-texture-2d'
+// import { unpackTexture2D } from './unpack-texture-2d'
 
 const { cardDir, voiceDir } = getPath
 
@@ -410,23 +410,23 @@ export default class extends Vue {
 
     // try {
     if (!fs.existsSync(cardDir(`bg_${id}.png`))) {
-      let hash: string = ipcRenderer.sendSync('searchManifest', `card_bg_${id}.unity3d`)[0].hash
-      downloadResult = await this.dler.downloadAsset(
-        hash,
-        cardDir(`card_bg_${id}`),
-        (progressing || (prog => { this.imgProgress = prog.loading }))
-      )
-      if (downloadResult) {
-        this.imgProgress = 99.99
-        fs.removeSync(cardDir(`card_bg_${id}`))
-        await unpackTexture2D(cardDir(`card_bg_${id}.unity3d`))
-        return cardDir(`bg_${id}.png`)
-      } else {
-        // throw new Error('abort')
-        return ''
-      }
-    }
-    return cardDir(`bg_${id}.png`)
+    //   let hash: string = ipcRenderer.sendSync('searchManifest', `card_bg_${id}.unity3d`)[0].hash
+    //   downloadResult = await this.dler.downloadAsset(
+    //     hash,
+    //     cardDir(`card_bg_${id}`),
+    //     (progressing || (prog => { this.imgProgress = prog.loading }))
+    //   )
+    //   if (downloadResult) {
+    //     this.imgProgress = 99.99
+    //     fs.removeSync(cardDir(`card_bg_${id}`))
+    //     await unpackTexture2D(cardDir(`card_bg_${id}.unity3d`))
+    //     return cardDir(`bg_${id}.png`)
+    //   } else {
+    //     // throw new Error('abort')
+    //     return ''
+    //   }
+    // }
+    // return cardDir(`bg_${id}.png`)
     // } catch (_err) {
     //   // downloadResult = await this.dler.downloadOne(
     //   //   this.getCardUrl(id),
@@ -434,16 +434,17 @@ export default class extends Vue {
     //   //   (progressing || (prog => { this.imgProgress = prog.loading }))
     //   // )
     //   if (_err.message !== 'abort') {
-    //     downloadResult = await this.dler.downloadSpread(
-    //       id.toString(),
-    //       cardDir(`bg_${id}.png`),
-    //       (progressing || (prog => { this.imgProgress = prog.loading }))
-    //     )
-    //     return downloadResult
+      downloadResult = await this.dler.downloadSpread(
+        id.toString(),
+        cardDir(`bg_${id}.png`),
+        (progressing || (prog => { this.imgProgress = prog.loading }))
+      )
+      return downloadResult
     //   } else {
     //     throw _err
     //   }
-    // }
+    }
+    return cardDir(`bg_${id}.png`)
   }
   toggle (practice: string) {
     switch (practice) {

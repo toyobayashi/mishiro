@@ -10,7 +10,7 @@ import { ipcRenderer, Event } from 'electron'
 import getPath from './get-path'
 import MishiroIdol from './mishiro-idol'
 import ThePlayer from './the-player'
-import { unpackTexture2D } from './unpack-texture-2d'
+// import { unpackTexture2D } from './unpack-texture-2d'
 
 const { manifestPath, masterPath, bgmDir, iconDir } = getPath
 
@@ -124,27 +124,25 @@ export default class extends Vue {
   //   })
   // }
 
-  getGachaIcon (icons: { name: string; hash: string; [x: string]: any }[]) {
-    return new Promise(async (resolve, _reject) => {
-      for (let i = 0; i < icons.length; i++) {
-        let cacheName = iconDir(path.parse(icons[i].name).name)
-        this.text = icons[i].name + '　' + i + '/' + icons.length
-        this.loading = 100 * i / icons.length
-        if (!fs.existsSync(cacheName + '.png')) {
-          try {
-            let asset = await this.dler.downloadAsset(icons[i].hash, cacheName)
-            if (asset) {
-              fs.removeSync(cacheName)
-              await unpackTexture2D(asset)
-            }
-          } catch (err) {
-            console.log(err)
-            continue
-          }
+  async getGachaIcon (icons: { name: string; hash: string; [x: string]: any }[]) {
+    for (let i = 0; i < icons.length; i++) {
+      let cacheName = iconDir(path.parse(icons[i].name).name)
+      this.text = icons[i].name + '　' + i + '/' + icons.length
+      this.loading = 100 * i / icons.length
+      if (!fs.existsSync(cacheName + '.png')) {
+        try {
+          // let asset = await this.dler.downloadAsset(icons[i].hash, cacheName)
+          // if (asset) {
+          //   fs.removeSync(cacheName)
+          //   await unpackTexture2D(asset)
+          // }
+          await this.dler.downloadIcon(icons[i].name.slice(5, 5 + 6), cacheName + '.png')
+        } catch (err) {
+          console.log(err)
+          continue
         }
       }
-      resolve()
-    })
+    }
   }
 
   mounted () {
