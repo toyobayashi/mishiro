@@ -62,7 +62,7 @@ async function check (progressing: (prog: ProgressInfo) => void) {
     console.log('/load/check failed')
   }
 
-  let versionFrom = config.latestResVer as number
+  let versionFrom = (config.latestResVer as number) - 100
 
   return new Promise<number>((resolve, reject) => {
     let resVer = versionFrom
