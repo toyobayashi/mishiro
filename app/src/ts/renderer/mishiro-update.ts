@@ -6,13 +6,15 @@ import { MasterData } from '../main/on-master-read'
 import ProgressBar from '../../vue/component/ProgressBar.vue'
 import check from './check'
 
-import { ipcRenderer, Event } from 'electron'
+import { ipcRenderer, Event, remote } from 'electron'
 import getPath from './get-path'
 import MishiroIdol from './mishiro-idol'
 import ThePlayer from './the-player'
 // import { unpackTexture2D } from './unpack-texture-2d'
 
 const { manifestPath, masterPath, bgmDir, iconDir } = getPath
+
+let clientR: typeof client = remote.getGlobal('client')
 
 @Component({
   components: {
@@ -147,8 +149,7 @@ export default class extends Vue {
 
   mounted () {
     this.$nextTick(() => {
-      this.text = this.$t('update.check') as string
-      this.event.$on('enter', async ($resver?: number) => { // 已从入口进入
+      this.event.$on('enter', async ($resver?: number) => {
         ipcRenderer.on('readManifest', async (_event: Event, masterHash: string, resVer: number) => {
           const masterFile = await this.getMaster(resVer, masterHash)
           if (masterFile) ipcRenderer.send('readMaster', masterFile, resVer)
@@ -288,12 +289,35 @@ export default class extends Vue {
           // console.log(failedList)
           this.emitReady()
         })
-        if (navigator.onLine) { // 判断网络是否连接
+        if (navigator.onLine) {
           let resVer: number
           if ($resver) {
             resVer = $resver
           } else {
+
+            if (!clientR.user) {
+              // try {
+              //   this.text = 'Loading...'
+              //   this.loading = 0
+              //   const acc = await clientR.signup((step) => {
+              //     this.loading = step
+              //   })
+              //   if (acc !== '') {
+              //     this.configurer.configure('account', acc)
+              //   } else {
+              //     throw new Error('')
+              //   }
+              // } catch (err) {
+              //   console.log(err)
+              clientR.user = '506351535'
+              clientR.viewer = '141935962'
+              clientR.udid = 'edb05dd4-9d13-4f76-b860-95f7a79de44e'
+              // }
+            }
+
             try {
+              this.text = this.$t('update.check') as string
+              this.loading = 0
               resVer = await this.getResVer()
             } catch (err) {
               console.log(err)
@@ -309,7 +333,7 @@ export default class extends Vue {
           this.$emit('input', this.appData)
           const manifestFile = await this.getManifest(resVer)
           if (manifestFile) ipcRenderer.send('readManifest', manifestFile, resVer)
-        } else { // 如果网络未连接则直接触发ready事件
+        } else {
           let resVer = this.configurer.getConfig().latestResVer as number
           this.appData.resVer = Number(resVer)
           this.$emit('input', this.appData)

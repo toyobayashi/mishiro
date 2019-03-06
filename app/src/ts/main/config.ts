@@ -24,12 +24,12 @@ export class Configurer {
     this.configFile = configFile
     if (!fs.existsSync(configFile)) {
       this.config = {
-        latestResVer: 10040400,
+        latestResVer: 10052300,
         language: 'zh'
       }
     } else {
       this.config = fs.readJsonSync(configFile) || {}
-      this.config.latestResVer = this.config.latestResVer || 10040400
+      this.config.latestResVer = this.config.latestResVer || 10052300
       this.config.language = this.config.language || 'zh'
     }
     fs.writeJsonSync(configFile, this.config, { spaces: 2 })
