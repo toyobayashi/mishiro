@@ -10,7 +10,7 @@ import { ipcRenderer, Event, remote } from 'electron'
 import getPath from './get-path'
 import MishiroIdol from './mishiro-idol'
 import ThePlayer from './the-player'
-// import { unpackTexture2D } from './unpack-texture-2d'
+import { unpackTexture2D } from './unpack-texture-2d'
 
 const { manifestPath, masterPath, bgmDir, iconDir } = getPath
 
@@ -132,13 +132,17 @@ export default class extends Vue {
       this.text = icons[i].name + '　' + i + '/' + icons.length
       this.loading = 100 * i / icons.length
       if (!fs.existsSync(cacheName + '.png')) {
+        const config = this.configurer.getConfig()
         try {
-          // let asset = await this.dler.downloadAsset(icons[i].hash, cacheName)
-          // if (asset) {
-          //   fs.removeSync(cacheName)
-          //   await unpackTexture2D(asset)
-          // }
-          await this.dler.downloadIcon(icons[i].name.slice(5, 5 + 6), cacheName + '.png')
+          if (!config.card || config.card === 'default') {
+            let asset = await this.dler.downloadAsset(icons[i].hash, cacheName)
+            if (asset) {
+              fs.removeSync(cacheName)
+              await unpackTexture2D(asset)
+            }
+          } else {
+            await this.dler.downloadIcon(icons[i].name.slice(5, 5 + 6), cacheName + '.png')
+          }
         } catch (err) {
           console.log(err)
           continue
@@ -289,32 +293,32 @@ export default class extends Vue {
           // console.log(failedList)
           this.emitReady()
         })
+
+        if (!clientR.user) {
+          // try {
+          //   this.text = 'Loading...'
+          //   this.loading = 0
+          //   const acc = await clientR.signup((step) => {
+          //     this.loading = step
+          //   })
+          //   if (acc !== '') {
+          //     this.configurer.configure('account', acc)
+          //   } else {
+          //     throw new Error('')
+          //   }
+          // } catch (err) {
+          //   console.log(err)
+          clientR.user = '506351535'
+          clientR.viewer = '141935962'
+          clientR.udid = 'edb05dd4-9d13-4f76-b860-95f7a79de44e'
+          // }
+        }
+
         if (navigator.onLine) {
           let resVer: number
           if ($resver) {
             resVer = $resver
           } else {
-
-            if (!clientR.user) {
-              // try {
-              //   this.text = 'Loading...'
-              //   this.loading = 0
-              //   const acc = await clientR.signup((step) => {
-              //     this.loading = step
-              //   })
-              //   if (acc !== '') {
-              //     this.configurer.configure('account', acc)
-              //   } else {
-              //     throw new Error('')
-              //   }
-              // } catch (err) {
-              //   console.log(err)
-              clientR.user = '506351535'
-              clientR.viewer = '141935962'
-              clientR.udid = 'edb05dd4-9d13-4f76-b860-95f7a79de44e'
-              // }
-            }
-
             try {
               this.text = this.$t('update.check') as string
               this.loading = 0

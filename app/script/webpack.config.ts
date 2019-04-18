@@ -68,7 +68,12 @@ export const main: webpack.Configuration = {
   externals: [webpackNodeExternals()],
   resolve: {
     extensions: ['.ts', '.js', '.json']
-  }
+  },
+  plugins: [
+    new webpack.DefinePlugin({
+      'process.isLinux': JSON.stringify(process.platform === 'linux')
+    })
+  ]
 }
 
 // export const manifest: any = path.join(__dirname, 'manifest.json')

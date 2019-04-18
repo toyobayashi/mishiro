@@ -1,6 +1,7 @@
 import './common/asar'
 import { app, BrowserWindow, ipcMain, Event, BrowserWindowConstructorOptions, nativeImage } from 'electron'
 import { join } from 'path'
+import { existsSync } from 'fs-extra'
 import * as url from 'url'
 import './main/get-path'
 import './main/core'
@@ -8,13 +9,10 @@ import ipc from './main/ipc'
 
 app.commandLine.appendSwitch('autoplay-policy', 'no-user-gesture-required')
 
-ipc()
-
 let mainWindow: BrowserWindow | null
 
 function createWindow () {
   // Menu.setApplicationMenu(null)
-  const linuxIcon = require('../res/icon/1024x1024.png')
   const browerWindowOptions: BrowserWindowConstructorOptions = {
     width: 1296,
     height: 863,
@@ -26,11 +24,26 @@ function createWindow () {
       nodeIntegration: true
     }
   }
-  if (process.platform === 'linux') {
-    browerWindowOptions.icon = nativeImage.createFromPath(join(__dirname, linuxIcon))
+  if ((process as any).isLinux) {
+    let linuxIcon: string
+    try {
+      linuxIcon = require('../res/icon/1024x1024.png')
+    } catch (_) {
+      linuxIcon = ''
+    }
+    if (linuxIcon) {
+      browerWindowOptions.icon = nativeImage.createFromPath(join(__dirname, linuxIcon))
+    }
   } else {
     if (process.env.NODE_ENV !== 'production') {
-      browerWindowOptions.icon = process.platform === 'win32' ? nativeImage.createFromPath(join(__dirname, '../src/res/icon/mishiro.ico')) : nativeImage.createFromPath(join(__dirname, '../src/res/icon/mishiro.icns'))
+      let icon: string = ''
+
+      const iconPath = join(__dirname, `../src/res/icon/mishiro.${process.platform === 'win32' ? 'ico' : 'icns'}`)
+      if (existsSync(iconPath)) icon = iconPath
+
+      if (icon) {
+        browerWindowOptions.icon = nativeImage.createFromPath(icon)
+      }
     }
   }
   mainWindow = new BrowserWindow(browerWindowOptions)
@@ -70,8 +83,6 @@ function createWindow () {
   })
 }
 
-app.whenReady().then(createWindow).catch(err => console.log(err))
-
 app.on('window-all-closed', function () {
   if (process.platform !== 'darwin') {
     app.quit()
@@ -91,3 +102,10 @@ ipcMain.on('flash', () => {
 ipcMain.on('mainWindowId', (event: Event) => {
   event.returnValue = mainWindow && mainWindow.id
 })
+
+function main () {
+  ipc()
+  if (!mainWindow) createWindow()
+}
+
+app.whenReady().then(main).catch(err => console.log(err))

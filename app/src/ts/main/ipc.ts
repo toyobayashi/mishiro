@@ -8,7 +8,11 @@ import onScore from './on-score'
 import onCheckScore from './on-check-score'
 import onLyrics from './on-lyrics'
 
-export default function () {
+let initialized = false
+
+export default function ipc () {
+  if (initialized) return
+
   let manifestData: any = {}
   let manifests: any[] = []
   let version: number = -1
@@ -56,4 +60,6 @@ export default function () {
   ipcMain.on('lyrics', (event: Event, scoreFile: string) => {
     onLyrics(event, scoreFile).catch(err => console.log(err))
   })
+
+  initialized = true
 }

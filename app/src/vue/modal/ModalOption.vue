@@ -1,7 +1,7 @@
 <template>
 <div v-show="show" class="modal">
   <transition name="scale" @after-leave="afterLeave">
-    <div :style="{ width: modalWidth }" v-if="visible">
+    <div :style="{ width: '700px' }" v-if="visible">
       <div class="modal-header">
         <StaticTitleDot v-once/>
         <h4 class="modal-title">{{$t("menu.option")}}</h4>
@@ -14,6 +14,13 @@
               <InputRadio :text="$t('i18n.chinese')" value="zh" v-model="lang" lable-id="razh"/>
               <InputRadio :text="$t('i18n.japanese')" value="ja" v-model="lang" lable-id="raja"/>
               <InputRadio :text="$t('i18n.english')" value="en" v-model="lang" lable-id="raen"/>
+            </div>
+          </div>
+          <div>
+            <label>{{$t("menu.getCardFrom")}}</label>
+            <div class="pull-right option-input clearfix" style="display:flex;justify-content:space-around">
+              <InputRadio :text="$t('menu.official')" value="default" v-model="card" lable-id="gcfd"/>
+              <InputRadio :text="$t('menu.kirara')" value="kirara" v-model="card" lable-id="gcfk"/>
             </div>
           </div>
           <div class="margin-top-10">
@@ -68,6 +75,7 @@ export default class extends mixins(modalMixin) {
   eventId: string = ''
   backgroundId: string = ''
   account: string = ''
+  card: 'default' | 'kirara' = 'default'
   language: any = {
     zh: 'i18n.chinese',
     ja: 'i18n.japanese',
@@ -95,6 +103,7 @@ export default class extends mixins(modalMixin) {
     let eventId: number | ''
     let backgroundId: number | ''
     let account: string
+    let card: 'default' | 'kirara' = this.card
     if (this.resVer) {
       if (
         Number(this.resVer) < 10012760 ||
@@ -182,7 +191,8 @@ export default class extends mixins(modalMixin) {
       gacha: Number(gachaId),
       event: Number(eventId),
       background: Number(backgroundId),
-      account: account
+      account: account,
+      card: card
     })
     this.visible = false
   }
@@ -197,6 +207,7 @@ export default class extends mixins(modalMixin) {
         this.eventId = config.event ? config.event.toString() : ''
         this.backgroundId = config.background ? config.background.toString() : ''
         this.account = config.account ? config.account : ''
+        this.card = config.card ? config.card : 'default'
         this.show = true
         this.visible = true
       })

@@ -177,6 +177,9 @@ export default {
     noCache: 'キャッシュクリアの必要がありません。',
     commitHash: 'Commit',
     commitDate: 'Date',
+    getCardFrom: '何処からカードを',
+    official: '公式',
+    kirara: 'kirara',
     arch: 'Architecture'
   }
 }
