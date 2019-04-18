@@ -13,9 +13,10 @@ export interface MishiroConfig {
   language?: 'zh' | 'ja' | 'en'
   background?: number
   account?: string
+  card?: 'default' | 'kirara'
 }
 
-export type MishiroConfigKey = 'latestResVer' | 'resVer' | 'gacha' | 'event' | 'language' | 'background' | 'account'
+export type MishiroConfigKey = keyof MishiroConfig
 
 export class Configurer {
   private configFile: string
@@ -25,12 +26,14 @@ export class Configurer {
     if (!fs.existsSync(configFile)) {
       this.config = {
         latestResVer: 10052300,
-        language: 'zh'
+        language: 'zh',
+        card: 'default'
       }
     } else {
       this.config = fs.readJsonSync(configFile) || {}
       this.config.latestResVer = this.config.latestResVer || 10052300
       this.config.language = this.config.language || 'zh'
+      this.config.card = this.config.card || 'default'
     }
     fs.writeJsonSync(configFile, this.config, { spaces: 2 })
   }

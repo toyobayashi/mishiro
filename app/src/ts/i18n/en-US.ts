@@ -177,6 +177,9 @@ export default {
     noCache: 'No cache.',
     commitHash: 'Commit',
     commitDate: 'Date',
+    getCardFrom: 'GET CARD FROM',
+    official: 'official',
+    kirara: 'kirara',
     arch: 'Architecture'
   }
 }

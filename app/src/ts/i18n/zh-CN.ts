@@ -177,6 +177,9 @@ export default {
     noCache: '無需清除緩存。',
     commitHash: '提交',
     commitDate: '日期',
+    getCardFrom: '従何処獲取卡面',
+    official: '官方',
+    kirara: 'kirara',
     arch: '架構'
   }
 }
