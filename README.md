@@ -8,14 +8,10 @@
 <!-- [![Vue](https://img.shields.io/badge/dynamic/json.svg?label=vue&url=https%3A%2F%2Fraw.githubusercontent.com%2Ftoyobayashi%2Fmishiro%2Fmaster%2Fapp%2Fpackage.json&query=%24.dependencies.vue&colorB=41b883)](https://vuejs.org/)
 [![Webpack](https://img.shields.io/badge/dynamic/json.svg?label=webpack&url=https%3A%2F%2Fraw.githubusercontent.com%2Ftoyobayashi%2Fmishiro%2Fmaster%2Fapp%2Fpackage.json&query=%24.devDependencies.webpack&colorB=55a7dd)](https://webpack.js.org/) -->
 
-<font color="green" size=5>**Available >= [1.8.4](https://github.com/toyobayashi/mishiro/releases/tag/v1.8.4)**</font>
-
-<font color="red" size=5>**Unavailable < [1.8.4](https://github.com/toyobayashi/mishiro/releases/tag/v1.8.4)**</font>
+<font color="green" size=5>**Latest Available Version: [1.8.5](https://github.com/toyobayashi/mishiro/releases/tag/v1.8.5)**</font>
 
 [Release Download](https://github.com/toyobayashi/mishiro/releases) __(Do not install mishiro in a path which includes Chinese or Japanese characters)__  
 [中文](https://github.com/toyobayashi/mishiro/blob/master/README_CN.md)
-
-
 
 ## Feature
 
@@ -55,11 +51,18 @@ Repo: [mishiro-score-viewer](https://github.com/toyobayashi/mishiro-score-viewer
 
 ### Quick Start
 
-1. Clone  
+1. Clone / Pull  
 
     ``` bash 
     $ git clone https://github.com/toyobayashi/mishiro.git
+    $ git pull
     ```
+
+    **NOTE:** Due to C++ native addon compilation must match correct Electron / Node.js version, when `electron` version in `package.json` changed, please remove the following folders manually then run `npm install` again.
+
+    * `/app/node_modules/lame`
+    * `/app/node_modules/sqlite3`
+    * `/app/node_modules/hca-decoder`
 
 2. Install  
 
