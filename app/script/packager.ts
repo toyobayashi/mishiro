@@ -76,13 +76,9 @@ function removeBuild (root: string) {
   fs.writeFileSync(path.join(nodeModulesDir, 'lame/build/Release/bindings.node'), lameNode)
 }
 
-function packAsar (root: string) {
-  return new Promise<void>((resolve) => {
-    createPackageWithOptions(root, path.join(root, '../app.asar'), { unpack: process.platform === 'linux' ? '{*.node,**/public/*.png}' : '*.node' }, () => {
-      fs.removeSync(root)
-      resolve()
-    })
-  })
+async function packAsar (root: string) {
+  await createPackageWithOptions(root, path.join(root, '../app.asar'), { unpack: process.platform === 'linux' ? '{*.node,**/public/*.png}' : '*.node' })
+  await fs.remove(root)
 }
 
 async function rename (appPath: string) {
@@ -179,7 +175,7 @@ async function main () {
   const root = process.platform === 'darwin' ? path.join(appPath, 'mishiro.app/Contents/Resources/app') : path.join(appPath, 'resources/app')
   await writePackageJson(root)
 
-  execSync(`npm install --production --arch=${arch} --target_arch=${arch} --build-from-source --runtime=electron --target=${pkg.devDependencies.electron} --dist-url=https://atom.io/download/electron`, { cwd: root, stdio: 'inherit' })
+  execSync(`npm install --no-package-lock --production --arch=${arch} --target_arch=${arch} --build-from-source --runtime=electron --target=${pkg.devDependencies.electron} --dist-url=https://atom.io/download/electron`, { cwd: root, stdio: 'inherit' })
   removeBuild(root)
   await packAsar(root)
 
