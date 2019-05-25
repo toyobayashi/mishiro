@@ -13,6 +13,10 @@
 [Release Download](https://github.com/toyobayashi/mishiro/releases) __(Do not install mishiro in a path which includes Chinese or Japanese characters)__  
 [中文](https://github.com/toyobayashi/mishiro/blob/master/README_CN.md)
 
+## Screenshot
+
+![screenshot.png](https://github.com/toyobayashi/mishiro/raw/master/img/screenshot.png)
+
 ## Feature
 
 * Support language: Chinese / Japanese / English.
