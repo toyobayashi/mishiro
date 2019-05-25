@@ -10,5 +10,6 @@ asset/*
 !asset/se.asar
 dist/*
 !dist/mishiro.nsi
+!dist/mishiro.iss
 !dist/build.bat
 /config.json

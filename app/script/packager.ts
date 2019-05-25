@@ -1,7 +1,7 @@
 import * as packager from 'electron-packager'
 import * as path from 'path'
 import * as fs from 'fs-extra'
-import { execSync } from 'child_process'
+import { execSync, spawn } from 'child_process'
 import * as pkg from '../package.json'
 import { prod } from './webpack'
 import { ilog, wlog, elog } from './rainbow'
@@ -25,6 +25,7 @@ function writePackageJson (root: string) {
 }
 
 function copyExtra (root: string) {
+  ilog(`[${new Date().toLocaleString()}] Copy extra resources...`)
   return Promise.all([
     path.join(__dirname, '../../asset/bgm'),
     path.join(__dirname, '../../asset/icon'),
@@ -77,6 +78,7 @@ function removeBuild (root: string) {
 }
 
 async function packAsar (root: string) {
+  ilog(`[${new Date().toLocaleString()}] Make app.asar...`)
   await createPackageWithOptions(root, path.join(root, '../app.asar'), { unpack: process.platform === 'linux' ? '{*.node,**/public/*.png}' : '*.node' })
   await fs.remove(root)
 }
@@ -167,6 +169,27 @@ function getDirectorySizeSync (dir: string) {
   return size
 }
 
+function inno (sourceDir: string) {
+  return new Promise<void>((resolve, reject) => {
+    const def: any = {
+      Name: pkg.name,
+      Version: pkg.version,
+      Publisher: pkg.author,
+      URL: 'https://github.com/toyobayashi/mishiro',
+      AppId: '{{76632B3A-54F9-4986-A8DE-445BFECE5116}',
+      OutputDir: path.join(__dirname, '../..', 'dist'),
+      Arch: arch,
+      RepoDir: path.join(__dirname, '../..'),
+      SourceDir: sourceDir,
+      ArchitecturesAllowed: arch === 'ia32' ? '' : 'x64',
+      ArchitecturesInstallIn64BitMode: arch === 'ia32' ? '' : 'x64'
+    }
+    spawn('ISCC.exe', [...Object.keys(def).map(k => `/D${k}=${def[k]}`), path.join(__dirname, '../..', 'dist', 'mishiro.iss')], { stdio: 'inherit' })
+      .on('error', reject)
+      .on('exit', resolve)
+  })
+}
+
 async function main () {
   const start = new Date().getTime()
   // await reInstall()
@@ -182,8 +205,19 @@ async function main () {
   await copyExtra(root)
   const newPath = await rename(appPath)
   const size = await zipApp(newPath)
-  if (process.platform === 'linux') createDebInstaller(newPath)
   ilog(`[${new Date().toLocaleString()}] Size: ${size} Bytes`)
+
+  if (process.platform === 'linux') {
+    createDebInstaller(newPath)
+  } else if (process.platform === 'win32') {
+    ilog(`[${new Date().toLocaleString()}] Create inno-setup installer...`)
+    try {
+      await inno(newPath)
+    } catch (err) {
+      wlog(`[${new Date().toLocaleString()}] ${err.message} `)
+    }
+  }
+
   return (new Date().getTime() - start) / 1000
 }
 
