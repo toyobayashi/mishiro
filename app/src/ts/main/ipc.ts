@@ -7,6 +7,9 @@ import onGame from './on-game'
 import onScore from './on-score'
 import onCheckScore from './on-check-score'
 import onLyrics from './on-lyrics'
+import { existsSync } from 'fs-extra'
+import getPath from './get-path'
+import { basename } from 'path'
 
 let initialized = false
 
@@ -59,6 +62,10 @@ export default function ipc () {
 
   ipcMain.on('lyrics', (event: Event, scoreFile: string) => {
     onLyrics(event, scoreFile).catch(err => console.log(err))
+  })
+
+  ipcMain.on('checkFile', (event: Event, id: string, manifest: any[]) => {
+    event.sender.send('checkFile', id, manifest.filter(row => !existsSync(getPath.downloadDir(basename(row.name)))))
   })
 
   initialized = true

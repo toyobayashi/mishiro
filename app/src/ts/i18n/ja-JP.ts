@@ -22,7 +22,9 @@ export default {
     resVer: 'リソースバージョン',
     downloadFailed: 'ダウンロードが失敗しました。通信環境の良いの所でもう一度お試しください。',
     msg: 'メッセージ',
-    stmnFull: 'スタミナが回復しました。'
+    stmnFull: 'スタミナが回復しました。',
+    all: '全部',
+    canDownload: 'ﾀﾞｳﾝﾛｰﾄﾞ可能'
   },
   event: {
     atapon: 'アタポン',

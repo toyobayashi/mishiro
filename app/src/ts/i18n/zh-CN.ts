@@ -22,7 +22,9 @@ export default {
     resVer: '資源版本',
     downloadFailed: '下載失敗。請在網絡良好的環境下重試。',
     msg: '消息',
-    stmnFull: '体力已回満。'
+    stmnFull: '体力已回満。',
+    all: '全部',
+    canDownload: '未下載'
   },
   event: {
     atapon: '消耗道具型',

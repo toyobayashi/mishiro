@@ -22,7 +22,9 @@ export default {
     resVer: 'RESOURCE VERSION',
     downloadFailed: 'Download failed. Please download again under good network environment.',
     msg: 'MESSAGE',
-    stmnFull: 'Stamina healed.'
+    stmnFull: 'Stamina healed.',
+    all: 'ALL',
+    canDownload: 'CAN DL'
   },
   event: {
     atapon: 'ATAPOM',
