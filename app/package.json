@@ -47,7 +47,7 @@
     "cross-env": "^5.2.0",
     "css-loader": "^2.1.0",
     "cuint": "^0.2.2",
-    "electron": "4.1.4",
+    "electron": "4.2.2",
     "electron-packager": "^13.1.1",
     "express-serve-asar": "^1.0.1",
     "file-loader": "^3.0.1",
@@ -78,6 +78,6 @@
     "marked": "^0.6.2",
     "mishiro-core": "^2.0.0",
     "request": "^2.88.0",
-    "sqlite3": "^4.0.6"
+    "sqlite3": "^4.0.8"
   }
 }
