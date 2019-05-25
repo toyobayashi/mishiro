@@ -127,12 +127,12 @@ export default class extends Vue {
   // }
 
   async getGachaIcon (icons: { name: string; hash: string; [x: string]: any }[]) {
+    const config = this.configurer.getConfig()
     for (let i = 0; i < icons.length; i++) {
       let cacheName = iconDir(path.parse(icons[i].name).name)
-      this.text = icons[i].name + '　' + i + '/' + icons.length
+      this.text = ((!config.card || config.card === 'default') ? icons[i].name : path.basename(cacheName + '.png')) + '　' + i + '/' + icons.length
       this.loading = 100 * i / icons.length
       if (!fs.existsSync(cacheName + '.png')) {
-        const config = this.configurer.getConfig()
         try {
           if (!config.card || config.card === 'default') {
             let asset = await this.dler.downloadAsset(icons[i].hash, cacheName)

@@ -14,10 +14,15 @@
         <span>{{(page + 1) + ' / ' + (totalPage + 1)}}</span>
         <span @click="page !== totalPage ? page += 1 : page = 0">next</span>
       </div>
-      <ProgressBar class="cgss-progress-event" :percent="current"/>
-      <ProgressBar class="cgss-progress-event" :percent="total"/>
+      <div class="page-progress">
+        <div>
+          <ProgressBar class="cgss-progress-event" :percent="current"/>
+          <ProgressBar class="cgss-progress-event" :percent="total"/>
+        </div>
+        <button class="cgss-btn-lg cgss-btn-lg-ok" @click="filterOnClick">{{notDownloadedOnly ? $t("home.canDownload") : $t('home.all')}}</button>
+      </div>
     </div>
-    <TheTable :data="data.slice(page * recordPerPage, (page + 1) * recordPerPage)" @change="tableChange" :is-disabled="isDisabled"/>
+    <TheTable :data="canDownloadRows.slice(page * recordPerPage, (page + 1) * recordPerPage)" @change="tableChange" :is-disabled="isDisabled" />
   </div>
   <!-- <TaskLoading :total-loading="total" :current-loading="current" :text="text" class="margin-top-20" :color="'event'"/> -->
 </div>
@@ -27,6 +32,16 @@
 </script>
 
 <style>
+.page-progress {
+  display: flex;
+  justify-content: space-between;
+}
+.page-progress > div {
+  width: calc(100% - 220px);
+  display: flex;
+  flex-direction: column;
+  justify-content: space-around;
+}
 .page-head {
   display: flex;
   justify-content: space-around;
@@ -46,7 +61,7 @@
 .db-query-result{
   overflow: hidden;
   position: relative;
-  padding-top: 80px;
-  height: calc(100% - 130px);
+  padding-top: 100px;
+  height: calc(100% - 110px);
 }
 </style>

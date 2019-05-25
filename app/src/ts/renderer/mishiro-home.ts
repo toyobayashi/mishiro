@@ -8,6 +8,7 @@ import * as fs from 'fs-extra'
 import getPath from './get-path'
 import { shell, ipcRenderer, remote, Event } from 'electron'
 import { Vue, Component } from 'vue-property-decorator'
+import { generateObjectId } from '../common/object-id'
 // import { ProgressInfo } from 'mishiro-core'
 
 const { downloadDir } = getPath
@@ -30,10 +31,32 @@ export default class extends Vue {
   total: number = 0
   page: number = 0
   recordPerPage: number = 10
+  notDownloadedOnly: boolean = false
+  canDownloadRows: any[] = []
 
   get totalPage () {
-    if (!this.data.length) return 0
-    return this.data.length / this.recordPerPage === Math.floor(this.data.length / this.recordPerPage) ? this.data.length / this.recordPerPage - 1 : Math.floor(this.data.length / this.recordPerPage)
+    const canDownload: any[] = this.canDownloadRows
+    if (!canDownload.length) return 0
+    return canDownload.length / this.recordPerPage === Math.floor(canDownload.length / this.recordPerPage) ? canDownload.length / this.recordPerPage - 1 : Math.floor(canDownload.length / this.recordPerPage)
+  }
+
+  // get canDownloadRows () {
+  //   if (!this.notDownloadedOnly) return this.data
+  //   return this.data.filter(row => !this.isDisabled(row))
+  // }
+
+  checkFile (data: any[]): Promise<any[]> {
+    return new Promise<any[]>((resolve, reject) => {
+      const id = generateObjectId()
+      ipcRenderer.once('checkFile', (_ev: Event, oid: string, notDownloaded: any[]) => {
+        if (oid === id) {
+          resolve(notDownloaded)
+        } else {
+          reject(new Error(`${id} !== ${oid}`))
+        }
+      })
+      ipcRenderer.send('checkFile', id, data)
+    })
   }
 
   isDisabled (row: any) {
@@ -50,6 +73,7 @@ export default class extends Vue {
     if (this.queryString === '') {
       this.page = 0
       this.data = []
+      this.canDownloadRows = []
       // this.event.$emit('alert', this.$t('home.errorTitle'), this.$t('home.noEmptyString'))
     } else if (this.queryString === 'dev') {
       remote.getCurrentWindow().webContents.openDevTools()
@@ -57,6 +81,18 @@ export default class extends Vue {
       ipcRenderer.send('queryManifest', this.queryString)
     }
     this.playSe(this.enterSe)
+  }
+  filterOnClick () {
+    this.notDownloadedOnly = !this.notDownloadedOnly
+    if (!this.notDownloadedOnly) {
+      this.canDownloadRows = this.data
+      this.page = 0
+    } else {
+      this.checkFile(this.data).then((res) => {
+        this.canDownloadRows = res
+        this.page = 0
+      }).catch(err => console.log(err))
+    }
   }
   tableChange (val: any[]) {
     this.selectedItem = val
@@ -178,6 +214,13 @@ export default class extends Vue {
       ipcRenderer.on('queryManifest', (_event: Event, manifestArr: any[]) => {
         this.page = 0
         this.data = manifestArr
+        if (!this.notDownloadedOnly) {
+          this.canDownloadRows = this.data
+        } else {
+          this.checkFile(this.data).then((res) => {
+            this.canDownloadRows = res
+          }).catch(err => console.log(err))
+        }
       })
     })
   }
