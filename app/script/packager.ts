@@ -176,7 +176,7 @@ function inno (sourceDir: string) {
       Version: pkg.version,
       Publisher: pkg.author,
       URL: 'https://github.com/toyobayashi/mishiro',
-      AppId: '{{76632B3A-54F9-4986-A8DE-445BFECE5116}',
+      AppId: arch === 'ia32' ? '{{1988B0A7-591C-4EE6-B069-96723508F0D5}' : '{{76632B3A-54F9-4986-A8DE-445BFECE5116}',
       OutputDir: path.join(__dirname, '../..', 'dist'),
       Arch: arch,
       RepoDir: path.join(__dirname, '../..'),
