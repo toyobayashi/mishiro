@@ -1,5 +1,3 @@
-#define AppUserId "toyobayashi.mishiro"
-
 [Setup]
 AppId={#AppId}
 AppName={#Name}
@@ -23,6 +21,8 @@ ShowLanguageDialog=auto
 ArchitecturesAllowed={#ArchitecturesAllowed}
 ArchitecturesInstallIn64BitMode={#ArchitecturesInstallIn64BitMode}
 DefaultDirName={autopf}\{#Name}
+Uninstallable=yes
+UninstallDisplayName=uninstall
 ;DisableProgramGroupPage=yes
 ; Uncomment the following line to run in non administrative install mode (install for current user only.)
 ;PrivilegesRequired=lowest
@@ -42,9 +42,9 @@ Name: "desktopicon"; Description: "{cm:CreateDesktopIcon}"; GroupDescription: "{
 Source: "*"; DestDir: "{app}"; Flags: ignoreversion recursesubdirs createallsubdirs
 
 [Icons]
-Name: "{group}\{#Name}"; Filename: "{app}\{#Name}.exe"; AppUserModelID: "{#AppUserId}"
-Name: "{group}\Uninstall"; Filename: "{app}\unins000.exe"; AppUserModelID: "{#AppUserId}"
-Name: "{autodesktop}\{#Name}"; Filename: "{app}\{#Name}.exe"; Tasks: desktopicon; AppUserModelID: "{#AppUserId}"
+Name: "{group}\{#Name}"; Filename: "{app}\{#Name}.exe"
+Name: "{group}\Uninstall mishiro"; Filename: "{uninstallexe}"
+Name: "{autodesktop}\{#Name}"; Filename: "{app}\{#Name}.exe"; Tasks: desktopicon
 
 [Run]
 Filename: "{app}\{#Name}.exe"; Description: "{cm:LaunchProgram,{#Name}}"; Flags: nowait postinstall; Check: WizardNotSilent
