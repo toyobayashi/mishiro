@@ -22,7 +22,7 @@ ArchitecturesAllowed={#ArchitecturesAllowed}
 ArchitecturesInstallIn64BitMode={#ArchitecturesInstallIn64BitMode}
 DefaultDirName={autopf}\{#Name}
 Uninstallable=yes
-UninstallDisplayName=uninstall
+UninstallDisplayName={#Name}
 ;DisableProgramGroupPage=yes
 ; Uncomment the following line to run in non administrative install mode (install for current user only.)
 ;PrivilegesRequired=lowest
