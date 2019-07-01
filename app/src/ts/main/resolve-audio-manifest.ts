@@ -36,7 +36,7 @@ export default function (bgmManifest: BGM[], liveManifest: Live[], musicData: Mu
       fileName = name + '.mp3'
     } else {
       if (arr.length > 2) {
-        if (arr[2] === 'another') {
+        if (isNaN(Number(arr[2]))) {
           fileName = arr[1] + '_' + arr[2] + '-' + musicData.filter(row => Number(row.id) === Number(arr[1]))[0].name.replace(/\\n|\\|\/|<|>|\*|\?|:|"|\|/g, '') + '.mp3'
         } else {
           fileName = arr[1] + '_' + arr[2] + '-' + musicData.filter(row => Number(row.id) === Number(arr[1]))[0].name.replace(/\\n|\\|\/|<|>|\*|\?|:|"|\|/g, '') + '（' + charaData.filter(row => Number(row.chara_id) === Number(arr[2]))[0].name + '）.mp3'
