@@ -70,20 +70,29 @@ Repo: [mishiro-score-viewer](https://github.com/toyobayashi/mishiro-score-viewer
 
 2. Install  
 
-    ``` bash
-    $ cd mishiro/app
+    ``` bat
+    > cd mishiro/app
 
-    # if mainland Chinese, recommend
-    $ npm config set registry http://registry.npm.taobao.org/
-    $ npm config set electron_mirror https://npm.taobao.org/mirrors/electron/
-    # endif
+    REM if mainland Chinese, recommend
+    > npm config set registry http://registry.npm.taobao.org/
+    > npm config set electron_mirror https://npm.taobao.org/mirrors/electron/
+    REM endif
 
-    # if you have not downloaded Electron's C++ header
-    $ npm install -g node-gyp
-    $ node-gyp install --target=4.2.2 --dist-url=https://atom.io/download/electron
+    REM if you have not downloaded Electron's C++ header
+    > npm install -g node-gyp
+    > node-gyp install --target=4.2.2 --dist-url=https://atom.io/download/electron
+    REM else
 
-    # install dependencies
-    $ npm install
+    REM if you have not downloaded Electron's C++ header and
+    REM your system is windows and
+    REM you installed Visual Studio 2019
+    > npm install -g toyobayashi/node-gyp#v3.8.0-vs2019
+    > for /f "delims=" %P in ('npm prefix -g') do npm config set node_gyp "%P\node_modules\node-gyp\bin\node-gyp.js"
+    > node-gyp install --target=4.2.2 --dist-url=https://atom.io/download/electron
+    REM endif 
+
+    REM install dependencies
+    > npm install
     ```
 
 * Develop
