@@ -2,12 +2,7 @@
   "extends": "../tsconfig.base.json",
   "compilerOptions": {
     "module": "commonjs",
-    "target": "es6",
+    "target": "es2017",
     "resolveJsonModule": true
-  },
-  "include": [
-    "../src/ts/@types/**/*",
-    "./**/*",
-    "../package.json"
-  ]
+  }
 }

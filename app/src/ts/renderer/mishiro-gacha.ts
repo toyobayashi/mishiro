@@ -140,6 +140,10 @@ export default class extends Vue {
   ikkaiHiku () {
     // console.log(this.oddsArray)
     this.playSe(this.enterSe)
+    if (!this.gachaAvailable.length) {
+      this.event.$emit('alert', this.$t('home.errorTitle'), this.$t('gacha.failed'))
+      return
+    }
     this.gachaResult = []
     this.costStarJewel += 250
     setTimeout(() => {
@@ -148,6 +152,10 @@ export default class extends Vue {
   }
   jukkaiHiku () {
     this.playSe(this.enterSe)
+    if (!this.gachaAvailable.length) {
+      this.event.$emit('alert', this.$t('home.errorTitle'), this.$t('gacha.failed'))
+      return
+    }
     this.gachaResult = []
     this.costStarJewel += 2500
     setTimeout(() => {

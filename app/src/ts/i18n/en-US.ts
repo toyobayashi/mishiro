@@ -145,7 +145,8 @@ export default {
     r: 'rare',
     sr: 'S rare',
     ssr: 'SS rare',
-    get: 'got'
+    get: 'got',
+    failed: 'Failed to get available gacha data.'
   },
   menu: {
     option: 'OPTION',

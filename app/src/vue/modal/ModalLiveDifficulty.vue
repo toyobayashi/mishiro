@@ -86,8 +86,8 @@ export default class extends mixins(modalMixin) {
             slashes: true
           }))
         } else {
-          const { devServerHost, devServerPort, publicPath } = require('../../../script/config.json')
-          win.loadURL(`http://${devServerHost}:${devServerPort}${publicPath}game.html`)
+          const config = require('../../../script/config.ts').default
+          win.loadURL(`http://${config.devServerHost}:${config.devServerPort}${config.publicPath}game.html`)
         }
 
         win.webContents.on('did-finish-load', function () {

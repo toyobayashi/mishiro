@@ -31,6 +31,6 @@ new Vue({
   render: (h) => h(Mishiro)
 })
 
-window.addEventListener('beforeunload', () => {
-  remote.app.quit()
-})
+// window.addEventListener('beforeunload', () => {
+//   remote.app.quit()
+// })

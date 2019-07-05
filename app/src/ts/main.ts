@@ -55,32 +55,38 @@ function createWindow () {
     if (process.env.NODE_ENV !== 'production') mainWindow.webContents.openDevTools()
   })
 
-  // mainWindow.loadURL(url.format({
-  //   pathname: getPath('./public/index.html'),
-  //   protocol: 'file:',
-  //   slashes: true
-  // }))
-
-  // if (process.env.NODE_ENV === 'development') mainWindow.webContents.openDevTools()
-
-  if (process.env.NODE_ENV !== 'production') {
-    const { devServerHost, devServerPort, publicPath } = require('../../script/config.json')
-    mainWindow.loadURL(`http://${devServerHost}:${devServerPort}${publicPath}`)
-  } else {
-    mainWindow.loadURL(url.format({
-      pathname: join(__dirname, 'index.html'),
-      protocol: 'file:',
-      slashes: true
-    }))
-  }
-
   mainWindow.on('closed', function () {
     mainWindow = null
+    app.quit()
   })
 
   mainWindow.on('focus', () => {
     mainWindow && mainWindow.flashFrame(false)
   })
+
+  if (process.env.NODE_ENV !== 'production') {
+    const config = require('../../script/config').default
+    const res: any = mainWindow.loadURL(`http://${config.devServerHost}:${config.devServerPort}${config.publicPath}`)
+
+    if (res !== undefined && typeof res.then === 'function' && typeof res.catch === 'function') {
+      res.catch((err: Error) => {
+        console.log(err)
+      })
+    }
+  } else {
+    (mainWindow as any).removeMenu ? (mainWindow as any).removeMenu() : mainWindow.setMenu(null)
+    const res: any = mainWindow.loadURL(url.format({
+      pathname: join(__dirname, 'index.html'),
+      protocol: 'file:',
+      slashes: true
+    }))
+
+    if (res !== undefined && typeof res.then === 'function' && typeof res.catch === 'function') {
+      res.catch((err: Error) => {
+        console.log(err)
+      })
+    }
+  }
 }
 
 app.on('window-all-closed', function () {
@@ -103,9 +109,10 @@ ipcMain.on('mainWindowId', (event: Event) => {
   event.returnValue = mainWindow && mainWindow.id
 })
 
+// tslint:disable-next-line: strict-type-predicates
+typeof (app as any).whenReady === 'function' ? (app as any).whenReady().then(main) : app.on('ready', main)
+
 function main () {
   ipc()
   if (!mainWindow) createWindow()
 }
-
-app.whenReady().then(main).catch(err => console.log(err))

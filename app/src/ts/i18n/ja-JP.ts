@@ -145,7 +145,8 @@ export default {
     r: 'レア',
     sr: 'Sレア',
     ssr: 'SSレア',
-    get: '獲得済み'
+    get: '獲得済み',
+    failed: 'ガチャデータの読み込みは失敗しました。'
   },
   menu: {
     option: 'オプション',

@@ -1,31 +1,80 @@
 import * as packager from 'electron-packager'
 import * as path from 'path'
 import * as fs from 'fs-extra'
-import { execSync, spawn } from 'child_process'
 import * as pkg from '../package.json'
-import { prod } from './webpack'
-import { ilog, wlog, elog } from './rainbow'
-import { zip } from 'zauz'
+import { execSync, spawn } from 'child_process'
+import build from './build'
+import config from './config'
+import chalk from 'chalk'
 import { productionPackage, packagerOptions, arch } from './packager.config'
+import { getPath } from './util'
 
 const { createPackageWithOptions } = require('asar')
+const crossZip = require('cross-zip')
+
+function isUuid4 (str: string) {
+  const reg = /[0123456789ABCDEF]{8}-[0123456789ABCDEF]{4}-4[0123456789ABCDEF]{3}-[89AB][0123456789ABCDEF]{3}-[0123456789ABCDEF]{12}/
+  return reg.test(str)
+}
 
 function bundleProductionCode () {
-  ilog(`[${new Date().toLocaleString()}] Bundle production code...`)
-  return prod()
+  return build()
 }
 
 function packageApp () {
-  process.stdout.write(`[${new Date().toLocaleString()}] `)
   return packager(packagerOptions)
 }
 
 function writePackageJson (root: string) {
-  return fs.writeJson(path.join(root, 'package.json'), productionPackage)
+  return new Promise<void>((resolve, reject) => {
+    fs.writeFile(path.join(root, 'package.json'), JSON.stringify(productionPackage), 'utf8', (err) => {
+      if (err) return reject(err)
+      resolve()
+    })
+  })
+}
+
+async function rename (appPath: string) {
+  let dirName: string | string[] = path.basename(appPath).split('-')
+  dirName.splice(1, 0, `v${pkg.version}`)
+  dirName = dirName.join('-')
+  const newPath = path.join(path.dirname(appPath), dirName)
+  if (fs.existsSync(newPath)) {
+    console.log(chalk.yellowBright(`[${new Date().toLocaleString()}] Overwriting ${newPath} `))
+    await fs.remove(newPath)
+  }
+  await fs.rename(appPath, newPath)
+  return newPath
+}
+
+function zip (source: string, target: string): Promise<number> {
+  if (!fs.existsSync(path.dirname(target))) fs.mkdirsSync(path.dirname(target))
+  return new Promise<number>((resolve, reject) => {
+    crossZip.zip(source, target, (err: Error) => {
+      if (err) {
+        reject(err)
+        return
+      }
+      fs.stat(target, (err, stat) => {
+        if (err) {
+          reject(err)
+          return
+        }
+        if (!stat.isFile()) {
+          reject(new Error('Zip failed.'))
+          return
+        }
+        resolve(stat.size)
+      })
+    })
+  })
+}
+
+function zipApp (p: string) {
+  return zip(p, p + '.zip')
 }
 
 function copyExtra (root: string) {
-  ilog(`[${new Date().toLocaleString()}] Copy extra resources...`)
   return Promise.all([
     path.join(__dirname, '../../asset/bgm'),
     path.join(__dirname, '../../asset/icon'),
@@ -77,43 +126,18 @@ function removeBuild (root: string) {
   fs.writeFileSync(path.join(nodeModulesDir, 'lame/build/Release/bindings.node'), lameNode)
 }
 
-async function packAsar (root: string) {
-  ilog(`[${new Date().toLocaleString()}] Make app.asar...`)
-  await createPackageWithOptions(root, path.join(root, '../app.asar'), { unpack: process.platform === 'linux' ? '{*.node,**/public/*.png}' : '*.node' })
-  await fs.remove(root)
-}
-
-async function rename (appPath: string) {
-  let dirName: string | string[] = path.basename(appPath).split('-')
-  dirName.splice(1, 0, `v${pkg.version}`)
-  dirName = dirName.join('-')
-  const newPath = path.join(path.dirname(appPath), dirName)
-  if (fs.existsSync(newPath)) {
-    wlog(`[${new Date().toLocaleString()}] Overwriting... `)
-    await fs.remove(newPath)
-  }
-  await fs.rename(appPath, newPath)
-  return newPath
-}
-
-function zipApp (p: string) {
-  ilog(`[${new Date().toLocaleString()}] Zip ${p}`)
-  return zip(p, p + '.zip')
-}
-
 function createDebInstaller (appPath: string) {
-  ilog(`[${new Date().toLocaleString()}] Create .deb installer...`)
   const distRoot = path.dirname(appPath)
   const icon: { [size: string]: string } = {
-    '16x16': path.join(__dirname, '../src/res/icon', '16x16.png'),
-    '24x24': path.join(__dirname, '../src/res/icon', '24x24.png'),
-    '32x32': path.join(__dirname, '../src/res/icon', '32x32.png'),
-    '48x48': path.join(__dirname, '../src/res/icon', '48x48.png'),
-    '64x64': path.join(__dirname, '../src/res/icon', '64x64.png'),
-    '128x128': path.join(__dirname, '../src/res/icon', '128x128.png'),
-    '256x256': path.join(__dirname, '../src/res/icon', '256x256.png'),
-    '512x512': path.join(__dirname, '../src/res/icon', '512x512.png'),
-    '1024x1024': path.join(__dirname, '../src/res/icon', '1024x1024.png')
+    '16x16': getPath(config.iconSrcDir, '16x16.png'),
+    '24x24': getPath(config.iconSrcDir, '24x24.png'),
+    '32x32': getPath(config.iconSrcDir, '32x32.png'),
+    '48x48': getPath(config.iconSrcDir, '48x48.png'),
+    '64x64': getPath(config.iconSrcDir, '64x64.png'),
+    '128x128': getPath(config.iconSrcDir, '128x128.png'),
+    '256x256': getPath(config.iconSrcDir, '256x256.png'),
+    '512x512': getPath(config.iconSrcDir, '512x512.png'),
+    '1024x1024': getPath(config.iconSrcDir, '1024x1024.png')
   }
   fs.mkdirsSync(path.join(distRoot, '.tmp/DEBIAN'))
   fs.writeFileSync(
@@ -169,57 +193,96 @@ function getDirectorySizeSync (dir: string) {
   return size
 }
 
+async function asarApp (root: string) {
+  await createPackageWithOptions(root, path.join(root, '../app.asar'), { unpack: process.platform === 'linux' ? `{*.node,**/${path.basename(config.outputPath)}/${config.iconOutDir}/*.png}` : '*.node' })
+  await fs.remove(root)
+}
+
+async function zipAsar (root: string) {
+  const rootDotDot = path.join(root, '..')
+  fs.mkdirsSync(path.join(rootDotDot, '.tmp'))
+  await Promise.all([
+    fs.copy(path.join(rootDotDot, 'app.asar'), path.join(rootDotDot, '.tmp/app.asar')),
+    fs.existsSync(path.join(rootDotDot, 'app.asar.unpacked')) ? fs.copy(path.join(rootDotDot, 'app.asar.unpacked'), path.join(rootDotDot, '.tmp/app.asar.unpacked')) : Promise.resolve()
+  ])
+  await zip(path.join(rootDotDot, '.tmp'), path.join(config.distPath, `app-v${productionPackage.version}-${process.platform}-${arch}.zip`))
+  fs.removeSync(path.join(rootDotDot, '.tmp'))
+}
+
 function inno (sourceDir: string) {
   return new Promise<void>((resolve, reject) => {
+    const appid = arch === 'ia32' ? `{{${config.inno.appid.ia32}}` : `{{${config.inno.appid.x64}}`
+    if (!isUuid4(appid)) {
+      reject(new Error('Please specify [config.inno.appid] in script/config.ts to generate windows installer.'))
+      return
+    }
     const def: any = {
       Name: pkg.name,
       Version: pkg.version,
       // tslint:disable-next-line: strict-type-predicates
       Publisher: typeof pkg.author === 'object' ? pkg.author.name : pkg.author,
-      URL: 'https://github.com/toyobayashi/mishiro',
-      AppId: arch === 'ia32' ? '{{1988B0A7-591C-4EE6-B069-96723508F0D5}' : '{{76632B3A-54F9-4986-A8DE-445BFECE5116}',
-      OutputDir: path.join(__dirname, '../..', 'dist'),
+      URL: config.inno.url || pkg.name,
+      AppId: appid,
+      OutputDir: getPath(config.distPath),
       Arch: arch,
-      RepoDir: path.join(__dirname, '../..'),
+      RepoDir: getPath('..'),
       SourceDir: sourceDir,
       ArchitecturesAllowed: arch === 'ia32' ? '' : 'x64',
       ArchitecturesInstallIn64BitMode: arch === 'ia32' ? '' : 'x64'
     }
-    spawn('ISCC.exe', [...Object.keys(def).map(k => `/D${k}=${def[k]}`), path.join(__dirname, '../..', 'dist', 'mishiro.iss')], { stdio: 'inherit' })
+    spawn('ISCC.exe', ['/Q', ...Object.keys(def).map(k => `/D${k}=${def[k]}`), getPath('script', `${pkg.name}.iss`)], { stdio: 'inherit' })
       .on('error', reject)
       .on('exit', resolve)
   })
 }
 
-async function main () {
+export default async function pack () {
   const start = new Date().getTime()
-  // await reInstall()
+
+  console.log(chalk.greenBright(`[${new Date().toLocaleString()}] Bundle production code...`))
   await bundleProductionCode()
+
+  process.stdout.write(chalk.greenBright(`[${new Date().toLocaleString()}] `))
   const [appPath] = await packageApp()
-  const root = process.platform === 'darwin' ? path.join(appPath, 'mishiro.app/Contents/Resources/app') : path.join(appPath, 'resources/app')
+
+  console.log(chalk.greenBright(`[${new Date().toLocaleString()}] Write production package.json...`))
+  const root = process.platform === 'darwin' ? path.join(appPath, `${pkg.name}.app/Contents/Resources/app`) : path.join(appPath, 'resources/app')
   await writePackageJson(root)
 
+  console.log(chalk.greenBright(`[${new Date().toLocaleString()}] Install production dependencies...`))
   execSync(`npm install --no-package-lock --production --arch=${arch} --target_arch=${arch} --build-from-source --runtime=electron --target=${pkg.devDependencies.electron} --dist-url=https://atom.io/download/electron`, { cwd: root, stdio: 'inherit' })
   removeBuild(root)
-  await packAsar(root)
 
+  console.log(chalk.greenBright(`[${new Date().toLocaleString()}] Make app.asar...`))
+  await asarApp(root)
+
+  console.log(chalk.greenBright(`[${new Date().toLocaleString()}] Copy extra resources...`))
   await copyExtra(root)
+
+  console.log(chalk.greenBright(`[${new Date().toLocaleString()}] Zip resources...`))
+  await zipAsar(root)
+
   const newPath = await rename(appPath)
+
+  console.log(chalk.greenBright(`[${new Date().toLocaleString()}] Zip ${newPath}...`))
   const size = await zipApp(newPath)
-  ilog(`[${new Date().toLocaleString()}] Size: ${size} Bytes`)
+  console.log(chalk.greenBright(`[${new Date().toLocaleString()}] Total size of zip: ${size} Bytes`))
 
   if (process.platform === 'linux') {
+    console.log(chalk.greenBright(`[${new Date().toLocaleString()}] Create .deb installer...`))
     createDebInstaller(newPath)
   } else if (process.platform === 'win32') {
-    ilog(`[${new Date().toLocaleString()}] Create inno-setup installer...`)
+    console.log(chalk.greenBright(`[${new Date().toLocaleString()}] Create inno-setup installer...`))
     try {
       await inno(newPath)
     } catch (err) {
-      wlog(`[${new Date().toLocaleString()}] ${err.message} `)
+      console.log(chalk.yellowBright(`[${new Date().toLocaleString()}] ${err.message} `))
     }
   }
 
   return (new Date().getTime() - start) / 1000
 }
 
-main().then(s => console.log(`\n  Done in ${s} seconds.`)).catch(e => elog(e))
+if (require.main === module) {
+  pack().then(s => console.log(chalk.greenBright(`\n  Done in ${s} seconds.`))).catch(e => console.log(chalk.redBright(e.toString())))
+}

@@ -2,6 +2,13 @@
   "version": "0.2.0",
   "configurations": [
     {
+      "type": "node",
+      "request": "attach",
+      "port": 9222,
+      "name": "attach main",
+      "processId": "${command:PickProcess}"
+    },
+    {
       "name": "main",
       "type": "node",
       "request": "launch",
@@ -21,7 +28,7 @@
     {
       "type": "chrome",
       "request": "attach",
-      "name": "Attach to Chrome",
+      "name": "attach renderer",
       "port": 9222,
       "webRoot": "${workspaceFolder}/..",
       "sourceMaps": true,

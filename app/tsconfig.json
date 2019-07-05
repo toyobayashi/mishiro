@@ -3,13 +3,15 @@
   "compilerOptions": {
     "experimentalDecorators": true,
     "strictPropertyInitialization": false,
-    "module": "es6",
+    "module": "esnext",
     "target": "es2017",
     "sourceMap": true,
-    "typeRoots": [
-      "./node_modules/@types",
-      "./src/ts/@types"
-    ]
+    "baseUrl": ".",
+    "paths": {
+      "@/*": [
+        "src/*"
+      ]
+    }
   },
   "include": [
     "./src/ts/**/*",

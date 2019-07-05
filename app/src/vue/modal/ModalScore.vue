@@ -89,8 +89,8 @@ export default class extends mixins(modalMixin) {
             slashes: true
           }))
         } else {
-          const { devServerHost, devServerPort, publicPath } = require('../../../script/config.json')
-          win.loadURL(`http://${devServerHost}:${devServerPort}${publicPath}score.html`)
+          const config = require('../../../script/config.ts').default
+          win.loadURL(`http://${config.devServerHost}:${config.devServerPort}${config.publicPath}score.html`)
           win.webContents.openDevTools()
         }
 
