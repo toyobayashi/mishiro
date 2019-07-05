@@ -2,7 +2,7 @@ import { remote } from 'electron'
 import { Vue, Component, Prop } from 'vue-property-decorator'
 import * as marked from 'marked'
 import getPath from './get-path'
-import * as fs from 'fs-extra'
+import fs from './fs'
 // import * as request from 'request'
 import license from './license'
 

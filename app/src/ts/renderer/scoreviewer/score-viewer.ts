@@ -1,6 +1,6 @@
 import { remote, ipcRenderer } from 'electron'
 import { relative, parse } from 'path'
-import { writeFile } from 'fs-extra'
+import fs from '../fs'
 import Global, { globalInstance } from './global'
 import { ScoreNote } from '../../main/on-score'
 import Note, { ScoreNoteWithNoteInstance } from './note'
@@ -387,7 +387,7 @@ class ScoreViewer {
       this._isReadyToSave = true
       this.start()
 
-      writeFile(filename, Buffer.from(base64str.substr(22), 'base64'), (err) => {
+      fs.writeFile(filename, Buffer.from(base64str.substr(22), 'base64'), (err) => {
         if (err) alert(err.message)
       })
     }

@@ -1,6 +1,6 @@
 import { shell, ipcRenderer, Event, clipboard } from 'electron'
 import { Vue, Component, Prop } from 'vue-property-decorator'
-import * as fs from 'fs-extra'
+import fs from './fs'
 import * as path from 'path'
 import TaskLoading from '../../vue/component/TaskLoading.vue'
 import InputText from '../../vue/component/InputText.vue'

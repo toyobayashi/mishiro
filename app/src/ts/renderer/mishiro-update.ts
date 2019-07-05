@@ -1,4 +1,4 @@
-import * as fs from 'fs-extra'
+import fs from './fs'
 import * as path from 'path'
 import { Vue, Component, Prop, Emit } from 'vue-property-decorator'
 import { ProgressInfo } from 'mishiro-core'
@@ -11,10 +11,11 @@ import getPath from './get-path'
 import MishiroIdol from './mishiro-idol'
 import ThePlayer from './the-player'
 import { unpackTexture2D } from './unpack-texture-2d'
+import { Client } from './typings/main'
 
 const { manifestPath, masterPath, bgmDir, iconDir } = getPath
 
-let clientR: typeof client = remote.getGlobal('client')
+let client: Client = remote.getGlobal('client')
 
 @Component({
   components: {
@@ -294,11 +295,11 @@ export default class extends Vue {
           this.emitReady()
         })
 
-        if (!clientR.user) {
+        if (!client.user) {
           // try {
           //   this.text = 'Loading...'
           //   this.loading = 0
-          //   const acc = await clientR.signup((step) => {
+          //   const acc = await client.signup((step) => {
           //     this.loading = step
           //   })
           //   if (acc !== '') {
@@ -308,9 +309,9 @@ export default class extends Vue {
           //   }
           // } catch (err) {
           //   console.log(err)
-          clientR.user = '506351535'
-          clientR.viewer = '141935962'
-          clientR.udid = 'edb05dd4-9d13-4f76-b860-95f7a79de44e'
+          client.user = '506351535'
+          client.viewer = '141935962'
+          client.udid = 'edb05dd4-9d13-4f76-b860-95f7a79de44e'
           // }
         }
 

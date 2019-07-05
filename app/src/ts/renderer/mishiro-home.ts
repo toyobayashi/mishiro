@@ -4,7 +4,7 @@ import InputText from '../../vue/component/InputText.vue'
 import ProgressBar from '../../vue/component/ProgressBar.vue'
 
 import * as path from 'path'
-import * as fs from 'fs-extra'
+import fs from './fs'
 import getPath from './get-path'
 import { shell, ipcRenderer, remote, Event } from 'electron'
 import { Vue, Component } from 'vue-property-decorator'

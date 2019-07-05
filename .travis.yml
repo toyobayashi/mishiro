@@ -1,6 +1,6 @@
 language: node_js
 node_js:
-  - '10.15.3'
+  - '10.16.0'
 os:
   - linux
   - osx
@@ -14,7 +14,7 @@ before_install:
 install:
   - yarn
 script:
-  - yarn run pkg64
+  - yarn run pack:x64
 branches:
   only:
   - master

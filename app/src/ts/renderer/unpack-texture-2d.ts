@@ -1,5 +1,5 @@
 import { remote } from 'electron'
-import { removeSync } from 'fs-extra'
+import fs from './fs'
 // import getPath from './get-path'
 // import { format } from 'url'
 
@@ -38,7 +38,7 @@ export function unpackTexture2D (assetbundle: string): Promise<string[]> {
     // console.log(assetbundle);
     // (win as BrowserWindow).webContents.send('texture2d', assetbundle, randomId, id)
     remote.getGlobal('mishiroCore').util.unpackTexture2D(assetbundle).then((result: string[]) => {
-      removeSync(assetbundle)
+      fs.removeSync(assetbundle)
       resolve(result)
     }).catch((e: Error) => {
       reject({

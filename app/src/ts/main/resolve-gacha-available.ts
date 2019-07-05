@@ -1,3 +1,9 @@
+import { Client } from 'mishiro-core'
+
+declare namespace global {
+  export let client: Client
+}
+
 function getRarity (id: number, cardData: any[]): number {
   for (let i = 0; i < cardData.length; i++) {
     if (id === Number(cardData[i].id)) {
@@ -19,7 +25,7 @@ export default async function (gachaAvailable: any[], cardData: any[], gachaData
   // 数据库没有数据时，直接从接口获取数据，不做数据统计
   if (!gachaAvailable.length) {
     try {
-      let gachaResponse = await client.getGachaRate(gachaData.id)
+      let gachaResponse = await global.client.getGachaRate(gachaData.id)
       if (gachaResponse.data_headers.result_code !== 1) {
         console.log('Get gacha odds failed. Code: ' + gachaResponse.data_headers.result_code)
         return {
@@ -81,7 +87,7 @@ export default async function (gachaAvailable: any[], cardData: any[], gachaData
 
   if (gachaAvailable.length && gachaAvailable[0]['relative_odds'] === 0) {
     try {
-      let gachaResponse = await client.getGachaRate(gachaData.id)
+      let gachaResponse = await global.client.getGachaRate(gachaData.id)
       if (gachaResponse.data_headers.result_code === 1) {
         let idolList = (gachaResponse.data as any).idol_list
         let totalList = [...idolList.r, ...idolList.sr, ...idolList.ssr]

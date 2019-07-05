@@ -1,5 +1,6 @@
 import Vue from 'vue'
 import VueI18n from 'vue-i18n'
+import { Configurer } from './main'
 
 declare module 'vue/types/vue' {
   interface Vue {
@@ -9,8 +10,8 @@ declare module 'vue/types/vue' {
     bgm: HTMLAudioElement
     enterSe: HTMLAudioElement
     cancelSe: HTMLAudioElement
-    configurer: typeof configurer
-    core: typeof mishiroCore
+    configurer: Configurer
+    core: typeof import('mishiro-core')
     updater: import('electron-github-asar-updater')
 
     createCardIconTask: (cardIdArr: number[]) => string[][]
