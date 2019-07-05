@@ -10,7 +10,9 @@ before_install:
   - yarn --verison
   - cd app
   - yarn global add node-gyp
-  - npm config set node_gyp "/usr/local/lib/node_modules/node-gyp/bin/node-gyp.js"
+  - prefix=`npm prefix -g`
+  - globalnodegyp=$prefix"/node_modules/node-gyp/bin/node-gyp.js"
+  - npm config set node_gyp $globalnodegyp
   - node-gyp install --target=4.2.2 --dist-url=https://atom.io/download/electron
 install:
   - yarn
