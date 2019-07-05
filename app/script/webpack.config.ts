@@ -1,76 +1,69 @@
-﻿import * as webpack from 'webpack'
+﻿import { Configuration, HotModuleReplacementPlugin, DefinePlugin } from 'webpack'
+import * as HtmlWebpackPlugin from 'html-webpack-plugin'
 import * as MiniCssExtractPlugin from 'mini-css-extract-plugin'
 import * as OptimizeCSSAssetsPlugin from 'optimize-css-assets-webpack-plugin'
-import * as HtmlWebpackPlugin from 'html-webpack-plugin'
 import { VueLoaderPlugin } from 'vue-loader'
-import * as path from 'path'
-import * as webpackNodeExternals from 'webpack-node-externals'
 import ForkTsCheckerWebpackPlugin = require('fork-ts-checker-webpack-plugin')
-import { publicPath } from './config.json'
-const TerserWebpackPlugin = require('terser-webpack-plugin')
+import * as webpackNodeExternals from 'webpack-node-externals'
+import config from './config'
+import { getPath } from './util'
+import * as TerserWebpackPlugin from 'terser-webpack-plugin'
+import * as serveAsar from 'express-serve-asar'
 
-export const mode = process.env.NODE_ENV === 'production' ? 'production' : 'development'
+const cssLoader = [
+  config.mode === 'production' ? MiniCssExtractPlugin.loader : 'vue-style-loader',
+  { loader: 'css-loader', options: { url: false } }
+]
 
-/* export const dll: webpack.Configuration = {
-  mode,
-  target: 'electron-renderer',
-  entry: {
-    vendor: Object.keys(pkg.dependencies)
-  },
-  node: {
-    __filename: false,
-    __dirname: false
-  },
-  output: {
-    path: path.join(__dirname, '../public'),
-    filename: 'dll.js',
-    library: '__dll_[hash]__'
-  },
-  plugins: [
-    new webpack.DllPlugin({
-      path: path.join(__dirname, 'manifest.json'),
-      name: '__dll_[hash]__',
-      context: __dirname
-    })
-  ],
-  optimization: {
-    minimizer: [uglify]
-  }
-} */
-
-export const main: webpack.Configuration = {
-  mode,
+export const mainConfig: Configuration = {
+  mode: config.mode,
   target: 'electron-main',
-  context: path.join(__dirname, '..'),
+  context: getPath(),
   entry: {
-    'mishiro.main': [path.join(__dirname, '../src/ts/main.ts')]
+    'mishiro.main': [getPath('src/ts/main.ts')]
   },
   output: {
-    path: path.join(__dirname, '../..', publicPath),
+    path: getPath(config.outputPath),
     filename: '[name].js'
   },
   node: false,
   module: {
-    rules: [{
-      test: /\.ts$/,
-      exclude: /node_modules/,
-      loader: 'ts-loader'
-    }, {
-      test: /\.(jpg|png|ico|icns)$/,
-      use: [{
-        loader: 'file-loader',
-        options: {
-          name: './[name].[ext]'
-        }
-      }]
-    }]
+    rules: [
+      {
+        test: /\.ts$/,
+        exclude: /node_modules/,
+        use: [
+          {
+            loader: 'ts-loader',
+            options: {
+              transpileOnly: config.mode !== 'production',
+              configFile: getPath('./src/ts/main/tsconfig.json')
+            }
+          }
+        ]
+      },
+      {
+        test: /\.(jpg|png|ico|icns)$/,
+        use: [
+          {
+            loader: 'file-loader',
+            options: {
+              name: `./${config.iconOutDir}/[name].[ext]`
+            }
+          }
+        ]
+      }
+    ]
   },
   externals: [webpackNodeExternals()],
   resolve: {
-    extensions: ['.ts', '.js', '.json']
+    alias: {
+      '@': getPath('src')
+    },
+    extensions: ['.ts', '.js', 'json']
   },
   plugins: [
-    new webpack.DefinePlugin({
+    new DefinePlugin({
       'process.isLinux': JSON.stringify(process.platform === 'linux')
     })
   ]
@@ -78,52 +71,64 @@ export const main: webpack.Configuration = {
 
 // export const manifest: any = path.join(__dirname, 'manifest.json')
 
-export const renderer: webpack.Configuration = {
-  mode,
+export const rendererConfig: Configuration = {
+  mode: config.mode,
+  context: getPath(),
   target: 'electron-renderer',
-  context: path.join(__dirname, '..'),
   entry: {
-    'mishiro.renderer': [path.join(__dirname, '../src/ts/renderer.ts')],
-    'mishiro.live': [path.join(__dirname, '../src/ts/renderer-game.ts')],
-    'mishiro.score': [path.join(__dirname, '../src/ts/renderer-score.ts')]
+    'mishiro.renderer': [getPath('src/ts/renderer.ts')],
+    'mishiro.live': [getPath('src/ts/renderer-game.ts')],
+    'mishiro.score': [getPath('src/ts/renderer-score.ts')]
   },
   output: {
-    path: path.join(__dirname, '../..', publicPath),
+    path: getPath(config.outputPath),
     filename: '[name].js'
   },
   node: false,
   module: {
-    rules: [{
-      test: /\.vue$/,
-      exclude: /node_modules/,
-      loader: 'vue-loader'
-    }, {
-      test: /\.css$/,
-      exclude: /node_modules/,
-      use: [
-        mode === 'production' ? MiniCssExtractPlugin.loader : 'vue-style-loader',
-        { loader: 'css-loader', options: { url: false } }
-      ]
-    }, {
-      test: /\.ts$/,
-      exclude: /node_modules/,
-      use: [
-        {
-          loader: 'ts-loader',
-          options: {
-            appendTsSuffixTo: [/\.vue$/],
-            transpileOnly: mode !== 'production'
+    rules: [
+      {
+        test: /\.vue$/,
+        loader: 'vue-loader'
+      },
+      {
+        test: /\.ts(x)?$/,
+        exclude: /node_modules/,
+        use: [
+          {
+            loader: 'ts-loader',
+            options: {
+              appendTsSuffixTo: [/\.vue$/],
+              transpileOnly: config.mode !== 'production',
+              configFile: getPath('./src/ts/renderer/tsconfig.json')
+            }
           }
-        }
-      ]
-    }]
+        ]
+      },
+      {
+        test: /\.css$/,
+        use: [
+          ...cssLoader
+        ]
+      }/* ,
+      {
+        test: /\.styl(us)?$/,
+        use: [
+          ...cssLoader,
+          'stylus-loader'
+        ]
+      } */
+    ]
   },
   resolve: {
-    extensions: ['.ts', '.js', '.vue', '.css']
+    alias: {
+      '@': getPath('src')
+    },
+    extensions: ['.ts', '.tsx', '.js', '.jsx', '.vue', '.css', '.styl', '.json']
   },
-  externals: [webpackNodeExternals({
-    whitelist: mode === 'production' ? [/vue/] : [/webpack/]
-  })],
+  // externals: [webpackNodeExternals({
+  //   whitelist: mode === 'production' ? [/vue/] : [/webpack/]
+  // })],
   plugins: [
     new VueLoaderPlugin(),
     /* new webpack.DllReferencePlugin({
@@ -131,36 +136,44 @@ export const renderer: webpack.Configuration = {
       context: __dirname
     }), */
     new HtmlWebpackPlugin({
-      template: path.join(__dirname, '../src/ts/template/index.template.ts'),
+      template: getPath('src/ts/template/index.template.ts'),
       filename: 'index.html',
       chunks: ['mishiro.renderer', 'common', 'dll']
     }),
     new HtmlWebpackPlugin({
-      template: path.join(__dirname, '../src/ts/template/game.template.ts'),
+      template: getPath('src/ts/template/game.template.ts'),
       filename: 'game.html',
       chunks: ['mishiro.live', 'common', 'dll']
     }),
     new HtmlWebpackPlugin({
-      template: path.join(__dirname, '../src/ts/template/score.template.ts'),
+      template: getPath('src/ts/template/score.template.ts'),
       filename: 'score.html',
-      chunks: mode === 'production' ? ['mishiro.score', 'common'] : ['mishiro.score', 'common', 'dll']
+      chunks: ['mishiro.score', 'common', 'dll']
     })
   ],
   optimization: {
     splitChunks: {
-      chunks: 'all',
-      name: 'common',
       cacheGroups: {
         dll: {
+          name: 'dll',
           test: /[\\/]node_modules[\\/]/,
-          name: 'dll'
+          priority: -10,
+          chunks: 'initial'
+        },
+        common: {
+          name: 'common',
+          minChunks: 2,
+          priority: -20,
+          chunks: 'initial',
+          reuseExistingChunk: true
         }
       }
     }
   }
 }
 
-if (mode === 'production') {
+if (config.mode === 'production') {
+  (rendererConfig.output as any).chunkFilename = '[name].js'
   const terser = () => new TerserWebpackPlugin({
     parallel: true,
     cache: true,
@@ -171,32 +184,64 @@ if (mode === 'production') {
       }
     }
   })
-  main.optimization = {
-    ...(main.optimization || {}),
+  mainConfig.optimization = {
+    ...(mainConfig.optimization || {}),
     minimizer: [terser()]
   }
-  renderer.plugins = [
-    ...(renderer.plugins || []),
+  rendererConfig.plugins = [
+    ...(rendererConfig.plugins || []),
     new MiniCssExtractPlugin({
       filename: '[name].css'
     })
   ]
-  renderer.optimization = {
-    ...(renderer.optimization || {}),
+  rendererConfig.optimization = {
+    ...(rendererConfig.optimization || {}),
     minimizer: [
       terser(),
       new OptimizeCSSAssetsPlugin({})
     ]
   }
 } else {
-  renderer.devtool = main.devtool = 'eval-source-map'
-  if (renderer.output) renderer.output.publicPath = publicPath
-  renderer.plugins = [
-    ...(renderer.plugins || []),
+  rendererConfig.devServer = {
+    stats: config.statsOptions,
+    hot: true,
+    host: config.devServerHost,
+    inline: true,
+    contentBase: getPath(config.contentBase),
+    publicPath: config.publicPath,
+    before (app) {
+      app.use(serveAsar(getPath(config.contentBase)))
+    }
+  }
+  rendererConfig.devtool = mainConfig.devtool = 'eval-source-map'
+
+  rendererConfig.plugins = [
+    ...(rendererConfig.plugins || []),
+    new HotModuleReplacementPlugin(),
     new ForkTsCheckerWebpackPlugin({
-      vue: true,
-      tslint: true
-    }),
-    new webpack.HotModuleReplacementPlugin()
+      tslint: true,
+      tsconfig: getPath('./src/ts/renderer/tsconfig.json'),
+      vue: true
+    })
   ]
+
+  /* preloadConfig.plugins = [
+    ...(preloadConfig.plugins || []),
+    new ForkTsCheckerWebpackPlugin({
+      tslint: true,
+      tsconfig: getPath('./src/preload/tsconfig.json')
+    })
+  ] */
+
+  mainConfig.plugins = [
+    ...(mainConfig.plugins || []),
+    new ForkTsCheckerWebpackPlugin({
+      tslint: true,
+      tsconfig: getPath('./src/ts/main/tsconfig.json')
+    })
+  ]
+
+  if (config.publicPath) {
+    rendererConfig.output && (rendererConfig.output.publicPath = config.publicPath)
+  }
 }

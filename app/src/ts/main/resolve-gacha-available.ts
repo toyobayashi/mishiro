@@ -29,7 +29,7 @@ export default async function (gachaAvailable: any[], cardData: any[], gachaData
       }
 
       let idolList = (gachaResponse.data as any).idol_list
-      let totalList = [...idolList.r, ...idolList.sr, ...idolList.ssr]
+      let totalList = [...(idolList.r || []), ...(idolList.sr || []), ...(idolList.ssr || [])]
 
       for (let i = 0; i < totalList.length; i++) {
         const rarity = getRarity(totalList[i].card_id, cardData)

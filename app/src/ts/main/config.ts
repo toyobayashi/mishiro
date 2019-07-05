@@ -48,7 +48,7 @@ export class Configurer {
       for (let k in obj) {
         let mishiroConfigKey = k as MishiroConfigKey
         if (obj[mishiroConfigKey]) {
-          this.config[mishiroConfigKey] = obj[mishiroConfigKey]
+          (this.config as any)[mishiroConfigKey] = obj[mishiroConfigKey]
         } else {
           if (this.config[mishiroConfigKey] !== void 0) {
             delete this.config[mishiroConfigKey]

@@ -145,7 +145,8 @@ export default {
     r: 'R',
     sr: 'SR',
     ssr: 'SSR',
-    get: '已獲得'
+    get: '已獲得',
+    failed: '獲取数据失敗。'
   },
   menu: {
     option: '選項',
