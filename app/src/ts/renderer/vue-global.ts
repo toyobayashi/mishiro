@@ -2,10 +2,11 @@ import { remote, ipcRenderer } from 'electron'
 import getPath from './get-path'
 // import Downloader from './downloader'
 import { PluginFunction } from 'vue'
-import * as fs from 'fs-extra'
+import fs from './fs'
 import * as path from 'path'
 
 const { iconDir } = getPath
+// const fs = remote.getGlobal('fs') as typeof global.fs
 
 // const gameHostBase = 'http://storage.game.starlight-stage.jp/dl/resources'
 const imgHostBase = 'https://truecolor.kirara.ca'

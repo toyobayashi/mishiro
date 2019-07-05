@@ -1,8 +1,11 @@
 import * as fs from 'fs-extra'
 import getPath from './get-path'
+import * as request from 'request'
 
 declare namespace global {
   export let configurer: Configurer
+  export let fs: typeof import('fs-extra')
+  export let request: typeof import('request')
 }
 
 export interface MishiroConfig {
@@ -69,5 +72,7 @@ export class Configurer {
 }
 
 global.configurer = new Configurer(getPath.configPath)
+global.fs = fs
+global.request = request
 
 export default global.configurer

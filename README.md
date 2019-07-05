@@ -102,13 +102,16 @@ Repo: [mishiro-score-viewer](https://github.com/toyobayashi/mishiro-score-viewer
     ``` bash
     # ~/mishiro/app$ code .
     $ npm run dev
+
+    # or
+    $ npm run serve
     $ npm start # or press [F5] in vscode
     ```
 
 * Build  
 
     ``` bash
-    $ npm run prod
+    $ npm run build
     ```
 
 * Launch  
@@ -120,8 +123,8 @@ Repo: [mishiro-score-viewer](https://github.com/toyobayashi/mishiro-score-viewer
 * Pack
 
     ``` bash
-    $ npm run pkg64 # x64 
-    $ npm run pkg32 # Windows x86
+    $ npm run pack:x64 # x64 
+    $ npm run pack:ia32 # Windows x86
     ```
 
 ## Reference

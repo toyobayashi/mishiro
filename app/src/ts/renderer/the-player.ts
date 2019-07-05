@@ -1,4 +1,4 @@
-import * as fs from 'fs-extra'
+import fs from './fs'
 import getPath from './get-path'
 import { Vue, Component, Prop } from 'vue-property-decorator'
 import { MasterData } from '../main/on-master-read'

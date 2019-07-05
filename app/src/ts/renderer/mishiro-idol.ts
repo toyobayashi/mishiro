@@ -3,7 +3,7 @@ import TabSmall from '../../vue/component/TabSmall.vue'
 import InputText from '../../vue/component/InputText.vue'
 
 import getPath from './get-path'
-import * as fs from 'fs-extra'
+import fs from './fs'
 import * as path from 'path'
 import { ipcRenderer, shell } from 'electron'
 import { MasterData } from '../main/on-master-read'

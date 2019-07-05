@@ -15,6 +15,14 @@ const cssLoader = [
   { loader: 'css-loader', options: { url: false } }
 ]
 
+const htmlMinify = config.mode === 'production' ? {
+  removeComments: true,
+  collapseWhitespace: true,
+  removeAttributeQuotes: true,
+  collapseBooleanAttributes: true,
+  removeScriptTypeAttributes: true
+} : false
+
 export const mainConfig: Configuration = {
   mode: config.mode,
   target: 'electron-main',
@@ -138,17 +146,20 @@ export const rendererConfig: Configuration = {
     new HtmlWebpackPlugin({
       template: getPath('src/ts/template/index.template.ts'),
       filename: 'index.html',
-      chunks: ['mishiro.renderer', 'common', 'dll']
+      chunks: ['mishiro.renderer', 'common', 'dll'],
+      minify: htmlMinify
     }),
     new HtmlWebpackPlugin({
       template: getPath('src/ts/template/game.template.ts'),
       filename: 'game.html',
-      chunks: ['mishiro.live', 'common', 'dll']
+      chunks: ['mishiro.live', 'common', 'dll'],
+      minify: htmlMinify
     }),
     new HtmlWebpackPlugin({
       template: getPath('src/ts/template/score.template.ts'),
       filename: 'score.html',
-      chunks: ['mishiro.score', 'common', 'dll']
+      chunks: ['mishiro.score', 'common', 'dll'],
+      minify: htmlMinify
     })
   ],
   optimization: {

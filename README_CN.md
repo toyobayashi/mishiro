@@ -82,13 +82,16 @@
     ``` bash
     # ~/mishiro/app$ code .
     $ npm run dev
+
+    # 或者
+    $ npm run serve
     $ npm start # 或者直接在 VSCode 里按 [F5]
     ```
 
 * 构建  
 
     ``` bash
-    $ npm run prod
+    $ npm run build
     ```
 
 * 启动  
@@ -100,8 +103,8 @@
 * 打包
 
     ``` bash
-    $ npm run pkg64 # x64
-    $ npm run pkg32 # Windows x86
+    $ npm run pack:x64 # x64 
+    $ npm run pack:ia32 # Windows x86
     ```
 
 ## 参考

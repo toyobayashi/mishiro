@@ -33,44 +33,12 @@
 </template>
 
 <script lang="ts">
-// import { createWriteStream, existsSync } from 'fs-extra'
-import { shell/* , remote */ } from 'electron'
+import { shell } from 'electron'
 import modalMixin from '../../ts/renderer/modal-mixin'
 import ProgressBar from '../component/ProgressBar.vue'
-// import getPath from '../../ts/renderer/get-path'
-// import { ProgressInfo } from 'mishiro-core'
-// import { unzip } from 'zauz'
-// import * as http from 'http'
-// import * as https from 'https'
+
 import Component, { mixins } from 'vue-class-component'
 import * as marked from 'marked'
-
-// const { downloadDir } = getPath
-
-// function download (url: string, p: string, onData?: (prog: any) => void): Promise<void> {
-//   return new Promise((resolve, reject) => {
-//     let protocol: any = /^https:/.exec(url) ? https : http
-
-//     protocol.get(url, (res1: http.IncomingMessage) => {
-//       protocol = /^https:/.exec(res1.headers.location as string) ? https : http
-
-//       protocol
-//         .get(res1.headers.location, (res2: http.IncomingMessage) => {
-//           const total = parseInt(res2.headers['content-length'] as any, 10)
-//           let completed = 0
-//           res2.pipe(createWriteStream(p))
-//           res2.on('data', data => {
-//             completed += data.length
-//             if (onData) onData({ loading: 100 * completed / total })
-//           })
-//           res2.on('error', reject)
-//           res2.on('end', resolve)
-//         })
-//         .on('error', reject)
-//     })
-//     .on('error', reject)
-//   })
-// }
 
 @Component({
   components: {
@@ -106,32 +74,6 @@ export default class extends mixins(modalMixin) {
         this.btnDisabled = false
         this.event.$emit('alert', this.$t('home.errorTitle'), err.message)
       }
-
-      // this.btnDisabled = true
-      // const patchFile = downloadDir(`mishiro-v${this.versionData.version}-patch.zip`)
-      // if (!existsSync(patchFile)) {
-      //   try {
-      //     await download(this.versionData.patchUrl, patchFile, (prog: ProgressInfo) => { this.updateProgress = prog.loading })
-      //     this.updateProgress = 99.99
-      //   } catch (err) {
-      //     this.btnDisabled = false
-      //     this.updateProgress = 0
-      //     this.event.$emit('alert', this.$t('home.errorTitle'), err.message)
-      //   }
-      // }
-      // // this.btnDisabled = false
-      // // this.updateProgress = 0
-      // // shell.openExternal(patchFile)
-      // unzip(patchFile, getPath(), (err) => {
-      //   if (err) {
-      //     this.event.$emit('alert', this.$t('home.errorTitle'), err.message)
-      //   } else {
-      //     this.btnDisabled = false
-      //     this.updateProgress = 0
-      //     remote.app.relaunch({ args: ['.'] })
-      //     remote.app.exit(0)
-      //   }
-      // })
     } else if (this.versionData.exeUrl) {
       shell.openExternal(this.versionData.exeUrl)
     } else if (this.versionData.zipUrl) {

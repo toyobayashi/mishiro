@@ -1,9 +1,10 @@
 import { ProgressInfo } from 'mishiro-core'
 import { remote } from 'electron'
-import * as request from 'request'
+import request from './request'
+import { Configurer, Client } from './typings/main'
 
-let configurerR: typeof configurer = remote.getGlobal('configurer')
-let clientR: typeof client = remote.getGlobal('client')
+let configurerR: Configurer = remote.getGlobal('configurer')
+let clientR: Client = remote.getGlobal('client')
 
 let current = 0
 let max = 20
