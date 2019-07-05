@@ -6,7 +6,7 @@ install:
 
     cd app
 
-    npm install -g node-gyp
+    npm install -g toyobayashi/node-gyp#v3.8.0-vs2017
 
     for /f "delims=" %%P in ('npm prefix -g') do npm config set node_gyp "%%P\node_modules\node-gyp\bin\node-gyp.js"
 

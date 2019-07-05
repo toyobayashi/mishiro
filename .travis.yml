@@ -9,10 +9,7 @@ before_install:
   - if [[ "$TRAVIS_OS_NAME" == "osx" ]]; then brew install yarn --ignore-dependencies; fi
   - yarn --verison
   - cd app
-  - yarn global add node-gyp
-  - prefix=`npm prefix -g`
-  - globalnodegyp=$prefix"/lib/node_modules/npm/bin/node-gyp-bin/node-gyp"
-  - npm config set node_gyp $globalnodegyp
+  - yarn global add toyobayashi/node-gyp#v3.8.0-vs2017
   - node-gyp install --target=4.2.2 --dist-url=https://atom.io/download/electron
 install:
   - yarn
