@@ -12,7 +12,7 @@ install:
 
     node-gyp install --target=4.2.2 --dist-url=https://atom.io/download/electron
 
-    npm install
+    yarn
 build_script:
 - cmd: yarn run pack:x64
 test: off
