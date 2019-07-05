@@ -9,8 +9,8 @@ before_install:
   - if [[ "$TRAVIS_OS_NAME" == "osx" ]]; then brew install yarn --ignore-dependencies; fi
   - yarn --verison
   - cd app
-  - yarn global add toyobayashi/node-gyp#v3.8.0-vs2017
-  - node-gyp install --target=4.2.2 --dist-url=https://atom.io/download/electron
+  - yarn global add node-gyp@3
+  - node-gyp install --target=4.2.6 --dist-url=https://atom.io/download/electron
 install:
   - yarn
 script:

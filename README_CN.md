@@ -61,14 +61,8 @@
 
     REM 获取 Electron 用于编译原生模块的头文件
     > npm install -g node-gyp
-    > node-gyp install --target=4.2.2 --dist-url=https://atom.io/download/electron
-
-    REM 获取 Electron 用于编译原生模块的头文件
-    REM 如果你用的是 Windows 系统而且
-    REM 你装的是 Visual Studio 2019
-    > npm install -g toyobayashi/node-gyp#v3.8.0-vs2019
     > for /f "delims=" %P in ('npm prefix -g') do npm config set node_gyp "%P\node_modules\node-gyp\bin\node-gyp.js"
-    > node-gyp install --target=4.2.2 --dist-url=https://atom.io/download/electron
+    > node-gyp install --target=4.2.6 --dist-url=https://npm.taobao.org/mirrors/atom-shell
     REM 结束
 
     REM 安装依赖

@@ -50,7 +50,7 @@
     "cross-zip": "^2.1.5",
     "css-loader": "^3.0.0",
     "cuint": "^0.2.2",
-    "electron": "4.2.2",
+    "electron": "4.2.6",
     "electron-packager": "^14.0.1",
     "express-serve-asar": "^1.0.1",
     "file-loader": "^4.0.0",

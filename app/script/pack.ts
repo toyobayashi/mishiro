@@ -71,7 +71,10 @@ function zip (source: string, target: string): Promise<number> {
 }
 
 function zipApp (p: string) {
-  return zip(p, p + '.zip')
+  return zip(p, p + '.zip').catch(err => {
+    console.log(chalk.yellowBright(`[${new Date().toLocaleString()}] ${err.message} `))
+    return -1
+  })
 }
 
 function copyExtra (root: string) {
@@ -205,8 +208,12 @@ async function zipAsar (root: string) {
     fs.copy(path.join(rootDotDot, 'app.asar'), path.join(rootDotDot, '.tmp/app.asar')),
     fs.existsSync(path.join(rootDotDot, 'app.asar.unpacked')) ? fs.copy(path.join(rootDotDot, 'app.asar.unpacked'), path.join(rootDotDot, '.tmp/app.asar.unpacked')) : Promise.resolve()
   ])
-  await zip(path.join(rootDotDot, '.tmp'), path.join(config.distPath, `app-v${productionPackage.version}-${process.platform}-${arch}.zip`))
-  fs.removeSync(path.join(rootDotDot, '.tmp'))
+  try {
+    await zip(path.join(rootDotDot, '.tmp'), path.join(config.distPath, `app-v${productionPackage.version}-${process.platform}-${arch}.zip`))
+    fs.removeSync(path.join(rootDotDot, '.tmp'))
+  } catch (err) {
+    console.log(chalk.yellowBright(`[${new Date().toLocaleString()}] ${err.message} `))
+  }
 }
 
 function inno (sourceDir: string) {
