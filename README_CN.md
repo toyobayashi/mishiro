@@ -21,6 +21,7 @@
 * __Python 2.7__
 * __Visual Studio 2015/2017__
 * __.Net 4.5.1__ （只有 Windows 7 需要）
+* __最新 Powershell__
 
 ### MacOS 需要  
 
@@ -32,8 +33,9 @@
 
 * __Node.js 8+__
 * __Python 2.7__
-* __gcc__
+* __gcc & g++__
 * __make__
+* __zip & unzip__
 
 ### 快速开始
 
@@ -52,22 +54,39 @@
 
 2. 装依赖  
 
-    ``` bat
-    > cd mishiro/app
+    * Windows
 
-    REM 设置国内镜像
-    > npm config set registry http://registry.npm.taobao.org/
-    > npm config set electron_mirror https://npm.taobao.org/mirrors/electron/
+        ``` bat
+        > cd mishiro/app
 
-    REM 获取 Electron 用于编译原生模块的头文件
-    > npm install -g node-gyp
-    > for /f "delims=" %P in ('npm prefix -g') do npm config set node_gyp "%P\node_modules\node-gyp\bin\node-gyp.js"
-    > node-gyp install --target=4.2.6 --dist-url=https://npm.taobao.org/mirrors/atom-shell
-    REM 结束
+        REM 设置国内镜像
+        > npm config set registry http://registry.npm.taobao.org/
+        > npm config set electron_mirror https://npm.taobao.org/mirrors/electron/
 
-    REM 安装依赖
-    > npm install
-    ```
+        REM 获取 Electron 用于编译原生模块的头文件
+        > npm install -g node-gyp
+        > for /f "delims=" %P in ('npm prefix -g') do npm config set node_gyp "%P\node_modules\node-gyp\bin\node-gyp.js"
+        > node-gyp install --target=4.2.6 --dist-url=https://npm.taobao.org/mirrors/atom-shell
+
+        REM 安装依赖
+        > npm install
+        ```
+
+    * Linux
+
+        ``` bash
+        $ cd mishiro/app
+
+        # 设置国内镜像
+        $ npm config set registry http://registry.npm.taobao.org/
+        $ npm config set electron_mirror https://npm.taobao.org/mirrors/electron/
+
+        # 安装 node-gyp v3，下载 C++ 头文件
+        $ npm install -g node-gyp@3
+        $ node-gyp install --target=4.2.6 --dist-url=https://npm.taobao.org/mirrors/atom-shell
+
+        $ npm install
+        ```
 
 * 开发
 

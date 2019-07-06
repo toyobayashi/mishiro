@@ -39,6 +39,7 @@ Repo: [mishiro-score-viewer](https://github.com/toyobayashi/mishiro-score-viewer
 * __Python 2.7__
 * __Visual Studio 2015/2017__
 * __.Net 4.5.1 (Windows 7 only)__  
+* __Powershell__
 
 ### MacOS Require
  
@@ -50,8 +51,9 @@ Repo: [mishiro-score-viewer](https://github.com/toyobayashi/mishiro-score-viewer
 
 * __Node.js 8+__
 * __Python 2.7__
-* __gcc__
+* __gcc & g++__
 * __make__
+* __zip & unzip__
 
 ### Quick Start
 
@@ -70,23 +72,41 @@ Repo: [mishiro-score-viewer](https://github.com/toyobayashi/mishiro-score-viewer
 
 2. Install  
 
-    ``` bat
-    > cd mishiro/app
+    * Windows
 
-    REM if mainland Chinese, recommend
-    > npm config set registry http://registry.npm.taobao.org/
-    > npm config set electron_mirror https://npm.taobao.org/mirrors/electron/
-    REM endif
+        ``` bat
+        > cd mishiro/app
 
-    REM if you have not downloaded Electron's C++ header
-    > npm install -g node-gyp
-    > for /f "delims=" %P in ('npm prefix -g') do npm config set node_gyp "%P\node_modules\node-gyp\bin\node-gyp.js"
-    > node-gyp install --target=4.2.6 --dist-url=https://atom.io/download/electron
-    REM endif 
+        REM if mainland Chinese, recommend
+        > npm config set registry http://registry.npm.taobao.org/
+        > npm config set electron_mirror https://npm.taobao.org/mirrors/electron/
+        REM endif
 
-    REM install dependencies
-    > npm install
-    ```
+        REM if you have not downloaded Electron's C++ header
+        > npm install -g node-gyp
+        > for /f "delims=" %P in ('npm prefix -g') do npm config set node_gyp "%P\node_modules\node-gyp\bin\node-gyp.js"
+        > node-gyp install --target=4.2.6 --dist-url=https://atom.io/download/electron
+        REM endif 
+
+        REM install dependencies
+        > npm install
+        ```
+    
+    * Linux
+
+        ``` bash
+        $ cd mishiro/app
+
+        # if mainland Chinese, recommend
+        $ npm config set registry http://registry.npm.taobao.org/
+        $ npm config set electron_mirror https://npm.taobao.org/mirrors/electron/
+        # endif
+
+        $ npm install -g node-gyp@3
+        $ node-gyp install --target=4.2.6 --dist-url=https://atom.io/download/electron
+
+        $ npm install
+        ```
 
 * Develop
 
