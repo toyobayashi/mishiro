@@ -143,7 +143,7 @@ function createDebInstaller (appPath: string) {
     '1024x1024': getPath(config.iconSrcDir, '1024x1024.png')
   }
   fs.mkdirsSync(path.join(distRoot, '.tmp/DEBIAN'))
-  fs.chmodSync(path.join(distRoot, '.tmp'), 775)
+  fs.chmodSync(path.join(distRoot, '.tmp/DEBIAN'), 0o775)
   fs.writeFileSync(
     path.join(distRoot, '.tmp/DEBIAN/control'),
     `Package: ${pkg.name}
