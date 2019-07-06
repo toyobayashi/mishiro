@@ -52,6 +52,7 @@ const packagerOptions: Options = {
   arch,
   ignore: /node_modules|src|script|README|tslint\.json|tsconfig|package-lock\.json|\.git|\.vscode|\.npmrc/,
   appCopyright: 'Copyright (C) 2017-2019 Toyobayashi',
+  tmpdir: false,
   download: {
     // cache: process.platform === 'win32' ? join(homedir(), '.electron') : join(homedir(), '.cache/electron'),
     mirrorOptions: {
