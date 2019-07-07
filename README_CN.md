@@ -1,5 +1,15 @@
 # mishiro
-[戳这里下载](https://github.com/toyobayashi/mishiro/releases) __（MacOS请按照下面的步骤和[Electron分发应用](http://electronjs.org/docs/tutorial/application-distribution)自行打包。请不要安装在有汉字的目录下）__  
+
+## 下载
+
+* [从 Github 下载](https://github.com/toyobayashi/mishiro/releases)  
+* [从码云下载](https://gitee.com/toyobayashi/mishiro/releases)  
+
+注意：
+
+* 不推荐将 mishiro 安装或解压在包含汉字的路径下，可能会出现一些问题。
+* 由于我没有 mac 电脑，所以很抱歉 mac 用户请参照请按照下面的步骤和[Electron分发应用](http://electronjs.org/docs/tutorial/application-distribution)自行编译打包。
+
 
 ## 特性
 
@@ -17,25 +27,25 @@
 
 ### Windows 需要
 
-* __Node.js 8+__
-* __Python 2.7__
-* __Visual Studio 2015/2017__
-* __.Net 4.5.1__ （只有 Windows 7 需要）
-* __最新 Powershell__
-
-### MacOS 需要  
-
-* __Node.js 8+__
-* __Python 2.7__
-* __Xcode__ （终端运行 ```xcode-select --install``` 安装Command Line Tools）
+* __Windows 7 以上__
+* __Node.js 10+__
+* __Python 2.7__ （`node-gyp` 现在不支持 3.x ）
+* __Visual Studio 2015/2017/2019 并安装`使用 C++ 的桌面开发`工作负载或 `VC++ v140+ 构建工具集`__
+* __.NET 和 Powershell__ （Windows 10 有自带）
 
 ### Linux 需要
 
-* __Node.js 8+__
+* __Node.js 10+__
 * __Python 2.7__
 * __gcc & g++__
 * __make__
 * __zip & unzip__
+
+### MacOS 需要  （这部分未测试）
+
+* __Node.js 10+__
+* __Python 2.7__
+* __Xcode__ （终端运行 ```xcode-select --install``` 安装Command Line Tools）
 
 ### 快速开始
 
@@ -53,6 +63,8 @@
     * `/app/node_modules/hca-decoder`
 
 2. 装依赖  
+
+    mishiro 依赖了一些 C++ 原生模块，在 `npm install` 的时候这些 C++ 包的代码会被编译，所以请确保本地配置好了 C++ 的编译环境，否则 `npm install` 会失败。  
 
     * Windows
 
@@ -72,7 +84,7 @@
         > npm install
         ```
 
-    * Linux
+    * Linux / MacOS
 
         ``` bash
         $ cd mishiro/app

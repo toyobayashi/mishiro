@@ -10,8 +10,17 @@
 
 <font color="green" size=5>**Latest Available Version: [1.9.1](https://github.com/toyobayashi/mishiro/releases/tag/v1.9.1)**</font>
 
-[Release Download](https://github.com/toyobayashi/mishiro/releases) __(Do not install mishiro in a path which includes Chinese or Japanese characters)__  
-[中文](https://github.com/toyobayashi/mishiro/blob/master/README_CN.md)
+[中文 README](https://github.com/toyobayashi/mishiro/blob/master/README_CN.md)
+
+## Download
+
+* [Download from Github Release](https://github.com/toyobayashi/mishiro/releases)  
+* [Download from Gitee Release (Chinese user)](https://gitee.com/toyobayashi/mishiro/releases)  
+
+Note：
+
+* Do not install mishiro in a path which includes Chinese or Japanese characters.
+* Mac users please refer to the following building steps and [Electron's document](http://electronjs.org/docs/tutorial/application-distribution) to compile and pack mishiro.
 
 ## Screenshot
 
@@ -34,26 +43,26 @@ Repo: [mishiro-score-viewer](https://github.com/toyobayashi/mishiro-score-viewer
 ## Development & Building
 
 ### Windows Require
- 
-* __Node.js 8+__
-* __Python 2.7__
-* __Visual Studio 2015/2017__
-* __.Net 4.5.1 (Windows 7 only)__  
-* __Powershell__
 
-### MacOS Require
- 
-* __Node.js 8+__
-* __Python 2.7__
-* __Xcode__ (install Command Line Tools by running ```xcode-select --install``` in your terminal)
+* __Windows 7+__
+* __Node.js 10+__
+* __Python 2.7__ ( 3.x is not supported by `node-gyp` yet)
+* __Visual Studio 2015/2017/2019 with C++ Desktop workload installed__
+* __.NET & Powershell__  
 
 ### Linux Require
 
-* __Node.js 8+__
+* __Node.js 10+__
 * __Python 2.7__
 * __gcc & g++__
 * __make__
 * __zip & unzip__
+
+### MacOS Require (This part is not tested)
+ 
+* __Node.js 10+__
+* __Python 2.7__
+* __Xcode__ (install Command Line Tools by running ```xcode-select --install``` in your terminal)
 
 ### Quick Start
 
@@ -92,7 +101,7 @@ Repo: [mishiro-score-viewer](https://github.com/toyobayashi/mishiro-score-viewer
         > npm install
         ```
     
-    * Linux
+    * Linux / MacOS
 
         ``` bash
         $ cd mishiro/app
