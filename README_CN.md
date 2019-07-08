@@ -3,7 +3,7 @@
 ## 下载
 
 * [从 Github 下载](https://github.com/toyobayashi/mishiro/releases)  
-* [从码云下载（国内推荐，由于众所周知的原因 Github 上可能无法下载）](https://gitee.com/toyobayashi/mishiro/releases)  
+* [从码云下载（中国大陆地区推荐，由于众所周知的原因 Github 上可能无法下载）](https://gitee.com/toyobayashi/mishiro/releases)  
 
 注意：
 
