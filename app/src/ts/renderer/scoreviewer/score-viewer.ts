@@ -1,6 +1,3 @@
-import { remote, ipcRenderer } from 'electron'
-import { relative, parse } from 'path'
-import fs from '../fs'
 import Global, { globalInstance } from './global'
 import { ScoreNote } from '../../main/on-score'
 import Note, { ScoreNoteWithNoteInstance } from './note'
@@ -8,7 +5,11 @@ import TapNote from './tap-note'
 import FlipNote from './flip-note'
 import LongNote from './long-note'
 import LongMoveNote from './long-move-note'
-import getPath from '../get-path'
+
+const { relative, parse } = window.node.path
+const fs = window.node.fs
+const getPath = window.preload.getPath
+const { remote, ipcRenderer } = window.node.electron
 
 interface Song<ScoreType> {
   src: string
@@ -97,7 +98,7 @@ class ScoreViewer {
     if (ScoreViewer._instance) return ScoreViewer._instance
 
     if (options) this.options = Object.assign({}, this.options, options)
-    this.audio = process.env.NODE_ENV === 'production' ? Global.createAudio(song.src) : Global.createAudio(relative(__dirname, song.src))
+    this.audio = process.env.NODE_ENV === 'production' ? Global.createAudio(song.src) : Global.createAudio(relative(window.preload.getPath('public'), song.src))
 
     this.song = song
     // this._preCalculation = {

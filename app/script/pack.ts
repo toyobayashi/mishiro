@@ -97,16 +97,19 @@ async function installDependencies (root: string): Promise<void> {
   let needInstall = false
   if (!fs.existsSync(libJson)) {
     fs.mkdirsSync(libRoot)
-    fs.writeJsonSync(libJson, productionPackage)
+    fs.writeJsonSync(libJson, pkg)
     needInstall = true
   } else {
-    const lib = fs.readJsonSync(libJson).dependencies || {}
-    for (let moduleName in productionPackage.dependencies) {
-      if (lib[moduleName] !== productionPackage.dependencies[moduleName]) {
-        fs.writeJsonSync(libJson, productionPackage)
+    const lib = fs.readJsonSync(libJson) || { devDependencies: {}, dependencies: {} }
+    for (let moduleName in pkg.dependencies) {
+      if (lib.dependencies[moduleName] !== (pkg.dependencies as any)[moduleName]) {
+        fs.writeJsonSync(libJson, pkg)
         needInstall = true
         break
       }
+    }
+    if (lib.devDependencies.electron !== pkg.devDependencies.electron) {
+      needInstall = true
     }
   }
 

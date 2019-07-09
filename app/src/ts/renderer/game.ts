@@ -1,5 +1,5 @@
-import { parse, relative } from 'path'
-import { remote } from 'electron'
+const { parse, relative } = window.node.path
+const { remote } = window.node.electron
 
 let liveResult: any = {
   perfect: 0,
@@ -137,7 +137,7 @@ class Game {
     let name = parse(song.src).name.split('-')[1]
     document.getElementsByTagName('title')[0].innerHTML = liveResult.name = name
     liveResult.fullCombo = song.fullCombo
-    let music = process.env.NODE_ENV === 'production' ? new Audio(song.src) : new Audio(relative(__dirname, song.src))
+    let music = process.env.NODE_ENV === 'production' ? new Audio(song.src) : new Audio(relative(window.preload.getPath('public'), song.src))
     const msbp = 60 / song.bpm * 1000
     const DELAY = Game.DISTANCE / Game.PX_SPEED
     music.addEventListener('play', () => {

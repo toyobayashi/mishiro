@@ -28,36 +28,5 @@
 </div>
 </template>
 
-<script lang="ts">
-import { remote, shell } from 'electron'
-import modalMixin from '../../ts/renderer/modal-mixin'
-import Component, { mixins } from 'vue-class-component'
-
-declare function __non_webpack_require__ (module: string): any
-
-const execSync = remote.getGlobal('execSync')
-
-@Component
-export default class extends mixins(modalMixin) {
-
-  app = remote.app
-  versions = process.versions
-  arch = process.arch
-  commit = process.env.NODE_ENV === 'production' ? __non_webpack_require__('../package.json')._commit : execSync('git rev-parse HEAD', { cwd: require('path').join(__dirname, '..') }).toString().replace(/[\r\n]/g, '')
-  commitDate = process.env.NODE_ENV === 'production' ? __non_webpack_require__('../package.json')._commitDate : new Date(execSync('git log -1', { cwd: require('path').join(__dirname, '..') }).toString().match(/Date:\s*(.*?)\n/)[1]).toISOString()
-
-  showRepo () {
-    shell.openExternal('https://github.com/toyobayashi/mishiro')
-    this.playSe(this.enterSe)
-  }
-
-  mounted () {
-    this.$nextTick(() => {
-      this.event.$on('showAbout', () => {
-        this.show = true
-        this.visible = true
-      })
-    })
-  }
-}
+<script lang="ts" src="../../ts/renderer/modal-about.ts">
 </script>

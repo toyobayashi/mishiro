@@ -3,14 +3,14 @@ import TheTable from '../../vue/component/TheTable.vue'
 import InputText from '../../vue/component/InputText.vue'
 import ProgressBar from '../../vue/component/ProgressBar.vue'
 
-import * as path from 'path'
-import fs from './fs'
-import getPath from './get-path'
-import { shell, ipcRenderer, remote, Event } from 'electron'
+import { Event } from 'electron'
 import { Vue, Component } from 'vue-property-decorator'
 import { generateObjectId } from '../common/object-id'
 // import { ProgressInfo } from 'mishiro-core'
-
+const fs = window.node.fs
+const path = window.node.path
+const getPath = window.preload.getPath
+const { shell, ipcRenderer, remote } = window.node.electron
 const { downloadDir } = getPath
 
 @Component({

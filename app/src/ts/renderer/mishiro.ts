@@ -1,31 +1,31 @@
 import { Vue, Component } from 'vue-property-decorator'
 
-import MishiroEntry from '../../vue/view/MishiroEntry.vue'
+// import MishiroEntry from '../../vue/view/MishiroEntry.vue'
 import MishiroUpdate from '../../vue/view/MishiroUpdate.vue'
-import MishiroHome from '../../vue/view/MishiroHome.vue'
-import MishiroIdol from '../../vue/view/MishiroIdol.vue'
-import MishiroLive from '../../vue/view/MishiroLive.vue'
-import MishiroGacha from '../../vue/view/MishiroGacha.vue'
-import MishiroMenu from '../../vue/view/MishiroMenu.vue'
+// import MishiroHome from '../../vue/view/MishiroHome.vue'
+// import MishiroIdol from '../../vue/view/MishiroIdol.vue'
+// import MishiroLive from '../../vue/view/MishiroLive.vue'
+// import MishiroGacha from '../../vue/view/MishiroGacha.vue'
+// import MishiroMenu from '../../vue/view/MishiroMenu.vue'
 
-import ThePlayer from '../../vue/component/ThePlayer.vue'
-import TheBackground from '../../vue/component/TheBackground.vue'
+// import ThePlayer from '../../vue/component/ThePlayer.vue'
+// import TheBackground from '../../vue/component/TheBackground.vue'
+// import TheToggleButton from '../../vue/component/TheToggleButton.vue'
+// import TheFooter from '../../vue/component/TheFooter.vue'
+// import TheVersion from '../../vue/component/TheVersion.vue'
 import TabSmall from '../../vue/component/TabSmall.vue'
-import TheToggleButton from '../../vue/component/TheToggleButton.vue'
-import TheFooter from '../../vue/component/TheFooter.vue'
-import TheVersion from '../../vue/component/TheVersion.vue'
 
-import ModalAlert from '../../vue/modal/ModalAlert.vue'
-import ModalGachaHistory from '../../vue/modal/ModalGachaHistory.vue'
-import ModalGachaCard from '../../vue/modal/ModalGachaCard.vue'
-import ModalGachaInformation from '../../vue/modal/ModalGachaInformation.vue'
-import ModalAbout from '../../vue/modal/ModalAbout.vue'
-import ModalOption from '../../vue/modal/ModalOption.vue'
-import ModalVersion from '../../vue/modal/ModalVersion.vue'
-import ModalCalculator from '../../vue/modal/ModalCalculator.vue'
-import ModalLiveDifficulty from '../../vue/modal/ModalLiveDifficulty.vue'
-import ModalScore from '../../vue/modal/ModalScore.vue'
-import ModalLiveResult from '../../vue/modal/ModalLiveResult.vue'
+// import ModalAlert from '../../vue/modal/ModalAlert.vue'
+// import ModalGachaHistory from '../../vue/modal/ModalGachaHistory.vue'
+// import ModalGachaCard from '../../vue/modal/ModalGachaCard.vue'
+// import ModalGachaInformation from '../../vue/modal/ModalGachaInformation.vue'
+// import ModalAbout from '../../vue/modal/ModalAbout.vue'
+// import ModalOption from '../../vue/modal/ModalOption.vue'
+// import ModalVersion from '../../vue/modal/ModalVersion.vue'
+// import ModalCalculator from '../../vue/modal/ModalCalculator.vue'
+// import ModalLiveDifficulty from '../../vue/modal/ModalLiveDifficulty.vue'
+// import ModalScore from '../../vue/modal/ModalScore.vue'
+// import ModalLiveResult from '../../vue/modal/ModalLiveResult.vue'
 
 const i18nTabs: any = {
   zh: 'i18n.chinese',
@@ -33,35 +33,37 @@ const i18nTabs: any = {
   en: 'i18n.english'
 }
 
-const useResVer = require('electron').remote.getGlobal('configurer').getConfig().latestResVer
+const useResVer = window.preload.configurer.getConfig().latestResVer
 // const useResVer = void 0
 
 @Component({
   components: {
-    MishiroEntry,
-    ThePlayer,
+    MishiroEntry: () => import(/* webpackChunkName: "mishiro-entry" */ '../../vue/view/MishiroEntry.vue'),
     MishiroUpdate,
-    TheBackground,
+    MishiroHome: () => import(/* webpackChunkName: "mishiro-home" */ '../../vue/view/MishiroHome.vue'),
+    MishiroIdol: () => import(/* webpackChunkName: "mishiro-idol" */ '../../vue/view/MishiroIdol.vue'),
+    MishiroLive: () => import(/* webpackChunkName: "mishiro-live" */ '../../vue/view/MishiroLive.vue'),
+    MishiroGacha: () => import(/* webpackChunkName: "mishiro-gacha" */ '../../vue/view/MishiroGacha.vue'),
+    MishiroMenu: () => import(/* webpackChunkName: "mishiro-menu" */ '../../vue/view/MishiroMenu.vue'),
+
+    ThePlayer: () => import(/* webpackChunkName: "the-player" */ '../../vue/component/ThePlayer.vue'),
+    TheBackground: () => import(/* webpackChunkName: "the-background" */ '../../vue/component/TheBackground.vue'),
+    TheToggleButton: () => import(/* webpackChunkName: "the-toggle-button" */ '../../vue/component/TheToggleButton.vue'),
+    TheFooter: () => import(/* webpackChunkName: "the-footer" */ '../../vue/component/TheFooter.vue'),
+    TheVersion: () => import(/* webpackChunkName: "the-version" */ '../../vue/component/TheVersion.vue'),
     TabSmall,
-    TheToggleButton,
-    TheFooter,
-    TheVersion,
-    MishiroHome,
-    MishiroIdol,
-    MishiroLive,
-    MishiroGacha,
-    MishiroMenu,
-    ModalAlert,
-    ModalGachaHistory,
-    ModalGachaCard,
-    ModalGachaInformation,
-    ModalAbout,
-    ModalVersion,
-    ModalOption,
-    ModalCalculator,
-    ModalLiveDifficulty,
-    ModalScore,
-    ModalLiveResult
+
+    ModalAlert: () => import(/* webpackChunkName: "modal-alert" */ '../../vue/modal/ModalAlert.vue'),
+    ModalGachaHistory: () => import(/* webpackChunkName: "modal-gacha-history" */ '../../vue/modal/ModalGachaHistory.vue'),
+    ModalGachaCard: () => import(/* webpackChunkName: "modal-gacha-card" */ '../../vue/modal/ModalGachaCard.vue'),
+    ModalGachaInformation: () => import(/* webpackChunkName: "modal-gacha-information" */ '../../vue/modal/ModalGachaInformation.vue'),
+    ModalAbout: () => import(/* webpackChunkName: "modal-about" */ '../../vue/modal/ModalAbout.vue'),
+    ModalVersion: () => import(/* webpackChunkName: "modal-version" */ '../../vue/modal/ModalVersion.vue'),
+    ModalOption: () => import(/* webpackChunkName: "modal-option" */ '../../vue/modal/ModalOption.vue'),
+    ModalCalculator: () => import(/* webpackChunkName: "modal-calculator" */ '../../vue/modal/ModalCalculator.vue'),
+    ModalLiveDifficulty: () => import(/* webpackChunkName: "modal-live-difficulty" */ '../../vue/modal/ModalLiveDifficulty.vue'),
+    ModalScore: () => import(/* webpackChunkName: "modal-score" */ '../../vue/modal/ModalScore.vue'),
+    ModalLiveResult: () => import(/* webpackChunkName: "modal-live-result" */ '../../vue/modal/ModalLiveResult.vue')
   }
 })
 export default class extends Vue {

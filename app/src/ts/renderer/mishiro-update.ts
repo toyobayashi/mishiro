@@ -1,21 +1,22 @@
-import fs from './fs'
-import * as path from 'path'
 import { Vue, Component, Prop, Emit } from 'vue-property-decorator'
 import { ProgressInfo } from 'mishiro-core'
 import { MasterData } from '../main/on-master-read'
 import ProgressBar from '../../vue/component/ProgressBar.vue'
 import check from './check'
 
-import { ipcRenderer, Event, remote } from 'electron'
-import getPath from './get-path'
+import { Event } from 'electron'
+
 import MishiroIdol from './mishiro-idol'
 import ThePlayer from './the-player'
 import { unpackTexture2D } from './unpack-texture-2d'
-import { Client } from './typings/main'
-
+// import { Client } from './typings/main'
+const fs = window.node.fs
+const path = window.node.path
+const getPath = window.preload.getPath
 const { manifestPath, masterPath, bgmDir, iconDir } = getPath
+const ipcRenderer = window.node.electron.ipcRenderer
 
-let client: Client = remote.getGlobal('client')
+let client = window.preload.client
 
 @Component({
   components: {
@@ -251,7 +252,7 @@ export default class extends Vue {
           const getBackground = async (id: string | number) => {
             try {
               getBackgroundResult = await downloadCard.call(this, id, 'eventBgReady', (prog: ProgressInfo) => {
-                this.text = prog.name || ''
+                this.text = (prog.name || '') + '　' + Math.ceil(prog.current / 1024) + '/' + Math.ceil(prog.max / 1024) + ' KB'
                 this.loading = prog.loading
               })
 

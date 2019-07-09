@@ -3,7 +3,7 @@ import * as HtmlWebpackPlugin from 'html-webpack-plugin'
 import * as MiniCssExtractPlugin from 'mini-css-extract-plugin'
 import * as OptimizeCSSAssetsPlugin from 'optimize-css-assets-webpack-plugin'
 import { VueLoaderPlugin } from 'vue-loader'
-import ForkTsCheckerWebpackPlugin = require('fork-ts-checker-webpack-plugin')
+import * as ForkTsCheckerWebpackPlugin from 'fork-ts-checker-webpack-plugin'
 import * as webpackNodeExternals from 'webpack-node-externals'
 import config from './config'
 import { getPath } from './util'
@@ -79,10 +79,48 @@ export const mainConfig: Configuration = {
 
 // export const manifest: any = path.join(__dirname, 'manifest.json')
 
-export const rendererConfig: Configuration = {
+export const preloadConfig: Configuration = {
   mode: config.mode,
   context: getPath(),
   target: 'electron-renderer',
+  entry: {
+    preload: [getPath('./src/ts/preload/preload.ts')]
+  },
+  output: {
+    filename: '[name].js',
+    path: getPath(config.outputPath)
+  },
+  node: false,
+  externals: [webpackNodeExternals()],
+  module: {
+    rules: [
+      {
+        test: /\.ts$/,
+        exclude: /node_modules/,
+        use: [
+          {
+            loader: 'ts-loader',
+            options: {
+              transpileOnly: config.mode !== 'production',
+              configFile: getPath('./src/ts/preload/tsconfig.json')
+            }
+          }
+        ]
+      }
+    ]
+  },
+  resolve: {
+    alias: {
+      '@': getPath('src')
+    },
+    extensions: ['.ts', '.tsx', '.js', '.jsx', '.json']
+  }
+}
+
+export const rendererConfig: Configuration = {
+  mode: config.mode,
+  context: getPath(),
+  target: 'web',
   entry: {
     'mishiro.renderer': [getPath('src/ts/renderer.ts')],
     'mishiro.live': [getPath('src/ts/renderer-game.ts')],
@@ -90,9 +128,9 @@ export const rendererConfig: Configuration = {
   },
   output: {
     path: getPath(config.outputPath),
-    filename: '[name].js'
+    filename: '[name].js',
+    chunkFilename: '[name].js'
   },
-  node: false,
   module: {
     rules: [
       {
@@ -184,7 +222,7 @@ export const rendererConfig: Configuration = {
 }
 
 if (config.mode === 'production') {
-  (rendererConfig.output as any).chunkFilename = '[name].js'
+  // (rendererConfig.output as any).chunkFilename = '[name].js'
   const terser = () => new TerserWebpackPlugin({
     parallel: true,
     cache: true,
@@ -212,6 +250,10 @@ if (config.mode === 'production') {
       new OptimizeCSSAssetsPlugin({})
     ]
   }
+  preloadConfig.optimization = {
+    ...(mainConfig.optimization || {}),
+    minimizer: [terser()]
+  }
 } else {
   rendererConfig.devServer = {
     stats: config.statsOptions,
@@ -224,7 +266,7 @@ if (config.mode === 'production') {
       app.use(serveAsar(getPath(config.contentBase)))
     }
   }
-  rendererConfig.devtool = mainConfig.devtool = 'eval-source-map'
+  rendererConfig.devtool = mainConfig.devtool = preloadConfig.devtool = 'eval-source-map'
 
   rendererConfig.plugins = [
     ...(rendererConfig.plugins || []),
@@ -236,13 +278,13 @@ if (config.mode === 'production') {
     })
   ]
 
-  /* preloadConfig.plugins = [
+  preloadConfig.plugins = [
     ...(preloadConfig.plugins || []),
     new ForkTsCheckerWebpackPlugin({
       tslint: true,
-      tsconfig: getPath('./src/preload/tsconfig.json')
+      tsconfig: getPath('./src/ts/preload/tsconfig.json')
     })
-  ] */
+  ]
 
   mainConfig.plugins = [
     ...(mainConfig.plugins || []),

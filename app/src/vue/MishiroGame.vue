@@ -9,28 +9,5 @@
 </div>
 </template>
 
-<script lang="ts">
-import TheCombo from './component/TheCombo.vue'
-import TheLiveGauge from './component/TheLiveGauge.vue'
-import { liveResult, Game } from '../ts/renderer/game'
-import { Vue, Component } from 'vue-property-decorator'
-import { ipcRenderer, Event } from 'electron'
-
-@Component({
-  components: {
-    TheCombo,
-    TheLiveGauge
-  }
-})
-export default class extends Vue {
-  liveResult = liveResult
-  mounted () {
-    this.$nextTick(() => {
-      ipcRenderer.once('start', (_event: Event, song: any, fromWindowId: number) => {
-        Game.start(song, fromWindowId)
-      })
-      Game.init()
-    })
-  }
-}
+<script lang="ts" src="../ts/renderer/mishiro-game.ts">
 </script>
