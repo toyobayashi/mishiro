@@ -1,10 +1,6 @@
 import { ProgressInfo } from 'mishiro-core'
-import { remote } from 'electron'
-import request from './request'
-import { Configurer, Client } from './typings/main'
 
-let configurerR: Configurer = remote.getGlobal('configurer')
-let clientR: Client = remote.getGlobal('client')
+const request = window.node.request
 
 let current = 0
 let max = 20
@@ -45,19 +41,19 @@ function httpGetVersion (resVer: number, progressing: (prog: ProgressInfo) => vo
 }
 
 async function check (progressing: (prog: ProgressInfo) => void) {
-  let config = configurerR.getConfig()
+  let config = window.preload.configurer.getConfig()
   if (config.resVer) {
     return config.resVer
   }
-  let res = await clientR.check()
+  let res = await window.preload.client.check()
   if (res !== 0) {
-    if (res > (configurerR.getConfig().latestResVer as number)) {
-      console.log(`/load/check [New Version] ${configurerR.getConfig().latestResVer as number} => ${res}`)
+    if (res > (window.preload.configurer.getConfig().latestResVer as number)) {
+      console.log(`/load/check [New Version] ${window.preload.configurer.getConfig().latestResVer as number} => ${res}`)
     } else {
       console.log(`/load/check [Latest Version] ${res}`)
     }
-    configurerR.configure('latestResVer', res)
-    clientR.resVer = res.toString()
+    window.preload.configurer.configure('latestResVer', res)
+    window.preload.client.resVer = res.toString()
     return res
   } else {
     console.log('/load/check failed')
@@ -90,8 +86,8 @@ async function check (progressing: (prog: ProgressInfo) => void) {
           }
         }
         if (!isContinue) {
-          configurerR.configure('latestResVer', resVer)
-          clientR.resVer = resVer.toString()
+          window.preload.configurer.configure('latestResVer', resVer)
+          window.preload.client.resVer = resVer.toString()
           resolve(resVer)
         }
       }).catch(err => reject(err))

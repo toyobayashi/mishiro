@@ -21,7 +21,9 @@ function createWindow () {
     show: false,
     backgroundColor: '#000000',
     webPreferences: {
-      nodeIntegration: true
+      nodeIntegration: false,
+      contextIsolation: false,
+      preload: join(__dirname, 'preload.js')
     }
   }
   if ((process as any).isLinux) {

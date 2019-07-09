@@ -6,8 +6,8 @@
   <transition name="fade">
     <MishiroUpdate v-if="!isReady" @ready="isReady = !isReady" v-model="appData" :is-touched="isTouched"/>
   </transition>
-  <TheBackground/>
-  <div id="mainBlock" v-show="show">
+  <TheBackground v-show="isReady"/>
+  <div id="mainBlock" v-show="show && isReady">
     <MishiroHome v-show="currentBlock === 'home'"/>
     <MishiroIdol v-show="currentBlock === 'idol'" :master="appData.master"/>
     <MishiroLive v-show="currentBlock === 'live'" :master="appData.master"/>

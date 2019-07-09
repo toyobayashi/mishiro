@@ -1,6 +1,6 @@
 import { Vue, Component } from 'vue-property-decorator'
-import fs from './fs'
-import getPath from './get-path'
+const fs = window.node.fs
+const getPath = window.preload.getPath
 
 @Component
 export default class extends Vue {

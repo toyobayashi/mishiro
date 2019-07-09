@@ -44,7 +44,6 @@ export default class extends Vue {
   /*-webkit-text-stroke: 0px #202020;*/
   text-align: center;
   color: #fff;
-  z-index: 100;
 }
 .cgss-progress-stamina>div>div{
   float: left;

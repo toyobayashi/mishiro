@@ -1,10 +1,9 @@
-import { remote } from 'electron'
 import { Vue, Component, Prop } from 'vue-property-decorator'
-import * as marked from 'marked'
-import getPath from './get-path'
-import fs from './fs'
-// import * as request from 'request'
 import license from './license'
+
+const fs = window.node.fs
+const getPath = window.preload.getPath
+const remote = window.node.electron.remote
 
 const { dataDir } = getPath
 
@@ -23,8 +22,11 @@ export default class extends Vue {
   }
   showLicense () {
     this.playSe(this.enterSe)
-    this.event.$emit('license')
-    this.event.$emit('alert', this.$t('menu.license'), marked(license), 900)
+    // tslint:disable-next-line: no-floating-promises
+    import(/* webpackChunkName: "marked" */ 'marked').then((marked) => {
+      this.event.$emit('license')
+      this.event.$emit('alert', this.$t('menu.license'), (marked as any).default(license), 900)
+    })
   }
   showVar () {
     this.playSe(this.enterSe)

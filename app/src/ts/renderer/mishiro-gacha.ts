@@ -1,7 +1,9 @@
-import { shell } from 'electron'
+
 import { Vue, Component, Prop } from 'vue-property-decorator'
 import { MasterData } from '../main/on-master-read'
-import getPath from './get-path'
+
+const getPath = window.preload.getPath
+const { shell } = window.node.electron
 
 @Component
 export default class extends Vue {

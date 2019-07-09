@@ -1,6 +1,6 @@
 import configurer from './config'
 import * as core from 'mishiro-core'
-import { execSync as system } from 'child_process'
+// import { execSync as system } from 'child_process'
 import * as Updater from 'electron-github-asar-updater'
 // import { app, dialog } from 'electron'
 
@@ -33,9 +33,9 @@ global.client = new core.Client(
   confver !== void 0 ? (confver - 100).toString() : void 0
 )
 
-global.execSync = function (command: string) {
-  return system(command)
-}
+// global.execSync = function (command: string) {
+//   return system(command)
+// }
 
 global.updater = updater
 

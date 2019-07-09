@@ -5,10 +5,11 @@ import InputRadio from '../../vue/component/InputRadio.vue'
 import InputText from '../../vue/component/InputText.vue'
 import privateStatus from './calculator-data'
 
-import { ipcRenderer } from 'electron'
 import Component, { mixins } from 'vue-class-component'
 import { Prop, Watch } from 'vue-property-decorator'
 import { MasterData } from '../main/on-master-read'
+
+const { ipcRenderer } = window.node.electron
 
 @Component({
   components: {

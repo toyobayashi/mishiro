@@ -1,11 +1,10 @@
-import { remote, ipcRenderer } from 'electron'
-import getPath from './get-path'
-// import Downloader from './downloader'
 import { PluginFunction } from 'vue'
-import fs from './fs'
-import * as path from 'path'
 
-const { iconDir } = getPath
+const { ipcRenderer } = window.node.electron
+const fs = window.node.fs
+const path = window.node.path
+
+const { iconDir } = window.preload.getPath
 // const fs = remote.getGlobal('fs') as typeof global.fs
 
 // const gameHostBase = 'http://storage.game.starlight-stage.jp/dl/resources'
@@ -25,9 +24,9 @@ const install: PluginFunction<undefined> = function (Vue) {
   Vue.prototype.bgm = new Audio() // 背景音乐
   Vue.prototype.enterSe = new Audio('../../asset/se.asar/se_common_enter.mp3') // 确认音效
   Vue.prototype.cancelSe = new Audio('../../asset/se.asar/se_common_cancel.mp3') // 取消音效
-  Vue.prototype.configurer = remote.getGlobal('configurer')
-  Vue.prototype.core = remote.getGlobal('mishiroCore')
-  Vue.prototype.updater = remote.getGlobal('updater')
+  Vue.prototype.configurer = window.preload.configurer
+  Vue.prototype.core = window.node.mishiroCore
+  Vue.prototype.updater = window.preload.updater
 
   // 全局方法
   Vue.prototype.playSe = function (se: HTMLAudioElement) { // 播放音效

@@ -1,14 +1,16 @@
-import { shell, ipcRenderer, Event, clipboard } from 'electron'
+import { Event } from 'electron'
 import { Vue, Component, Prop } from 'vue-property-decorator'
-import fs from './fs'
-import * as path from 'path'
+
 import TaskLoading from '../../vue/component/TaskLoading.vue'
 import InputText from '../../vue/component/InputText.vue'
 import { generateObjectId } from '../common/object-id'
 
-import getPath from './get-path'
 import { MasterData } from '../main/on-master-read'
 
+const fs = window.node.fs
+const path = window.node.path
+const getPath = window.preload.getPath
+const { shell, ipcRenderer, clipboard } = window.node.electron
 const { scoreDir, bgmDir, liveDir } = getPath
 
 @Component({

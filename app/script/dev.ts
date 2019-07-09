@@ -1,4 +1,4 @@
-import { mainConfig, rendererConfig/* , preloadConfig */ } from './webpack.config'
+import { mainConfig, rendererConfig, preloadConfig } from './webpack.config'
 import { watch, startDevServer } from './util'
 import config from './config'
 import start from './start'
@@ -17,11 +17,11 @@ export default function dev () {
 
   const firstLaunch = {
     main: false,
-    // preload: false,
+    preload: false,
     renderer: false
   }
 
-  const isReady = () => firstLaunch.main /* && firstLaunch.preload */ && firstLaunch.renderer
+  const isReady = () => firstLaunch.main && firstLaunch.preload && firstLaunch.renderer
 
   const relaunch = function relaunch () {
     if (appProcess) {
@@ -47,7 +47,7 @@ export default function dev () {
     console.log(stats.toString(config.statsOptions) + '\n')
   })
 
-  /* watch(preloadConfig, function watchHandler (err, stats) {
+  watch(preloadConfig, function watchHandler (err, stats) {
     if (err) {
       console.log(err)
       return
@@ -60,7 +60,7 @@ export default function dev () {
     }
 
     console.log(stats.toString(config.statsOptions) + '\n')
-  }) */
+  })
 
   startDevServer(rendererConfig, config.devServerPort, config.devServerHost, function (err) {
     if (err) {

@@ -32,69 +32,7 @@
 </div>
 </template>
 
-<script lang="ts">
-import { shell } from 'electron'
-import modalMixin from '../../ts/renderer/modal-mixin'
-import ProgressBar from '../component/ProgressBar.vue'
-
-import Component, { mixins } from 'vue-class-component'
-import * as marked from 'marked'
-
-@Component({
-  components: {
-    ProgressBar
-  }
-})
-export default class extends mixins(modalMixin) {
-
-  versionData: any = {}
-  updateProgress: number = 0
-  btnDisabled: boolean = false
-
-  cancel () {
-    this.updater.abort()
-    this.close()
-  }
-
-  async showRepo () {
-    this.playSe(this.enterSe)
-    if (this.versionData.appZipUrl && process.env.NODE_ENV === 'production') {
-      this.btnDisabled = true
-      try {
-        const result = await this.updater.download((status: any) => {
-          this.updateProgress = status.loading
-        })
-        if (result) {
-          this.updater.relaunch()
-        } else {
-          this.btnDisabled = false
-          this.updateProgress = 0
-        }
-      } catch (err) {
-        this.btnDisabled = false
-        this.event.$emit('alert', this.$t('home.errorTitle'), err.message)
-      }
-    } else if (this.versionData.exeUrl) {
-      shell.openExternal(this.versionData.exeUrl)
-    } else if (this.versionData.zipUrl) {
-      shell.openExternal(this.versionData.zipUrl)
-    } else {
-      shell.openExternal('https://github.com/toyobayashi/mishiro/releases')
-    }
-
-  }
-
-  mounted () {
-    this.$nextTick(() => {
-      this.event.$on('versionCheck', (versionData: any) => {
-        this.show = true
-        this.visible = true
-        versionData.description = marked(versionData.release.body)
-        this.versionData = versionData
-      })
-    })
-  }
-}
+<script lang="ts" src="../../ts/renderer/modal-version.ts">
 </script>
 
 <style scoped>

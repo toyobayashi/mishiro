@@ -2,15 +2,15 @@ import ProgressBar from '../../vue/component/ProgressBar.vue'
 import TabSmall from '../../vue/component/TabSmall.vue'
 import InputText from '../../vue/component/InputText.vue'
 
-import getPath from './get-path'
-import fs from './fs'
-import * as path from 'path'
-import { ipcRenderer, shell } from 'electron'
 import { MasterData } from '../main/on-master-read'
 import { Vue, Component, Prop } from 'vue-property-decorator'
 import { ProgressInfo } from 'mishiro-core'
 import { unpackTexture2D } from './unpack-texture-2d'
 
+const { ipcRenderer, shell } = window.node.electron
+const fs = window.node.fs
+const path = window.node.path
+const getPath = window.preload.getPath
 const { cardDir, voiceDir } = getPath
 
 @Component({
@@ -377,7 +377,9 @@ export default class extends Vue {
             charaVoiceFiles[i] = path.join(charaDir, charaVoiceFiles[i])
           }
           let voiceFiles = charaVoiceFiles.concat(cardVoiceFiles)
-          this.voice.src = voiceFiles[Math.floor(voiceFiles.length * Math.random())]
+
+          const localSource = voiceFiles[Math.floor(voiceFiles.length * Math.random())]
+          this.voice.src = process.env.NODE_ENV === 'production' ? localSource : ('/' + path.relative(getPath('..'), localSource).replace(new RegExp('\\' + path.sep, 'g'), '/'))
           this.voice.play().catch(err => console.log(err))
         }
       }
