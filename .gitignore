@@ -13,3 +13,4 @@ dist/*
 !dist/mishiro.iss
 !dist/build.bat
 /config.json
+/app/.cache/*
