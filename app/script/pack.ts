@@ -9,7 +9,7 @@ import chalk from 'chalk'
 import { productionPackage, packagerOptions, arch } from './packager.config'
 import { getPath } from './util'
 
-const { createPackageWithOptions } = require('asar')
+const { createPackageWithOptions, extractAll } = require('asar')
 const crossZip = require('cross-zip')
 
 function isUuid4 (str: string) {
@@ -90,10 +90,52 @@ function copyExtra (root: string) {
   }))
 }
 
+async function installDependencies (root: string): Promise<void> {
+  const libJson = getPath('./.cache', `${process.platform}-${arch}`, 'package.json')
+  const libRoot = path.dirname(libJson)
+
+  let needInstall = false
+  if (!fs.existsSync(libJson)) {
+    fs.mkdirsSync(libRoot)
+    fs.writeJsonSync(libJson, productionPackage)
+    needInstall = true
+  } else {
+    const lib = fs.readJsonSync(libJson).dependencies || {}
+    for (let moduleName in productionPackage.dependencies) {
+      if (lib[moduleName] !== productionPackage.dependencies[moduleName]) {
+        fs.writeJsonSync(libJson, productionPackage)
+        needInstall = true
+        break
+      }
+    }
+  }
+
+  if (!needInstall) {
+    if (!fs.existsSync(path.join(libRoot, 'node_modules.asar'))) {
+      needInstall = true
+    }
+  }
+
+  if (needInstall) {
+    if (fs.existsSync(path.join(libRoot, 'node_modules.asar'))) fs.removeSync(path.join(libRoot, 'node_modules.asar'))
+    if (fs.existsSync(path.join(libRoot, 'node_modules.asar.unpacked'))) fs.removeSync(path.join(libRoot, 'node_modules.unpacked'))
+
+    execSync(`npm install --no-package-lock --production --arch=${arch} --target_arch=${arch} --build-from-source --runtime=electron --target=${pkg.devDependencies.electron} --dist-url=https://atom.io/download/electron`, { cwd: libRoot, stdio: 'inherit' })
+    removeBuild(libRoot)
+
+    await createPackageWithOptions(path.join(libRoot, 'node_modules'), path.join(libRoot, 'node_modules.asar'), {})
+    await fs.remove(path.join(libRoot, 'node_modules'))
+  }
+
+  extractAll(path.join(libRoot, 'node_modules.asar'), path.join(root, 'node_modules'))
+}
+
 function removeBuild (root: string) {
   const nodeModulesDir = path.join(root, 'node_modules')
   const lameNode = fs.readFileSync(path.join(nodeModulesDir, 'lame/build/Release/bindings.node'))
   const removeList = [
+    '.bin',
+    '.cache',
     'nan',
     'sqlite3/build',
     'sqlite3/deps',
@@ -203,15 +245,16 @@ async function asarApp (root: string) {
 }
 
 async function zipAsar (root: string) {
-  const rootDotDot = path.join(root, '..')
-  fs.mkdirsSync(path.join(rootDotDot, '.tmp'))
+  const resourcePath = path.join(root, '..')
+  const tmpDir = path.join(resourcePath, '.tmp')
+  fs.mkdirsSync(tmpDir)
   await Promise.all([
-    fs.copy(path.join(rootDotDot, 'app.asar'), path.join(rootDotDot, '.tmp/app.asar')),
-    fs.existsSync(path.join(rootDotDot, 'app.asar.unpacked')) ? fs.copy(path.join(rootDotDot, 'app.asar.unpacked'), path.join(rootDotDot, '.tmp/app.asar.unpacked')) : Promise.resolve()
+    fs.copy(path.join(resourcePath, 'app.asar'), path.join(resourcePath, '.tmp/app.asar')),
+    fs.existsSync(path.join(resourcePath, 'app.asar.unpacked')) ? fs.copy(path.join(resourcePath, 'app.asar.unpacked'), path.join(resourcePath, '.tmp/app.asar.unpacked')) : Promise.resolve()
   ])
   try {
-    await zip(path.join(rootDotDot, '.tmp'), getPath(config.distPath, `app-v${productionPackage.version}-${process.platform}-${arch}.zip`))
-    fs.removeSync(path.join(rootDotDot, '.tmp'))
+    await zip(tmpDir, getPath(config.distPath, `app-v${productionPackage.version}-${process.platform}-${arch}.zip`))
+    fs.removeSync(tmpDir)
   } catch (err) {
     console.log(chalk.yellowBright(`[${new Date().toLocaleString()}] ${err.message} `))
   }
@@ -258,8 +301,7 @@ export default async function pack () {
   await writePackageJson(root)
 
   console.log(chalk.greenBright(`[${new Date().toLocaleString()}] Install production dependencies...`))
-  execSync(`npm install --no-package-lock --production --arch=${arch} --target_arch=${arch} --build-from-source --runtime=electron --target=${pkg.devDependencies.electron} --dist-url=https://atom.io/download/electron`, { cwd: root, stdio: 'inherit' })
-  removeBuild(root)
+  await installDependencies(root)
 
   console.log(chalk.greenBright(`[${new Date().toLocaleString()}] Make app.asar...`))
   await asarApp(root)

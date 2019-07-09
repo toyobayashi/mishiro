@@ -50,7 +50,7 @@ const packagerOptions: Options = {
   dir: getPath(),
   out: getPath(config.distPath),
   arch,
-  ignore: /node_modules|src|script|README|tslint\.json|tsconfig|package-lock\.json|\.git|\.vscode|\.npmrc/,
+  ignore: /node_modules|src|script|README|tslint\.json|tsconfig|package-lock\.json|\.git|\.vscode|\.npmrc|\.cache/,
   appCopyright: 'Copyright (C) 2017-2019 Toyobayashi',
   download: {
     // cache: process.platform === 'win32' ? join(homedir(), '.electron') : join(homedir(), '.cache/electron'),
