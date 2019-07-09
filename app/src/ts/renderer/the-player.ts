@@ -143,6 +143,8 @@ export default class extends Vue {
         if ((o.id + '').charAt(0) !== '2' && (o.id + '').charAt(0) !== '6') {
           if (fs.existsSync(bgmDir(`bgm_event_${o.id}.mp3`))) {
             this.set({ src: `../../asset/bgm/bgm_event_${o.id}.mp3` })
+          } else {
+            this.set(bgmList.anni)
           }
         } else {
           this.set(bgmList.anni)
