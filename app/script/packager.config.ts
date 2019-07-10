@@ -52,13 +52,17 @@ const packagerOptions: Options = {
   arch,
   ignore: /node_modules|src|script|README|tslint\.json|tsconfig|package-lock\.json|\.git|\.vscode|\.npmrc|\.cache/,
   appCopyright: 'Copyright (C) 2017-2019 Toyobayashi',
-  download: {
-    // cache: process.platform === 'win32' ? join(homedir(), '.electron') : join(homedir(), '.cache/electron'),
-    mirrorOptions: {
-      mirror: process.env.npm_config_electron_mirror || 'https://npm.taobao.org/mirrors/electron/'
-    }
-  },
   overwrite: true
+}
+
+if (process.env.npm_config_electron_mirror && process.env.npm_config_electron_mirror.indexOf('taobao') !== -1) {
+  packagerOptions.download = {
+    unsafelyDisableChecksums: true,
+    mirrorOptions: {
+      mirror: process.env.npm_config_electron_mirror.endsWith('/') ? process.env.npm_config_electron_mirror : (process.env.npm_config_electron_mirror + '/'),
+      customDir: pkg.devDependencies.electron
+    }
+  }
 }
 
 if (process.platform === 'win32') {
