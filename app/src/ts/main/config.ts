@@ -1,10 +1,6 @@
 import * as fs from 'fs-extra'
 import getPath from './get-path'
 
-declare namespace global {
-  export let configurer: Configurer
-}
-
 export interface MishiroConfig {
   latestResVer?: number
   resVer?: number
@@ -68,6 +64,7 @@ export class Configurer {
   }
 }
 
-global.configurer = new Configurer(getPath.configPath)
+const configurer = new Configurer(getPath.configPath)
+__non_webpack_require__('./export.js').setCache('configurer', configurer)
 
-export default global.configurer
+export default configurer

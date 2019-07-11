@@ -5,7 +5,6 @@ const fs = window.node.fs
 const path = window.node.path
 
 const { iconDir } = window.preload.getPath
-// const fs = remote.getGlobal('fs') as typeof global.fs
 
 // const gameHostBase = 'http://storage.game.starlight-stage.jp/dl/resources'
 const imgHostBase = 'https://truecolor.kirara.ca'

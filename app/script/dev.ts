@@ -1,4 +1,4 @@
-import { mainConfig, rendererConfig, preloadConfig } from './webpack.config'
+import { mainConfig, rendererConfig, preloadConfig, remoteRequireConfig } from './webpack.config'
 import { watch, startDevServer } from './util'
 import config from './config'
 import start from './start'
@@ -18,7 +18,8 @@ export default function dev () {
   const firstLaunch = {
     main: false,
     preload: false,
-    renderer: false
+    renderer: false,
+    remote: false
   }
 
   const isReady = () => firstLaunch.main && firstLaunch.preload && firstLaunch.renderer
@@ -39,6 +40,21 @@ export default function dev () {
     }
 
     if (!firstLaunch.main) firstLaunch.main = true
+
+    if (isReady()) {
+      relaunch()
+    }
+
+    console.log(stats.toString(config.statsOptions) + '\n')
+  })
+
+  watch(remoteRequireConfig, function watchHandler (err, stats) {
+    if (err) {
+      console.log(err)
+      return
+    }
+
+    if (!firstLaunch.remote) firstLaunch.remote = true
 
     if (isReady()) {
       relaunch()
