@@ -1,22 +1,6 @@
 import { join } from 'path'
 
-declare namespace global {
-  export function getPath (...relative: string[]): string
-
-  export namespace getPath {
-    export const configPath: string
-    export function dataDir (...relative: string[]): string
-    export function manifestPath (resVer: number, db?: string): string
-    export function masterPath (resVer: number, db?: string): string
-    export function downloadDir (...relative: string[]): string
-    export function iconDir (...relative: string[]): string
-    export function cardDir (...relative: string[]): string
-    export function scoreDir (...relative: string[]): string
-    export function voiceDir (...relative: string[]): string
-    export function bgmDir (...relative: string[]): string
-    export function liveDir (...relative: string[]): string
-  }
-}
+const { setCache } = __non_webpack_require__('./export.js')
 
 function getPath (...relative: string[]) {
   return join(__dirname, '..', ...relative)
@@ -36,6 +20,6 @@ namespace getPath {
   export const liveDir = (...relative: string[]) => getPath(`../asset/live`, ...relative)
 }
 
-global.getPath = getPath
+setCache('getPath', getPath)
 
-export default global.getPath
+export default getPath

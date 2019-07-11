@@ -10,6 +10,7 @@ import onLyrics from './on-lyrics'
 import { existsSync } from 'fs-extra'
 import getPath from './get-path'
 import { basename } from 'path'
+import configurer from './config'
 
 let initialized = false
 

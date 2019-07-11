@@ -23,6 +23,45 @@ const htmlMinify = config.mode === 'production' ? {
   removeScriptTypeAttributes: true
 } : false
 
+export const remoteRequireConfig: Configuration = {
+  mode: config.mode,
+  target: 'electron-main',
+  context: getPath(),
+  entry: {
+    export: [getPath('src/ts/main-export/export.ts')]
+  },
+  output: {
+    path: getPath(config.outputPath),
+    filename: '[name].js',
+    libraryTarget: 'commonjs2'
+  },
+  node: false,
+  module: {
+    rules: [
+      {
+        test: /\.ts$/,
+        exclude: /node_modules/,
+        use: [
+          {
+            loader: 'ts-loader',
+            options: {
+              transpileOnly: config.mode !== 'production',
+              configFile: getPath('./src/ts/main-export/tsconfig.json')
+            }
+          }
+        ]
+      }
+    ]
+  },
+  externals: [webpackNodeExternals()],
+  resolve: {
+    alias: {
+      '@': getPath('src')
+    },
+    extensions: ['.ts', '.js', 'json']
+  }
+}
+
 export const mainConfig: Configuration = {
   mode: config.mode,
   target: 'electron-main',
@@ -233,6 +272,10 @@ if (config.mode === 'production') {
       }
     }
   })
+  remoteRequireConfig.optimization = {
+    ...(remoteRequireConfig.optimization || {}),
+    minimizer: [terser()]
+  }
   mainConfig.optimization = {
     ...(mainConfig.optimization || {}),
     minimizer: [terser()]
@@ -266,7 +309,7 @@ if (config.mode === 'production') {
       app.use(serveAsar(getPath(config.contentBase)))
     }
   }
-  rendererConfig.devtool = mainConfig.devtool = preloadConfig.devtool = 'eval-source-map'
+  rendererConfig.devtool = mainConfig.devtool = preloadConfig.devtool = remoteRequireConfig.devtool = 'eval-source-map'
 
   rendererConfig.plugins = [
     ...(rendererConfig.plugins || []),
@@ -291,6 +334,14 @@ if (config.mode === 'production') {
     new ForkTsCheckerWebpackPlugin({
       tslint: true,
       tsconfig: getPath('./src/ts/main/tsconfig.json')
+    })
+  ]
+
+  remoteRequireConfig.plugins = [
+    ...(remoteRequireConfig.plugins || []),
+    new ForkTsCheckerWebpackPlugin({
+      tslint: true,
+      tsconfig: getPath('./src/ts/main-export/tsconfig.json')
     })
   ]
 

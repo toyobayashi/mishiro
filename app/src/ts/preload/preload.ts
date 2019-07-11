@@ -3,10 +3,10 @@ import * as electron from 'electron'
 process.once('loaded', function () {
   window.preload = {
     package: electron.remote.require('../package.json'),
-    configurer: electron.remote.getGlobal('configurer'),
-    client: electron.remote.getGlobal('client'),
-    getPath: electron.remote.getGlobal('getPath'),
-    updater: electron.remote.getGlobal('updater')
+    configurer: electron.remote.require('./export.js').getCache('configurer'),
+    client: electron.remote.require('./export.js').getCache('client'),
+    getPath: electron.remote.require('./export.js').getCache('getPath'),
+    updater: electron.remote.require('./export.js').getCache('updater')
   }
   window.node = {
     process: {
