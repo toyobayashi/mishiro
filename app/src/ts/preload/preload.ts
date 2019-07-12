@@ -13,7 +13,7 @@ process.once('loaded', function () {
       arch: process.arch,
       versions: process.versions
     },
-    request: electron.remote.require('request'),
+    got: electron.remote.require('got'),
     electron,
     mishiroCore: electron.remote.require('mishiro-core'),
     fs: electron.remote.require('fs-extra'),

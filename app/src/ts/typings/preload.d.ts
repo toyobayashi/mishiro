@@ -11,7 +11,7 @@ declare interface Window {
       versions: typeof process.versions
       arch: typeof process.arch
     }
-    request: typeof import('request')
+    got: typeof import('got')
     electron: typeof import('electron')
     mishiroCore: typeof import('mishiro-core')
     fs: typeof import('fs-extra')
