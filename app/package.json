@@ -1,6 +1,6 @@
 {
   "name": "mishiro",
-  "version": "1.9.2",
+  "version": "1.9.3",
   "description": "mishiro",
   "main": "./public/mishiro.main.js",
   "scripts": {
@@ -32,12 +32,12 @@
   "devDependencies": {
     "@types/electron-packager": "^14.0.0",
     "@types/fs-extra": "^8.0.0",
+    "@types/got": "^9.6.0",
     "@types/html-webpack-plugin": "^3.2.0",
     "@types/marked": "^0.6.5",
     "@types/mini-css-extract-plugin": "^0.2.1",
     "@types/node": "~10.11.7",
     "@types/optimize-css-assets-webpack-plugin": "^1.3.4",
-    "@types/request": "^2.48.1",
     "@types/sqlite3": "^3.1.5",
     "@types/terser-webpack-plugin": "^1.2.1",
     "@types/webpack": "^4.4.34",
@@ -75,10 +75,10 @@
     "webpack-node-externals": "^1.7.2"
   },
   "dependencies": {
-    "electron-github-asar-updater": "^2.1.1",
+    "electron-github-asar-updater": "^3.0.0",
     "fs-extra": "^8.1.0",
-    "mishiro-core": "^2.0.1",
-    "request": "^2.88.0",
+    "mishiro-core": "^3.0.0",
+    "got": "^9.6.0",
     "sqlite3": "^4.0.9"
   }
 }

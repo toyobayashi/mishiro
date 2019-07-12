@@ -1,6 +1,6 @@
 import { ProgressInfo } from 'mishiro-core'
 
-const request = window.node.request
+const got = window.node.got
 
 let current = 0
 let max = 20
@@ -15,15 +15,24 @@ function httpGetVersion (resVer: number, progressing: (prog: ProgressInfo) => vo
     }
   }
   return new Promise((resolve) => {
-    request(option, (err) => {
-      if (err) {
-        resolve({ version: resVer, isExisting: false })
-      } else {
-        current++
-        progressing({ current, max, loading: 100 * current / max })
-        resolve({ version: resVer, isExisting: true })
-      }
+    got.get(option.url, {
+      headers: option.headers
+    }).then(() => {
+      current++
+      progressing({ current, max, loading: 100 * current / max })
+      resolve({ version: resVer, isExisting: true })
+    }).catch(() => {
+      resolve({ version: resVer, isExisting: false })
     })
+    // request(option, (err) => {
+    //   if (err) {
+    //     resolve({ version: resVer, isExisting: false })
+    //   } else {
+    //     current++
+    //     progressing({ current, max, loading: 100 * current / max })
+    //     resolve({ version: resVer, isExisting: true })
+    //   }
+    // })
     /* request(option, (err, res) => {
       if (err) {
         resolve({ version: resVer, isExisting: false })
