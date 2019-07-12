@@ -204,6 +204,22 @@ export default class extends Vue {
     }
   }
 
+  onMouseWheel (e: WheelEvent) {
+    if (e.deltaY < 0) {
+      this.previousPage()
+    } else {
+      this.nextPage()
+    }
+  }
+
+  previousPage () {
+    this.page !== 0 ? this.page -= 1 : this.page = this.totalPage
+  }
+
+  nextPage () {
+    this.page !== this.totalPage ? this.page += 1 : this.page = 0
+  }
+
   mounted () {
     this.$nextTick(() => {
       this.event.$on('enterKey', (block: string) => {

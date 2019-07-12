@@ -7,19 +7,19 @@
     <button :disabled="downloadBtnDisable" class="cgss-btn cgss-btn-star pull-right margin-left-10" @click="downloadSelectedItem">{{$t("home.download")}}</button>
     <button class="cgss-btn cgss-btn-ok pull-right margin-left-10" @click="query">{{$t("home.search")}}</button>
   </div>
-  <div class="black-bg db-query-result margin-top-10">
-    <div style="position: absolute; top: 0; width: calc(100% - 20px);">
-      <div class="page-head">
-        <span @click="page !== 0 ? page -= 1 : page = totalPage">previos</span>
-        <span>{{(page + 1) + ' / ' + (totalPage + 1)}}</span>
-        <span @click="page !== totalPage ? page += 1 : page = 0">next</span>
-      </div>
+  <div class="black-bg db-query-result margin-top-10" @mousewheel="onMouseWheel">
+    <div style="position: absolute; top: 10px; width: calc(100% - 20px);">
       <div class="page-progress">
-        <div>
+        <div class="progress-wrapper">
           <ProgressBar class="cgss-progress-event" :percent="current"/>
           <ProgressBar class="cgss-progress-event" :percent="total"/>
         </div>
         <button class="cgss-btn-lg cgss-btn-lg-ok" @click="filterOnClick">{{notDownloadedOnly ? $t("home.canDownload") : $t('home.all')}}</button>
+        <div class="page-content">
+          <span class="arrow previous" @click="previousPage"></span>
+          <span class="bold">{{(page + 1) + ' / ' + (totalPage + 1)}}</span>
+          <span class="arrow next" @click="nextPage"></span>
+        </div>
       </div>
     </div>
     <TheTable :data="canDownloadRows.slice(page * recordPerPage, (page + 1) * recordPerPage)" @change="tableChange" :is-disabled="isDisabled" />
@@ -35,15 +35,40 @@
 .page-progress {
   display: flex;
   justify-content: space-between;
+  align-items: stretch;
 }
-.page-progress > div {
-  width: calc(100% - 220px);
+
+.main-block-style .arrow {
+  background-image: url("../../asset/img.asar/arrow.png");
+  width: 40px;
+  height: 66px;
+  cursor: pointer;
+}
+
+.main-block-style .arrow.previous {
+  background-position: 0 0;
+}
+.main-block-style .arrow.next {
+  background-position: -40px 0;
+}
+
+.main-block-style .bold {
+  font-family: 'CGSS-B';
+  width: 140px;
+  text-align: center;
+}
+
+.page-progress > .page-content {
+  width: 220px;
+  display: flex;
+  justify-content: space-around;
+  align-items: center;
+}
+.page-progress > .progress-wrapper {
+  width: calc(100% - 440px);
+  height: 66px;
   display: flex;
   flex-direction: column;
-  justify-content: space-around;
-}
-.page-head {
-  display: flex;
   justify-content: space-around;
 }
 .manifest-query{
@@ -59,9 +84,9 @@
   overflow: hidden;
 }
 .db-query-result{
-  overflow: hidden;
+  overflow: auto;
   position: relative;
-  padding-top: 100px;
+  padding-top: 85px;
   height: calc(100% - 110px);
 }
 </style>
