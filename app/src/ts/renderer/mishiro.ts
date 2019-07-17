@@ -33,8 +33,8 @@ const i18nTabs: any = {
   en: 'i18n.english'
 }
 
-const useResVer = window.preload.configurer.getConfig().latestResVer
-// const useResVer = void 0
+// const useResVer = window.preload.configurer.getConfig().latestResVer
+const useResVer = void 0
 
 @Component({
   components: {
@@ -43,7 +43,7 @@ const useResVer = window.preload.configurer.getConfig().latestResVer
     MishiroHome: () => import(/* webpackChunkName: "mishiro-home" */ '../../vue/view/MishiroHome.vue'),
     MishiroIdol: () => import(/* webpackChunkName: "mishiro-idol" */ '../../vue/view/MishiroIdol.vue'),
     MishiroLive: () => import(/* webpackChunkName: "mishiro-live" */ '../../vue/view/MishiroLive.vue'),
-    MishiroGacha: () => import(/* webpackChunkName: "mishiro-gacha" */ '../../vue/view/MishiroGacha.vue'),
+    // MishiroGacha: () => import(/* webpackChunkName: "mishiro-gacha" */ '../../vue/view/MishiroGacha.vue'),
     MishiroMenu: () => import(/* webpackChunkName: "mishiro-menu" */ '../../vue/view/MishiroMenu.vue'),
 
     ThePlayer: () => import(/* webpackChunkName: "the-player" */ '../../vue/component/ThePlayer.vue'),
@@ -54,16 +54,16 @@ const useResVer = window.preload.configurer.getConfig().latestResVer
     TabSmall,
 
     ModalAlert: () => import(/* webpackChunkName: "modal-alert" */ '../../vue/modal/ModalAlert.vue'),
-    ModalGachaHistory: () => import(/* webpackChunkName: "modal-gacha-history" */ '../../vue/modal/ModalGachaHistory.vue'),
-    ModalGachaCard: () => import(/* webpackChunkName: "modal-gacha-card" */ '../../vue/modal/ModalGachaCard.vue'),
-    ModalGachaInformation: () => import(/* webpackChunkName: "modal-gacha-information" */ '../../vue/modal/ModalGachaInformation.vue'),
+    // ModalGachaHistory: () => import(/* webpackChunkName: "modal-gacha-history" */ '../../vue/modal/ModalGachaHistory.vue'),
+    // ModalGachaCard: () => import(/* webpackChunkName: "modal-gacha-card" */ '../../vue/modal/ModalGachaCard.vue'),
+    // ModalGachaInformation: () => import(/* webpackChunkName: "modal-gacha-information" */ '../../vue/modal/ModalGachaInformation.vue'),
     ModalAbout: () => import(/* webpackChunkName: "modal-about" */ '../../vue/modal/ModalAbout.vue'),
     ModalVersion: () => import(/* webpackChunkName: "modal-version" */ '../../vue/modal/ModalVersion.vue'),
     ModalOption: () => import(/* webpackChunkName: "modal-option" */ '../../vue/modal/ModalOption.vue'),
     ModalCalculator: () => import(/* webpackChunkName: "modal-calculator" */ '../../vue/modal/ModalCalculator.vue'),
-    ModalLiveDifficulty: () => import(/* webpackChunkName: "modal-live-difficulty" */ '../../vue/modal/ModalLiveDifficulty.vue'),
-    ModalScore: () => import(/* webpackChunkName: "modal-score" */ '../../vue/modal/ModalScore.vue'),
-    ModalLiveResult: () => import(/* webpackChunkName: "modal-live-result" */ '../../vue/modal/ModalLiveResult.vue')
+    // ModalLiveDifficulty: () => import(/* webpackChunkName: "modal-live-difficulty" */ '../../vue/modal/ModalLiveDifficulty.vue'),
+    ModalScore: () => import(/* webpackChunkName: "modal-score" */ '../../vue/modal/ModalScore.vue')
+    // ModalLiveResult: () => import(/* webpackChunkName: "modal-live-result" */ '../../vue/modal/ModalLiveResult.vue')
   }
 })
 export default class extends Vue {

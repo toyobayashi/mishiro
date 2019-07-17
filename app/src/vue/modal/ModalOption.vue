@@ -8,40 +8,40 @@
       </div>
       <div class="modal-body" :style="{ maxHeight: bodyMaxHeight }">
         <form>
-          <div>
+          <div class="option-line">
             <label>{{$t("menu.lang")}}</label>
-            <div class="pull-right option-input clearfix" style="display:flex;justify-content:space-around">
+            <div class="option-input">
               <InputRadio :text="$t('i18n.chinese')" value="zh" v-model="lang" lable-id="razh"/>
               <InputRadio :text="$t('i18n.japanese')" value="ja" v-model="lang" lable-id="raja"/>
               <InputRadio :text="$t('i18n.english')" value="en" v-model="lang" lable-id="raen"/>
             </div>
           </div>
-          <div>
+          <div class="margin-top-10 option-line">
             <label>{{$t("menu.getCardFrom")}}</label>
-            <div class="pull-right option-input clearfix" style="display:flex;justify-content:space-around">
+            <div class="option-input">
               <InputRadio :text="$t('menu.official')" value="default" v-model="card" lable-id="gcfd"/>
               <InputRadio :text="$t('menu.kirara')" value="kirara" v-model="card" lable-id="gcfk"/>
             </div>
           </div>
-          <div class="margin-top-10">
+          <div class="margin-top-10 option-line">
             <label>{{$t("menu.resVer")}}</label>
-            <InputText class="pull-right option-input" :placeholder="`10012760 ≤ ${$t('menu.resVer')} ≤ ${latestResVer}`" v-model="resVer" />
+            <InputText class="option-input" :placeholder="`10012760 ≤ ${$t('menu.resVer')} ≤ ${latestResVer}`" v-model="resVer" />
           </div>
-          <div class="margin-top-10">
+          <!-- <div class="margin-top-10">
             <label>{{$t("menu.gacha")}}</label>
-            <InputText class="pull-right option-input" :placeholder="`30001 ≤ ${$t('menu.gacha')} ≤ ${gachaNow.id}`" v-model="gachaId" />
-          </div>
-          <div class="margin-top-10">
+            <InputText class="option-input" :placeholder="`30001 ≤ ${$t('menu.gacha')} ≤ ${gachaNow.id}`" v-model="gachaId" />
+          </div> -->
+          <div class="margin-top-10 option-line">
             <label>{{$t("menu.event")}}</label>
-            <InputText class="pull-right option-input" :placeholder="$t('menu.eventPlacehoder') + 'bgm_event_ID'" v-model="eventId" />
+            <InputText class="option-input" :placeholder="$t('menu.eventPlacehoder') + 'bgm_event_ID'" v-model="eventId" />
           </div>
-          <div class="margin-top-10">
+          <div class="margin-top-10 option-line">
             <label>{{$t("menu.background")}}</label>
-            <InputText class="pull-right option-input" :placeholder="$t('menu.backPlacehoder')" v-model="backgroundId" />
+            <InputText class="option-input" :placeholder="$t('menu.backPlacehoder')" v-model="backgroundId" />
           </div>
-          <div class="margin-top-10">
+          <div class="margin-top-10 option-line">
             <label>{{$t("menu.account")}}</label>
-            <InputText class="pull-right option-input" placeholder="123456789:987654321:0a1b2c3d-5c6d-4e7f-8a9b-0e1f2a3b4c5d" v-model="account" />
+            <InputText class="option-input" placeholder="123456789:987654321:0a1b2c3d-5c6d-4e7f-8a9b-0e1f2a3b4c5d" v-model="account" />
           </div>
         </form>
       </div>
@@ -92,14 +92,14 @@ export default class extends mixins(modalMixin) {
   get eventData (): any {
     return this.master.eventAll ? this.master.eventAll : {}
   }
-  get gachaNow (): any {
-    return this.master.gachaNow ? this.master.gachaNow : {}
-  }
+  // get gachaNow (): any {
+  //   return this.master.gachaNow ? this.master.gachaNow : {}
+  // }
 
   save () {
     this.playSe(this.enterSe)
     let resVer: number | ''
-    let gachaId: number | ''
+    // let gachaId: number | ''
     let eventId: number | ''
     let backgroundId: number | ''
     let account: string
@@ -119,24 +119,24 @@ export default class extends mixins(modalMixin) {
       resVer = ''
     }
 
-    if (this.gachaId) {
-      if (
-        Number(this.gachaId) < 30000 ||
-        Number(this.gachaId) > this.gachaNow.id ||
-        Math.floor(Number(this.gachaId)) !== Number(this.gachaId)
-      ) {
-        this.event.$emit(
-          'alert',
-          this.$t('home.errorTitle'),
-          'gachaId error'
-        )
-        return
-      } else {
-        gachaId = Number(this.gachaId)
-      }
-    } else {
-      gachaId = ''
-    }
+    // if (this.gachaId) {
+    //   if (
+    //     Number(this.gachaId) < 30000 ||
+    //     Number(this.gachaId) > this.gachaNow.id ||
+    //     Math.floor(Number(this.gachaId)) !== Number(this.gachaId)
+    //   ) {
+    //     this.event.$emit(
+    //       'alert',
+    //       this.$t('home.errorTitle'),
+    //       'gachaId error'
+    //     )
+    //     return
+    //   } else {
+    //     gachaId = Number(this.gachaId)
+    //   }
+    // } else {
+    //   gachaId = ''
+    // }
 
     if (this.eventId) {
       if (!this.eventData.filter((e: any) => Number(e.id) === Number(this.eventId)).length) {
@@ -188,7 +188,7 @@ export default class extends mixins(modalMixin) {
     this.configurer.configure({
       language: this.lang,
       resVer: Number(resVer),
-      gacha: Number(gachaId),
+      // gacha: Number(gachaId),
       event: Number(eventId),
       background: Number(backgroundId),
       account: account,
@@ -225,6 +225,16 @@ export default class extends mixins(modalMixin) {
 .option-input {
   margin: 0;
   width: 70%;
+  display: flex;
+}
+.option-input > div {
+  width: 30%;
+}
+.option-line {
+  display: flex;
+}
+.option-line > label {
+  width: 30%;
 }
 .margin-left-50 {
   margin-left: 50px;

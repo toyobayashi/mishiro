@@ -23,7 +23,8 @@ export default async function (gachaAvailable: any[], cardData: any[], gachaData
   // 数据库没有数据时，直接从接口获取数据，不做数据统计
   if (!gachaAvailable.length) {
     try {
-      let gachaResponse = await client.getGachaRate(gachaData.id)
+      // let gachaResponse = await client.getGachaRate(gachaData.id)
+      let gachaResponse = { data_headers: { result_code: 0 }, data: [] }
       if (gachaResponse.data_headers.result_code !== 1) {
         console.log('Get gacha odds failed. Code: ' + gachaResponse.data_headers.result_code)
         return {

@@ -4,5 +4,8 @@
     "./**/*",
     "../typings/**/*",
     "../../vue/**/*"
+  ],
+  "exclude": [
+    "../../vue/modal/ModalGachaInformation.vue"
   ]
 }

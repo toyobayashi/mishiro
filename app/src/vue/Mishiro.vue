@@ -11,7 +11,7 @@
     <MishiroHome v-show="currentBlock === 'home'"/>
     <MishiroIdol v-show="currentBlock === 'idol'" :master="appData.master"/>
     <MishiroLive v-show="currentBlock === 'live'" :master="appData.master"/>
-    <MishiroGacha v-show="currentBlock === 'gacha'" :master="appData.master"/>
+    <!-- <MishiroGacha v-show="currentBlock === 'gacha'" :master="appData.master"/> -->
     <MishiroMenu v-show="currentBlock === 'menu'" @checking="checking = true" @checked="checking = false" :resVer="appData.resVer"/>
     <TheToggleButton @toggle="showBackground"/>
     <TheVersion :resVer="appData.resVer"/>
@@ -22,12 +22,12 @@
   <ModalCalculator :master="appData.master" :time="time"/>
   <ModalVersion/>
   <ModalAbout/>
-  <ModalLiveDifficulty/>
+  <!-- <ModalLiveDifficulty/> -->
   <ModalScore/>
-  <ModalLiveResult/>
-  <ModalGachaInformation :master="appData.master"/>
-  <ModalGachaHistory/>
-  <ModalGachaCard :master="appData.master"/>
+  <!-- <ModalLiveResult/> -->
+  <!-- <ModalGachaInformation :master="appData.master"/> -->
+  <!-- <ModalGachaHistory/> -->
+  <!-- <ModalGachaCard :master="appData.master"/> -->
   <ModalOption :master="appData.master" :latestResVer="appData.latestResVer" v-model="currentLanguage"/>
   <ModalAlert/>
   <img v-if="checking" :src="'../../asset/img.asar/spinner.gif'" class="spinner" />

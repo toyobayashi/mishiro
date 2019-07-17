@@ -162,7 +162,7 @@ export const rendererConfig: Configuration = {
   target: 'web',
   entry: {
     'mishiro.renderer': [getPath('src/ts/renderer.ts')],
-    'mishiro.live': [getPath('src/ts/renderer-game.ts')],
+    // 'mishiro.live': [getPath('src/ts/renderer-game.ts')],
     'mishiro.score': [getPath('src/ts/renderer-score.ts')]
   },
   output: {
@@ -226,12 +226,12 @@ export const rendererConfig: Configuration = {
       chunks: ['mishiro.renderer', 'common', 'dll'],
       minify: htmlMinify
     }),
-    new HtmlWebpackPlugin({
-      template: getPath('src/ts/template/game.template.ts'),
-      filename: 'game.html',
-      chunks: ['mishiro.live', 'common', 'dll'],
-      minify: htmlMinify
-    }),
+    // new HtmlWebpackPlugin({
+    //   template: getPath('src/ts/template/game.template.ts'),
+    //   filename: 'game.html',
+    //   chunks: ['mishiro.live', 'common', 'dll'],
+    //   minify: htmlMinify
+    // }),
     new HtmlWebpackPlugin({
       template: getPath('src/ts/template/score.template.ts'),
       filename: 'score.html',

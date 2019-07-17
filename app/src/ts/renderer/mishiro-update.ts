@@ -4,16 +4,14 @@ import { MasterData } from '../main/on-master-read'
 import ProgressBar from '../../vue/component/ProgressBar.vue'
 import check from './check'
 
-import { Event } from 'electron'
-
 import MishiroIdol from './mishiro-idol'
 import ThePlayer from './the-player'
-import { unpackTexture2D } from './unpack-texture-2d'
+// import { unpackTexture2D } from './unpack-texture-2d'
 // import { Client } from './typings/main'
 const fs = window.node.fs
 const path = window.node.path
 const getPath = window.preload.getPath
-const { manifestPath, masterPath, bgmDir, iconDir } = getPath
+const { manifestPath, masterPath, bgmDir/* , iconDir */ } = getPath
 const ipcRenderer = window.node.electron.ipcRenderer
 
 let client = window.preload.client
@@ -28,13 +26,13 @@ export default class extends Vue {
   loading: number = 0
   isReady: boolean = false
   text: string = ''
-  appData: { resVer: number | string; latestResVer: number | string; master: MasterData | any} = {
-    resVer: 'Unknown',
-    latestResVer: 'Unknown',
-    master: {}
-  }
+  // appData: { resVer: number | string; latestResVer: number | string; master: MasterData | any} = {
+  //   resVer: 'Unknown',
+  //   latestResVer: 'Unknown',
+  //   master: {}
+  // }
 
-  @Prop() value!: any
+  @Prop() value!: { resVer: number | string; latestResVer: number | string; master: MasterData | any }
   @Prop() isTouched!: boolean
 
   getEventCardId (eventAvailable: any[], eventData: any): number[] {
@@ -116,7 +114,7 @@ export default class extends Vue {
       } else throw new Error('Download master.mdb failed.')
     } catch (errorPath) {
       this.event.$emit('alert', this.$t('home.errorTitle'), this.$t('home.downloadFailed') + '<br/>' + errorPath)
-      return false
+      throw errorPath
     }
   }
 
@@ -128,172 +126,181 @@ export default class extends Vue {
   //   })
   // }
 
-  async getGachaIcon (icons: { name: string; hash: string; [x: string]: any }[]) {
-    const config = this.configurer.getConfig()
-    for (let i = 0; i < icons.length; i++) {
-      let cacheName = iconDir(path.parse(icons[i].name).name)
-      this.text = ((!config.card || config.card === 'default') ? icons[i].name : path.basename(cacheName + '.png')) + '　' + i + '/' + icons.length
-      this.loading = 100 * i / icons.length
-      if (!fs.existsSync(cacheName + '.png')) {
+  // async getGachaIcon (icons: { name: string; hash: string; [x: string]: any }[]) {
+  //   const config = this.configurer.getConfig()
+  //   for (let i = 0; i < icons.length; i++) {
+  //     let cacheName = iconDir(path.parse(icons[i].name).name)
+  //     this.text = ((!config.card || config.card === 'default') ? icons[i].name : path.basename(cacheName + '.png')) + '　' + i + '/' + icons.length
+  //     this.loading = 100 * i / icons.length
+  //     if (!fs.existsSync(cacheName + '.png')) {
+  //       try {
+  //         if (!config.card || config.card === 'default') {
+  //           let asset = await this.dler.downloadAsset(icons[i].hash, cacheName)
+  //           if (asset) {
+  //             fs.removeSync(cacheName)
+  //             await unpackTexture2D(asset)
+  //           }
+  //         } else {
+  //           await this.dler.downloadIcon(icons[i].name.slice(5, 5 + 6), cacheName + '.png')
+  //         }
+  //       } catch (err) {
+  //         console.log(err)
+  //         continue
+  //       }
+  //     }
+  //   }
+  // }
+
+  async afterMasterRead (masterData: MasterData) {
+    // console.log(masterData);
+    let config = this.configurer.getConfig()
+    const bgmList = new ThePlayer().bgmList
+    const downloader = new this.core.Downloader()
+    const toName = (p: string) => path.parse(p).name
+    const sync = {
+      ...(this.value || {}),
+      master: masterData,
+      latestResVer: config.latestResVer
+    }
+    // this.appData.master = masterData
+    // this.appData.latestResVer = config.latestResVer as number
+    this.$emit('input', sync)
+
+    const bgmManifest = masterData.bgmManifest
+    for (let k in bgmList) {
+      if (!fs.existsSync(path.join(getPath('./public'), bgmList[k].src))) {
+        let acbName = `b/${toName(bgmList[k].src)}.acb`
+        let hash: string = bgmManifest.filter(row => row.name === acbName)[0].hash
         try {
-          if (!config.card || config.card === 'default') {
-            let asset = await this.dler.downloadAsset(icons[i].hash, cacheName)
-            if (asset) {
-              fs.removeSync(cacheName)
-              await unpackTexture2D(asset)
+          // let result = await downloader.downloadOne(
+          //   this.getBgmUrl(hash),
+          //   bgmDir(`${toName(bgmList[k].src)}.acb`),
+          //   (prog: ProgressInfo) => {
+          //     this.text = prog.name + '　' + Math.ceil(prog.current / 1024) + '/' + Math.ceil(prog.max / 1024) + ' KB'
+          //     this.loading = prog.loading
+          //   }
+          // )
+          let result = await downloader.downloadSound(
+            'b',
+            hash,
+            bgmDir(`${toName(bgmList[k].src)}.acb`),
+            prog => {
+              this.text = prog.name + '　' + Math.ceil(prog.current / 1024) + '/' + Math.ceil(prog.max / 1024) + ' KB'
+              this.loading = prog.loading
             }
-          } else {
-            await this.dler.downloadIcon(icons[i].name.slice(5, 5 + 6), cacheName + '.png')
+          )
+          if (result) {
+            await this.acb2mp3(bgmDir(`${toName(bgmList[k].src)}.acb`))
           }
-        } catch (err) {
-          console.log(err)
-          continue
+        } catch (errorPath) {
+          this.event.$emit('alert', this.$t('home.errorTitle'), this.$t('home.downloadFailed') + '<br/>' + errorPath)
         }
       }
     }
+    if (masterData.eventHappening) {
+      if (Number(masterData.eventData.type) !== 2 && Number(masterData.eventData.type) !== 6 && !fs.existsSync(bgmDir(`bgm_event_${masterData.eventData.id}.mp3`))) {
+        const eventBgmHash = bgmManifest.filter(row => row.name === `b/bgm_event_${masterData.eventData.id}.acb`)[0].hash
+        try {
+          // let result = await downloader.download(
+          //   this.getBgmUrl(eventBgmHash),
+          //   bgmDir(`bgm_event_${masterData.eventData.id}.acb`),
+          //   (prog: ProgressInfo) => {
+          //     this.text = prog.name + '　' + Math.ceil(prog.current / 1024) + '/' + Math.ceil(prog.max / 1024) + ' KB'
+          //     this.loading = prog.loading
+          //   }
+          // )
+          let result = await downloader.downloadSound(
+            'b',
+            eventBgmHash,
+            bgmDir(`bgm_event_${masterData.eventData.id}.acb`),
+            prog => {
+              this.text = prog.name + '　' + Math.ceil(prog.current / 1024) + '/' + Math.ceil(prog.max / 1024) + ' KB'
+              this.loading = prog.loading
+            }
+          )
+          if (result) {
+            await this.acb2mp3(bgmDir(`bgm_event_${masterData.eventData.id}.acb`))
+          }
+        } catch (errorPath) {
+          this.event.$emit('alert', this.$t('home.errorTitle'), this.$t('home.downloadFailed') + '<br/>' + errorPath)
+        }
+      }
+    }
+
+    const cardId = this.getEventCardId(masterData.eventAvailable, masterData.eventData)
+
+    if (masterData.eventHappening) {
+      localStorage.setItem('msrEvent', `{"id":${masterData.eventData.id},"card":${Number(cardId[0]) + 1}}`)
+    } else {
+      localStorage.removeItem('msrEvent')
+    }
+
+    let downloadCard = new MishiroIdol().downloadCard
+
+    // const tmpawait = () => new Promise((resolve) => {
+    //   this.event.$once('_eventBgReady', () => {
+    //     resolve()
+    //   })
+    // })
+
+    let getBackgroundResult: string = ''
+
+    const getBackground = async (id: string | number) => {
+      try {
+        getBackgroundResult = await downloadCard.call(this, id, 'eventBgReady', (prog: ProgressInfo) => {
+          this.text = (prog.name || '') + '　' + Math.ceil(prog.current / 1024) + '/' + Math.ceil(prog.max / 1024) + ' KB'
+          this.loading = prog.loading
+        })
+
+        this.loading = 99.99
+        if (getBackgroundResult/*  && getBackgroundResult !== 'await ipc' */) {
+          this.event.$emit('eventBgReady', id)
+        }
+      } catch (err) {
+        this.event.$emit('alert', this.$t('home.errorTitle'), this.$t('home.downloadFailed') + '<br/>' + err)
+      }
+    }
+
+    if (config.background) {
+      await getBackground(config.background)
+    } else {
+      // const cardIdEvolution = [(Number(cardId[0]) + 1), (Number(cardId[1]) + 1)];
+      if (masterData.eventHappening) {
+        await getBackground(Number(cardId[0]) + 1)
+      }
+    }
+
+    // if (getBackgroundResult === 'await ipc') await tmpawait()
+
+    if (masterData.eventHappening) this.event.$emit('eventRewardCard', cardId)
+
+    /* let iconId = []
+    for (let index = 0; index < masterData.gachaAvailable.length; index++) {
+      iconId.push(masterData.gachaAvailable[index].reward_id)
+    }
+    const iconTask = this.createCardIconTask(iconId)
+    await downloader.download(iconTask, ([_url, filepath]) => {
+      const name = path.basename(filepath)
+      this.text = name + '　' + downloader.index + '/' + iconTask.length
+      this.loading = 100 * downloader.index / iconTask.length
+    }, prog => {
+      this.loading = 100 * downloader.index / iconTask.length + prog.loading / iconTask.length
+    }) */
+
+    // await this.getGachaIcon(masterData.gachaIcon)
+    // console.log(failedList)
+    this.emitReady()
   }
 
   mounted () {
     this.$nextTick(() => {
       this.event.$on('enter', async ($resver?: number) => {
-        ipcRenderer.on('readManifest', async (_event: Event, masterHash: string, resVer: number) => {
-          const masterFile = await this.getMaster(resVer, masterHash)
-          if (masterFile) ipcRenderer.send('readMaster', masterFile, resVer)
-        })
-        ipcRenderer.on('readMaster', async (_event: Event, masterData: MasterData) => {
-          // console.log(masterData);
-          let config = this.configurer.getConfig()
-          const bgmList = new ThePlayer().bgmList
-          const downloader = new this.core.Downloader()
-          const toName = (p: string) => path.parse(p).name
-          this.appData.master = masterData
-          this.appData.latestResVer = config.latestResVer as number
-          this.$emit('input', this.appData)
-
-          const bgmManifest = masterData.bgmManifest
-          for (let k in bgmList) {
-            if (!fs.existsSync(path.join(getPath('./public'), bgmList[k].src))) {
-              let acbName = `b/${toName(bgmList[k].src)}.acb`
-              let hash: string = bgmManifest.filter(row => row.name === acbName)[0].hash
-              try {
-                // let result = await downloader.downloadOne(
-                //   this.getBgmUrl(hash),
-                //   bgmDir(`${toName(bgmList[k].src)}.acb`),
-                //   (prog: ProgressInfo) => {
-                //     this.text = prog.name + '　' + Math.ceil(prog.current / 1024) + '/' + Math.ceil(prog.max / 1024) + ' KB'
-                //     this.loading = prog.loading
-                //   }
-                // )
-                let result = await downloader.downloadSound(
-                  'b',
-                  hash,
-                  bgmDir(`${toName(bgmList[k].src)}.acb`),
-                  prog => {
-                    this.text = prog.name + '　' + Math.ceil(prog.current / 1024) + '/' + Math.ceil(prog.max / 1024) + ' KB'
-                    this.loading = prog.loading
-                  }
-                )
-                if (result) {
-                  await this.acb2mp3(bgmDir(`${toName(bgmList[k].src)}.acb`))
-                }
-              } catch (errorPath) {
-                this.event.$emit('alert', this.$t('home.errorTitle'), this.$t('home.downloadFailed') + '<br/>' + errorPath)
-              }
-            }
-          }
-          if (masterData.eventHappening) {
-            if (Number(masterData.eventData.type) !== 2 && Number(masterData.eventData.type) !== 6 && !fs.existsSync(bgmDir(`bgm_event_${masterData.eventData.id}.mp3`))) {
-              const eventBgmHash = bgmManifest.filter(row => row.name === `b/bgm_event_${masterData.eventData.id}.acb`)[0].hash
-              try {
-                // let result = await downloader.download(
-                //   this.getBgmUrl(eventBgmHash),
-                //   bgmDir(`bgm_event_${masterData.eventData.id}.acb`),
-                //   (prog: ProgressInfo) => {
-                //     this.text = prog.name + '　' + Math.ceil(prog.current / 1024) + '/' + Math.ceil(prog.max / 1024) + ' KB'
-                //     this.loading = prog.loading
-                //   }
-                // )
-                let result = await downloader.downloadSound(
-                  'b',
-                  eventBgmHash,
-                  bgmDir(`bgm_event_${masterData.eventData.id}.acb`),
-                  prog => {
-                    this.text = prog.name + '　' + Math.ceil(prog.current / 1024) + '/' + Math.ceil(prog.max / 1024) + ' KB'
-                    this.loading = prog.loading
-                  }
-                )
-                if (result) {
-                  await this.acb2mp3(bgmDir(`bgm_event_${masterData.eventData.id}.acb`))
-                }
-              } catch (errorPath) {
-                this.event.$emit('alert', this.$t('home.errorTitle'), this.$t('home.downloadFailed') + '<br/>' + errorPath)
-              }
-            }
-          }
-
-          const cardId = this.getEventCardId(masterData.eventAvailable, masterData.eventData)
-
-          if (masterData.eventHappening) {
-            localStorage.setItem('msrEvent', `{"id":${masterData.eventData.id},"card":${Number(cardId[0]) + 1}}`)
-          } else {
-            localStorage.removeItem('msrEvent')
-          }
-
-          let downloadCard = new MishiroIdol().downloadCard
-
-          // const tmpawait = () => new Promise((resolve) => {
-          //   this.event.$once('_eventBgReady', () => {
-          //     resolve()
-          //   })
-          // })
-
-          let getBackgroundResult: string = ''
-
-          const getBackground = async (id: string | number) => {
-            try {
-              getBackgroundResult = await downloadCard.call(this, id, 'eventBgReady', (prog: ProgressInfo) => {
-                this.text = (prog.name || '') + '　' + Math.ceil(prog.current / 1024) + '/' + Math.ceil(prog.max / 1024) + ' KB'
-                this.loading = prog.loading
-              })
-
-              this.loading = 99.99
-              if (getBackgroundResult/*  && getBackgroundResult !== 'await ipc' */) {
-                this.event.$emit('eventBgReady', id)
-              }
-            } catch (err) {
-              this.event.$emit('alert', this.$t('home.errorTitle'), this.$t('home.downloadFailed') + '<br/>' + err)
-            }
-          }
-
-          if (config.background) {
-            await getBackground(config.background)
-          } else {
-            // const cardIdEvolution = [(Number(cardId[0]) + 1), (Number(cardId[1]) + 1)];
-            if (masterData.eventHappening) {
-              await getBackground(Number(cardId[0]) + 1)
-            }
-          }
-
-          // if (getBackgroundResult === 'await ipc') await tmpawait()
-
-          if (masterData.eventHappening) this.event.$emit('eventRewardCard', cardId)
-
-          /* let iconId = []
-          for (let index = 0; index < masterData.gachaAvailable.length; index++) {
-            iconId.push(masterData.gachaAvailable[index].reward_id)
-          }
-          const iconTask = this.createCardIconTask(iconId)
-          await downloader.download(iconTask, ([_url, filepath]) => {
-            const name = path.basename(filepath)
-            this.text = name + '　' + downloader.index + '/' + iconTask.length
-            this.loading = 100 * downloader.index / iconTask.length
-          }, prog => {
-            this.loading = 100 * downloader.index / iconTask.length + prog.loading / iconTask.length
-          }) */
-
-          await this.getGachaIcon(masterData.gachaIcon)
-          // console.log(failedList)
-          this.emitReady()
+        // ipcRenderer.on('readManifest', async (_event: Event, masterHash: string, resVer: number) => {
+        //   const masterFile = await this.getMaster(resVer, masterHash)
+        //   if (masterFile) ipcRenderer.send('readMaster', masterFile, resVer)
+        // })
+        ipcRenderer.once('readMaster', async (_event: Event, masterData: MasterData) => {
+          await this.afterMasterRead(masterData)
         })
 
         if (!client.user) {
@@ -335,17 +342,39 @@ export default class extends Vue {
             }
           }
 
-          this.appData.resVer = Number(resVer)
-          this.$emit('input', this.appData)
+          const sync = {
+            ...(this.value || {}),
+            resVer: Number(resVer)
+          }
+          // this.appData.resVer = Number(resVer)
+          this.$emit('input', sync)
           const manifestFile = await this.getManifest(resVer)
-          if (manifestFile) ipcRenderer.send('readManifest', manifestFile, resVer)
+          if (manifestFile) {
+            const masterHash = await (window.preload.readManifest as any)(manifestFile)
+            delete window.preload.readManifest
+            const masterFile = await this.getMaster(resVer, masterHash)
+            if (masterFile) ipcRenderer.send('readMaster', masterFile, resVer)
+            // const masterData = await window.preload.readMaster(masterFile)
+            // await this.afterMasterRead(masterData)
+          }
         } else {
           let resVer = this.configurer.getConfig().latestResVer as number
-          this.appData.resVer = Number(resVer)
-          this.$emit('input', this.appData)
+          const sync = {
+            ...(this.value || {}),
+            resVer: Number(resVer)
+          }
+          // this.appData.resVer = Number(resVer)
+          this.$emit('input', sync)
           if (fs.existsSync(manifestPath(resVer, '.db')) && fs.existsSync(masterPath(resVer, '.db'))) {
             let manifestFile = manifestPath(resVer, '.db')
-            if (manifestFile) ipcRenderer.send('readManifest', manifestFile, resVer)
+            if (manifestFile) {
+              const masterHash: string = await (window.preload.readManifest as any)(manifestFile)
+              delete window.preload.readManifest
+              const masterFile = await this.getMaster(resVer, masterHash)
+              if (masterFile) ipcRenderer.send('readMaster', masterFile, resVer)
+              // const masterData = await window.preload.readMaster(masterFile)
+              // await this.afterMasterRead(masterData)
+            }
           } else {
             this.event.$emit('alert', this.$t('home.errorTitle'), this.$t('home.noNetwork'))
           }
