@@ -11,11 +11,12 @@
           <div>
             <!-- <label>{{$t("menu.lang")}}</label> -->
             <div style="display:flex;justify-content:space-between">
-              <InputRadio text="Debut" value="1" v-model="difficulty" lable-id="s_1"/>
+              <InputRadio v-for="(value, text) in difficulties" :key="value" :text="text" :value="value" v-model="difficulty" :lable-id="'s_' + value"/>
+              <!-- <InputRadio text="Debut" value="1" v-model="difficulty" lable-id="s_1"/>
               <InputRadio text="Regular" value="2" v-model="difficulty" lable-id="s_2"/>
               <InputRadio text="Pro" value="3" v-model="difficulty" lable-id="s_3"/>
               <InputRadio text="Master" value="4" v-model="difficulty" lable-id="s_4"/>
-              <InputRadio v-if="hasMasterPlus" text="Master+" value="5" v-model="difficulty" lable-id="s_5"/>
+              <InputRadio v-if="hasMasterPlus" text="Master+" value="5" v-model="difficulty" lable-id="s_5"/> -->
             </div>
           </div>
         </form>

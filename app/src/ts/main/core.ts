@@ -15,7 +15,7 @@ const confacc = config.account
 
 setCache('client', new core.Client(
   confacc || '::',
-  confver !== void 0 ? (confver - 100).toString() : void 0
+  confver !== void 0 ? (confver/*  - 100 */).toString() : void 0
 ))
 
 setCache('updater', updater)

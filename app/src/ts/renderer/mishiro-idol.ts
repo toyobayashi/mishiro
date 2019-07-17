@@ -7,7 +7,7 @@ import { Vue, Component, Prop } from 'vue-property-decorator'
 import { ProgressInfo } from 'mishiro-core'
 import { unpackTexture2D } from './unpack-texture-2d'
 
-const { ipcRenderer, shell } = window.node.electron
+const { /* ipcRenderer,  */shell } = window.node.electron
 const fs = window.node.fs
 const path = window.node.path
 const getPath = window.preload.getPath
@@ -414,7 +414,11 @@ export default class extends Vue {
       const config = this.configurer.getConfig()
       try {
         if (!config.card || config.card === 'default') {
-          let hash: string = ipcRenderer.sendSync('searchManifest', `card_bg_${id}.unity3d`)[0].hash
+          // let hash: string = ipcRenderer.sendSync('searchManifest', `card_bg_${id}.unity3d`)[0].hash
+          const manifestDB = window.preload.getManifestDB()
+          if (!manifestDB) throw new Error('Manifest database is not available.')
+          let dbres: { hash: string }[] = (await manifestDB.find('manifests', ['hash'], { name: `card_bg_${id}.unity3d` }))
+          const hash = dbres[0].hash
           downloadResult = await this.dler.downloadAsset(
             hash,
             cardDir(`card_bg_${id}`),

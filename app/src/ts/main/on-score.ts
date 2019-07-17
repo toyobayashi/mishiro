@@ -1,4 +1,5 @@
-import { openSqlite } from './sqlite3'
+import DB from './db'
+// import { openSqlite } from './sqlite3'
 import { Event, ipcMain } from 'electron'
 
 export interface ScoreNote {
@@ -49,16 +50,30 @@ const difficultyMap: any = {
   5: 'MASTER+'
 }
 
-export default async function (event: Event, scoreFile: string, difficulty: number | string, bpm: number, src: string) {
-  let bdb = await openSqlite(scoreFile)
-  let rows = await bdb._all(`SELECT data FROM blobs WHERE name LIKE "%/_${difficulty}.csv" ESCAPE '/'`)
-  bdb.close()
-  if (!rows.length) return
+// export default async function (event: Event, scoreFile: string, difficulty: number | string, bpm: number, src: string) {
+//   let bdb = await openSqlite(scoreFile)
+//   let rows = await bdb._all(`SELECT data FROM blobs WHERE name LIKE "%/_${difficulty}.csv" ESCAPE '/'`)
+//   bdb.close()
+//   if (!rows.length) return
+
+//   const data = rows[0].data.toString()
+
+//   let { fullCombo, score } = createScore(data)
+
+//   song = { src, bpm, score, fullCombo, difficulty: difficultyMap[difficulty] }
+//   event.sender.send('score')
+// }
+
+export default async function getScore (scoreFile: string, difficulty: number | string, bpm: number, src: string) {
+  const bdb = new DB(scoreFile)
+  const rows = await bdb.find('blobs', ['data'], { name: { $like: [`%/_${difficulty}.csv`, '/'] } })
+  await bdb.close()
+  if (!rows.length) return false
 
   const data = rows[0].data.toString()
 
   let { fullCombo, score } = createScore(data)
 
   song = { src, bpm, score, fullCombo, difficulty: difficultyMap[difficulty] }
-  event.sender.send('score')
+  return true
 }

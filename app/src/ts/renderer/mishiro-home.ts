@@ -3,14 +3,14 @@ import TheTable from '../../vue/component/TheTable.vue'
 import InputText from '../../vue/component/InputText.vue'
 import ProgressBar from '../../vue/component/ProgressBar.vue'
 
-import { Event } from 'electron'
+// import { Event } from 'electron'
 import { Vue, Component } from 'vue-property-decorator'
-import { generateObjectId } from '../common/object-id'
+// import { generateObjectId } from '../common/object-id'
 // import { ProgressInfo } from 'mishiro-core'
 const fs = window.node.fs
 const path = window.node.path
 const getPath = window.preload.getPath
-const { shell, ipcRenderer, remote } = window.node.electron
+const { shell, remote } = window.node.electron
 const { downloadDir } = getPath
 
 @Component({
@@ -45,18 +45,19 @@ export default class extends Vue {
   //   return this.data.filter(row => !this.isDisabled(row))
   // }
 
-  checkFile (data: any[]): Promise<any[]> {
-    return new Promise<any[]>((resolve, reject) => {
-      const id = generateObjectId()
-      ipcRenderer.once('checkFile', (_ev: Event, oid: string, notDownloaded: any[]) => {
-        if (oid === id) {
-          resolve(notDownloaded)
-        } else {
-          reject(new Error(`${id} !== ${oid}`))
-        }
-      })
-      ipcRenderer.send('checkFile', id, data)
-    })
+  checkFile (data: any[]): any[] {
+    // return new Promise<any[]>((resolve, reject) => {
+      // const id = generateObjectId()
+      // ipcRenderer.once('checkFile', (_ev: Event, oid: string, notDownloaded: any[]) => {
+      //   if (oid === id) {
+      //     resolve(notDownloaded)
+      //   } else {
+      //     reject(new Error(`${id} !== ${oid}`))
+      //   }
+      // })
+      // ipcRenderer.send('checkFile', id, data)
+    // })
+    return data.filter(row => !fs.existsSync(getPath.downloadDir(path.basename(row.name))))
   }
 
   isDisabled (row: any) {
@@ -78,9 +79,25 @@ export default class extends Vue {
     } else if (this.queryString === 'dev') {
       remote.getCurrentWindow().webContents.openDevTools()
     } else {
-      ipcRenderer.send('queryManifest', this.queryString)
+      const manifestDB = window.preload.getManifestDB()
+      if (!manifestDB) return
+      manifestDB.find<{ name: string; hash: string }>('manifests', ['name', 'hash'], { name: { $like: `%${this.queryString.trim()}%` } }).then(manifestArr => {
+        this.page = 0
+        this.data = manifestArr
+        if (!this.notDownloadedOnly) {
+          this.canDownloadRows = this.data
+        } else {
+          // this.checkFile(this.data).then((res) => {
+          //   this.canDownloadRows = res
+          // }).catch(err => console.log(err))
+          this.canDownloadRows = this.checkFile(this.data)
+        }
+      }).catch(err => {
+        this.event.$emit('alert', this.$t('home.errorTitle'), err.message)
+      })
+      // ipcRenderer.send('queryManifest', this.queryString)
     }
-    this.playSe(this.enterSe)
+    // this.playSe(this.enterSe)
   }
   filterOnClick () {
     this.notDownloadedOnly = !this.notDownloadedOnly
@@ -88,10 +105,12 @@ export default class extends Vue {
       this.canDownloadRows = this.data
       this.page = 0
     } else {
-      this.checkFile(this.data).then((res) => {
-        this.canDownloadRows = res
-        this.page = 0
-      }).catch(err => console.log(err))
+      // this.checkFile(this.data).then((res) => {
+      //   this.canDownloadRows = res
+      //   this.page = 0
+      // }).catch(err => console.log(err))
+      this.canDownloadRows = this.checkFile(this.data)
+      this.page = 0
     }
   }
   tableChange (val: any[]) {
@@ -227,17 +246,17 @@ export default class extends Vue {
           this.query()
         }
       })
-      ipcRenderer.on('queryManifest', (_event: Event, manifestArr: any[]) => {
-        this.page = 0
-        this.data = manifestArr
-        if (!this.notDownloadedOnly) {
-          this.canDownloadRows = this.data
-        } else {
-          this.checkFile(this.data).then((res) => {
-            this.canDownloadRows = res
-          }).catch(err => console.log(err))
-        }
-      })
+      // ipcRenderer.on('queryManifest', (_event: Event, manifestArr: any[]) => {
+      //   this.page = 0
+      //   this.data = manifestArr
+      //   if (!this.notDownloadedOnly) {
+      //     this.canDownloadRows = this.data
+      //   } else {
+      //     this.checkFile(this.data).then((res) => {
+      //       this.canDownloadRows = res
+      //     }).catch(err => console.log(err))
+      //   }
+      // })
     })
   }
 }

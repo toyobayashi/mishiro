@@ -3,7 +3,7 @@ import { Vue, Component, Prop } from 'vue-property-decorator'
 
 import TaskLoading from '../../vue/component/TaskLoading.vue'
 import InputText from '../../vue/component/InputText.vue'
-import { generateObjectId } from '../common/object-id'
+// import { generateObjectId } from '../common/object-id'
 
 import { MasterData } from '../main/on-master-read'
 
@@ -193,8 +193,8 @@ export default class extends Vue {
         }
       }
 
-      ipcRenderer.send('lyrics', scoreDir(this.activeAudio.score))
-
+      // ipcRenderer.send('lyrics', scoreDir(this.activeAudio.score))
+      this.allLyrics = await window.preload.getLyrics(scoreDir(this.activeAudio.score))
     }
   }
   query () {
@@ -280,29 +280,29 @@ export default class extends Vue {
     return true
   }
 
-  async startGame () {
-    this.playSe(this.enterSe)
-    const result = await this.gameOrScore()
-    if (result) this.event.$emit('game', this.activeAudio)
-  }
+  // async startGame () {
+  //   this.playSe(this.enterSe)
+  //   const result = await this.gameOrScore()
+  //   if (result) this.event.$emit('game', this.activeAudio)
+  // }
 
   async startScore () {
     this.playSe(this.enterSe)
     const result = await this.gameOrScore()
     if (!result) return
-    const hasMasterPlus = await this.checkScore(scoreDir(this.activeAudio.score))
-    this.event.$emit('score', this.activeAudio, hasMasterPlus)
+    const difficulties = await window.preload.getScoreDifficulties(scoreDir(this.activeAudio.score))
+    this.event.$emit('score', this.activeAudio, difficulties)
   }
 
-  private checkScore (scoreFile: string) {
-    const id = generateObjectId()
-    return new Promise<boolean>((resolve) => {
-      ipcRenderer.once(id, (_e: Event, hasMasterPlus: boolean) => {
-        resolve(hasMasterPlus)
-      })
-      ipcRenderer.send('checkScore', id, scoreFile)
-    })
-  }
+  // private checkScore (scoreFile: string) {
+  //   const id = generateObjectId()
+  //   return new Promise<boolean>((resolve) => {
+  //     ipcRenderer.once(id, (_e: Event, hasMasterPlus: boolean) => {
+  //       resolve(hasMasterPlus)
+  //     })
+  //     ipcRenderer.send('checkScore', id, scoreFile)
+  //   })
+  // }
 
   mounted () {
     this.$nextTick(() => {
@@ -342,9 +342,9 @@ export default class extends Vue {
         if (liveResult) this.event.$emit('showLiveResult', liveResult)
         else this.event.$emit('playBgm')
       })
-      ipcRenderer.on('lyrics', (_event: Event, lyrics: { time: number; lyrics: string; size: any }[]) => {
-        this.allLyrics = lyrics
-      })
+      // ipcRenderer.on('lyrics', (_event: Event, lyrics: { time: number; lyrics: string; size: any }[]) => {
+      //   this.allLyrics = lyrics
+      // })
     })
   }
 }
