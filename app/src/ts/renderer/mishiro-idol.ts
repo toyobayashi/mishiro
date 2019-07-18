@@ -149,7 +149,7 @@ export default class extends Vue {
         { text: this.$t('idol.leader_skill_name') },
         { text: this.information.leaderSkill && this.information.leaderSkill.name },
         { text: this.$t('idol.voice') },
-        { text: this.information.charaData && this.information.charaData.voice }
+        { text: this.information.charaData && this.information.charaData.voice || this.$t('idol.nashi') }
       ],
       [
         { text: this.information.leaderSkill && this.information.leaderSkill.explain, colspan: '2', class: 'text-left' },
