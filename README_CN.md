@@ -78,7 +78,7 @@
         REM 获取 Electron 用于编译原生模块的头文件
         > npm install -g node-gyp
         > for /f "delims=" %P in ('npm prefix -g') do npm config set node_gyp "%P\node_modules\node-gyp\bin\node-gyp.js"
-        > node-gyp install --target=4.2.6 --dist-url=https://npm.taobao.org/mirrors/atom-shell
+        > node-gyp install --target=4.2.7 --dist-url=https://npm.taobao.org/mirrors/atom-shell
 
         REM 安装依赖
         > npm install
@@ -95,7 +95,7 @@
 
         # 安装 node-gyp v3，下载 C++ 头文件
         $ npm install -g node-gyp@3
-        $ node-gyp install --target=4.2.6 --dist-url=https://npm.taobao.org/mirrors/atom-shell
+        $ node-gyp install --target=4.2.7 --dist-url=https://npm.taobao.org/mirrors/atom-shell
 
         $ npm install
         ```

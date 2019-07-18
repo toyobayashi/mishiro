@@ -94,7 +94,7 @@ Repo: [mishiro-score-viewer](https://github.com/toyobayashi/mishiro-score-viewer
         REM if you have not downloaded Electron's C++ header
         > npm install -g node-gyp
         > for /f "delims=" %P in ('npm prefix -g') do npm config set node_gyp "%P\node_modules\node-gyp\bin\node-gyp.js"
-        > node-gyp install --target=4.2.6 --dist-url=https://atom.io/download/electron
+        > node-gyp install --target=4.2.7 --dist-url=https://atom.io/download/electron
         REM endif 
 
         REM install dependencies
@@ -112,7 +112,7 @@ Repo: [mishiro-score-viewer](https://github.com/toyobayashi/mishiro-score-viewer
         # endif
 
         $ npm install -g node-gyp@3
-        $ node-gyp install --target=4.2.6 --dist-url=https://atom.io/download/electron
+        $ node-gyp install --target=4.2.7 --dist-url=https://atom.io/download/electron
 
         $ npm install
         ```
