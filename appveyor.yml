@@ -10,7 +10,7 @@ install:
 
     for /f "delims=" %%P in ('npm prefix -g') do npm config set node_gyp "%%P\node_modules\node-gyp\bin\node-gyp.js"
 
-    node-gyp install --target=4.2.7 --dist-url=https://atom.io/download/electron
+    node-gyp install --target=4.2.8 --dist-url=https://atom.io/download/electron
 
     yarn
 build_script:
