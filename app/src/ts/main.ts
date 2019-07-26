@@ -23,7 +23,10 @@ function createWindow () {
     webPreferences: {
       nodeIntegration: false,
       contextIsolation: false,
-      preload: join(__dirname, 'preload.js')
+      preload: join(__dirname, 'preload.js'),
+      defaultFontFamily: {
+        standard: 'Microsoft YaHei'
+      }
     }
   }
   if ((process as any).isLinux) {

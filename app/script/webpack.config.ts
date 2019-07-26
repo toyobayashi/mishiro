@@ -195,6 +195,12 @@ export const rendererConfig: Configuration = {
         use: [
           ...cssLoader
         ]
+      },
+      {
+        test: /\.(svg)$/,
+        use: [
+          'raw-loader'
+        ]
       }/* ,
       {
         test: /\.styl(us)?$/,

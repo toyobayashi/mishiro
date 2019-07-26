@@ -44,6 +44,7 @@ const useResVer = void 0
     MishiroIdol: () => import(/* webpackChunkName: "mishiro-idol" */ '../../vue/view/MishiroIdol.vue'),
     MishiroLive: () => import(/* webpackChunkName: "mishiro-live" */ '../../vue/view/MishiroLive.vue'),
     // MishiroGacha: () => import(/* webpackChunkName: "mishiro-gacha" */ '../../vue/view/MishiroGacha.vue'),
+    MishiroCommu: () => import(/* webpackChunkName: "mishiro-commu" */ '../../vue/view/MishiroCommu.vue'),
     MishiroMenu: () => import(/* webpackChunkName: "mishiro-menu" */ '../../vue/view/MishiroMenu.vue'),
 
     ThePlayer: () => import(/* webpackChunkName: "the-player" */ '../../vue/component/ThePlayer.vue'),

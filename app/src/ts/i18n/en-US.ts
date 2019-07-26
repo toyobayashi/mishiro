@@ -184,5 +184,9 @@ export default {
     official: 'official',
     kirara: 'kirara',
     arch: 'Architecture'
+  },
+  commu: {
+    id: 'Enter ID',
+    notfound: 'Please enter correct id'
   }
 }
