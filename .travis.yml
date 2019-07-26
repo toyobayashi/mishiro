@@ -10,7 +10,7 @@ before_install:
   - yarn --verison
   - cd app
   - yarn global add node-gyp@3
-  - node-gyp install --target=4.2.7 --dist-url=https://atom.io/download/electron
+  - node-gyp install --target=4.2.8 --dist-url=https://atom.io/download/electron
 install:
   - yarn
 script:
