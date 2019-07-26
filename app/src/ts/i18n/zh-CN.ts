@@ -184,5 +184,9 @@ export default {
     official: '官方',
     kirara: 'kirara',
     arch: '架構'
+  },
+  commu: {
+    id: '請輸入ID',
+    notfound: '請輸入正確的ID'
   }
 }
