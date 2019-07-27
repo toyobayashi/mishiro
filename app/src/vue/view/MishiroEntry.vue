@@ -17,20 +17,6 @@
   position: absolute;
   z-index: 1000;
 }
-.yoko{
-  position: fixed;
-  z-index: 1000;
-  bottom: 0;
-  width: 100%;
-}
-.tate{
-  position: fixed;
-  z-index: 1000;
-  bottom: 0;
-  left: 50%;
-  transform: translateX(-50%);
-  height: 100%;
-}
 .touch{
   z-index: 1000;
   position: fixed;

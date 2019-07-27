@@ -3,7 +3,7 @@ import { Vue, Component, Prop } from 'vue-property-decorator'
 export default class extends Vue {
   @Prop() value: string
 
-  blocks: string[] = ['home', 'idol', 'live', 'gacha', 'menu']
+  blocks: string[] = ['home', 'idol', 'commu', 'live', 'menu']
 
   input (block: string) {
     if (block !== this.value) {

@@ -187,6 +187,7 @@ export default {
   },
   commu: {
     id: '請輸入ID',
-    notfound: '請輸入正確的ID'
+    notfound: '請輸入正確的ID',
+    newVersion: '有新的資源版本，請重启mishiro'
   }
 }

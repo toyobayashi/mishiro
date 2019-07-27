@@ -32,10 +32,15 @@ const bgmList: any = {
     start: 0.990,
     end: 80.900
   },
-  gacha: {
-    src: '../../asset/bgm/bgm_gacha_menu.mp3',
-    start: 1.800,
-    end: 56.599
+  // gacha: {
+  //   src: '../../asset/bgm/bgm_gacha_menu.mp3',
+  //   start: 1.800,
+  //   end: 56.599
+  // },
+  commu: {
+    src: '../../asset/bgm/bgm_commu_menu.mp3',
+    start: 2.6,
+    end: 45.2
   },
   caravan: {
     src: '../../asset/bgm/bgm_event_typeA.mp3'
@@ -214,9 +219,14 @@ export default class extends Vue {
                 }
               }
               break
-            case 'gacha':
-              if (this.playing.src !== bgmList.gacha.src) {
-                this.play(bgmList.gacha)
+            // case 'gacha':
+            //   if (this.playing.src !== bgmList.gacha.src) {
+            //     this.play(bgmList.gacha)
+            //   }
+            //   break
+            case 'commu':
+              if (this.playing.src !== bgmList.commu.src) {
+                this.play(bgmList.commu)
               }
               break
             case 'menu':

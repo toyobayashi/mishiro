@@ -187,6 +187,7 @@ export default {
   },
   commu: {
     id: 'ID入力',
-    notfound: '正しいIDを入力しましょう'
+    notfound: '正しいIDを入力しましょう',
+    newVersion: '新しいリソースバージョンがあります。mishiroを再起動してください。'
   }
 }
