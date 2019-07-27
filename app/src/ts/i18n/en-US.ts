@@ -187,6 +187,7 @@ export default {
   },
   commu: {
     id: 'Enter ID',
-    notfound: 'Please enter correct id'
+    notfound: 'Please enter correct id',
+    newVersion: 'New resource version found, please relaunch mishiro.'
   }
 }

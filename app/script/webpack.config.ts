@@ -199,7 +199,13 @@ export const rendererConfig: Configuration = {
       {
         test: /\.(svg)$/,
         use: [
-          'raw-loader'
+          // 'raw-loader'
+          {
+            loader: 'file-loader',
+            options: {
+              name: `./[name].[ext]`
+            }
+          }
         ]
       }/* ,
       {
