@@ -2,7 +2,7 @@ import { Vue, Component } from 'vue-property-decorator'
 import InputText from '../../vue/component/InputText.vue'
 import { ServerResponse } from 'mishiro-core'
 
-/* const template =  */require('../../res/banner.svg')
+// /* const template =  */require('../../res/banner.svg')
 const { existsSync, readFileSync, remove } = window.node.fs
 const getPath = window.preload.getPath
 const { iconDir } = getPath

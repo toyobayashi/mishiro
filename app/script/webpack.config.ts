@@ -4,6 +4,7 @@ import * as MiniCssExtractPlugin from 'mini-css-extract-plugin'
 import * as OptimizeCSSAssetsPlugin from 'optimize-css-assets-webpack-plugin'
 import { VueLoaderPlugin } from 'vue-loader'
 import * as ForkTsCheckerWebpackPlugin from 'fork-ts-checker-webpack-plugin'
+import * as CopyWebpackPlugin from 'copy-webpack-plugin'
 import * as webpackNodeExternals from 'webpack-node-externals'
 import config from './config'
 import { getPath } from './util'
@@ -153,7 +154,12 @@ export const preloadConfig: Configuration = {
       '@': getPath('src')
     },
     extensions: ['.ts', '.tsx', '.js', '.jsx', '.json']
-  }
+  },
+  plugins: [
+    new CopyWebpackPlugin([
+      { from: getPath('src/res/banner.svg') }
+    ])
+  ]
 }
 
 export const rendererConfig: Configuration = {
@@ -195,7 +201,7 @@ export const rendererConfig: Configuration = {
         use: [
           ...cssLoader
         ]
-      },
+      }/* ,
       {
         test: /\.(svg)$/,
         use: [
@@ -207,7 +213,7 @@ export const rendererConfig: Configuration = {
             }
           }
         ]
-      }/* ,
+      },
       {
         test: /\.styl(us)?$/,
         use: [

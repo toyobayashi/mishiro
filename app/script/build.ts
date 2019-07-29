@@ -2,12 +2,14 @@ import { mainConfig, rendererConfig, preloadConfig, remoteRequireConfig } from '
 import { compile } from './util'
 import config from './config'
 
+const options = Object.assign({}, config.statsOptions, { warnings: false })
+
 export default function build () {
   return Promise.all([
-    compile(mainConfig, config.statsOptions),
-    compile(remoteRequireConfig, config.statsOptions),
-    compile(preloadConfig, config.statsOptions),
-    compile(rendererConfig, config.statsOptions)
+    compile(mainConfig, options),
+    compile(remoteRequireConfig, options),
+    compile(preloadConfig, options),
+    compile(rendererConfig, options)
   ])
 }
 
