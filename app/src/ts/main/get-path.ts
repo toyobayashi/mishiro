@@ -13,6 +13,7 @@ namespace getPath {
   export const masterPath = (resVer: number, db: string = '') => dataDir(`master_${resVer}${db}`)
   export const downloadDir = (...relative: string[]) => getPath(`../asset/download`, ...relative)
   export const iconDir = (...relative: string[]) => getPath(`../asset/icon`, ...relative)
+  export const emblemDir = (...relative: string[]) => getPath(`../asset/emblem`, ...relative)
   export const cardDir = (...relative: string[]) => getPath(`../asset/card`, ...relative)
   export const scoreDir = (...relative: string[]) => getPath(`../asset/score`, ...relative)
   export const voiceDir = (...relative: string[]) => getPath(`../asset/voice`, ...relative)
