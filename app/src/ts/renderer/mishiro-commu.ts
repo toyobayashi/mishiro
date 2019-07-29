@@ -1,11 +1,12 @@
 import { Vue, Component } from 'vue-property-decorator'
 import InputText from '../../vue/component/InputText.vue'
 import { ServerResponse } from 'mishiro-core'
+import { unpackTexture2D } from './unpack-texture-2d'
 
 // /* const template =  */require('../../res/banner.svg')
 const { existsSync, readFileSync, remove } = window.node.fs
 const getPath = window.preload.getPath
-const { iconDir } = getPath
+const { iconDir, emblemDir } = getPath
 // const { join } = window.node.path
 
 function createSVGElement (data: string): Document {
@@ -170,26 +171,36 @@ export default class extends Vue {
     let emblemB64 = ''
 
     try {
-      if (existsSync(iconDir(`card_${data.leader_card.id}_m.png`))) {
-        iconB64 = readFileSync(iconDir(`card_${data.leader_card.id}_m.png`)).toString('base64')
+      const cacheName = iconDir(`card_${data.leader_card.id}_m`)
+      const emblemCache = emblemDir(`emblem_${data.emblem_id}_l`)
+      if (existsSync(cacheName + '.png')) {
+        iconB64 = readFileSync(cacheName + '.png').toString('base64')
       } else {
-        const record = await window.preload.getManifestDB()!.findOne('manifests', ['name', 'hash'], { name: `card_${data.leader_card.id}_m.unity3d` })
-        const iconu3d = await this.dler.downloadAsset(record.hash, iconDir(`card_${data.leader_card.id}_m`))
-        await this.core.util.unpackTexture2D(iconu3d, iconDir())
-        await remove(iconu3d)
-        await remove(iconDir(`card_${data.leader_card.id}_m`))
-        iconB64 = readFileSync(iconDir(`card_${data.leader_card.id}_m.png`)).toString('base64')
+        const config = this.configurer.getConfig()
+        if (!config.card || config.card === 'default') {
+          const record = await window.preload.getManifestDB()!.findOne('manifests', ['name', 'hash'], { name: `card_${data.leader_card.id}_m.unity3d` })
+          let asset = await this.dler.downloadAsset(record.hash, cacheName)
+          if (asset) {
+            await remove(cacheName)
+            await unpackTexture2D(asset)
+            iconB64 = readFileSync(cacheName + '.png').toString('base64')
+          }
+        } else {
+          await this.dler.downloadIcon(data.leader_card.id.toString(), cacheName + '.png')
+          iconB64 = readFileSync(cacheName + '.png').toString('base64')
+        }
       }
 
-      if (existsSync(iconDir(`emblem_${data.emblem_id}_l.png`))) {
-        emblemB64 = readFileSync(iconDir(`emblem_${data.emblem_id}_l.png`)).toString('base64')
+      if (existsSync(emblemCache + '.png')) {
+        emblemB64 = readFileSync(emblemCache + '.png').toString('base64')
       } else {
         const record = await window.preload.getManifestDB()!.findOne('manifests', ['name', 'hash'], { name: `emblem_${data.emblem_id}_l.unity3d` })
-        const iconu3d = await this.dler.downloadAsset(record.hash, iconDir(`emblem_${data.emblem_id}_l`))
-        await this.core.util.unpackTexture2D(iconu3d, iconDir())
-        await remove(iconu3d)
-        await remove(iconDir(`emblem_${data.emblem_id}_l`))
-        emblemB64 = readFileSync(iconDir(`emblem_${data.emblem_id}_l.png`)).toString('base64')
+        let asset = await this.dler.downloadAsset(record.hash, emblemCache)
+        if (asset) {
+          await remove(emblemCache)
+          await unpackTexture2D(asset)
+          emblemB64 = readFileSync(emblemCache + '.png').toString('base64')
+        }
       }
     } catch (err) {
       console.log(err)
