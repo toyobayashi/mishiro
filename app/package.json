@@ -52,7 +52,7 @@
     "cross-zip": "^2.1.5",
     "css-loader": "^3.0.0",
     "cuint": "^0.2.2",
-    "electron": "4.2.8",
+    "electron": "6.0.0",
     "electron-packager": "^14.0.1",
     "express-serve-asar": "^1.0.1",
     "file-loader": "^4.0.0",
@@ -80,7 +80,7 @@
   "dependencies": {
     "electron-github-asar-updater": "^3.0.0",
     "fs-extra": "^8.1.0",
-    "mishiro-core": "^3.1.0",
+    "mishiro-core": "^4.0.0",
     "got": "^9.6.0",
     "sqlite3": "^4.0.9"
   }

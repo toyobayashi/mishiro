@@ -1,4 +1,4 @@
-import { ipcMain, Event } from 'electron'
+import { ipcMain, IpcMainEvent } from 'electron'
 import readManifest from './on-manifest-read'
 import readMaster, { MasterData } from './on-master-read'
 // import onManifestQuery from './on-manifest-query'
@@ -43,7 +43,7 @@ export default function ipc () {
   //   event.sender.send('readManifest', masterHash, resVer)
   // })
 
-  ipcMain.on('readMaster', async (event: Event, masterFile: string/* , resVer: number */) => {
+  ipcMain.on('readMaster', async (event: IpcMainEvent, masterFile: string/* , resVer: number */) => {
     if (!masterData) {
       masterData = await readMaster(masterFile/* , configurer.getConfig(), manifests */)
     }

@@ -220,8 +220,8 @@ export default class extends Vue {
     if (!fs.existsSync(dirb)) fs.mkdirsSync(dirb)
     if (!fs.existsSync(dirl)) fs.mkdirsSync(dirl)
     if (process.platform === 'win32') {
-      shell.openExternal(dirb)
-      shell.openExternal(dirl)
+      shell.openExternal(dirb).catch(err => console.log(err))
+      shell.openExternal(dirl).catch(err => console.log(err))
     } else {
       shell.showItemInFolder(dirb + '/.')
       shell.showItemInFolder(dirl + '/.')

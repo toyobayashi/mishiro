@@ -396,7 +396,11 @@ class ScoreViewer {
     remote.dialog.showSaveDialog({
       title: 'Save Score - ' + name + '-' + this.song.difficulty,
       defaultPath: getPath.scoreDir(name + '-' + this.song.difficulty + '.png')
-    }, _drawAndSave)
+    }).then((res) => {
+      res.filePath && _drawAndSave(res.filePath)
+    }).catch((err: any) => {
+      console.log(err)
+    })
   }
 
   private _formatTime (second: number) {
