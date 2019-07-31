@@ -1,5 +1,5 @@
 import './common/asar'
-import { app, BrowserWindow, ipcMain, Event, BrowserWindowConstructorOptions, nativeImage } from 'electron'
+import { app, BrowserWindow, ipcMain, IpcMainEvent, BrowserWindowConstructorOptions, nativeImage } from 'electron'
 import { join } from 'path'
 import { existsSync } from 'fs-extra'
 import * as url from 'url'
@@ -110,7 +110,7 @@ ipcMain.on('flash', () => {
   mainWindow && mainWindow.flashFrame(true)
 })
 
-ipcMain.on('mainWindowId', (event: Event) => {
+ipcMain.on('mainWindowId', (event: IpcMainEvent) => {
   event.returnValue = mainWindow && mainWindow.id
 })
 

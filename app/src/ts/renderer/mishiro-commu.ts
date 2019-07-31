@@ -135,7 +135,7 @@ export default class extends Vue {
   dler = new this.core.Downloader()
 
   openOrigin () {
-    window.node.electron.shell.openExternal('https://deresute.me/')
+    window.node.electron.shell.openExternal('https://deresute.me/').catch(err => console.log(err))
   }
 
   async query () {
