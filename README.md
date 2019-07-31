@@ -75,7 +75,7 @@ Repo: [mishiro-score-viewer](https://github.com/toyobayashi/mishiro-score-viewer
 
     **NOTE:** Due to C++ native addon compilation must match correct Electron / Node.js version, when `electron` version in `package.json` changed, please remove the following folders manually then run `npm install` again.
 
-    * `/app/node_modules/lame`
+    * `/app/node_modules/mishiro-core`
     * `/app/node_modules/sqlite3`
     * `/app/node_modules/hca-decoder`
 
