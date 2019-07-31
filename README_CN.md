@@ -58,7 +58,7 @@
 
     **NOTE:** 由于 C++ 原生模块编译必须匹配对应的 Electron / Node.js 版本，每当 `package.json` 内的 `electron` 版本变化时，请手动删除以下的文件夹然后再重新跑一次 `npm install`。
 
-    * `/app/node_modules/lame`
+    * `/app/node_modules/mishiro-core`
     * `/app/node_modules/sqlite3`
     * `/app/node_modules/hca-decoder`
 

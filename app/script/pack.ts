@@ -135,11 +135,12 @@ async function installDependencies (root: string): Promise<void> {
 
 function removeBuild (root: string) {
   const nodeModulesDir = path.join(root, 'node_modules')
-  const lameNode = fs.readFileSync(path.join(nodeModulesDir, 'lame/build/Release/bindings.node'))
+  // const lameNode = fs.readFileSync(path.join(nodeModulesDir, 'lame/build/Release/bindings.node'))
   const removeList = [
     '.bin',
     '.cache',
     'nan',
+    'node-addon-api',
     'sqlite3/build',
     'sqlite3/deps',
     'sqlite3/node_modules',
@@ -170,15 +171,15 @@ function removeBuild (root: string) {
     'mishiro-core/binding.gyp',
     'mishiro-core/index.d.ts',
     'mishiro-core/README.md',
-    'rijndael-js/test',
+    // 'rijndael-js/test',
     '../package-lock.json'
   ]
   removeList.map(p => {
     const tmpPath = path.join(nodeModulesDir, p)
     if (fs.existsSync(tmpPath)) fs.removeSync(tmpPath)
   })
-  fs.mkdirsSync(path.join(nodeModulesDir, 'lame/build/Release'))
-  fs.writeFileSync(path.join(nodeModulesDir, 'lame/build/Release/bindings.node'), lameNode)
+  // fs.mkdirsSync(path.join(nodeModulesDir, 'lame/build/Release'))
+  // fs.writeFileSync(path.join(nodeModulesDir, 'lame/build/Release/bindings.node'), lameNode)
 }
 
 function createDebInstaller (appPath: string) {

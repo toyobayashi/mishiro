@@ -1,6 +1,7 @@
-version: 1.9.2-{build}
+version: 2.0.0-{build}
 image: Visual Studio 2017
 install:
+- ps: Install-Product node 10.16
 - cmd: >-
     node -v
 
