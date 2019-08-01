@@ -80,7 +80,7 @@
   "dependencies": {
     "electron-github-asar-updater": "^3.0.0",
     "fs-extra": "^8.1.0",
-    "mishiro-core": "^4.1.0",
+    "mishiro-core": "^4.1.1",
     "got": "^9.6.0",
     "sqlite3": "^4.0.9"
   }
