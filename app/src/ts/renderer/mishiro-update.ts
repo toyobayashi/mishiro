@@ -5,7 +5,7 @@ import ProgressBar from '../../vue/component/ProgressBar.vue'
 import check from './check'
 
 import MishiroIdol from './mishiro-idol'
-import ThePlayer from './the-player'
+import { bgmList } from './the-player'
 // import { unpackTexture2D } from './unpack-texture-2d'
 // import { Client } from './typings/main'
 const fs = window.node.fs
@@ -32,6 +32,10 @@ export default class extends Vue {
   //   master: {}
   // }
 
+  get wavProgress () {
+    return this.core.config.getProgressCallback()
+  }
+
   @Prop() value!: { resVer: number | string; latestResVer: number | string; master: MasterData | any }
   @Prop() isTouched!: boolean
 
@@ -46,7 +50,7 @@ export default class extends Vue {
 
   @Emit('ready')
   emitReady () {
-    this.event.$emit('ready')
+    this.event.$emit('play-studio-bgm')
   }
 
   async getResVer () {
@@ -154,7 +158,6 @@ export default class extends Vue {
   async afterMasterRead (masterData: MasterData) {
     // console.log(masterData);
     let config = this.configurer.getConfig()
-    const bgmList = new ThePlayer().bgmList
     const downloader = new this.core.Downloader()
     const toName = (p: string) => path.parse(p).name
     const sync = {
@@ -180,17 +183,22 @@ export default class extends Vue {
           //     this.loading = prog.loading
           //   }
           // )
+          this.text = path.basename(`${toName(bgmList[k].src)}.acb`)
+          this.loading = 0
           let result = await downloader.downloadSound(
             'b',
             hash,
             bgmDir(`${toName(bgmList[k].src)}.acb`),
             prog => {
               this.text = prog.name + '　' + Math.ceil(prog.current / 1024) + '/' + Math.ceil(prog.max / 1024) + ' KB'
-              this.loading = prog.loading
+              this.loading = prog.loading / (this.wavProgress ? 2 : 1)
             }
           )
           if (result) {
-            await this.acb2mp3(bgmDir(`${toName(bgmList[k].src)}.acb`))
+            await this.acb2mp3(bgmDir(`${toName(bgmList[k].src)}.acb`), void 0, (_current, _total, prog) => {
+              this.text = prog.name + '　' + this.$t('live.decoding')
+              this.loading = 50 + prog.loading / 2
+            })
           }
         } catch (errorPath) {
           this.event.$emit('alert', this.$t('home.errorTitle'), this.$t('home.downloadFailed') + '<br/>' + errorPath)
@@ -209,17 +217,22 @@ export default class extends Vue {
           //     this.loading = prog.loading
           //   }
           // )
+          this.text = `bgm_event_${masterData.eventData.id}.acb`
+          this.loading = 0
           let result = await downloader.downloadSound(
             'b',
             eventBgmHash,
             bgmDir(`bgm_event_${masterData.eventData.id}.acb`),
             prog => {
               this.text = prog.name + '　' + Math.ceil(prog.current / 1024) + '/' + Math.ceil(prog.max / 1024) + ' KB'
-              this.loading = prog.loading
+              this.loading = prog.loading / (this.wavProgress ? 2 : 1)
             }
           )
           if (result) {
-            await this.acb2mp3(bgmDir(`bgm_event_${masterData.eventData.id}.acb`))
+            await this.acb2mp3(bgmDir(`bgm_event_${masterData.eventData.id}.acb`), void 0, (_current, _total, prog) => {
+              this.text = prog.name + '　' + this.$t('live.decoding')
+              this.loading = 50 + prog.loading / 2
+            })
           }
         } catch (errorPath) {
           this.event.$emit('alert', this.$t('home.errorTitle'), this.$t('home.downloadFailed') + '<br/>' + errorPath)
@@ -247,6 +260,8 @@ export default class extends Vue {
 
     const getBackground = async (id: string | number) => {
       try {
+        this.text = `Download card_bg_${id}`
+        this.loading = 0
         getBackgroundResult = await downloadCard.call(this, id, 'eventBgReady', (prog: ProgressInfo) => {
           this.text = (prog.name || '') + '　' + Math.ceil(prog.current / 1024) + '/' + Math.ceil(prog.max / 1024) + ' KB'
           this.loading = prog.loading
