@@ -9,7 +9,6 @@
   <ul class="gray-bg" v-show="isShow">
     <li v-for="bgm in bgmList"
         :key="bgm.src"
-        v-if="!bgm.hidden"
         :id="bgm.src.slice(bgm.src.lastIndexOf('/') + 1).split('.')[0]" 
         @click="play(bgm)">
         <span v-text="bgm.src.slice(bgm.src.lastIndexOf('/') + 1)"

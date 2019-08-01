@@ -57,8 +57,8 @@ const install: PluginFunction<undefined> = function (Vue) {
   // Vue.prototype.getCardUrl = getCardUrl
   Vue.prototype.getIconUrl = getIconUrl
   Vue.prototype.mainWindowId = ipcRenderer.sendSync('mainWindowId')
-  Vue.prototype.acb2mp3 = async function (acbPath: string, rename?: string) {
-    let mp3list = await this.core.audio.acb2mp3(acbPath)
+  Vue.prototype.acb2mp3 = async function (acbPath: string, rename?: string, onProgress?: (current: number, total: number, prog: import('mishiro-core').ProgressInfo) => void) {
+    let mp3list = await window.node.mishiroCore.audio.acb2mp3(acbPath, void 0, onProgress)
     let mp3 = mp3list[0]
     let dest = path.join(path.dirname(acbPath), rename || path.basename(mp3))
     await fs.move(mp3, dest)

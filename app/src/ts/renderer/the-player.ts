@@ -6,7 +6,16 @@ const getPath = window.preload.getPath
 
 const { bgmDir } = getPath
 
-const bgmList: any = {
+interface BGMList {
+  [key: string]: {
+    src: string
+    start?: number
+    end?: number
+    hidden?: boolean
+  }
+}
+
+export const bgmList: BGMList = {
   anni: {
     src: '../../asset/bgm/bgm_event_3023.mp3',
     start: 13.90,
@@ -59,7 +68,6 @@ export default class extends Vue {
   startTime: number = 0
   endTime: number = 0
   isPlaying: boolean = false
-  bgmList = bgmList
   isShow: boolean = false
   playing: any = bgmList.anni
 
@@ -67,6 +75,16 @@ export default class extends Vue {
 
   get eventInfo () {
     return this.master.eventData
+  }
+
+  get bgmList () {
+    const list: BGMList = {}
+    for (let k in bgmList) {
+      if (!bgmList[k].hidden) {
+        list[k] = { ...bgmList[k] }
+      }
+    }
+    return list
   }
 
   initSrc () {
@@ -176,9 +194,10 @@ export default class extends Vue {
         }
       }, false)
 
-      this.event.$on('ready', () => {
+      this.event.$on('play-studio-bgm', () => {
         this.playStudioBgm()
       })
+
       this.event.$on('changeBgm', (block: string) => {
         let flag = false
         for (let b in bgmList) {

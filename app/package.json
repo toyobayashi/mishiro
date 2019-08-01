@@ -11,7 +11,8 @@
     "pack:ia32": "cross-env NODE_ENV=production ts-node -P ./script/tsconfig.json ./script/pack.ts ia32",
     "pack:x64": "cross-env NODE_ENV=production ts-node -P ./script/tsconfig.json ./script/pack.ts x64",
     "count": "ts-node -P ./script/tsconfig.json ./script/source-count.ts",
-    "dlc": "ts-node -P ./script/tsconfig.json ./script/release-download-count.ts"
+    "dlc": "ts-node -P ./script/tsconfig.json ./script/release-download-count.ts",
+    "rm": "ts-node -P ./script/tsconfig.json ./script/rm.ts"
   },
   "repository": {
     "type": "git",
@@ -79,7 +80,7 @@
   "dependencies": {
     "electron-github-asar-updater": "^3.0.0",
     "fs-extra": "^8.1.0",
-    "mishiro-core": "^4.0.0",
+    "mishiro-core": "^4.1.0",
     "got": "^9.6.0",
     "sqlite3": "^4.0.9"
   }

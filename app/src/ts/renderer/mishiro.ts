@@ -9,7 +9,7 @@ import MishiroUpdate from '../../vue/view/MishiroUpdate.vue'
 // import MishiroMenu from '../../vue/view/MishiroMenu.vue'
 
 // import ThePlayer from '../../vue/component/ThePlayer.vue'
-// import TheBackground from '../../vue/component/TheBackground.vue'
+import TheBackground from '../../vue/component/TheBackground.vue'
 // import TheToggleButton from '../../vue/component/TheToggleButton.vue'
 // import TheFooter from '../../vue/component/TheFooter.vue'
 // import TheVersion from '../../vue/component/TheVersion.vue'
@@ -48,7 +48,7 @@ const useResVer = void 0
     MishiroMenu: () => import(/* webpackChunkName: "mishiro-menu" */ '../../vue/view/MishiroMenu.vue'),
 
     ThePlayer: () => import(/* webpackChunkName: "the-player" */ '../../vue/component/ThePlayer.vue'),
-    TheBackground: () => import(/* webpackChunkName: "the-background" */ '../../vue/component/TheBackground.vue'),
+    TheBackground,
     TheToggleButton: () => import(/* webpackChunkName: "the-toggle-button" */ '../../vue/component/TheToggleButton.vue'),
     TheFooter: () => import(/* webpackChunkName: "the-footer" */ '../../vue/component/TheFooter.vue'),
     TheVersion: () => import(/* webpackChunkName: "the-version" */ '../../vue/component/TheVersion.vue'),

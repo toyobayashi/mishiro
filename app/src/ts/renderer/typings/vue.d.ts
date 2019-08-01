@@ -25,7 +25,7 @@ declare module 'vue/types/vue' {
     // getCardUrl: (id: string | number) => string
     getIconUrl: (id: string | number) => string
     mainWindowId: number
-    acb2mp3: (acbPath: string, rename?: string) => Promise<string>
+    acb2mp3: (acbPath: string, rename?: string, onProgress?: (current: number, total: number, prog: import('mishiro-core').ProgressInfo) => void) => Promise<string>
     // Downloader: typeof Downloader
   }
 }
