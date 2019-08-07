@@ -31,7 +31,7 @@ class BannerRenderer {
     // document.body.append(this.svg)
   }
 
-  render (data: any, icon: string, emblem: string) {
+  render (data: any, icon: string, emblem: string, callback?: () => void) {
     const root = this.svg
     const xlink = 'http://www.w3.org/1999/xlink'
 
@@ -118,6 +118,7 @@ class BannerRenderer {
       img.src = 'data:image/svg+xml;base64,' + Buffer.from(svgXml).toString('base64')
       img.onload = function () {
         ctx.drawImage(img, 0, 0)
+        callback && callback.call(this)
       }
     }
   }
@@ -206,10 +207,11 @@ export default class extends Vue {
       console.log(err)
       this.event.$emit('alert', this.$t('home.errorTitle'), err.message)
     }
-    this.isSearching = false
     if (!this.renderer) this.renderer = new BannerRenderer('can')
 
-    this.renderer.render(data, iconB64, emblemB64)
+    this.renderer.render(data, iconB64, emblemB64, () => {
+      this.isSearching = false
+    })
   }
 
   save () {

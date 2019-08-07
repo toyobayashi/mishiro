@@ -5,11 +5,11 @@ import ProgressBar from '../../vue/component/ProgressBar.vue'
 import check from './check'
 
 import MishiroIdol from './mishiro-idol'
-import { bgmList } from './the-player'
+// import { bgmList } from './the-player'
 // import { unpackTexture2D } from './unpack-texture-2d'
 // import { Client } from './typings/main'
 const fs = window.node.fs
-const path = window.node.path
+// const path = window.node.path
 const getPath = window.preload.getPath
 const { manifestPath, masterPath, bgmDir/* , iconDir */ } = getPath
 const ipcRenderer = window.node.electron.ipcRenderer
@@ -159,7 +159,7 @@ export default class extends Vue {
     // console.log(masterData);
     let config = this.configurer.getConfig()
     const downloader = new this.core.Downloader()
-    const toName = (p: string) => path.parse(p).name
+    // const toName = (p: string) => path.parse(p).name
     const sync = {
       ...(this.value || {}),
       master: masterData,
@@ -170,41 +170,33 @@ export default class extends Vue {
     this.$emit('input', sync)
 
     const bgmManifest = masterData.bgmManifest
-    for (let k in bgmList) {
-      if (!fs.existsSync(path.join(getPath('./public'), bgmList[k].src))) {
-        let acbName = `b/${toName(bgmList[k].src)}.acb`
-        let hash: string = bgmManifest.filter(row => row.name === acbName)[0].hash
-        try {
-          // let result = await downloader.downloadOne(
-          //   this.getBgmUrl(hash),
-          //   bgmDir(`${toName(bgmList[k].src)}.acb`),
-          //   (prog: ProgressInfo) => {
-          //     this.text = prog.name + '　' + Math.ceil(prog.current / 1024) + '/' + Math.ceil(prog.max / 1024) + ' KB'
-          //     this.loading = prog.loading
-          //   }
-          // )
-          this.text = path.basename(`${toName(bgmList[k].src)}.acb`)
-          this.loading = 0
-          let result = await downloader.downloadSound(
-            'b',
-            hash,
-            bgmDir(`${toName(bgmList[k].src)}.acb`),
-            prog => {
-              this.text = prog.name + '　' + Math.ceil(prog.current / 1024) + '/' + Math.ceil(prog.max / 1024) + ' KB'
-              this.loading = prog.loading / (this.wavProgress ? 2 : 1)
-            }
-          )
-          if (result) {
-            await this.acb2mp3(bgmDir(`${toName(bgmList[k].src)}.acb`), void 0, (_current, _total, prog) => {
-              this.text = prog.name + '　' + this.$t('live.decoding')
-              this.loading = 50 + prog.loading / 2
-            })
-          }
-        } catch (errorPath) {
-          this.event.$emit('alert', this.$t('home.errorTitle'), this.$t('home.downloadFailed') + '<br/>' + errorPath)
-        }
-      }
-    }
+    // for (let k in bgmList) {
+    //   if (!fs.existsSync(path.join(getPath('./public'), bgmList[k].src))) {
+    //     let acbName = `b/${toName(bgmList[k].src)}.acb`
+    //     let hash: string = bgmManifest.filter(row => row.name === acbName)[0].hash
+    //     try {
+    //       this.text = path.basename(`${toName(bgmList[k].src)}.acb`)
+    //       this.loading = 0
+    //       let result = await downloader.downloadSound(
+    //         'b',
+    //         hash,
+    //         bgmDir(`${toName(bgmList[k].src)}.acb`),
+    //         prog => {
+    //           this.text = prog.name + '　' + Math.ceil(prog.current / 1024) + '/' + Math.ceil(prog.max / 1024) + ' KB'
+    //           this.loading = prog.loading / (this.wavProgress ? 2 : 1)
+    //         }
+    //       )
+    //       if (result) {
+    //         await this.acb2mp3(bgmDir(`${toName(bgmList[k].src)}.acb`), void 0, (_current, _total, prog) => {
+    //           this.text = prog.name + '　' + this.$t('live.decoding')
+    //           this.loading = 50 + prog.loading / 2
+    //         })
+    //       }
+    //     } catch (errorPath) {
+    //       this.event.$emit('alert', this.$t('home.errorTitle'), this.$t('home.downloadFailed') + '<br/>' + errorPath)
+    //     }
+    //   }
+    // }
     if (masterData.eventHappening) {
       if (Number(masterData.eventData.type) !== 2 && Number(masterData.eventData.type) !== 6 && !fs.existsSync(bgmDir(`bgm_event_${masterData.eventData.id}.mp3`))) {
         const eventBgmHash = bgmManifest.filter(row => row.name === `b/bgm_event_${masterData.eventData.id}.acb`)[0].hash
