@@ -61,8 +61,8 @@ export default class extends Vue {
     return this.core.config.getProgressCallback()
   }
 
-  oninput () {
-    this.bgm.currentTime = Number((this.$refs.playProg as HTMLInputElement).value)
+  oninput (target: HTMLInputElement) {
+    this.bgm.currentTime = Number(target.value)
   }
   async selectAudio (audio: any) {
     if (this.activeAudio.hash === audio.hash) return
@@ -75,6 +75,10 @@ export default class extends Vue {
 
     if (audio.name.split('/')[0] === 'b') {
       if (!fs.existsSync(bgmDir(audio.fileName))) {
+        if (fs.existsSync(getPath(`../asset/bgm.asar/${audio.fileName}`))) {
+          this.event.$emit('liveSelect', { src: `../../asset/bgm.asar/${audio.fileName}` })
+          return
+        }
         if (navigator.onLine) {
           this.dler.stop()
           this.activeAudio = audio

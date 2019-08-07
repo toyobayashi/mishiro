@@ -78,7 +78,7 @@
         REM 获取 Electron 用于编译原生模块的头文件
         > npm install -g node-gyp
         > for /f "delims=" %P in ('npm prefix -g') do npm config set node_gyp "%P\node_modules\node-gyp\bin\node-gyp.js"
-        > node-gyp install --target=6.0.0 --dist-url=https://npm.taobao.org/mirrors/atom-shell
+        > for /f "delims=" %P in ('node -p "require('./package.json').devDependencies.electron") do node-gyp install --target=%P --dist-url=https://npm.taobao.org/mirrors/atom-shell
 
         REM 安装依赖
         > npm install
@@ -93,9 +93,10 @@
         $ npm config set registry http://registry.npm.taobao.org/
         $ npm config set electron_mirror https://npm.taobao.org/mirrors/electron/
 
-        # 安装 node-gyp v3，下载 C++ 头文件
-        $ npm install -g node-gyp@3
-        $ node-gyp install --target=6.0.0 --dist-url=https://npm.taobao.org/mirrors/atom-shell
+        # 安装 node-gyp，把 npm 使用的 node-gyp 指向全局安装的 node-gyp，然后下载 C++ 头文件
+        $ npm install -g node-gyp
+        $ npm config set node_gyp "`npm prefix -g`/lib/node_modules/node-gyp/bin/node-gyp.js"
+        $ node-gyp install --target=$(node -p require\(\'./package.json\'\).devDependencies.electron) --dist-url=https://npm.taobao.org/mirrors/atom-shell
 
         $ npm install
         ```

@@ -4,6 +4,7 @@ app/public/node/
 app/public/*
 !app/public/LICENSE.md
 asset/*
+!asset/bgm.asar
 !asset/chara_title.asar
 !asset/font.asar
 !asset/img.asar

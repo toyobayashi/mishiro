@@ -3,7 +3,7 @@
 [![GitHub release](https://img.shields.io/github/release/toyobayashi/mishiro.svg)](https://github.com/toyobayashi/mishiro/releases)
 [![Electron](https://img.shields.io/badge/dynamic/json.svg?label=electron&url=https%3A%2F%2Fraw.githubusercontent.com%2Ftoyobayashi%2Fmishiro%2Fmaster%2Fapp%2Fpackage.json&query=%24.devDependencies.electron&colorB=9feaf9)](https://electronjs.org/)
 [![GitHub repo size in bytes](https://img.shields.io/github/repo-size/toyobayashi/mishiro.svg)](https://github.com/toyobayashi/mishiro/archive/master.zip)
-[![Build status](https://ci.appveyor.com/api/projects/status/qv7x4qj669pyolfi/branch/master?svg=true)](https://ci.appveyor.com/project/toyobayashi/mishiro/branch/master)
+<!-- [![Build status](https://ci.appveyor.com/api/projects/status/qv7x4qj669pyolfi/branch/master?svg=true)](https://ci.appveyor.com/project/toyobayashi/mishiro/branch/master) -->
 [![Build status](https://travis-ci.com/toyobayashi/mishiro.svg?branch=master)](https://travis-ci.com/toyobayashi/mishiro/)
 <!-- [![Vue](https://img.shields.io/badge/dynamic/json.svg?label=vue&url=https%3A%2F%2Fraw.githubusercontent.com%2Ftoyobayashi%2Fmishiro%2Fmaster%2Fapp%2Fpackage.json&query=%24.dependencies.vue&colorB=41b883)](https://vuejs.org/)
 [![Webpack](https://img.shields.io/badge/dynamic/json.svg?label=webpack&url=https%3A%2F%2Fraw.githubusercontent.com%2Ftoyobayashi%2Fmishiro%2Fmaster%2Fapp%2Fpackage.json&query=%24.devDependencies.webpack&colorB=55a7dd)](https://webpack.js.org/) -->
@@ -94,7 +94,7 @@ Repo: [mishiro-score-viewer](https://github.com/toyobayashi/mishiro-score-viewer
         REM if you have not downloaded Electron's C++ header
         > npm install -g node-gyp
         > for /f "delims=" %P in ('npm prefix -g') do npm config set node_gyp "%P\node_modules\node-gyp\bin\node-gyp.js"
-        > node-gyp install --target=6.0.0 --dist-url=https://atom.io/download/electron
+        > for /f "delims=" %P in ('node -p "require('./package.json').devDependencies.electron") do node-gyp install --target=%P --dist-url=https://atom.io/download/electron
         REM endif 
 
         REM install dependencies
@@ -111,11 +111,14 @@ Repo: [mishiro-score-viewer](https://github.com/toyobayashi/mishiro-score-viewer
         $ npm config set electron_mirror https://npm.taobao.org/mirrors/electron/
         # endif
 
-        $ npm install -g node-gyp@3
-        $ node-gyp install --target=6.0.0 --dist-url=https://atom.io/download/electron
+        $ npm install -g node-gyp
+        $ npm config set node_gyp "`npm prefix -g`/lib/node_modules/node-gyp/bin/node-gyp.js"
+        $ node-gyp install --target=$(node -p require\(\'./package.json\'\).devDependencies.electron) --dist-url=https://atom.io/download/electron
 
         $ npm install
         ```
+
+    If run `npm install` error, remove `package-lock.json` then try again.
 
 * Develop
 

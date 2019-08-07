@@ -17,45 +17,45 @@ interface BGMList {
 
 export const bgmList: BGMList = {
   anni: {
-    src: '../../asset/bgm/bgm_event_3023.mp3',
+    src: '../../asset/bgm.asar/bgm_event_3023.mp3',
     start: 13.90,
     end: 95.00
   },
   day: {
-    src: '../../asset/bgm/bgm_studio_day.mp3',
+    src: '../../asset/bgm.asar/bgm_studio_day.mp3',
     start: 13.704,
     end: 95.165
   },
   night: {
-    src: '../../asset/bgm/bgm_studio_night.mp3',
+    src: '../../asset/bgm.asar/bgm_studio_night.mp3',
     start: 12.94,
     end: 98.79
   },
   sunset: {
-    src: '../../asset/bgm/bgm_studio_sunset.mp3',
+    src: '../../asset/bgm.asar/bgm_studio_sunset.mp3',
     start: 13.075,
     end: 100.575
   },
   idol: {
-    src: '../../asset/bgm/bgm_idol_menu.mp3',
+    src: '../../asset/bgm.asar/bgm_idol_menu.mp3',
     start: 0.990,
     end: 80.900
   },
   // gacha: {
-  //   src: '../../asset/bgm/bgm_gacha_menu.mp3',
+  //   src: '../../asset/bgm.asar/bgm_gacha_menu.mp3',
   //   start: 1.800,
   //   end: 56.599
   // },
   commu: {
-    src: '../../asset/bgm/bgm_commu_menu.mp3',
+    src: '../../asset/bgm.asar/bgm_commu_menu.mp3',
     start: 2.6,
     end: 45.2
   },
   caravan: {
-    src: '../../asset/bgm/bgm_event_typeA.mp3'
+    src: '../../asset/bgm.asar/bgm_event_typeA.mp3'
   },
   rail: {
-    src: '../../asset/bgm/bgm_event_rail.mp3',
+    src: '../../asset/bgm.asar/bgm_event_rail.mp3',
     start: 14.600,
     end: 94.560
   }
