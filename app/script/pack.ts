@@ -264,7 +264,7 @@ async function zipAsar (root: string) {
     fs.existsSync(path.join(resourcePath, 'app.asar.unpacked')) ? fs.copy(path.join(resourcePath, 'app.asar.unpacked'), path.join(resourcePath, '.tmp/app.asar.unpacked')) : Promise.resolve()
   ])
   try {
-    await zip(tmpDir, getPath(config.distPath, `app-v${productionPackage.version}-${process.platform}-${arch}.zip`))
+    await zip(tmpDir, getPath(config.distPath, `resources-v${productionPackage.version}-${process.platform}-${arch}.zip`))
     fs.removeSync(tmpDir)
   } catch (err) {
     console.log(chalk.yellowBright(`[${new Date().toLocaleString()}] ${err.message} `))
@@ -302,6 +302,9 @@ export default async function pack () {
   const start = new Date().getTime()
 
   console.log(chalk.greenBright(`[${new Date().toLocaleString()}] Bundle production code...`))
+  if (fs.existsSync(getPath('public'))) {
+    await fs.remove(getPath('public'))
+  }
   await bundleProductionCode()
 
   process.stdout.write(chalk.greenBright(`[${new Date().toLocaleString()}] `))

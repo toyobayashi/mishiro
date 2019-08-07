@@ -12,15 +12,17 @@ before_install:
   - npm install -g node-gyp
   - node-gyp -v
   - if [ "$TRAVIS_OS_NAME" = "windows" ]; then npm config set node_gyp "`npm prefix -g`\\node_modules\\node-gyp\\bin\\node-gyp.js"; else npm config set node_gyp "`npm prefix -g`/lib/node_modules/node-gyp/bin/node-gyp.js"; fi
-  - npm config ls
-  - node-gyp install --target=6.0.0 --dist-url=https://atom.io/download/electron
+  - node-gyp install --target=$(node -p require\(\'./app/package.json\'\).devDependencies.electron) --dist-url=https://atom.io/download/electron
   - cd ./app
   - rm -rf ./package-lock.json
+  - npm config ls
 install:
   - npm install
-script: true
+script: 
+  - npm run build
 before_deploy:
   - npm run pack:x64
+  - if [ "$TRAVIS_OS_NAME" = "windows" ]; then npm run pack:ia32; fi
 deploy:
   provider: releases
   api_key:

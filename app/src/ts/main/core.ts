@@ -4,7 +4,7 @@ import * as Updater from 'electron-github-asar-updater'
 
 const { setCache } = __non_webpack_require__('./export.js')
 
-const updater = new Updater('toyobayashi/mishiro')
+const updater = new Updater('toyobayashi/mishiro', 'resources')
 
 setCache('mishiroCore', core)
 
