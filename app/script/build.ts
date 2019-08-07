@@ -14,5 +14,8 @@ export default function build () {
 }
 
 if (require.main === module) {
-  build().catch(err => console.log(err))
+  build().catch(err => {
+    console.error(err)
+    process.exit(1)
+  })
 }
