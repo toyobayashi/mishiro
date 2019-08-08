@@ -79,8 +79,9 @@ function zipApp (p: string) {
 
 function copyExtra (root: string) {
   return Promise.all([
-    path.join(__dirname, '../../asset/bgm'),
+    // path.join(__dirname, '../../asset/bgm'),
     // path.join(__dirname, '../../asset/icon'),
+    path.join(__dirname, '../../asset/bgm.asar'),
     path.join(__dirname, '../../asset/chara_title.asar'),
     path.join(__dirname, '../../asset/se.asar'),
     path.join(__dirname, '../../asset/img.asar'),
