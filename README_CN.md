@@ -16,8 +16,8 @@
 * 语言支持：中文 / 日本語 / English
 * [ HOME ] 拿资源。(unity3d, acb, bdb, mdb)
 * [ IDOL ] 查卡，拿卡面，拿角色语音。
-* [ LIVE ] 拿背景音乐 / Live乐曲，谱面查看，玩。
-* [ GACHA ] 同步卡池抽到爽。
+* [ COMMU ] 查P。
+* [ LIVE ] 拿背景音乐 / Live乐曲，谱面演示。
 * [ MENU ] 活动算分，设置等
 
 谱面查看演示：[https://toyobayashi.github.io/mishiro-score-viewer/](https://toyobayashi.github.io/mishiro-score-viewer/)  
@@ -62,6 +62,8 @@
     * `/app/node_modules/sqlite3`
     * `/app/node_modules/hca-decoder`
 
+    也可以直接跑 `npm run rm` 来完成。
+
 2. 装依赖  
 
     mishiro 依赖了一些 C++ 原生模块，在 `npm install` 的时候这些 C++ 包的代码会被编译，所以请确保本地配置好了 C++ 的编译环境，否则 `npm install` 会失败。  
@@ -75,10 +77,15 @@
         > npm config set registry http://registry.npm.taobao.org/
         > npm config set electron_mirror https://npm.taobao.org/mirrors/electron/
 
-        REM 获取 Electron 用于编译原生模块的头文件
+        REM 安装 node-gyp@5
         > npm install -g node-gyp
+
+        REM 这一步很重要，把 npm 内部使用的 node-gyp 设置成全局安装的 node-gyp
+        REM 新版 node-gyp 的头文件缓存位置和老版本不一样，没有这一步安装原生模块依赖时可能会报找不到头文件的错
         > for /f "delims=" %P in ('npm prefix -g') do npm config set node_gyp "%P\node_modules\node-gyp\bin\node-gyp.js"
-        > for /f "delims=" %P in ('node -p "require('./package.json').devDependencies.electron") do node-gyp install --target=%P --dist-url=https://npm.taobao.org/mirrors/atom-shell
+
+        REM 根据 package.json 中指定的 electron 版本下载对应的头文件
+        > for /f "delims=" %P in ('node -p "require('./package.json').devDependencies.electron"') do node-gyp install --target=%P --dist-url=https://npm.taobao.org/mirrors/atom-shell
 
         REM 安装依赖
         > npm install
@@ -89,17 +96,21 @@
         ``` bash
         $ cd mishiro/app
 
-        # 设置国内镜像
         $ npm config set registry http://registry.npm.taobao.org/
         $ npm config set electron_mirror https://npm.taobao.org/mirrors/electron/
 
-        # 安装 node-gyp，把 npm 使用的 node-gyp 指向全局安装的 node-gyp，然后下载 C++ 头文件
         $ npm install -g node-gyp
         $ npm config set node_gyp "`npm prefix -g`/lib/node_modules/node-gyp/bin/node-gyp.js"
         $ node-gyp install --target=$(node -p require\(\'./package.json\'\).devDependencies.electron) --dist-url=https://npm.taobao.org/mirrors/atom-shell
 
         $ npm install
         ```
+
+    如果 `npm install` 失败，请检查下面几种情况：
+
+    1. 是否有 C++ 编译环境（VC++ / g++）
+    2. electron 头文件版本及其存放的位置是否正确
+    3. 网络环境和 npm 镜像
 
 * 开发
 
@@ -111,18 +122,22 @@
 
     # 或者
     $ npm run serve
-    $ npm start # 或者直接在 VSCode 里按 [F5]
+    # 然后通过 VSCode 的调试模式启动
     ```
+
+    如果启动时弹框报错，请检查原生模块是否编译成功以及 electron 头文件的版本是否正确。
 
 * 构建  
 
     ``` bash
+    # 打包生产环境代码
     $ npm run build
     ```
 
 * 启动  
 
     ``` bash
+    # 生产环境启动
     $ npm start
     ```
 

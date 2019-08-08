@@ -3,8 +3,8 @@
 [![GitHub release](https://img.shields.io/github/release/toyobayashi/mishiro.svg)](https://github.com/toyobayashi/mishiro/releases)
 [![Electron](https://img.shields.io/badge/dynamic/json.svg?label=electron&url=https%3A%2F%2Fraw.githubusercontent.com%2Ftoyobayashi%2Fmishiro%2Fmaster%2Fapp%2Fpackage.json&query=%24.devDependencies.electron&colorB=9feaf9)](https://electronjs.org/)
 [![GitHub repo size in bytes](https://img.shields.io/github/repo-size/toyobayashi/mishiro.svg)](https://github.com/toyobayashi/mishiro/archive/master.zip)
-<!-- [![Build status](https://ci.appveyor.com/api/projects/status/qv7x4qj669pyolfi/branch/master?svg=true)](https://ci.appveyor.com/project/toyobayashi/mishiro/branch/master) -->
 [![Build status](https://travis-ci.com/toyobayashi/mishiro.svg?branch=master)](https://travis-ci.com/toyobayashi/mishiro/)
+<!-- [![Build status](https://ci.appveyor.com/api/projects/status/qv7x4qj669pyolfi/branch/master?svg=true)](https://ci.appveyor.com/project/toyobayashi/mishiro/branch/master) -->
 <!-- [![Vue](https://img.shields.io/badge/dynamic/json.svg?label=vue&url=https%3A%2F%2Fraw.githubusercontent.com%2Ftoyobayashi%2Fmishiro%2Fmaster%2Fapp%2Fpackage.json&query=%24.dependencies.vue&colorB=41b883)](https://vuejs.org/)
 [![Webpack](https://img.shields.io/badge/dynamic/json.svg?label=webpack&url=https%3A%2F%2Fraw.githubusercontent.com%2Ftoyobayashi%2Fmishiro%2Fmaster%2Fapp%2Fpackage.json&query=%24.devDependencies.webpack&colorB=55a7dd)](https://webpack.js.org/) -->
 
@@ -31,8 +31,8 @@ Note：
 * Support language: Chinese / Japanese / English.
 * [ HOME ] Get game resources. (unity3d, acb, bdb, mdb)
 * [ IDOL ] Search idol card, get card background png / character voice.
+* [ COMMU ] Producer searching.
 * [ LIVE ] Get BGM / live songs, view live score, play.
-* [ GACHA ] Gacha simulation. (official odds)
 * [ MENU ] Event PT calculator, options...
 
 Score viewer demo: [https://toyobayashi.github.io/mishiro-score-viewer/](https://toyobayashi.github.io/mishiro-score-viewer/)  
@@ -79,6 +79,8 @@ Repo: [mishiro-score-viewer](https://github.com/toyobayashi/mishiro-score-viewer
     * `/app/node_modules/sqlite3`
     * `/app/node_modules/hca-decoder`
 
+    You can also just run `npm run rm` to do this.
+
 2. Install  
 
     * Windows
@@ -86,16 +88,14 @@ Repo: [mishiro-score-viewer](https://github.com/toyobayashi/mishiro-score-viewer
         ``` bat
         > cd mishiro/app
 
-        REM if mainland Chinese, recommend
-        > npm config set registry http://registry.npm.taobao.org/
-        > npm config set electron_mirror https://npm.taobao.org/mirrors/electron/
-        REM endif
-
-        REM if you have not downloaded Electron's C++ header
+        REM install node-gyp@5
         > npm install -g node-gyp
+
+        REM it's important to set the npm_config_node_gyp environment variable to tell npm using global installed node-gyp
         > for /f "delims=" %P in ('npm prefix -g') do npm config set node_gyp "%P\node_modules\node-gyp\bin\node-gyp.js"
-        > for /f "delims=" %P in ('node -p "require('./package.json').devDependencies.electron") do node-gyp install --target=%P --dist-url=https://atom.io/download/electron
-        REM endif 
+
+        REM install electron's node C++ header
+        > for /f "delims=" %P in ('node -p "require('./package.json').devDependencies.electron"') do node-gyp install --target=%P --dist-url=https://atom.io/download/electron
 
         REM install dependencies
         > npm install
@@ -105,11 +105,6 @@ Repo: [mishiro-score-viewer](https://github.com/toyobayashi/mishiro-score-viewer
 
         ``` bash
         $ cd mishiro/app
-
-        # if mainland Chinese, recommend
-        $ npm config set registry http://registry.npm.taobao.org/
-        $ npm config set electron_mirror https://npm.taobao.org/mirrors/electron/
-        # endif
 
         $ npm install -g node-gyp
         $ npm config set node_gyp "`npm prefix -g`/lib/node_modules/node-gyp/bin/node-gyp.js"
@@ -130,18 +125,20 @@ Repo: [mishiro-score-viewer](https://github.com/toyobayashi/mishiro-score-viewer
 
     # or
     $ npm run serve
-    $ npm start # or press [F5] in vscode
+    # then launch mishiro by vscode debug mode
     ```
 
 * Build  
 
     ``` bash
+    # bundle code for production
     $ npm run build
     ```
 
 * Launch  
 
     ``` bash
+    # launch mishiro in production mode
     $ npm start
     ```
 
