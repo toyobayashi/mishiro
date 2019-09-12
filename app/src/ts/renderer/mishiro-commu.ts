@@ -27,7 +27,7 @@ class BannerRenderer {
   constructor (canvasid: string) {
     this.canvas = document.getElementById(canvasid) as HTMLCanvasElement
     this.ctx = this.canvas && this.canvas.getContext('2d')
-    this.svg = createSVGElement(readFileSync(getPath('public/banner.svg'), 'utf8'))
+    this.svg = createSVGElement(readFileSync(getPath('renderer/banner.svg'), 'utf8'))
     // document.body.append(this.svg)
   }
 
@@ -136,7 +136,7 @@ export default class extends Vue {
   dler = new this.core.Downloader()
 
   openOrigin () {
-    window.node.electron.shell.openExternal('https://deresute.me/').catch(err => console.log(err))
+    window.node.electron.shell.openExternal('https://deresute.me/') // .catch(err => console.log(err))
   }
 
   async query () {

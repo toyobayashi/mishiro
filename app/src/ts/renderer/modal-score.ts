@@ -44,21 +44,21 @@ export default class extends mixins(modalMixin) {
       // parent: remote.BrowserWindow.fromId(windowID),
       backgroundColor: '#000000',
       webPreferences: {
-        nodeIntegration: false,
+        nodeIntegration: true,
         contextIsolation: false,
-        preload: window.preload.getPath('public', 'preload.js')
+        preload: window.preload.getPath('renderer', 'preload.js')
       }
     })
 
     if (process.env.NODE_ENV === 'production') {
       win.loadURL(url.format({
-        pathname: getPath('./public/score.html'),
+        pathname: getPath('./renderer/score.html'),
         protocol: 'file:',
         slashes: true
-      })).catch(err => console.log(err))
+      })) //.catch(err => console.log(err))
     } else {
-      const config = require('../../../script/config.ts').default
-      win.loadURL(`http://${config.devServerHost}:${config.devServerPort}${config.publicPath}score.html`).catch(err => console.log(err))
+      // const config = require('../../../script/config.ts').default
+      win.loadURL('http://localhost:8090/app/renderer/score.html')//.catch(err => console.log(err))
       win.webContents.openDevTools()
     }
 

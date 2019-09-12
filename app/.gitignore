@@ -1,0 +1,5 @@
+node_modules
+/resources/app
+/resources/asset/*
+/resources/config.json
+!/resources/asset/*.asar

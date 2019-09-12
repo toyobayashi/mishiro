@@ -396,11 +396,18 @@ class ScoreViewer {
     remote.dialog.showSaveDialog({
       title: 'Save Score - ' + name + '-' + this.song.difficulty,
       defaultPath: getPath.scoreDir(name + '-' + this.song.difficulty + '.png')
+    }, (filename) => {
+      filename && _drawAndSave(filename)
+    })
+
+    /* remote.dialog.showSaveDialog({
+      title: 'Save Score - ' + name + '-' + this.song.difficulty,
+      defaultPath: getPath.scoreDir(name + '-' + this.song.difficulty + '.png')
     }).then((res) => {
       res.filePath && _drawAndSave(res.filePath)
     }).catch((err: any) => {
       console.log(err)
-    })
+    }) */
   }
 
   private _formatTime (second: number) {

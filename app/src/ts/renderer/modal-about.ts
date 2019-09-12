@@ -11,7 +11,7 @@ export default class extends mixins(modalMixin) {
   commitDate = process.env.NODE_ENV === 'production' ? window.preload.package._commitDate : new Date((window.node.childProcess.execSync('git log -1', { cwd: window.preload.getPath() }).toString().match(/Date:\s*(.*?)\n/) as RegExpMatchArray)[1]).toISOString()
 
   showRepo () {
-    window.node.electron.shell.openExternal('https://github.com/toyobayashi/mishiro').catch(err => console.log(err))
+    window.node.electron.shell.openExternal('https://github.com/toyobayashi/mishiro') // .catch(err => console.log(err))
     this.playSe(this.enterSe)
   }
 

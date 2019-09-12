@@ -1,5 +1,5 @@
 import './common/asar'
-import { app, BrowserWindow, ipcMain, IpcMainEvent, BrowserWindowConstructorOptions, nativeImage } from 'electron'
+import { app, BrowserWindow, ipcMain, Event, BrowserWindowConstructorOptions, nativeImage } from 'electron'
 import { join } from 'path'
 import { existsSync } from 'fs-extra'
 import * as url from 'url'
@@ -21,18 +21,18 @@ function createWindow () {
     show: false,
     backgroundColor: '#000000',
     webPreferences: {
-      nodeIntegration: false,
+      nodeIntegration: true,
       contextIsolation: false,
-      preload: join(__dirname, 'preload.js'),
+      preload: join(__dirname, '../renderer/preload.js'),
       defaultFontFamily: {
         standard: 'Microsoft YaHei'
       }
     }
   }
-  if ((process as any).isLinux) {
+  if (process.platform === 'linux') {
     let linuxIcon: string
     try {
-      linuxIcon = require('../res/icon/1024x1024.png')
+      linuxIcon = join(__dirname, '../../icon/1024x1024.png')
     } catch (_) {
       linuxIcon = ''
     }
@@ -43,7 +43,7 @@ function createWindow () {
     if (process.env.NODE_ENV !== 'production') {
       let icon: string = ''
 
-      const iconPath = join(__dirname, `../src/res/icon/mishiro.${process.platform === 'win32' ? 'ico' : 'icns'}`)
+      const iconPath = join(__dirname, `../../../src/res/icon/app.${process.platform === 'win32' ? 'ico' : 'icns'}`)
       if (existsSync(iconPath)) icon = iconPath
 
       if (icon) {
@@ -70,8 +70,8 @@ function createWindow () {
   })
 
   if (process.env.NODE_ENV !== 'production') {
-    const config = require('../../script/config').default
-    const res: any = mainWindow.loadURL(`http://${config.devServerHost}:${config.devServerPort}${config.publicPath}`)
+    // const config = require('../../script/config').default
+    const res: any = mainWindow.loadURL('http://localhost:8090/app/renderer/')
 
     if (res !== undefined && typeof res.then === 'function' && typeof res.catch === 'function') {
       res.catch((err: Error) => {
@@ -81,7 +81,7 @@ function createWindow () {
   } else {
     (mainWindow as any).removeMenu ? (mainWindow as any).removeMenu() : mainWindow.setMenu(null)
     const res: any = mainWindow.loadURL(url.format({
-      pathname: join(__dirname, 'index.html'),
+      pathname: join(__dirname, '../renderer/index.html'),
       protocol: 'file:',
       slashes: true
     }))
@@ -110,7 +110,7 @@ ipcMain.on('flash', () => {
   mainWindow && mainWindow.flashFrame(true)
 })
 
-ipcMain.on('mainWindowId', (event: IpcMainEvent) => {
+ipcMain.on('mainWindowId', (event: Event) => {
   event.returnValue = mainWindow && mainWindow.id
 })
 

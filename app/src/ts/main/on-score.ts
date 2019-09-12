@@ -1,6 +1,6 @@
 import DB from './db'
 // import { openSqlite } from './sqlite3'
-import { IpcMainEvent, ipcMain } from 'electron'
+import { Event, ipcMain } from 'electron'
 
 export interface ScoreNote {
   sec: number // music time
@@ -36,7 +36,7 @@ function createScore (csv: string) {
 
 let song: { src: string; bpm: number; score: ScoreNote[]; fullCombo: number; difficulty: string } | null = null
 
-ipcMain.on('getSong', (event: IpcMainEvent) => {
+ipcMain.on('getSong', (event: Event) => {
   const sync = song
   song = null
   event.returnValue = sync
