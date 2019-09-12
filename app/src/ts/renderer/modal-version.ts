@@ -40,11 +40,11 @@ export default class extends mixins(modalMixin) {
         this.event.$emit('alert', this.$t('home.errorTitle'), err.message)
       }
     } else if (this.versionData.exeUrl) {
-      shell.openExternal(this.versionData.exeUrl).catch(err => console.log(err))
+      shell.openExternal(this.versionData.exeUrl) // .catch(err => console.log(err))
     } else if (this.versionData.zipUrl) {
-      shell.openExternal(this.versionData.zipUrl).catch(err => console.log(err))
+      shell.openExternal(this.versionData.zipUrl) // .catch(err => console.log(err))
     } else {
-      shell.openExternal('https://github.com/toyobayashi/mishiro/releases').catch(err => console.log(err))
+      shell.openExternal('https://github.com/toyobayashi/mishiro/releases') // .catch(err => console.log(err))
     }
 
   }
