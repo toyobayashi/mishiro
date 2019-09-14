@@ -34,7 +34,7 @@ const i18nTabs: any = {
 }
 
 // const useResVer = window.preload.configurer.getConfig().latestResVer
-const useResVer = void 0
+const useResVer = undefined
 
 @Component({
   components: {
@@ -81,11 +81,13 @@ export default class extends Vue {
     latestResVer: 'Unknown',
     master: {}
   }
+
   time: number = new Date().getTime()
 
   enter () {
     this.isEntered = true
   }
+
   changeLanguage (language: string) {
     switch (language) {
       case 'i18n.japanese': this._i18n._vm.locale = 'ja'; break
@@ -94,6 +96,7 @@ export default class extends Vue {
     }
     // this.$el.parentNode.parentNode.getElementsByTagName("title")[0].innerHTML = this.$t("title");
   }
+
   showBackground () {
     const cb = () => {
       this.show = !this.show
@@ -106,6 +109,7 @@ export default class extends Vue {
       }
     }, 0)
   }
+
   afterEnter (devResVer?: number) {
     this.event.$emit('enter', devResVer)
   }

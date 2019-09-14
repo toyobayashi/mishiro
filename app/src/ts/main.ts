@@ -21,9 +21,9 @@ function createWindow () {
     show: false,
     backgroundColor: '#000000',
     webPreferences: {
-      nodeIntegration: true,
+      nodeIntegration: false,
       contextIsolation: false,
-      preload: join(__dirname, '../renderer/preload.js'),
+      preload: join(__dirname, '../preload/preload.js'),
       defaultFontFamily: {
         standard: 'Microsoft YaHei'
       }

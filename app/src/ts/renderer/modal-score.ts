@@ -15,7 +15,6 @@ const url = window.node.url
   }
 })
 export default class extends mixins(modalMixin) {
-
   difficulty: string = '4'
   live: any = {}
   difficulties: { [key: string]: string } = {}
@@ -44,9 +43,9 @@ export default class extends mixins(modalMixin) {
       // parent: remote.BrowserWindow.fromId(windowID),
       backgroundColor: '#000000',
       webPreferences: {
-        nodeIntegration: true,
+        nodeIntegration: false,
         contextIsolation: false,
-        preload: window.preload.getPath('renderer', 'preload.js')
+        preload: window.preload.getPath('preload', 'preload.js')
       }
     })
 
@@ -55,10 +54,10 @@ export default class extends mixins(modalMixin) {
         pathname: getPath('./renderer/score.html'),
         protocol: 'file:',
         slashes: true
-      })) //.catch(err => console.log(err))
+      })) // .catch(err => console.log(err))
     } else {
       // const config = require('../../../script/config.ts').default
-      win.loadURL('http://localhost:8090/app/renderer/score.html')//.catch(err => console.log(err))
+      win.loadURL('http://localhost:8090/app/renderer/score.html') // .catch(err => console.log(err))
       win.webContents.openDevTools()
     }
 
@@ -75,6 +74,7 @@ export default class extends mixins(modalMixin) {
     //   liveDir(this.live.fileName) // audioFile
     // )
   }
+
   mounted () {
     this.$nextTick(() => {
       // ipcRenderer.on('score', (_event: Event) => {

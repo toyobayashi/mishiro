@@ -6,6 +6,7 @@ import * as webpack from 'webpack'
 const CopyWebpackPlugin = require('copy-webpack-plugin')
 
 export default {
+  target: 'electron',
   entry: {
     main: {
       'mishiro.main': [path.join(__dirname, 'src/ts/main.ts')],
@@ -13,13 +14,16 @@ export default {
     },
     renderer: {
       'mishiro.renderer': [path.join(__dirname, 'src/ts/renderer.ts')],
-      'mishiro.score': [path.join(__dirname, 'src/ts/renderer-score.ts')],
+      'mishiro.score': [path.join(__dirname, 'src/ts/renderer-score.ts')]
+    },
+    preload: {
       preload: [path.join(__dirname, 'src/ts/preload/preload.ts')]
     }
   },
   tsconfig: {
     main: path.join(__dirname, 'src/ts/main/tsconfig.json'),
-    renderer: path.join(__dirname, 'src/ts/renderer/tsconfig.json')
+    renderer: path.join(__dirname, 'src/ts/renderer/tsconfig.json'),
+    preload: path.join(__dirname, 'src/ts/preload/tsconfig.json')
   },
   indexHtml: [
     {
@@ -38,15 +42,15 @@ export default {
   },
   iconSrcDir: 'src/res/icon',
   configureWebpack: {
-    main (config: webpack.Configuration) {
-      config.plugins = [
-        ...(config.plugins || []),
-        new webpack.DefinePlugin({
-          'process.isLinux': JSON.stringify(process.platform === 'linux')
-        })
-      ]
-    },
-    renderer (config: webpack.Configuration) {
+    // main (config: webpack.Configuration) {
+    //   config.plugins = [
+    //     ...(config.plugins || []),
+    //     new webpack.DefinePlugin({
+    //       'process.isLinux': JSON.stringify(process.platform === 'linux')
+    //     })
+    //   ]
+    // },
+    preload (config: webpack.Configuration) {
       config.plugins = [
         ...(config.plugins || []),
         new CopyWebpackPlugin([
