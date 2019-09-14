@@ -15,7 +15,7 @@ const imgHostBase = 'https://truecolor.kirara.ca'
 // const getUnityUrl = (hash: string) => `${gameHostBase}/High/AssetBundles/Android/${hash}`
 // const getDbUrl = (hash: string) => `${gameHostBase}/Generic/${hash}`
 // const getCardUrl = (id: string | number) => `${imgHostBase}/spread/${id}.png`
-const getIconUrl = (id: string | number) => `${imgHostBase}/icon_card/${id}.png`
+const getIconUrl = (id: string | number): string => `${imgHostBase}/icon_card/${id}.png`
 
 const install: PluginFunction<undefined> = function (Vue) {
   // 全局属性
@@ -42,7 +42,7 @@ const install: PluginFunction<undefined> = function (Vue) {
   //   return task
   // }
   Vue.prototype.createCardIconTask = function (cardIdArr: number[]) {
-    let task = []
+    const task = []
     for (let i = 0; i < cardIdArr.length; i++) {
       task.push([getIconUrl(cardIdArr[i]), iconDir(`card_${cardIdArr[i]}_m.png`)])
     }
@@ -58,9 +58,9 @@ const install: PluginFunction<undefined> = function (Vue) {
   Vue.prototype.getIconUrl = getIconUrl
   Vue.prototype.mainWindowId = ipcRenderer.sendSync('mainWindowId')
   Vue.prototype.acb2mp3 = async function (acbPath: string, rename?: string, onProgress?: (current: number, total: number, prog: import('mishiro-core').ProgressInfo) => void) {
-    let mp3list = await window.node.mishiroCore.audio.acb2mp3(acbPath, void 0, onProgress)
-    let mp3 = mp3list[0]
-    let dest = path.join(path.dirname(acbPath), rename || path.basename(mp3))
+    const mp3list = await window.node.mishiroCore.audio.acb2mp3(acbPath, undefined, onProgress)
+    const mp3 = mp3list[0]
+    const dest = path.join(path.dirname(acbPath), rename || path.basename(mp3))
     await fs.move(mp3, dest)
     await Promise.all([
       fs.remove(path.dirname(mp3)),

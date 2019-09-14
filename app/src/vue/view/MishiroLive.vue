@@ -22,7 +22,7 @@
       </ul>
     </div>
   </div>
-  
+
   <div class="margin-top-20 clearfix live-bottom">
     <TaskLoading :total-loading="total" :current-loading="current" :text="text" :single="true" class="absolute-left" :color="'live'"/>
     <div class="gray-bg absolute-right timebar">

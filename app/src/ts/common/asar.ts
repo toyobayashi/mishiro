@@ -7,7 +7,7 @@ import { join } from 'path'
 
   const originalResolveLookupPaths = Module._resolveLookupPaths
 
-  Module._resolveLookupPaths = originalResolveLookupPaths.length === 2 ? (function (request: any, parent: any) {
+  Module._resolveLookupPaths = originalResolveLookupPaths.length === 2 ? function (request: any, parent: any) {
     const result = originalResolveLookupPaths(request, parent)
 
     if (!result) return result
@@ -20,7 +20,7 @@ import { join } from 'path'
     }
 
     return result
-  }) : (function (request: any, parent: any, newReturn: any) {
+  } : function (request: any, parent: any, newReturn: any) {
     const result = originalResolveLookupPaths(request, parent, newReturn)
 
     const paths = newReturn ? result : result[1]
@@ -32,5 +32,5 @@ import { join } from 'path'
     }
 
     return result
-  })
+  }
 })()

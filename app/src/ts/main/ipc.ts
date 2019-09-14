@@ -1,4 +1,4 @@
-import { ipcMain, Event } from 'electron'
+import { ipcMain } from 'electron'
 import readManifest from './on-manifest-read'
 import readMaster, { MasterData } from './on-master-read'
 // import onManifestQuery from './on-manifest-query'
@@ -13,7 +13,7 @@ import getLyrics from './on-lyrics'
 
 let initialized = false
 
-export default function ipc () {
+export default function ipc (): void {
   if (initialized) return
 
   const { setCache } = __non_webpack_require__('./export.js')
@@ -43,7 +43,7 @@ export default function ipc () {
   //   event.sender.send('readManifest', masterHash, resVer)
   // })
 
-  ipcMain.on('readMaster', async (event: Event, masterFile: string/* , resVer: number */) => {
+  ipcMain.on('readMaster', async (event, masterFile: string/* , resVer: number */) => {
     if (!masterData) {
       masterData = await readMaster(masterFile/* , configurer.getConfig(), manifests */)
     }

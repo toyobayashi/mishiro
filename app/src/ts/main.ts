@@ -1,5 +1,5 @@
 import './common/asar'
-import { app, BrowserWindow, ipcMain, Event, BrowserWindowConstructorOptions, nativeImage } from 'electron'
+import { app, BrowserWindow, ipcMain, BrowserWindowConstructorOptions, nativeImage } from 'electron'
 import { join } from 'path'
 import { existsSync } from 'fs-extra'
 import * as url from 'url'
@@ -11,7 +11,7 @@ app.commandLine.appendSwitch('autoplay-policy', 'no-user-gesture-required')
 
 let mainWindow: BrowserWindow | null
 
-function createWindow () {
+function createWindow (): void {
   // Menu.setApplicationMenu(null)
   const browerWindowOptions: BrowserWindowConstructorOptions = {
     width: 1296,
@@ -110,14 +110,14 @@ ipcMain.on('flash', () => {
   mainWindow && mainWindow.flashFrame(true)
 })
 
-ipcMain.on('mainWindowId', (event: Event) => {
+ipcMain.on('mainWindowId', (event) => {
   event.returnValue = mainWindow && mainWindow.id
 })
 
 // tslint:disable-next-line: strict-type-predicates
 typeof (app as any).whenReady === 'function' ? (app as any).whenReady().then(main) : app.on('ready', main)
 
-function main () {
+function main (): void {
   ipc()
   if (!mainWindow) createWindow()
 }

@@ -45,7 +45,7 @@
     "cuint": "^0.2.2",
     "electron": "6.0.9",
     "eslint": "^6.3.0",
-    "eslint-config-standard": "^14.1.0",
+    "eslint-config-standard-with-typescript": "^9.0.0",
     "eslint-plugin-html": "^6.0.0",
     "eslint-plugin-import": "^2.18.2",
     "eslint-plugin-node": "^10.0.0",

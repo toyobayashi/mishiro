@@ -27,75 +27,88 @@ export default class extends mixins(modalMixin) {
   staminaSpeed = 300 // 恢复速度，以秒记
   staminaTimer: NodeJS.Timer | number = 0 // 计时器开关
   eventType: any = {
-    '1': 'ATAPON',
-    '2': 'CARAVAN',
-    '3': 'MEDLEY',
-    '5': 'TOUR'
+    1: 'ATAPON',
+    2: 'CARAVAN',
+    3: 'MEDLEY',
+    5: 'TOUR'
   }
+
   publicStatus: any = {
     plv: '1',
     stamina: '0',
     exp: '0'
   }
+
   privateStatus: any = privateStatus
 
-  @Prop({ default: (() => ({})), type: Object }) master: MasterData
+  @Prop({ default: () => ({}), type: Object }) master: MasterData
   @Prop({ default: new Date().getTime() }) time: number
 
-  get eventData () {
+  get eventData (): any {
     return this.master.eventData/*  ? this.master.eventData : {} */
   }
-  get userLevel () {
+
+  get userLevel (): any[] {
     return this.master.userLevel
   }
-  get eventTimeTotal () {
+
+  get eventTimeTotal (): number {
     if (!this.eventData) return 1
     return new Date(this.eventData.event_end).getTime() - new Date(this.eventData.event_start).getTime()
   }
-  get eventTimeGone () {
+
+  get eventTimeGone (): number {
     if (!this.eventData) return 0
     return this.time - (new Date(this.eventData.event_start).getTime() - this.master.timeOffset)
   }
-  get eventTimeLeft () {
+
+  get eventTimeLeft (): number {
     return this.eventTimeTotal - this.eventTimeGone > 0 ? this.eventTimeTotal - this.eventTimeGone : 0
   }
-  get eventTimePercent () {
+
+  get eventTimePercent (): number {
     return this.eventTimeGone / this.eventTimeTotal > 1 ? 100 : 100 * this.eventTimeGone / this.eventTimeTotal
   }
-  get maxStamina () {
+
+  get maxStamina (): number {
     if (!this.publicStatus.plv || !this.userLevel) return 0
-    return this.userLevel.filter((level) => Number(level.level) === Number(this.publicStatus.plv))[0].stamina
+    return this.userLevel.filter((level: any) => Number(level.level) === Number(this.publicStatus.plv))[0].stamina
   }
-  get maxExp () {
+
+  get maxExp (): number {
     if (!this.publicStatus.plv || !this.userLevel || Number(this.publicStatus.plv) === 300) return Infinity
     return this.userLevel.filter((level) => Number(level.level) === Number(this.publicStatus.plv))[0].exp
   }
-  get staminaPercent () {
+
+  get staminaPercent (): number {
     if (this.stamina && this.maxStamina) return 100 * this.stamina / (this.maxStamina * this.staminaSpeed)
     return 0
   }
-  get staminaTimeLeft () {
+
+  get staminaTimeLeft (): string {
     if (this.stamina && this.maxStamina) return this.timeFormate(1000 * (this.maxStamina * this.staminaSpeed - this.stamina))
     return '00:00'
   }
 
   @Watch('eventData')
-  eventDataWatchHandler (v: any) {
+  eventDataWatchHandler (v: any): void {
     if (v.type === 6) this.currentEventTab = 'ATAPON'
     else this.currentEventTab = this.eventType[v.type]
   }
 
-  toggle (eventType: string) {
+  toggle (eventType: string): void {
     // console.log(eventType)
     this.currentEventTab = eventType
   }
-  stopCount () {
+
+  stopCount (): void {
     this.playSe(this.cancelSe)
     this.isCounting = false
     clearInterval(this.staminaTimer as NodeJS.Timer)
     this.stamina = 0
   }
-  startCount () {
+
+  startCount (): void {
     this.playSe(this.enterSe)
     if (!isNaN(this.publicStatus.stamina) && this.publicStatus.stamina < this.maxStamina * this.staminaSpeed) {
       this.stamina = this.publicStatus.stamina * this.staminaSpeed
@@ -113,7 +126,8 @@ export default class extends mixins(modalMixin) {
       }, 1000)
     }
   }
-  calculate () {
+
+  calculate (): void {
     this.playSe(this.enterSe)
     if (this.currentEventTab === 'ATAPON') {
       this.ataponCal()
@@ -127,26 +141,27 @@ export default class extends mixins(modalMixin) {
       this.event.$emit('alert', this.$t('home.errorTitle'), this.$t('home.hope'))
     }
   }
-  clear () {
+
+  clear (): void {
     this.playSe(this.cancelSe)
     if (this.currentEventTab === 'ATAPON') {
       // clearInterval(this.privateStatus['1'].timer)
-      for (let key in this.privateStatus['1'].output) {
+      for (const key in this.privateStatus['1'].output) {
         if (key === 'gameTime') this.privateStatus['1'].output[key] = '00:00'
         else this.privateStatus['1'].output[key] = 0
       }
     } else if (this.currentEventTab === 'TOUR') {
-      for (let key in this.privateStatus['5'].output) {
+      for (const key in this.privateStatus['5'].output) {
         if (key === 'gameTime') this.privateStatus['5'].output[key] = '00:00'
         else this.privateStatus['5'].output[key] = 0
       }
     } else if (this.currentEventTab === 'MEDLEY') {
-      for (let key in this.privateStatus['3'].output) {
+      for (const key in this.privateStatus['3'].output) {
         if (key === 'gameTime') this.privateStatus['3'].output[key] = '00:00'
         else this.privateStatus['3'].output[key] = 0
       }
     } else if (this.currentEventTab === 'CARAVAN') {
-      for (let key in this.privateStatus['2'].output) {
+      for (const key in this.privateStatus['2'].output) {
         if (key === 'gameTime') this.privateStatus['2'].output[key] = '00:00'
         else if (key === 'extraRewardOdds') this.privateStatus['2'].output[key] = '0/0/0/0/0'
         else if (key === 'cardRewardOdds') this.privateStatus['2'].output[key] = '0.00/0.00'
@@ -156,21 +171,25 @@ export default class extends mixins(modalMixin) {
       this.event.$emit('alert', this.$t('home.errorTitle'), this.$t('home.hope'))
     }
   }
-  timeFormate (t: number) {
-    let day = Math.floor(t / 1000 / 60 / 60 / 24)
-    let hour = Math.floor(t / 1000 / 60 / 60 % 24)
-    let minute = Math.floor(t / 1000 / 60 % 60)
-    let second = Math.floor(t / 1000 % 60)
-    return `${day ? day + '日' : ''}${day ? (hour >= 10 ? hour + ':' : ('0' + hour + ':')) : (hour ? (hour >= 10 ? hour + ':' : ('0' + hour + ':')) : '')}${minute >= 10 ? minute : '0' + minute}:${second >= 10 ? second : '0' + second}`
+
+  timeFormate (t: number): string {
+    const day = Math.floor(t / 1000 / 60 / 60 / 24)
+    const hour = Math.floor(t / 1000 / 60 / 60 % 24)
+    const minute = Math.floor(t / 1000 / 60 % 60)
+    const second = Math.floor(t / 1000 % 60)
+    return `${day ? `${day}日` : ''}${day ? (hour >= 10 ? `${hour}:` : `0${hour}:`) : (hour ? (hour >= 10 ? `${hour}:` : `0${hour}:`) : '')}${minute >= 10 ? minute : `0${minute}`}:${second >= 10 ? second : `0${second}`}`
   }
-  getExp (plv: number | string) {
+
+  getExp (plv: number | string): number {
     if (plv >= 300) return Infinity
     return this.userLevel.filter((level) => Number(level.level) === Number(plv))[0].exp
   }
-  getMaxStamina (plv: number | string) {
+
+  getMaxStamina (plv: number | string): number {
     return this.userLevel.filter((level) => Number(level.level) === Number(plv))[0].stamina
   }
-  getLevelUpTimes (liveTimes: number, expPerTime: number, currentExp: number | string) {
+
+  getLevelUpTimes (liveTimes: number, expPerTime: number, currentExp: number | string): number {
     let levelUp = 0
     let gotExp = liveTimes * expPerTime + Number(currentExp)
     let tempLevel = this.publicStatus.plv
@@ -182,12 +201,13 @@ export default class extends mixins(modalMixin) {
     }
     return levelUp
   }
-  ptCount (times: number, use: number, levelUp: number, typeCode: string, loginStamina?: number) {
+
+  ptCount (times: number, use: number, levelUp: number, typeCode: string, loginStamina?: number): void {
     // console.log(times, use, levelUp, typeCode, loginStamina)
     let levelStamina = 0
     let tempLevel = Number(this.publicStatus.plv)
-    let speed = this.staminaSpeed
-    let currentStaminaSeconds = this.stamina
+    const speed = this.staminaSpeed
+    const currentStaminaSeconds = this.stamina
 
     let stmn = 0
     let seconds = 0
@@ -213,7 +233,7 @@ export default class extends mixins(modalMixin) {
     this.privateStatus[typeCode].output.extraStamina = extraStamina
   }
 
-  mounted () {
+  mounted (): void {
     this.$nextTick(() => {
       this.event.$on('openCal', () => {
         this.show = true
@@ -222,25 +242,25 @@ export default class extends mixins(modalMixin) {
     })
   }
 
-  ataponCal () {
-    let curExp = Number(this.publicStatus.exp)
-    let curItem = Number(this.privateStatus['1'].input.itemNumber.model)
-    let curPt = Number(this.privateStatus['1'].input.currentPt.model)
-    let tarPt = Number(this.privateStatus['1'].input.targetPt.model)
-    let comDi = this.privateStatus['1'].input.commonDifficulty.model.split(' ')
-    let evtDi = this.privateStatus['1'].input.eventDifficulty.model.split(' ')
-    let cb = Number(this.privateStatus['1'].input.commonTimes.model)
-    let eb = Number(this.privateStatus['1'].input.eventTimes.model)
+  ataponCal (): void {
+    const curExp = Number(this.publicStatus.exp)
+    const curItem = Number(this.privateStatus['1'].input.itemNumber.model)
+    const curPt = Number(this.privateStatus['1'].input.currentPt.model)
+    const tarPt = Number(this.privateStatus['1'].input.targetPt.model)
+    const comDi = this.privateStatus['1'].input.commonDifficulty.model.split(' ')
+    const evtDi = this.privateStatus['1'].input.eventDifficulty.model.split(' ')
+    const cb = Number(this.privateStatus['1'].input.commonTimes.model)
+    const eb = Number(this.privateStatus['1'].input.eventTimes.model)
 
-    let cGet = Number(comDi[1])
-    let eUse = Number(evtDi[0])
-    let eGet = Number(evtDi[1])
+    const cGet = Number(comDi[1])
+    const eUse = Number(evtDi[0])
+    const eGet = Number(evtDi[1])
 
     let dateOffset = new Date(this.time + this.eventTimeLeft + this.master.timeOffset).getDate() - new Date(this.time + this.master.timeOffset).getDate()
     if (dateOffset < 0) dateOffset += new Date(new Date().getFullYear(), new Date().getMonth() + 1, 0).getDate()
-    let loginItem = 300 * dateOffset
+    const loginItem = 300 * dateOffset
     // console.log('loginItem = ' + loginItem)
-    let reqPt = (tarPt - curPt) > 0 ? tarPt - curPt : 0
+    const reqPt = (tarPt - curPt) > 0 ? tarPt - curPt : 0
 
     let eventLiveTimes = 0
     let commonLiveTimes = 0
@@ -294,18 +314,18 @@ export default class extends mixins(modalMixin) {
     }, 1000) */
   }
 
-  caravanCal () {
-    let curExp = Number(this.publicStatus.exp)
-    let curMdl = Number(this.privateStatus['2'].input.currentMedal.model)
-    let tarMdl = Number(this.privateStatus['2'].input.targetMedal.model)
-    let comDi = this.privateStatus['2'].input.commonDifficulty.model.split(' ')
-    let starRank = this.privateStatus['2'].input.starRank.model
+  caravanCal (): void {
+    const curExp = Number(this.publicStatus.exp)
+    const curMdl = Number(this.privateStatus['2'].input.currentMedal.model)
+    const tarMdl = Number(this.privateStatus['2'].input.targetMedal.model)
+    const comDi = this.privateStatus['2'].input.commonDifficulty.model.split(' ')
+    const starRank = this.privateStatus['2'].input.starRank.model
 
     let tsuikaritsu = 0
 
     let dateOffset = new Date(this.time + this.eventTimeLeft + this.master.timeOffset).getDate() - new Date(this.time + this.master.timeOffset).getDate()
     if (dateOffset < 0) dateOffset += new Date(new Date().getFullYear(), new Date().getMonth() + 1, 0).getDate()
-    let loginStamina = 50 * dateOffset
+    const loginStamina = 50 * dateOffset
 
     let zero = 0
     let one = 0
@@ -317,7 +337,7 @@ export default class extends mixins(modalMixin) {
     let jouiSRshutsugen = 0
 
     if (starRank <= 15) {
-      tsuikaritsu = changeDecimal((starRank * 0.1 + 1.0) * 0.4 * comDi[2], 2, 'round')
+      tsuikaritsu = Number(changeDecimal((starRank * 0.1 + 1.0) * 0.4 * comDi[2], 2, 'round'))
 
       zero = (1 - tsuikaritsu) * (1 - tsuikaritsu)
       one = 2 * tsuikaritsu * (1 - tsuikaritsu)
@@ -328,7 +348,7 @@ export default class extends mixins(modalMixin) {
       kaiSRshutsugen = one * 0.02 + two * 0.12
       jouiSRshutsugen = one * 0.01 + two * 0.03
     } else {
-      tsuikaritsu = changeDecimal((0.2 * (starRank - 15)) * comDi[2], 2, 'round')
+      tsuikaritsu = Number(changeDecimal((0.2 * (starRank - 15)) * comDi[2], 2, 'round'))
 
       zero = 0
       one = 0
@@ -340,7 +360,7 @@ export default class extends mixins(modalMixin) {
       jouiSRshutsugen = two * 0.03 + three * 0.04 + four * 0.06
     }
 
-    let reqMdl = (tarMdl - curMdl) > 0 ? tarMdl - curMdl : 0
+    const reqMdl = (tarMdl - curMdl) > 0 ? tarMdl - curMdl : 0
 
     let liveTimes = Math.ceil((tarMdl - curMdl) / avrMdl)
     if (liveTimes < 0) liveTimes = 0
@@ -351,10 +371,10 @@ export default class extends mixins(modalMixin) {
     three = Math.round(three * 100)
     four = Math.round(four * 100)
     avrMdl = Math.round(avrMdl)
-    kaiSRshutsugen = changeDecimal(kaiSRshutsugen * liveTimes, 2, 'round')
-    jouiSRshutsugen = changeDecimal(jouiSRshutsugen * liveTimes, 2, 'round')
+    kaiSRshutsugen = Number(changeDecimal(kaiSRshutsugen * liveTimes, 2, 'round'))
+    jouiSRshutsugen = Number(changeDecimal(jouiSRshutsugen * liveTimes, 2, 'round'))
 
-    let levelUp = this.getLevelUpTimes(liveTimes, comDi[3], curExp)
+    const levelUp = this.getLevelUpTimes(liveTimes, comDi[3], curExp)
 
     this.privateStatus['2'].output.levelUp = levelUp
     this.privateStatus['2'].output.extraRewardOdds = `${zero}/${one}/${two}/${three}/${four}`
@@ -366,23 +386,23 @@ export default class extends mixins(modalMixin) {
     this.ptCount(liveTimes, Number(comDi[0]), levelUp, '2', loginStamina)
   }
 
-  medleyCal () {
-    let curExp = Number(this.publicStatus.exp)
-    let curPt = Number(this.privateStatus['3'].input.currentPt.model)
-    let tarPt = Number(this.privateStatus['3'].input.targetPt.model)
-    let evtDi = this.privateStatus['3'].input.eventDifficulty.model.split(' ')
-    let hkyr = this.privateStatus['3'].input.hakoyureLevel.model.split(' ')
+  medleyCal (): void {
+    const curExp = Number(this.publicStatus.exp)
+    const curPt = Number(this.privateStatus['3'].input.currentPt.model)
+    const tarPt = Number(this.privateStatus['3'].input.targetPt.model)
+    const evtDi = this.privateStatus['3'].input.eventDifficulty.model.split(' ')
+    const hkyr = this.privateStatus['3'].input.hakoyureLevel.model.split(' ')
 
     let dateOffset = new Date(this.time + this.eventTimeLeft + this.master.timeOffset).getDate() - new Date(this.time + this.master.timeOffset).getDate()
     if (dateOffset < 0) dateOffset += new Date(new Date().getFullYear(), new Date().getMonth() + 1, 0).getDate()
-    let loginStamina = 50 * dateOffset
+    const loginStamina = 50 * dateOffset
     // console.log('loginItem = ' + loginItem)
-    let reqPt = (tarPt - curPt) > 0 ? tarPt - curPt : 0
+    const reqPt = (tarPt - curPt) > 0 ? tarPt - curPt : 0
 
     let liveTimes = Math.ceil((tarPt - curPt) / (Number(evtDi[2]) + Number(hkyr[evtDi[0]])))
     if (liveTimes < 0) liveTimes = 0
 
-    let levelUp = this.getLevelUpTimes(liveTimes, evtDi[3], curExp)
+    const levelUp = this.getLevelUpTimes(liveTimes, evtDi[3], curExp)
 
     this.privateStatus['3'].output.levelUp = levelUp
     this.privateStatus['3'].output.requirePt = reqPt
@@ -390,23 +410,24 @@ export default class extends mixins(modalMixin) {
     this.privateStatus['3'].output.bonusStamina = loginStamina
     this.ptCount(liveTimes, Number(evtDi[1]), levelUp, '3', loginStamina)
   }
-  tourCal () {
-    let curExp = Number(this.publicStatus.exp)
-    let curAd = Number(this.privateStatus['5'].input.currentAudience.model)
-    let tarAd = Number(this.privateStatus['5'].input.targetAudience.model)
-    let useArr = this.privateStatus['5'].input.areaStamina.model.split(' ')
-    let liveOption = this.privateStatus['5'].input.liveOption.model
+
+  tourCal (): void {
+    const curExp = Number(this.publicStatus.exp)
+    const curAd = Number(this.privateStatus['5'].input.currentAudience.model)
+    const tarAd = Number(this.privateStatus['5'].input.targetAudience.model)
+    const useArr = this.privateStatus['5'].input.areaStamina.model.split(' ')
+    const liveOption = this.privateStatus['5'].input.liveOption.model
 
     let dateOffset = new Date(this.time + this.eventTimeLeft + this.master.timeOffset).getDate() - new Date(this.time + this.master.timeOffset).getDate()
     if (dateOffset < 0) dateOffset += new Date(new Date().getFullYear(), new Date().getMonth() + 1, 0).getDate()
-    let loginStamina = 50 * dateOffset
+    const loginStamina = 50 * dateOffset
     // console.log('loginItem = ' + loginItem)
-    let reqAd = (tarAd - curAd) > 0 ? tarAd - curAd : 0
+    const reqAd = (tarAd - curAd) > 0 ? tarAd - curAd : 0
 
     let liveTimes = Math.ceil(reqAd / (useArr[2] * (1 + 0.015 * useArr[1] + Number(liveOption))))
     if (liveTimes < 0) liveTimes = 0
 
-    let levelUp = this.getLevelUpTimes(liveTimes, useArr[3], curExp)
+    const levelUp = this.getLevelUpTimes(liveTimes, useArr[3], curExp)
 
     this.privateStatus['5'].output.levelUp = levelUp
     this.privateStatus['5'].output.requireAudience = reqAd
@@ -416,11 +437,11 @@ export default class extends mixins(modalMixin) {
   }
 }
 
-function changeDecimal (x: any, n: number, op: string) {
-  x = parseFloat(x)
+function changeDecimal (x: string | number, n: number, op: string): string {
+  x = parseFloat(x as string)
   let c = 1
   if (isNaN(x)) {
-    return false
+    return ''
   }
   for (let i = 0; i < n; i++) {
     c = c * 10

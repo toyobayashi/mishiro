@@ -8,11 +8,10 @@ import Component, { mixins } from 'vue-class-component'
   }
 })
 export default class extends mixins(modalMixin, MishiroIdol) {
-
   card: any = {}
   cardPlus: any = {}
 
-  toggle (practice: string) {
+  toggle (practice: string): void {
     switch (practice) {
       case 'idol.before':
         this.information = this.card
@@ -25,7 +24,7 @@ export default class extends mixins(modalMixin, MishiroIdol) {
     }
   }
 
-  mounted () {
+  mounted (): void {
     this.$nextTick(() => {
       this.event.$on('showCard', (card: any) => {
         const cardPlus = this.cardData.filter((c: any) => Number(c.id) === Number(card.evolution_id))[0]

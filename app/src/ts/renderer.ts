@@ -15,9 +15,7 @@ if (process.env.NODE_ENV !== 'production') Object.defineProperty(window, 'ELECTR
 Vue.use(VueI18n)
 Vue.use(vueGlobal)
 
-// tslint:disable-next-line:no-unused-expression
-new Vue({
-  el: '#app',
+const vm = new Vue({
   i18n: new VueI18n({
     locale: window.preload.configurer.getConfig().language,
     messages: {
@@ -28,6 +26,11 @@ new Vue({
   }),
   render: (h) => h(Mishiro)
 })
+vm.$mount('#app')
+
+if (process.env.NODE_ENV !== 'production') {
+  if ((module as any).hot) (module as any).hot.accept()
+}
 
 // window.addEventListener('beforeunload', () => {
 //   remote.app.quit()

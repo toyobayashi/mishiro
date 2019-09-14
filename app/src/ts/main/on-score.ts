@@ -1,6 +1,6 @@
 import DB from './db'
 // import { openSqlite } from './sqlite3'
-import { Event, ipcMain } from 'electron'
+import { ipcMain } from 'electron'
 
 export interface ScoreNote {
   sec: number // music time
@@ -11,8 +11,11 @@ export interface ScoreNote {
   groupId: number // group id
 }
 
-function createScore (csv: string) {
-  let csvTable: string[] = csv.split('\n')
+function createScore (csv: string): {
+  fullCombo: number
+  score: ScoreNote[]
+} {
+  const csvTable: string[] = csv.split('\n')
   const fullCombo = csvTable[1].split(',').map(value => Number(value))[5]
   const score: ScoreNote[] = []
 
@@ -34,9 +37,9 @@ function createScore (csv: string) {
   return { fullCombo, score }
 }
 
-let song: { src: string; bpm: number; score: ScoreNote[]; fullCombo: number; difficulty: string } | null = null
+let song: { src: string, bpm: number, score: ScoreNote[], fullCombo: number, difficulty: string } | null = null
 
-ipcMain.on('getSong', (event: Event) => {
+ipcMain.on('getSong', (event) => {
   const sync = song
   song = null
   event.returnValue = sync
@@ -64,7 +67,7 @@ const difficultyMap: any = {
 //   event.sender.send('score')
 // }
 
-export default async function getScore (scoreFile: string, difficulty: number | string, bpm: number, src: string) {
+export default async function getScore (scoreFile: string, difficulty: number | string, bpm: number, src: string): Promise<boolean> {
   const bdb = new DB(scoreFile)
   const rows = await bdb.find('blobs', ['data'], { name: { $like: [`%/_${difficulty}.csv`, '/'] } })
   await bdb.close()
@@ -72,7 +75,7 @@ export default async function getScore (scoreFile: string, difficulty: number | 
 
   const data = rows[0].data.toString()
 
-  let { fullCombo, score } = createScore(data)
+  const { fullCombo, score } = createScore(data)
 
   song = { src, bpm, score, fullCombo, difficulty: difficultyMap[difficulty] }
   return true

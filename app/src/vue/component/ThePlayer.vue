@@ -1,4 +1,4 @@
-﻿<template>
+<template>
 <div class="bgm-select-bar clearfix">
   <button @click.stop="selectBgm()">
     <span>{{playing.src.slice(playing.src.lastIndexOf('/') + 1)}}</span>
@@ -9,7 +9,7 @@
   <ul class="gray-bg" v-show="isShow">
     <li v-for="bgm in bgmList"
         :key="bgm.src"
-        :id="bgm.src.slice(bgm.src.lastIndexOf('/') + 1).split('.')[0]" 
+        :id="bgm.src.slice(bgm.src.lastIndexOf('/') + 1).split('.')[0]"
         @click="play(bgm)">
         <span v-text="bgm.src.slice(bgm.src.lastIndexOf('/') + 1)"
               :class="{ theme: bgm.src === playing.src }"></span>
@@ -54,7 +54,7 @@
   width: 87px;
   background-position: -576px -30px;
 }
-.bgm-select-bar>button:nth-child(1):active{    
+.bgm-select-bar>button:nth-child(1):active{
   background-position: -384px 0;
   padding-top: 3px;
 }

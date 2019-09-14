@@ -15,7 +15,7 @@ export interface MishiroConfig {
 export type MishiroConfigKey = keyof MishiroConfig
 
 export class Configurer {
-  private configFile: string
+  private readonly configFile: string
   private config: MishiroConfig
   constructor (configFile: string) {
     this.configFile = configFile
@@ -33,20 +33,22 @@ export class Configurer {
     }
     fs.writeJsonSync(configFile, this.config, { spaces: 2 })
   }
-  getConfig () {
+
+  getConfig (): MishiroConfig {
     return this.config
   }
-  configure (obj: MishiroConfigKey | MishiroConfig, value?: any) {
+
+  configure (obj: MishiroConfigKey | MishiroConfig, value?: any): MishiroConfig {
     if (typeof obj === 'string') {
       this.config[obj] = value
       fs.writeJsonSync(this.configFile, this.config, { spaces: 2 })
     } else {
-      for (let k in obj) {
-        let mishiroConfigKey = k as MishiroConfigKey
+      for (const k in obj) {
+        const mishiroConfigKey = k as MishiroConfigKey
         if (obj[mishiroConfigKey]) {
           (this.config as any)[mishiroConfigKey] = obj[mishiroConfigKey]
         } else {
-          if (this.config[mishiroConfigKey] !== void 0) {
+          if (this.config[mishiroConfigKey] !== undefined) {
             delete this.config[mishiroConfigKey]
           }
         }
@@ -55,8 +57,9 @@ export class Configurer {
     }
     return this.config
   }
-  remove (key: MishiroConfigKey) {
-    if (this.config[key] !== void 0) {
+
+  remove (key: MishiroConfigKey): MishiroConfig {
+    if (this.config[key] !== undefined) {
       delete this.config[key]
       fs.writeJsonSync(this.configFile, this.config, { spaces: 2 })
     }

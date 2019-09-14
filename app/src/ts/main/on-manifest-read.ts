@@ -1,7 +1,7 @@
 // import { openSqlite } from './sqlite3'
 import DB from './db'
 
-export default async function readManifest (manifestFile: string) {
+export default async function readManifest (manifestFile: string): Promise<string> {
   const { setCache } = __non_webpack_require__('./export.js')
 
   const manifest: DB = new DB(manifestFile)
@@ -29,7 +29,7 @@ export default async function readManifest (manifestFile: string) {
   //   manifest = void 0
   // })
 
-  let masterHash = (await manifest.find('manifests', ['name', 'hash'], { name: 'master.mdb' }))[0].hash as string
+  const masterHash = (await manifest.find('manifests', ['name', 'hash'], { name: 'master.mdb' }))[0].hash as string
   // for (let i = 0; i < manifests.length; i++) {
   //   if (manifests[i].name === 'master.mdb') {
   //     masterHash = manifests[i].hash

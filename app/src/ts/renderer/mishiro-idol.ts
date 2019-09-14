@@ -32,14 +32,14 @@ export default class extends Vue {
   imgProgress: number = 0
   eventCard: any[] = []
   currentPractice: string = 'idol.after'
-  practice: { before: string; after: string } = {
+  practice: { before: string, after: string } = {
     before: 'idol.before',
     after: 'idol.after'
   }
 
-  @Prop({ default: (() => ({})), type: Object }) master!: MasterData
+  @Prop({ default: () => ({}), type: Object }) master!: MasterData
 
-  blood (v: any) {
+  blood (v: any): string {
     switch (v) {
       case 2001:
         return 'A'
@@ -54,7 +54,7 @@ export default class extends Vue {
     }
   }
 
-  hand (v: any) {
+  hand (v: any): string {
     switch (v) {
       case 3001:
         return '右'
@@ -67,17 +67,18 @@ export default class extends Vue {
     }
   }
 
-  threesize (v: any) {
-    if (!v) return
+  threesize (v: any): string {
+    if (!v) return ''
     if (v[0] === undefined || v[1] === undefined || v[2] === undefined) {
       return ''
     } else if (v[0] >= 1000 && v[1] >= 1000 && v[2] >= 1000) {
       return '？/？/？'
     } else {
-      return v[0] + '/' + v[1] + '/' + v[2]
+      return `${v[0]}/${v[1]}/${v[2]}`
     }
   }
 
+  // eslint-disable-next-line @typescript-eslint/explicit-function-return-type
   get table () {
     return [
       [
@@ -114,7 +115,7 @@ export default class extends Vue {
         { text: this.$t('idol.vocal'), class: 'vocal' },
         { text: this.vocal, class: 'vocal' },
         { text: this.$t('idol.birth') },
-        { text: this.information.charaData && (this.information.charaData.birth_month + '月' + this.information.charaData.birth_day + '日') }
+        { text: this.information.charaData && (`${this.information.charaData.birth_month}月${this.information.charaData.birth_day}日`) }
       ],
       [
         { text: this.$t('idol.dance'), class: 'dance' },
@@ -149,7 +150,7 @@ export default class extends Vue {
         { text: this.$t('idol.leader_skill_name') },
         { text: this.information.leaderSkill && this.information.leaderSkill.name },
         { text: this.$t('idol.voice') },
-        { text: this.information.charaData && this.information.charaData.voice || this.$t('idol.nashi') }
+        { text: (this.information.charaData && this.information.charaData.voice) || this.$t('idol.nashi') }
       ],
       [
         { text: this.information.leaderSkill && this.information.leaderSkill.explain, colspan: '2', class: 'text-left' },
@@ -159,13 +160,15 @@ export default class extends Vue {
     ]
   }
 
-  get cardData () {
+  get cardData (): any[] {
     return this.master.cardData
   }
-  get voiceManifest () {
+
+  get voiceManifest (): any[] {
     return this.master.voiceManifest
   }
-  get rarity () {
+
+  get rarity (): string {
     switch (this.information.rarity) {
       case 1:
         return 'N'
@@ -187,38 +190,43 @@ export default class extends Vue {
         return ''
     }
   }
-  get hp () {
+
+  get hp (): string {
     if (this.information.hp_min && this.information.hp_max && this.information.bonus_hp) {
-      return this.information.hp_min + '～' + this.information.hp_max + ' (+' + this.information.bonus_hp + ')'
+      return `${this.information.hp_min}～${this.information.hp_max} (+${this.information.bonus_hp})'`
     } else {
       return ''
     }
   }
-  get vocal () {
+
+  get vocal (): string {
     if (this.information.vocal_min && this.information.vocal_max && this.information.bonus_vocal) {
-      return this.information.vocal_min + '～' + this.information.vocal_max + ' (+' + this.information.bonus_vocal + ')'
+      return `${this.information.vocal_min}～${this.information.vocal_max} (+${this.information.bonus_vocal})'`
     } else {
       return ''
     }
   }
-  get dance () {
+
+  get dance (): string {
     if (this.information.dance_min && this.information.dance_max && this.information.bonus_dance) {
-      return this.information.dance_min + '～' + this.information.dance_max + ' (+' + this.information.bonus_dance + ')'
+      return `${this.information.dance_min}～${this.information.dance_max} (+${this.information.bonus_dance})'`
     } else {
       return ''
     }
   }
-  get visual () {
+
+  get visual (): string {
     if (this.information.visual_min && this.information.visual_max && this.information.bonus_visual) {
-      return this.information.visual_min + '～' + this.information.visual_max + ' (+' + this.information.bonus_visual + ')'
+      return `${this.information.visual_min}～${this.information.visual_max} (+${this.information.bonus_visual})'`
     } else {
       return ''
     }
   }
-  get solo () {
+
+  get solo (): string {
     if (this.information.solo_live !== undefined) {
       if (Number(this.information.solo_live) === 0) {
-        return this.$t('idol.nashi')
+        return this.$t('idol.nashi') as string
       } else {
         return 'お願い！シンデレラ'
       }
@@ -227,7 +235,7 @@ export default class extends Vue {
     }
   }
 
-  query () {
+  query (): void {
     this.searchResult.length = 0
     this.playSe(this.enterSe)
     if (this.queryString) {
@@ -257,7 +265,8 @@ export default class extends Vue {
       this.searchResult = [].concat(this.cardData.filter(card => (Number(card.id) === this.eventCard[0] || Number(card.id) === this.eventCard[1])) as any)
     }
   }
-  selectedIdol (card: any) {
+
+  selectedIdol (card: any): void {
     if (Number(this.activeCard.id) !== Number(card.id)) {
       this.playSe(this.enterSe)
       this.activeCard = card
@@ -275,19 +284,20 @@ export default class extends Vue {
       }
     }
   }
-  async changeBackground (card: any) {
+
+  async changeBackground (card: any): Promise<void> {
     this.imgProgress = 0
     this.dler.stop()
     if (Number(card.rarity) > 4) {
       if (!fs.existsSync(cardDir(`bg_${card.id}.png`))) {
         try {
-          let result = await this.downloadCard(card.id, 'idolSelect')
+          const result = await this.downloadCard(card.id, 'idolSelect')
           if (result/*  && result !== 'await ipc' */) {
             this.imgProgress = 0
             this.event.$emit('idolSelect', card.id)
           }
         } catch (errorPath) {
-          this.event.$emit('alert', this.$t('home.errorTitle'), this.$t('home.downloadFailed') + '<br/>' + errorPath)
+          this.event.$emit('alert', this.$t('home.errorTitle'), (this.$t('home.downloadFailed') as string) + '<br/>' + (errorPath as string))
           throw errorPath
         }
       } else {
@@ -297,22 +307,23 @@ export default class extends Vue {
       this.event.$emit('noBg')
     }
   }
-  async downloadVoice () {
+
+  async downloadVoice (): Promise<void> {
     this.playSe(this.enterSe)
     if (this.activeCard.charaData.voice) {
       let charaDl = null
       let cardDl = null
-      let id = this.currentPractice === 'idol.after' ? this.activeCardPlus.id : this.activeCard.id
-      let cid = this.activeCard.chara_id
-      let cardVoice = this.voiceManifest.filter(row => row.name === `v/card_${id}.acb`)
-      let charaVoice = this.voiceManifest.filter(row => row.name === `v/chara_${cid}.acb`)
-      let cardDir = voiceDir(`card_${id}`)
-      let charaDir = voiceDir(`chara_${cid}`)
-      let cardExist = fs.existsSync(cardDir)
-      let charaExist = fs.existsSync(charaDir)
+      const id = this.currentPractice === 'idol.after' ? this.activeCardPlus.id : this.activeCard.id
+      const cid = this.activeCard.chara_id
+      const cardVoice = this.voiceManifest.filter(row => row.name === `v/card_${id}.acb`)
+      const charaVoice = this.voiceManifest.filter(row => row.name === `v/chara_${cid}.acb`)
+      const cardDir = voiceDir(`card_${id}`)
+      const charaDir = voiceDir(`chara_${cid}`)
+      const cardExist = fs.existsSync(cardDir)
+      const charaExist = fs.existsSync(charaDir)
       if (!charaExist) {
         fs.mkdirsSync(charaDir)
-        let hash = charaVoice[0].hash
+        const hash = charaVoice[0].hash
         try {
           this.voiceDisable = true
           // charaDl = await this.dler.downloadOne(
@@ -330,13 +341,13 @@ export default class extends Vue {
         } catch (errorPath) {
           fs.removeSync(charaDir)
           this.voiceDisable = false
-          this.event.$emit('alert', this.$t('home.errorTitle'), this.$t('home.downloadFailed') + '<br/>' + errorPath)
+          this.event.$emit('alert', this.$t('home.errorTitle'), (this.$t('home.downloadFailed') as string) + '<br/>' + (errorPath as string))
           return
         }
       }
       if (!cardExist) {
         fs.mkdirsSync(cardDir)
-        let hash = cardVoice[0].hash
+        const hash = cardVoice[0].hash
         try {
           // cardDl = await this.dler.downloadOne(
           //   this.getVoiceUrl(hash),
@@ -355,7 +366,7 @@ export default class extends Vue {
         } catch (errorPath) {
           fs.removeSync(cardDir)
           this.voiceDisable = false
-          this.event.$emit('alert', this.$t('home.errorTitle'), this.$t('home.downloadFailed') + '<br/>' + errorPath)
+          this.event.$emit('alert', this.$t('home.errorTitle'), (this.$t('home.downloadFailed') as string) + '<br/>' + (errorPath as string))
           return
         }
       }
@@ -368,15 +379,15 @@ export default class extends Vue {
         await this.voiceDecode([charaDl])
       } else {
         if (charaDl === null && cardDl === null) {
-          let cardVoiceFiles = fs.readdirSync(cardDir)
+          const cardVoiceFiles = fs.readdirSync(cardDir)
           for (let i = 0; i < cardVoiceFiles.length; i++) {
             cardVoiceFiles[i] = path.join(cardDir, cardVoiceFiles[i])
           }
-          let charaVoiceFiles = fs.readdirSync(charaDir)
+          const charaVoiceFiles = fs.readdirSync(charaDir)
           for (let i = 0; i < charaVoiceFiles.length; i++) {
             charaVoiceFiles[i] = path.join(charaDir, charaVoiceFiles[i])
           }
-          let voiceFiles = charaVoiceFiles.concat(cardVoiceFiles)
+          const voiceFiles = charaVoiceFiles.concat(cardVoiceFiles)
 
           const localSource = voiceFiles[Math.floor(voiceFiles.length * Math.random())]
           this.voice.src = process.env.NODE_ENV === 'production' ? localSource : ('/' + path.relative(getPath('..'), localSource).replace(new RegExp('\\' + path.sep, 'g'), '/'))
@@ -385,15 +396,15 @@ export default class extends Vue {
       }
     } else {
       this.event.$emit('alert', this.$t('home.errorTitle'), this.$t('idol.noVoice'))
-      return
     }
   }
-  async voiceDecode (acbs: string[]) {
+
+  async voiceDecode (acbs: string[]): Promise<void> {
     let hcaFiles: string[] = []
-    let hcaDirs: string[] = []
+    const hcaDirs: string[] = []
     for (let i = 0; i < acbs.length; i++) {
-      let acb = acbs[i]
-      let files = await this.core.audio.acb2hca(acb)
+      const acb = acbs[i]
+      const files = await this.core.audio.acb2hca(acb)
       hcaDirs.push(files.dirname || path.dirname(files[0]))
       hcaFiles = [...hcaFiles, ...files]
     }
@@ -406,8 +417,8 @@ export default class extends Vue {
       this.voiceDisable = false
     }).catch(err => console.log(err))
   }
-  async downloadCard (id: number | string, _data?: any, progressing?: (prog: ProgressInfo) => void) {
 
+  async downloadCard (id: number | string, _data?: any, progressing?: (prog: ProgressInfo) => void): Promise<string> {
     let downloadResult: string = ''
 
     if (!fs.existsSync(cardDir(`bg_${id}.png`))) {
@@ -417,7 +428,7 @@ export default class extends Vue {
           // let hash: string = ipcRenderer.sendSync('searchManifest', `card_bg_${id}.unity3d`)[0].hash
           const manifestDB = window.preload.getManifestDB()
           if (!manifestDB) throw new Error('Manifest database is not available.')
-          let dbres: { hash: string }[] = (await manifestDB.find('manifests', ['hash'], { name: `card_bg_${id}.unity3d` }))
+          const dbres: Array<{ hash: string }> = (await manifestDB.find('manifests', ['hash'], { name: `card_bg_${id}.unity3d` }))
           const hash = dbres[0].hash
           downloadResult = await this.dler.downloadAsset(
             hash,
@@ -456,7 +467,8 @@ export default class extends Vue {
     }
     return cardDir(`bg_${id}.png`)
   }
-  toggle (practice: string) {
+
+  toggle (practice: string): void {
     switch (practice) {
       case 'idol.before':
         this.information = this.activeCard
@@ -474,14 +486,19 @@ export default class extends Vue {
         break
     }
   }
-  opendir () {
+
+  opendir (): void {
     this.playSe(this.enterSe)
     const dir = cardDir()
     if (!fs.existsSync(dir)) fs.mkdirsSync(dir)
-    process.platform === 'win32' ? shell.openExternal(dir) : shell.showItemInFolder(dir + '/.')
+    if (process.platform === 'win32') {
+      shell.openExternal(dir).catch(err => console.log(err))
+    } else {
+      shell.showItemInFolder(dir + '/.')
+    }
   }
 
-  mounted () {
+  mounted (): void {
     this.$nextTick(() => {
       this.event.$on('eventBgReady', (id: number) => {
         if (id % 2 === 0) {

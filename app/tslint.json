@@ -1,7 +1,0 @@
-{
-  "extends": "tslint-config-standard",
-  "defaultSeverity": "warning",
-  "rules": {
-    "ter-no-irregular-whitespace": false
-  }
-}

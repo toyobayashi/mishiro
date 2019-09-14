@@ -1,7 +1,6 @@
 import { Vue, Component, Prop, Model } from 'vue-property-decorator'
 @Component
 export default class extends Vue {
-
   @Model('tabClicked') value: string
   @Prop({ required: true, default: () => ({}), type: Object }) tab: any
   @Prop({ default: false }) noTranslation: boolean
@@ -15,7 +14,7 @@ export default class extends Vue {
   /* playSe: Function
   enterSe: HTMLAudioElement */
 
-  liClick (item: string) {
+  liClick (item: string): void {
     if (item !== this.value) {
       this.playSe(this.enterSe)
       this.$emit('tabClicked', item)

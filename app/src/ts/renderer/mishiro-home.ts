@@ -34,7 +34,7 @@ export default class extends Vue {
   notDownloadedOnly: boolean = false
   canDownloadRows: any[] = []
 
-  get totalPage () {
+  get totalPage (): number {
     const canDownload: any[] = this.canDownloadRows
     if (!canDownload.length) return 0
     return canDownload.length / this.recordPerPage === Math.floor(canDownload.length / this.recordPerPage) ? canDownload.length / this.recordPerPage - 1 : Math.floor(canDownload.length / this.recordPerPage)
@@ -47,30 +47,35 @@ export default class extends Vue {
 
   checkFile (data: any[]): any[] {
     // return new Promise<any[]>((resolve, reject) => {
-      // const id = generateObjectId()
-      // ipcRenderer.once('checkFile', (_ev: Event, oid: string, notDownloaded: any[]) => {
-      //   if (oid === id) {
-      //     resolve(notDownloaded)
-      //   } else {
-      //     reject(new Error(`${id} !== ${oid}`))
-      //   }
-      // })
-      // ipcRenderer.send('checkFile', id, data)
+    // const id = generateObjectId()
+    // ipcRenderer.once('checkFile', (_ev: Event, oid: string, notDownloaded: any[]) => {
+    //   if (oid === id) {
+    //     resolve(notDownloaded)
+    //   } else {
+    //     reject(new Error(`${id} !== ${oid}`))
+    //   }
+    // })
+    // ipcRenderer.send('checkFile', id, data)
     // })
     return data.filter(row => !fs.existsSync(getPath.downloadDir(path.basename(row.name))))
   }
 
-  isDisabled (row: any) {
+  isDisabled (row: any): boolean {
     return fs.existsSync(downloadDir(path.basename(row.name)))
   }
 
-  opendir () {
+  opendir (): void {
     this.playSe(this.enterSe)
     const dir = downloadDir()
     if (!fs.existsSync(dir)) fs.mkdirsSync(dir)
-    process.platform === 'win32' ? shell.openExternal(dir) : shell.showItemInFolder(dir + '/.')
+    if (process.platform === 'win32') {
+      shell.openExternal(dir).catch(err => console.log(err))
+    } else {
+      shell.showItemInFolder(dir + '/.')
+    }
   }
-  query () {
+
+  query (): void {
     if (this.queryString === '') {
       this.page = 0
       this.data = []
@@ -81,7 +86,7 @@ export default class extends Vue {
     } else {
       const manifestDB = window.preload.getManifestDB()
       if (!manifestDB) return
-      manifestDB.find<{ name: string; hash: string }>('manifests', ['name', 'hash'], { name: { $like: `%${this.queryString.trim()}%` } }).then(manifestArr => {
+      manifestDB.find<{ name: string, hash: string }>('manifests', ['name', 'hash'], { name: { $like: `%${this.queryString.trim()}%` } }).then(manifestArr => {
         this.page = 0
         this.data = manifestArr
         if (!this.notDownloadedOnly) {
@@ -99,7 +104,8 @@ export default class extends Vue {
     }
     // this.playSe(this.enterSe)
   }
-  filterOnClick () {
+
+  filterOnClick (): void {
     this.notDownloadedOnly = !this.notDownloadedOnly
     if (!this.notDownloadedOnly) {
       this.canDownloadRows = this.data
@@ -113,10 +119,12 @@ export default class extends Vue {
       this.page = 0
     }
   }
-  tableChange (val: any[]) {
+
+  tableChange (val: any[]): void {
     this.selectedItem = val
   }
-  stopDownload () {
+
+  stopDownload (): void {
     this.playSe(this.cancelSe)
     this.downloadBtnDisable = false
     this.total = 0
@@ -124,7 +132,8 @@ export default class extends Vue {
     this.text = ''
     this.dler.stop(() => this.event.$emit('alert', this.$t('home.errorTitle'), this.$t('home.noTask')))
   }
-  async downloadSelectedItem () {
+
+  async downloadSelectedItem (): Promise<void> {
     this.playSe(this.enterSe)
     if (!navigator.onLine) {
       this.event.$emit('alert', this.$t('home.errorTitle'), this.$t('home.noNetwork'))
@@ -135,7 +144,7 @@ export default class extends Vue {
     if (tasks.length > 0) {
       this.downloadBtnDisable = true
 
-      let errorList = await this.dler.batchDownload(
+      const errorList = await this.dler.batchDownload(
         tasks,
         downloadDir(),
         (_row, filepath) => {
@@ -223,7 +232,7 @@ export default class extends Vue {
     }
   }
 
-  onMouseWheel (e: WheelEvent) {
+  onMouseWheel (e: WheelEvent): void {
     if (e.deltaY < 0) {
       this.previousPage()
     } else {
@@ -231,15 +240,15 @@ export default class extends Vue {
     }
   }
 
-  previousPage () {
+  previousPage (): void {
     this.page !== 0 ? this.page -= 1 : this.page = this.totalPage
   }
 
-  nextPage () {
+  nextPage (): void {
     this.page !== this.totalPage ? this.page += 1 : this.page = 0
   }
 
-  mounted () {
+  mounted (): void {
     this.$nextTick(() => {
       this.event.$on('enterKey', (block: string) => {
         if (block === 'home') {

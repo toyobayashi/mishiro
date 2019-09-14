@@ -23,10 +23,10 @@ const { scoreDir, bgmDir, liveDir } = getPath
       let min: string | number = Math.floor(second / 60)
       let sec: string | number = Math.floor(second % 60)
       if (min < 10) {
-        min = '0' + min
+        min = `0${min}`
       }
       if (sec < 10) {
-        sec = '0' + sec
+        sec = `0${sec}`
       }
       return `${min}:${sec}`
     }
@@ -45,26 +45,28 @@ export default class extends Vue {
   allLive: boolean = true
   liveQueryList: any[] = []
   isGameRunning: boolean = false
-  allLyrics: { time: number; lyrics: string; size: any}[] = []
-  lyrics: { time: number; lyrics: string; size: any}[] = []
+  allLyrics: Array<{ time: number, lyrics: string, size: any}> = []
+  lyrics: Array<{ time: number, lyrics: string, size: any}> = []
 
   @Prop({ default: () => ({}) }) master: MasterData
 
-  get liveManifest () {
+  get liveManifest (): any[] {
     return this.master.liveManifest ? this.master.liveManifest : []
   }
-  get bgmManifest () {
+
+  get bgmManifest (): any[] {
     return this.master.bgmManifest ? this.master.bgmManifest : []
   }
 
-  get wavProgress () {
+  get wavProgress (): boolean {
     return this.core.config.getProgressCallback()
   }
 
-  oninput (target: HTMLInputElement) {
+  oninput (target: HTMLInputElement): void {
     this.bgm.currentTime = Number(target.value)
   }
-  async selectAudio (audio: any) {
+
+  async selectAudio (audio: any): Promise<void> {
     if (this.activeAudio.hash === audio.hash) return
 
     this.playSe(this.enterSe)
@@ -104,7 +106,7 @@ export default class extends Vue {
               }
             )
           } catch (errorPath) {
-            this.event.$emit('alert', this.$t('home.errorTitle'), this.$t('home.downloadFailed') + '<br/>' + errorPath)
+            this.event.$emit('alert', this.$t('home.errorTitle'), (this.$t('home.downloadFailed') as string) + '<br/>' + (errorPath as string))
           }
           if (result) {
             this.total = (this.wavProgress ? 50 : 99.99)
@@ -156,7 +158,7 @@ export default class extends Vue {
             }
           )
         } catch (errorPath) {
-          this.event.$emit('alert', this.$t('home.errorTitle'), this.$t('home.downloadFailed') + '<br/>' + errorPath)
+          this.event.$emit('alert', this.$t('home.errorTitle'), (this.$t('home.downloadFailed') as string) + '<br/>' + (errorPath as string))
           return
         }
 
@@ -173,7 +175,6 @@ export default class extends Vue {
         this.current = 0
         this.text = ''
         this.event.$emit('liveSelect', { src: `../../asset/live/${audio.fileName}` })
-
       } else {
         this.activeAudio = audio
         this.event.$emit('liveSelect', { src: `../../asset/live/${audio.fileName}` })
@@ -190,7 +191,7 @@ export default class extends Vue {
           return
         }
         try {
-          let scoreBdb = await this.scoreDownloader.downloadDatabase(
+          const scoreBdb = await this.scoreDownloader.downloadDatabase(
             this.activeAudio.scoreHash,
             scoreDir(this.activeAudio.score.split('.')[0])
           )
@@ -202,7 +203,7 @@ export default class extends Vue {
             return
           }
         } catch (errorPath) {
-          this.event.$emit('alert', this.$t('home.errorTitle'), this.$t('home.downloadFailed') + '<br/>' + errorPath)
+          this.event.$emit('alert', this.$t('home.errorTitle'), (this.$t('home.downloadFailed') as string) + '<br/>' + (errorPath as string))
           return
         }
       }
@@ -211,7 +212,8 @@ export default class extends Vue {
       this.allLyrics = await window.preload.getLyrics(scoreDir(this.activeAudio.score))
     }
   }
-  query () {
+
+  query (): void {
     this.playSe(this.enterSe)
     if (this.queryString) {
       this.allLive = false
@@ -227,21 +229,23 @@ export default class extends Vue {
       this.liveQueryList = []
     }
   }
-  opendir () {
+
+  opendir (): void {
     this.playSe(this.enterSe)
     const dirb = bgmDir()
     const dirl = liveDir()
     if (!fs.existsSync(dirb)) fs.mkdirsSync(dirb)
     if (!fs.existsSync(dirl)) fs.mkdirsSync(dirl)
     if (process.platform === 'win32') {
-      shell.openExternal(dirb) // .catch(err => console.log(err))
-      shell.openExternal(dirl) // .catch(err => console.log(err))
+      shell.openExternal(dirb).catch(err => console.log(err))
+      shell.openExternal(dirl).catch(err => console.log(err))
     } else {
       shell.showItemInFolder(dirb + '/.')
       shell.showItemInFolder(dirl + '/.')
     }
   }
-  openLyrics () {
+
+  openLyrics (): void {
     const self = this
     this.event.$emit('alert', path.parse(this.activeAudio.fileName).name, this.allLyrics.map(line => line.lyrics).join('<br/>'), undefined, {
       text: this.$t('live.copy'),
@@ -252,7 +256,7 @@ export default class extends Vue {
     })
   }
 
-  private async gameOrScore () {
+  private async gameOrScore (): Promise<boolean> {
     if (this.isGameRunning) {
       this.event.$emit('alert', this.$t('home.errorTitle'), this.$t('live.gameRunning'))
       return false
@@ -274,7 +278,7 @@ export default class extends Vue {
         //   this.getDbUrl(this.activeAudio.scoreHash),
         //   scoreDir(this.activeAudio.score.split('.')[0])
         // )
-        let scoreBdb = await this.scoreDownloader.downloadDatabase(
+        const scoreBdb = await this.scoreDownloader.downloadDatabase(
           this.activeAudio.scoreHash,
           scoreDir(this.activeAudio.score.split('.')[0])
         )
@@ -286,7 +290,7 @@ export default class extends Vue {
           return false
         }
       } catch (errorPath) {
-        this.event.$emit('alert', this.$t('home.errorTitle'), this.$t('home.downloadFailed') + '<br/>' + errorPath)
+        this.event.$emit('alert', this.$t('home.errorTitle'), (this.$t('home.downloadFailed') as string) + '<br/>' + (errorPath as string))
         return false
       }
     }
@@ -300,7 +304,7 @@ export default class extends Vue {
   //   if (result) this.event.$emit('game', this.activeAudio)
   // }
 
-  async startScore () {
+  async startScore (): Promise<void> {
     this.playSe(this.enterSe)
     const result = await this.gameOrScore()
     if (!result) return
@@ -318,7 +322,7 @@ export default class extends Vue {
   //   })
   // }
 
-  mounted () {
+  mounted (): void {
     this.$nextTick(() => {
       this.bgm.addEventListener('timeupdate', () => {
         this.currentTime = this.bgm.currentTime

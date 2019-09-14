@@ -84,11 +84,11 @@ export default class extends Vue {
 
   time: number = new Date().getTime()
 
-  enter () {
+  enter (): void {
     this.isEntered = true
   }
 
-  changeLanguage (language: string) {
+  changeLanguage (language: string): void {
     switch (language) {
       case 'i18n.japanese': this._i18n._vm.locale = 'ja'; break
       case 'i18n.chinese': this._i18n._vm.locale = 'zh'; break
@@ -97,8 +97,8 @@ export default class extends Vue {
     // this.$el.parentNode.parentNode.getElementsByTagName("title")[0].innerHTML = this.$t("title");
   }
 
-  showBackground () {
-    const cb = () => {
+  showBackground (): void {
+    const cb = (): void => {
       this.show = !this.show
       document.removeEventListener('click', cb, false)
     }
@@ -110,11 +110,11 @@ export default class extends Vue {
     }, 0)
   }
 
-  afterEnter (devResVer?: number) {
+  afterEnter (devResVer?: number): void {
     this.event.$emit('enter', devResVer)
   }
 
-  mounted () {
+  mounted (): void {
     this.$nextTick(() => {
       if (process.env.NODE_ENV !== 'production') this.afterEnter(useResVer)
       setInterval(() => {

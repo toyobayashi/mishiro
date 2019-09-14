@@ -19,7 +19,7 @@ export default class extends mixins(modalMixin) {
   live: any = {}
   difficulties: { [key: string]: string } = {}
 
-  async start () {
+  async start (): Promise<void> {
     this.playSe(this.enterSe)
     const res = await window.preload.getScore(
       scoreDir(this.live.score), // scoreFile)
@@ -54,10 +54,10 @@ export default class extends mixins(modalMixin) {
         pathname: getPath('./renderer/score.html'),
         protocol: 'file:',
         slashes: true
-      })) // .catch(err => console.log(err))
+      })).catch(err => console.log(err))
     } else {
       // const config = require('../../../script/config.ts').default
-      win.loadURL('http://localhost:8090/app/renderer/score.html') // .catch(err => console.log(err))
+      win.loadURL('http://localhost:8090/app/renderer/score.html').catch(err => console.log(err))
       win.webContents.openDevTools()
     }
 
@@ -75,7 +75,7 @@ export default class extends mixins(modalMixin) {
     // )
   }
 
-  mounted () {
+  mounted (): void {
     this.$nextTick(() => {
       // ipcRenderer.on('score', (_event: Event) => {
 

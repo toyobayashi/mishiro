@@ -63,7 +63,6 @@ export const bgmList: BGMList = {
 
 @Component
 export default class extends Vue {
-
   bgmTimer: number | NodeJS.Timer = 0
   startTime: number = 0
   endTime: number = 0
@@ -71,15 +70,15 @@ export default class extends Vue {
   isShow: boolean = false
   playing: any = bgmList.anni
 
-  @Prop({ type: Object, default: (() => ({})) }) master!: MasterData
+  @Prop({ type: Object, default: () => ({}) }) master!: MasterData
 
-  get eventInfo () {
+  get eventInfo (): any {
     return this.master.eventData
   }
 
-  get bgmList () {
+  get bgmList (): BGMList {
     const list: BGMList = {}
-    for (let k in bgmList) {
+    for (const k in bgmList) {
       if (!bgmList[k].hidden) {
         list[k] = { ...bgmList[k] }
       }
@@ -87,8 +86,8 @@ export default class extends Vue {
     return list
   }
 
-  initSrc () {
-    let t = new Date()
+  initSrc (): string {
+    const t = new Date()
     if (t.getHours() >= 5 && t.getHours() <= 16) {
       return bgmList.day.src
     } else if (t.getHours() < 5 || t.getHours() >= 20) {
@@ -97,7 +96,8 @@ export default class extends Vue {
       return bgmList.sunset.src
     }
   }
-  pauseButton () {
+
+  pauseButton (): void {
     this.playSe(this.cancelSe)
     if (this.isPlaying) {
       this.pause()
@@ -105,18 +105,21 @@ export default class extends Vue {
       this.play()
     }
   }
-  selectBgm () {
+
+  selectBgm (): void {
     this.playSe(this.enterSe)
     this.isShow = !this.isShow
   }
-  set (bgm: any) {
+
+  set (bgm: any): void {
     this.bgm.src = bgm.src
     this.startTime = bgm.start
     this.endTime = bgm.end
     this.playing = bgm
   }
-  playStudioBgm () {
-    let t = new Date()
+
+  playStudioBgm (): void {
+    const t = new Date()
     if (t.getHours() >= 5 && t.getHours() <= 16) {
       this.play(bgmList.day)
     } else if (t.getHours() < 5 || t.getHours() >= 20) {
@@ -125,7 +128,8 @@ export default class extends Vue {
       this.play(bgmList.sunset)
     }
   }
-  play (bgm?: any) {
+
+  play (bgm?: any): void {
     if (bgm) {
       this.set(bgm)
       this.event.$emit('playerSelect', bgm.src.split('/')[bgm.src.split('/').length - 1])
@@ -144,7 +148,7 @@ export default class extends Vue {
           }
         }, 1)
       } else {
-        let windowbgm = this.bgm
+        const windowbgm = this.bgm
         this.bgm.onended = function () {
           windowbgm.currentTime = 0
           windowbgm.play().catch(err => console.log(err))
@@ -152,18 +156,19 @@ export default class extends Vue {
       }
     }, 0)
   }
-  pause () {
+
+  pause (): void {
     this.bgm.pause()
     this.isPlaying = false
     clearInterval(this.bgmTimer as NodeJS.Timer)
   }
 
-  beforeMount () {
+  beforeMount (): void {
     this.$nextTick(() => {
-      let msrEvent = localStorage.getItem('msrEvent')
+      const msrEvent = localStorage.getItem('msrEvent')
       if (msrEvent) {
-        let o = JSON.parse(msrEvent)
-        if ((o.id + '').charAt(0) !== '2' && (o.id + '').charAt(0) !== '6') {
+        const o = JSON.parse(msrEvent)
+        if ((o.id.toString()).charAt(0) !== '2' && (o.id.toString()).charAt(0) !== '6') {
           if (fs.existsSync(bgmDir(`bgm_event_${o.id}.mp3`))) {
             this.set({ src: `../../asset/bgm/bgm_event_${o.id}.mp3` })
           } else {
@@ -177,11 +182,12 @@ export default class extends Vue {
       }
     })
   }
-  mounted () {
+
+  mounted (): void {
     this.$nextTick(() => {
       // this.setStudioBgm();
       this.play()
-      let charaTitleVoiceArr = fs.readdirSync(getPath('../asset/chara_title.asar'))
+      const charaTitleVoiceArr = fs.readdirSync(getPath('../asset/chara_title.asar'))
       for (let i = 0; i < charaTitleVoiceArr.length; i++) {
         charaTitleVoiceArr[i] = '../../asset/chara_title.asar/' + charaTitleVoiceArr[i]
       }
@@ -200,7 +206,7 @@ export default class extends Vue {
 
       this.event.$on('changeBgm', (block: string) => {
         let flag = false
-        for (let b in bgmList) {
+        for (const b in bgmList) {
           if (bgmList[b].src === this.playing.src) {
             flag = true
             break
@@ -260,7 +266,7 @@ export default class extends Vue {
       })
       this.event.$on('liveSelect', (bgm: any) => {
         let flag = false
-        for (let b in bgmList) {
+        for (const b in bgmList) {
           if (bgmList[b].src === bgm.src) {
             flag = true
             this.play(bgmList[b])
