@@ -1,7 +1,7 @@
 import { Socket } from 'net'
 
-export function connect () {
-  let client = new Socket()
+export function connect (): void {
+  const client = new Socket()
   client.on('data', msg => {
     if (msg.toString() === 'reload') {
       client.destroy()

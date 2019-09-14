@@ -1,9 +1,9 @@
 import * as sqlite3 from 'sqlite3'
 
 class DB {
-
   private _db: sqlite3.Database | null = null
-  constructor (private _dbPath: string) {
+
+  constructor (private readonly _dbPath: string) {
     this._db = new sqlite3.Database(this._dbPath, sqlite3.OPEN_READONLY, (err: Error | null) => {
       if (err) {
         console.log(err)
@@ -42,7 +42,7 @@ class DB {
         }
         if (eachCall) eachCall.call(this, err, row)
         res.push(row)
-      }, (err, _count: number) => {
+      }, (err /* , count: number */) => {
         if (err) {
           reject(err)
           return
@@ -78,7 +78,7 @@ class DB {
     })
   }
 
-  close () {
+  close (): Promise<void> {
     return new Promise<void>((resolve, reject) => {
       if (!this._db) {
         reject(new Error(`Database ${this._dbPath} is not available.`))
@@ -99,13 +99,13 @@ class DB {
     let sql = `SELECT ${columns ? columns.join(', ') : '*'} FROM ${table}`
     if (query) {
       sql += ' WHERE '
-      let conditionArray = []
-      for (let column in query) {
+      const conditionArray = []
+      for (const column in query) {
         if (typeof query[column] === 'object' && query[column] !== null) {
           if (column === '$or') {
-            throw new Error(`$or is not supported yet.`)
+            throw new Error('$or is not supported yet.')
           } else {
-            for (let con in query[column]) {
+            for (const con in query[column]) {
               if (con === '$gt') {
                 conditionArray.push(`${column} > ${query[column][con]}`)
               } else if (con === '$gte') {
@@ -128,7 +128,7 @@ class DB {
             }
           }
         } else {
-          conditionArray.push(`${column} = ${typeof query[column] === 'number' ? query[column] : ('"' + query[column] + '"')}`)
+          conditionArray.push(`${column} = ${typeof query[column] === 'number' ? query[column] : `"${query[column]}"`}`)
         }
       }
       sql += conditionArray.join(' AND ')
@@ -136,8 +136,8 @@ class DB {
 
     if (orderBy) {
       sql += ' ORDER BY '
-      let orderByArray = []
-      for (let column in orderBy) {
+      const orderByArray = []
+      for (const column in orderBy) {
         if (orderBy[column] === 1) {
           orderByArray.push(`${column} ASC`)
         } else if (orderBy[column] === -1) {

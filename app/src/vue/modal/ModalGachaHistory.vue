@@ -25,7 +25,6 @@ import modalMixin from '../../ts/renderer/modal-mixin'
 import Component, { mixins } from 'vue-class-component'
 @Component
 export default class extends mixins(modalMixin) {
-
   modalWidth: string = '700px'
   list: any[] = []
 

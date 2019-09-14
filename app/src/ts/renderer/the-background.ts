@@ -1,11 +1,10 @@
 import { Vue, Component } from 'vue-property-decorator'
 @Component
 export default class extends Vue {
-
   bg: boolean | null = null
   backgroundId: boolean | number = false
 
-  mounted () {
+  mounted (): void {
     this.$nextTick(() => {
       this.bg = (window.innerWidth / window.innerHeight >= 1280 / 824)
       window.addEventListener('resize', () => {

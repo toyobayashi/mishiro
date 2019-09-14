@@ -27,7 +27,6 @@ import modalMixin from '../../ts/renderer/modal-mixin'
 import Component, { mixins } from 'vue-class-component'
 @Component
 export default class extends mixins(modalMixin) {
-
   liveResult: any = {}
 
   get table () {
@@ -47,6 +46,7 @@ export default class extends mixins(modalMixin) {
     this.visible = false
     this.event.$emit('playBgm')
   }
+
   mounted () {
     this.$nextTick(() => {
       this.event.$on('showLiveResult', (liveResult: any) => {
@@ -58,4 +58,3 @@ export default class extends mixins(modalMixin) {
   }
 }
 </script>
-

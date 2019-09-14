@@ -5,7 +5,7 @@ const got = window.node.got
 let current = 0
 let max = 20
 
-function httpGetVersion (resVer: number, progressing: (prog: ProgressInfo) => void): Promise<{ version: number; isExisting: boolean}> {
+function httpGetVersion (resVer: number, progressing: (prog: ProgressInfo) => void): Promise<{ version: number, isExisting: boolean}> {
   const option = {
     url: `http://storage.game.starlight-stage.jp/dl/${resVer}/manifests/all_dbmanifest`,
     headers: {
@@ -49,12 +49,12 @@ function httpGetVersion (resVer: number, progressing: (prog: ProgressInfo) => vo
   })
 }
 
-async function check (progressing: (prog: ProgressInfo) => void) {
-  let config = window.preload.configurer.getConfig()
+async function check (progressing: (prog: ProgressInfo) => void): Promise<number> {
+  const config = window.preload.configurer.getConfig()
   if (config.resVer) {
     return config.resVer
   }
-  let res = await window.preload.client.check()
+  const res = await window.preload.client.check()
   if (res !== 0) {
     if (res > (window.preload.configurer.getConfig().latestResVer as number)) {
       console.log(`/load/check [New Version] ${window.preload.configurer.getConfig().latestResVer as number} => ${res}`)
@@ -68,23 +68,23 @@ async function check (progressing: (prog: ProgressInfo) => void) {
     console.log('/load/check failed')
   }
 
-  let versionFrom = (config.latestResVer as number) - 100
+  const versionFrom = (config.latestResVer as number) - 100
 
   return new Promise<number>((resolve, reject) => {
     let resVer = versionFrom
 
-    function checkVersion (versionFrom: number) {
-      let versionArr = []
+    function checkVersion (versionFrom: number): void {
+      const versionArr = []
       for (let i = 10; i < 210; i += 10) {
         versionArr.push(Number(versionFrom) + i)
       }
-      let promiseArr: Promise<{ version: number; isExisting: boolean}>[] = []
+      const promiseArr: Array<Promise<{ version: number, isExisting: boolean}>> = []
       versionArr.forEach((v) => {
         promiseArr.push(httpGetVersion(v, progressing))
       })
-      Promise.all(promiseArr).then(async (arr) => {
+      Promise.all(promiseArr).then((arr) => {
         max += 20
-        let temp = arr
+        const temp = arr
         let isContinue = false
         for (let i = temp.length - 1; i >= 0; i--) {
           if (temp[i].isExisting === true) {

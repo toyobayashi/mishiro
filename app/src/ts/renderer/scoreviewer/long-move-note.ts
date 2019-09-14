@@ -15,7 +15,7 @@ class LongMoveNote extends Note {
     }
   }
 
-  public drawConnection (sv: ScoreViewer) {
+  public drawConnection (sv: ScoreViewer): void {
     if (this._connection) {
       const connectionX = ScoreViewer.X[this._connection.finishPos - 1]
       const connectionY = ScoreViewer.calY(sv.options.speed, this._connection.sec, sv.audio.currentTime)
@@ -35,7 +35,7 @@ class LongMoveNote extends Note {
     sv.frontCtx.drawImage(globalInstance.longMoveCanvas, this._x, this._y)
   }
 
-  public saveDrawConnection (sv: ScoreViewer) {
+  public saveDrawConnection (sv: ScoreViewer): void {
     if (this._connection) {
       const connectionX = ScoreViewer.X[this._connection.finishPos - 1]
       const connectionY = ScoreViewer.saveCalY(sv, this._connection.sec)

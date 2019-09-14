@@ -11,7 +11,7 @@
 
 <style scoped>
 .black{
-  position: absolute; 
+  position: absolute;
   z-index: 900;
   font-family: "CGSS-B";
   display: flex;

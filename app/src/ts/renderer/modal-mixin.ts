@@ -6,26 +6,26 @@ import { Vue, Component } from 'vue-property-decorator'
   }
 })
 export default class extends Vue {
-
   show: boolean = false
   visible: boolean = false
-  bodyMaxHeight: string = window.innerHeight - 267 + 'px'
+  bodyMaxHeight: string = `${window.innerHeight - 267}px`
   modalWidth: string = '600px'
 
-  close () {
+  close (): void {
     this.playSe(this.cancelSe)
     this.visible = false
   }
-  afterLeave () {
+
+  afterLeave (): void {
     this.show = false
   }
 
-  mounted () {
+  mounted (): void {
     this.$nextTick(() => {
       window.addEventListener(
         'resize',
         () => {
-          this.bodyMaxHeight = window.innerHeight - 267 + 'px'
+          this.bodyMaxHeight = `${window.innerHeight - 267}px`
         },
         false
       )

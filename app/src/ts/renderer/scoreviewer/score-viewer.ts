@@ -24,9 +24,7 @@ interface Option {
 }
 
 class ScoreViewer {
-
   public static main (): void {
-
     window.addEventListener('beforeunload', () => {
       const mainwindow = remote.BrowserWindow.fromId(ipcRenderer.sendSync('mainWindowId'))
       mainwindow.webContents.send('liveEnd', null, false)
@@ -36,7 +34,7 @@ class ScoreViewer {
     if (!song) return
 
     // console.log(song)
-    let name = parse(song.src).name.substr(parse(song.src).name.indexOf('-') + 1)
+    const name = parse(song.src).name.substr(parse(song.src).name.indexOf('-') + 1)
     document.getElementsByTagName('title')[0].innerHTML = name
     const sv = ScoreViewer.init(song, document.body)
     sv.start()
@@ -50,7 +48,7 @@ class ScoreViewer {
   }
 
   private static _instance: ScoreViewer | null = null
-  public static init (song: Song<ScoreNote>, el: HTMLElement, options?: Option) {
+  public static init (song: Song<ScoreNote>, el: HTMLElement, options?: Option): ScoreViewer {
     return new ScoreViewer(song, el, options)
   }
 
@@ -62,10 +60,10 @@ class ScoreViewer {
     return sv.saveCanvas.height - ((~~(globalInstance.saveSpeed * 60 * (sec)))) / globalInstance.scale
   }
 
-  private static CANVAS_WIDTH = 867
-  private static CANVAS_HEIGHT = 720
+  private static readonly CANVAS_WIDTH = 867
+  private static readonly CANVAS_HEIGHT = 720
   public static X: number[] = [238 - 206, 414 - 206, 589 - 206, 764 - 206, 937 - 206]
-  private static BOTTOM = 20
+  private static readonly BOTTOM = 20
   public static TOP_TO_TARGET_POSITION = ScoreViewer.CANVAS_HEIGHT - ScoreViewer.BOTTOM - 114 + 6
 
   public frontCanvas: HTMLCanvasElement
@@ -113,13 +111,12 @@ class ScoreViewer {
     return ScoreViewer._instance
   }
 
-  private _setNoteInstance (index: number, note: Note) {
+  private _setNoteInstance (index: number, note: Note): void {
     if (!this.song.score[index]._instance) this.song.score[index]._instance = note
   }
 
-  private _resolveNoteList () {
+  private _resolveNoteList (): void {
     for (let i = 0; i < this.song.score.length; i++) {
-
       if (this.song.score[i]._instance) continue
       const note = this.song.score[i]
 
@@ -145,7 +142,7 @@ class ScoreViewer {
             this._setNoteInstance(i, new FlipNote(note, undefined, this._getSyncNote(i)))
           }
           break
-        case 2:
+        case 2: {
           const endIndex = this._findLongNote(i, note.finishPos)
           if (endIndex !== -1) {
             const group = this._findSameGroup(endIndex, this.song.score[endIndex].groupId)
@@ -171,7 +168,8 @@ class ScoreViewer {
           }
           this._setNoteInstance(i, new LongNote(note, undefined, this._getSyncNote(i)))
           break
-        case 3:
+        }
+        case 3: {
           const group = this._findSameGroup(i, note.groupId)
           if (group.length) {
             for (let j = group.length - 1; j > 0; j--) {
@@ -189,13 +187,14 @@ class ScoreViewer {
           }
           this._setNoteInstance(i, new LongMoveNote(note, undefined, this._getSyncNote(i)))
           break
+        }
         default:
           break
       }
     }
   }
 
-  public start () {
+  public start (): void {
     if (!this._isReady) {
       setTimeout(() => {
         this.start()
@@ -209,26 +208,26 @@ class ScoreViewer {
 
     _frame()
 
-    function _frame () {
+    function _frame (): void {
       self._cal()
       self._renderNote()
       self._t = window.requestAnimationFrame(_frame)
     }
   }
 
-  public stop () {
+  public stop (): void {
     this.audio.pause()
     window.cancelAnimationFrame(this._t)
   }
 
-  private _clear () {
+  private _clear (): void {
     if (!this._isClean) {
       this.frontCtx.clearRect(0, 0, ScoreViewer.CANVAS_WIDTH, ScoreViewer.CANVAS_HEIGHT - 15)
       this._isClean = true
     }
   }
 
-  private _cal () {
+  private _cal (): void {
     let combo = -1
 
     for (let i = 0; i < this.song.score.length; i++) {
@@ -240,7 +239,7 @@ class ScoreViewer {
     }
 
     if (combo === -1) combo = this.song.score.length
-    if (this._comboDom.innerHTML !== '' + combo) this._comboDom.innerHTML = '' + combo
+    if (this._comboDom.innerHTML !== combo.toString()) this._comboDom.innerHTML = combo.toString()
 
     for (let i = combo; i < this.song.score.length; i++) {
       (this.song.score[i]._instance as Note).setY(ScoreViewer.calY(this.options.speed, this.song.score[i].sec, this.audio.currentTime))
@@ -267,8 +266,7 @@ class ScoreViewer {
     return index
   }
 
-  private _renderNote () {
-
+  private _renderNote (): void {
     this._clear()
 
     for (let i = this.song.score.length - 1; i >= 0; i--) {
@@ -295,7 +293,7 @@ class ScoreViewer {
     return undefined
   }
 
-  private _saveScore () {
+  private _saveScore (): void {
     if (!this._isReady) {
       setTimeout(() => {
         this._saveScore()
@@ -303,9 +301,9 @@ class ScoreViewer {
       return
     }
 
-    let name = parse(this.song.src).name.substr(parse(this.song.src).name.indexOf('-') + 1)
+    const name = parse(this.song.src).name.substr(parse(this.song.src).name.indexOf('-') + 1)
 
-    const _drawAndSave = (filename: string) => {
+    const _drawAndSave = (filename: string): void => {
       if (!this._isReadyToSave) {
         this.stop()
         this.saveCanvas.height = globalInstance.saveSpeed * 60 * this.audio.duration / globalInstance.scale
@@ -320,7 +318,7 @@ class ScoreViewer {
         const b = Math.round(this.audio.duration * this.song.bpm / 60)
         for (let i = 0; i < b; i += 4) {
           const y = this.saveCanvas.height - (i * 60 / this.song.bpm * globalInstance.saveSpeed * 60) / globalInstance.scale + globalInstance.noteHeight / 2 / globalInstance.scale
-          this.saveCtx.fillText('' + i, 1, y - 2)
+          this.saveCtx.fillText(i.toString(), 1, y - 2)
 
           this.saveCtx.beginPath()
           this.saveCtx.moveTo(0, y)
@@ -373,7 +371,6 @@ class ScoreViewer {
 
         ScoreViewer.TOP_TO_TARGET_POSITION = OLD_TOP_TO_TARGET_POSITION
         ScoreViewer.X = oldX
-
       }
 
       const base64str = this.saveCanvas.toDataURL('image/png')
@@ -393,36 +390,36 @@ class ScoreViewer {
       })
     }
 
-    remote.dialog.showSaveDialog({
+    /* remote.dialog.showSaveDialog({
       title: 'Save Score - ' + name + '-' + this.song.difficulty,
       defaultPath: getPath.scoreDir(name + '-' + this.song.difficulty + '.png')
     }, (filename) => {
       filename && _drawAndSave(filename)
-    })
+    }) */
 
-    /* remote.dialog.showSaveDialog({
+    remote.dialog.showSaveDialog({
       title: 'Save Score - ' + name + '-' + this.song.difficulty,
       defaultPath: getPath.scoreDir(name + '-' + this.song.difficulty + '.png')
     }).then((res) => {
       res.filePath && _drawAndSave(res.filePath)
     }).catch((err: any) => {
       console.log(err)
-    }) */
+    })
   }
 
-  private _formatTime (second: number) {
+  private _formatTime (second: number): string {
     let min: string | number = Math.floor(second / 60)
     let sec: string | number = Math.floor(second % 60)
     if (min < 10) {
-      min = '0' + min
+      min = `0${min}`
     }
     if (sec < 10) {
-      sec = '0' + sec
+      sec = `0${sec}`
     }
     return `${min}:${sec}`
   }
 
-  private _resolveDOM (el: HTMLElement) {
+  private _resolveDOM (el: HTMLElement): void {
     const background = document.getElementById('bg') as HTMLImageElement
     this.frontCanvas = document.createElement('canvas')
     this.backCanvas = document.createElement('canvas')
@@ -543,7 +540,7 @@ class ScoreViewer {
     this.audio.addEventListener('timeupdate', () => {
       this.rangeInput.value = this.audio.currentTime.toString()
       this.progressTime.innerHTML = `${this._formatTime(this.audio.currentTime)} / ${this._formatTime(this.audio.duration)}`
-      this.rangeInput.style.backgroundSize = 100 * (this.audio.currentTime / this.audio.duration) + '% 100%'
+      this.rangeInput.style.backgroundSize = `${100 * (this.audio.currentTime / this.audio.duration)}% 100%`
     })
 
     window.addEventListener('resize', () => {

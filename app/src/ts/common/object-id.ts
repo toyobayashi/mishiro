@@ -5,13 +5,13 @@ export const generateObjectId = (function () {
   }
   let index = ~~(Math.random() * 0xffffff)
 
-  function toHex (num: number) {
-    let hex = num.toString(16)
+  function toHex (num: number): string {
+    const hex = num.toString(16)
     return hex.length === 1 ? '0' + hex : hex
   }
 
   return function generateObjectId () {
-    let time = ~~(Date.now() / 1000)
+    const time = ~~(Date.now() / 1000)
     let timeString = ''
     let indexString = ''
     timeString += toHex((time >> 24) & 0xff)

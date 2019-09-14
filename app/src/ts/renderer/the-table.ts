@@ -1,4 +1,4 @@
-import { Vue, Component, Prop, Emit, Watch } from 'vue-property-decorator'
+import { Vue, Component, Prop, Watch } from 'vue-property-decorator'
 @Component
 export default class extends Vue {
   @Prop() data: any[]
@@ -7,13 +7,12 @@ export default class extends Vue {
   selected: any[] = []
   selectAll: boolean = false
 
-  @Emit()
-  change (_selected: any[]) {
-    // this.$emit('change', this.selected)
+  change (selected: any[]): void {
+    this.$emit('change', selected)
   }
 
   @Watch('selectAll')
-  selectAllWatchHandler (val: boolean) {
+  selectAllWatchHandler (val: boolean): void {
     if (val) {
       this.selected = []
       for (let i = 0; i < this.data.length; i++) {
@@ -27,7 +26,7 @@ export default class extends Vue {
     this.$emit('change', this.selected)
   }
 
-  mounted () {
+  mounted (): void {
     this.$nextTick(() => {
       this.event.$on('completeTask', (name: string, disable: boolean = true) => {
         for (let i = 0; i < this.selected.length; i++) {
@@ -38,7 +37,7 @@ export default class extends Vue {
             this.selected[i].name === 'r/' + name ||
             this.selected[i].name === 'v/' + name) {
             if (disable) {
-              let o = document.getElementById(this.selected[i].hash)
+              const o = document.getElementById(this.selected[i].hash)
               if (o) o.setAttribute('disabled', 'disabled')
             }
             this.selected.splice(i, 1)

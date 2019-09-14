@@ -32,14 +32,14 @@ export default class extends Vue {
   height: 18px;
    border: 1px solid #808080;
   border-radius: 2px;
-  background-color: #101010; 
+  background-color: #101010;
 }
 .cgss-progress>div>span{
   position: absolute;
   display: block;
   width: 100%;
   line-height: 16px;
-  font-family: "CGSS-B"; 
+  font-family: "CGSS-B";
   font-size: 15px;
   /*-webkit-text-stroke: 0px #202020;*/
   text-align: center;
@@ -52,7 +52,7 @@ export default class extends Vue {
   /* transition: width 0.6s cubic-bezier(0, 0.25, 0.25, 0.99); */
 }
 .cgss-progress-event>div>div{
-  float: left; 
+  float: left;
   height: 100%;
   background: linear-gradient(180deg, #f090c0, #e02060);
   /* transition: width 0.6s cubic-bezier(0, 0.25, 0.25, 0.99); */

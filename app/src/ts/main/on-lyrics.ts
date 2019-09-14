@@ -26,18 +26,18 @@ import DB from './db'
 //   event.sender.send('lyrics', lyrics)
 // }
 
-export default async function getLyrics (scoreFile: string): Promise<{ time: number; lyrics: string; size: number }[]> {
+export default async function getLyrics (scoreFile: string): Promise<Array<{ time: number, lyrics: string, size: number }>> {
   const bdb = new DB(scoreFile)
-  const rows = await bdb.find<{ name: string; data: Buffer | string }>('blobs', ['name', 'data'])
+  const rows = await bdb.find<{ name: string, data: Buffer | string }>('blobs', ['name', 'data'])
   await bdb.close()
-  let name = parse(scoreFile).name.split('_')
-  let musicscores = name[0]
-  let mxxx = name[1]
+  const name = parse(scoreFile).name.split('_')
+  const musicscores = name[0]
+  const mxxx = name[1]
 
-  let nameField = `${musicscores}/${mxxx}/${mxxx}_lyrics.csv`
-  let data = rows.filter((row: any) => row.name === nameField)[0].data.toString()
+  const nameField = `${musicscores}/${mxxx}/${mxxx}_lyrics.csv`
+  const data = rows.filter((row: any) => row.name === nameField)[0].data.toString()
   const list = data.split('\n')
-  const lyrics: { time: number; lyrics: string; size: number }[] = []
+  const lyrics: Array<{ time: number, lyrics: string, size: number }> = []
   for (let i = 1; i < list.length - 1; i++) {
     const line = list[i].split(',')
     lyrics.push({

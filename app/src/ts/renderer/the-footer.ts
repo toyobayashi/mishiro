@@ -5,7 +5,7 @@ export default class extends Vue {
 
   blocks: string[] = ['home', 'idol', 'commu', 'live', 'menu']
 
-  input (block: string) {
+  input (block: string): void {
     if (block !== this.value) {
       // if (block === 'gacha') {
       //   this.event.$emit('alert', this.$t('home.errorTitle'), 'GACHA part has been disabled.')

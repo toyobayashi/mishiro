@@ -1,5 +1,8 @@
 import { MishiroConfig } from '../main/config'
-export default function getEventData (eventAll: any[], config: MishiroConfig, now: number, timeOffset: number) {
+export default function getEventData (eventAll: any[], config: MishiroConfig, now: number, timeOffset: number): {
+  eventData: any
+  eventHappening: boolean
+} {
   eventAll.sort((a, b) => new Date(b.event_start).getTime() - new Date(a.event_start).getTime())
 
   if (config && config.event) {

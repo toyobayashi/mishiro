@@ -68,7 +68,6 @@ import { MasterData } from '../../ts/main/on-master-read'
   }
 })
 export default class extends mixins(modalMixin) {
-
   lang: 'zh' | 'ja' | 'en' = 'zh'
   resVer: string = ''
   gachaId: string = ''
@@ -82,13 +81,14 @@ export default class extends mixins(modalMixin) {
     en: 'i18n.english'
   }
 
-  @Prop({ default: (() => ({})), type: Object }) master: MasterData
+  @Prop({ default: () => ({}), type: Object }) master: MasterData
   @Prop({ required: true }) latestResVer: string | number
   @Prop() value: string
 
   get cardData (): any {
     return this.master.cardData ? this.master.cardData : {}
   }
+
   get eventData (): any {
     return this.master.eventAll ? this.master.eventAll : {}
   }
@@ -103,7 +103,7 @@ export default class extends mixins(modalMixin) {
     let eventId: number | ''
     let backgroundId: number | ''
     let account: string
-    let card: 'default' | 'kirara' = this.card
+    const card: 'default' | 'kirara' = this.card
     if (this.resVer) {
       if (
         Number(this.resVer) < 10012760 ||
@@ -200,7 +200,7 @@ export default class extends mixins(modalMixin) {
   mounted () {
     this.$nextTick(() => {
       this.event.$on('option', async () => {
-        let config = this.configurer.getConfig()
+        const config = this.configurer.getConfig()
         this.lang = config.language || 'zh'
         this.resVer = config.resVer ? config.resVer.toString() : ''
         this.gachaId = config.gacha ? config.gacha.toString() : ''

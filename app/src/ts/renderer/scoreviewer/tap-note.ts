@@ -9,19 +9,19 @@ class TapNote extends Note {
     if (syncNote) this._synchronizedNote = syncNote
   }
 
-  public drawConnection (_sv: ScoreViewer) {
-    return
+  public drawConnection (_sv: ScoreViewer): void {
+    // empty
   }
 
-  public drawNote (sv: ScoreViewer) {
+  public drawNote (sv: ScoreViewer): void {
     sv.frontCtx.drawImage(globalInstance.tapCanvas, this._x, this._y)
   }
 
-  public saveDrawConnection (_sv: ScoreViewer) {
-    return
+  public saveDrawConnection (_sv: ScoreViewer): void {
+    // empty
   }
 
-  public saveDrawNote (sv: ScoreViewer) {
+  public saveDrawNote (sv: ScoreViewer): void {
     sv.saveCtx.drawImage(globalInstance.tapCanvas, 0, 0, globalInstance.tapCanvas.width, globalInstance.tapCanvas.height, this._x, this._y, globalInstance.tapCanvas.width / globalInstance.scale, globalInstance.tapCanvas.height / globalInstance.scale/* ScoreViewer.calY(sv.options.speed, this._sec, 0) */)
   }
 }

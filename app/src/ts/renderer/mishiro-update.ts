@@ -14,7 +14,7 @@ const getPath = window.preload.getPath
 const { manifestPath, masterPath, bgmDir/* , iconDir */ } = getPath
 const ipcRenderer = window.node.electron.ipcRenderer
 
-let client = window.preload.client
+const client = window.preload.client
 
 @Component({
   components: {
@@ -32,11 +32,11 @@ export default class extends Vue {
   //   master: {}
   // }
 
-  get wavProgress () {
+  get wavProgress (): boolean {
     return this.core.config.getProgressCallback()
   }
 
-  @Prop() value!: { resVer: number | string; latestResVer: number | string; master: MasterData | any }
+  @Prop() value!: { resVer: number | string, latestResVer: number | string, master: MasterData | any }
   @Prop() isTouched!: boolean
 
   getEventCardId (eventAvailable: any[], eventData: any): number[] {
@@ -49,18 +49,19 @@ export default class extends Vue {
   }
 
   @Emit('ready')
-  emitReady () {
+  emitReady (): void {
     this.event.$emit('play-studio-bgm')
   }
 
-  async getResVer () {
-    let resVer = await check(prog => { // 检查资源版本，回调更新进度条
-      this.text = (this.$t('update.check') as string) + prog.current + ' / ' + prog.max
+  async getResVer (): Promise<number> {
+    const resVer = await check(prog => { // 检查资源版本，回调更新进度条
+      this.text = (this.$t('update.check') as string) + `${prog.current} / ${prog.max}`
       this.loading = prog.loading
     })
     return resVer
   }
-  async getManifest (resVer: number) {
+
+  async getManifest (resVer: number): Promise<string> {
     this.loading = 0
     this.text = this.$t('update.manifest') as string
 
@@ -72,7 +73,7 @@ export default class extends Vue {
     }
     try {
       const manifestFile = await this.dler.downloadManifest(resVer, manifestPath(resVer), prog => {
-        this.text = (this.$t('update.manifest') as string) + Math.ceil(prog.current / 1024) + '/' + Math.ceil(prog.max / 1024) + ' KB'
+        this.text = (this.$t('update.manifest') as string) + `${Math.ceil(prog.current / 1024)}/${Math.ceil(prog.max / 1024)} KB`
         this.loading = prog.loading
       })
       if (manifestFile) {
@@ -80,13 +81,13 @@ export default class extends Vue {
         return manifestFile
       } else throw new Error('Download failed.')
     } catch (errorPath) {
-      this.event.$emit('alert', this.$t('home.errorTitle'), this.$t('home.downloadFailed') + '<br/>' + errorPath)
-      return false
+      this.event.$emit('alert', this.$t('home.errorTitle'), (this.$t('home.downloadFailed') as string) + '<br/>' + (errorPath as string))
+      return ''
     }
   }
 
-  downloadMaster (resVer: number, hash: string, progressing: (prog: ProgressInfo) => void) {
-    let downloader = new this.core.Downloader()
+  downloadMaster (resVer: number, hash: string, progressing: (prog: ProgressInfo) => void): Promise<string> {
+    const downloader = new this.core.Downloader()
     return downloader.downloadDatabase(hash, masterPath(resVer), progressing, '.db')
     // return downloader.downloadOne(
     //   `http://storage.game.starlight-stage.jp/dl/resources/Generic/${hash}`,
@@ -95,7 +96,7 @@ export default class extends Vue {
     // )
   }
 
-  async getMaster (resVer: number, masterHash: string) {
+  async getMaster (resVer: number, masterHash: string): Promise<string> {
     this.loading = 0
     this.text = this.$t('update.master') as string
 
@@ -107,7 +108,7 @@ export default class extends Vue {
     }
     try {
       const masterFile = await this.downloadMaster(resVer, masterHash, prog => {
-        this.text = (this.$t('update.master') as string) + Math.ceil(prog.current / 1024) + '/' + Math.ceil(prog.max / 1024) + ' KB'
+        this.text = (this.$t('update.master') as string) + `${Math.ceil(prog.current / 1024)}/${Math.ceil(prog.max / 1024)} KB`
         this.loading = prog.loading
       })
       if (masterFile) {
@@ -117,7 +118,7 @@ export default class extends Vue {
         return masterFile
       } else throw new Error('Download master.mdb failed.')
     } catch (errorPath) {
-      this.event.$emit('alert', this.$t('home.errorTitle'), this.$t('home.downloadFailed') + '<br/>' + errorPath)
+      this.event.$emit('alert', this.$t('home.errorTitle'), (this.$t('home.downloadFailed') as string) + '<br/>' + (errorPath as string))
       throw errorPath
     }
   }
@@ -155,9 +156,9 @@ export default class extends Vue {
   //   }
   // }
 
-  async afterMasterRead (masterData: MasterData) {
+  async afterMasterRead (masterData: MasterData): Promise<void> {
     // console.log(masterData);
-    let config = this.configurer.getConfig()
+    const config = this.configurer.getConfig()
     const downloader = new this.core.Downloader()
     // const toName = (p: string) => path.parse(p).name
     const sync = {
@@ -211,23 +212,23 @@ export default class extends Vue {
           // )
           this.text = `bgm_event_${masterData.eventData.id}.acb`
           this.loading = 0
-          let result = await downloader.downloadSound(
+          const result = await downloader.downloadSound(
             'b',
             eventBgmHash,
             bgmDir(`bgm_event_${masterData.eventData.id}.acb`),
             prog => {
-              this.text = prog.name + '　' + Math.ceil(prog.current / 1024) + '/' + Math.ceil(prog.max / 1024) + ' KB'
+              this.text = (prog.name || '') + '　' + `${Math.ceil(prog.current / 1024)}/${Math.ceil(prog.max / 1024)} KB`
               this.loading = prog.loading / (this.wavProgress ? 2 : 1)
             }
           )
           if (result) {
-            await this.acb2mp3(bgmDir(`bgm_event_${masterData.eventData.id}.acb`), void 0, (_current, _total, prog) => {
-              this.text = prog.name + '　' + this.$t('live.decoding')
+            await this.acb2mp3(bgmDir(`bgm_event_${masterData.eventData.id}.acb`), undefined, (_current, _total, prog) => {
+              this.text = (prog.name || '') + '　' + (this.$t('live.decoding') as string)
               this.loading = 50 + prog.loading / 2
             })
           }
         } catch (errorPath) {
-          this.event.$emit('alert', this.$t('home.errorTitle'), this.$t('home.downloadFailed') + '<br/>' + errorPath)
+          this.event.$emit('alert', this.$t('home.errorTitle'), (this.$t('home.downloadFailed') as string) + '<br/>' + (errorPath as string))
         }
       }
     }
@@ -240,7 +241,7 @@ export default class extends Vue {
       localStorage.removeItem('msrEvent')
     }
 
-    let downloadCard = new MishiroIdol().downloadCard
+    const downloadCard = new MishiroIdol().downloadCard
 
     // const tmpawait = () => new Promise((resolve) => {
     //   this.event.$once('_eventBgReady', () => {
@@ -250,12 +251,12 @@ export default class extends Vue {
 
     let getBackgroundResult: string = ''
 
-    const getBackground = async (id: string | number) => {
+    const getBackground = async (id: string | number): Promise<void> => {
       try {
         this.text = `Download card_bg_${id}`
         this.loading = 0
         getBackgroundResult = await downloadCard.call(this, id, 'eventBgReady', (prog: ProgressInfo) => {
-          this.text = (prog.name || '') + '　' + Math.ceil(prog.current / 1024) + '/' + Math.ceil(prog.max / 1024) + ' KB'
+          this.text = (prog.name || '') + '　' + `${Math.ceil(prog.current / 1024)}/${Math.ceil(prog.max / 1024)} KB`
           this.loading = prog.loading
         })
 
@@ -264,7 +265,7 @@ export default class extends Vue {
           this.event.$emit('eventBgReady', id)
         }
       } catch (err) {
-        this.event.$emit('alert', this.$t('home.errorTitle'), this.$t('home.downloadFailed') + '<br/>' + err)
+        this.event.$emit('alert', this.$t('home.errorTitle'), (this.$t('home.downloadFailed') as string) + '<br/>' + (err.toString() as string))
       }
     }
 
@@ -299,7 +300,7 @@ export default class extends Vue {
     this.emitReady()
   }
 
-  mounted () {
+  mounted (): void {
     this.$nextTick(() => {
       this.event.$on('enter', async ($resver?: number) => {
         // ipcRenderer.on('readManifest', async (_event: Event, masterHash: string, resVer: number) => {
@@ -365,7 +366,7 @@ export default class extends Vue {
             // await this.afterMasterRead(masterData)
           }
         } else {
-          let resVer = this.configurer.getConfig().latestResVer as number
+          const resVer = this.configurer.getConfig().latestResVer as number
           const sync = {
             ...(this.value || {}),
             resVer: Number(resVer)
@@ -373,7 +374,7 @@ export default class extends Vue {
           // this.appData.resVer = Number(resVer)
           this.$emit('input', sync)
           if (fs.existsSync(manifestPath(resVer, '.db')) && fs.existsSync(masterPath(resVer, '.db'))) {
-            let manifestFile = manifestPath(resVer, '.db')
+            const manifestFile = manifestPath(resVer, '.db')
             if (manifestFile) {
               const masterHash: string = await (window.preload.readManifest as any)(manifestFile)
               delete window.preload.readManifest

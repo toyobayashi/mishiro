@@ -31,13 +31,12 @@ import { Prop } from 'vue-property-decorator'
 import { MasterData } from '../../ts/main/on-master-read'
 @Component
 export default class extends mixins(modalMixin) {
-
   info: any = {}
 
-  @Prop({ default: (() => ({})), type: Object }) master: MasterData
+  @Prop({ default: () => ({}), type: Object }) master: MasterData
 
   get gachaData (): any {
-    return this.master.gachaData ? this.master.gachaData : {}
+    return /* this.master.gachaData ? this.master.gachaData :  */{}
   }
 
   get table () {

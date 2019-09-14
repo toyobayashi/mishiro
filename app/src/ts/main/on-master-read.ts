@@ -12,7 +12,18 @@ import DB from './db'
 
 // let masterData: MasterData | null = null
 
-export default async function readMaster (masterFile: string/* , config: MishiroConfig, manifests: { name: string; hash: string; [x: string]: any }[] */) {
+export default async function readMaster (masterFile: string/* , config: MishiroConfig, manifests: { name: string; hash: string; [x: string]: any }[] */): Promise<{
+  eventAll: any
+  eventData: any
+  eventAvailable: any
+  eventHappening: any
+  cardData: any
+  bgmManifest: any
+  liveManifest: any
+  voiceManifest: any
+  userLevel: any
+  timeOffset: any
+}> {
   // if (masterData) return masterData
   const config = configurer.getConfig()
   const { getCache } = __non_webpack_require__('./export.js')
@@ -23,7 +34,7 @@ export default async function readMaster (masterFile: string/* , config: Mishiro
   const now = new Date().getTime()
 
   // let master: any = await openSqlite(masterFile)
-  let master = new DB(masterFile)
+  const master = new DB(masterFile)
   // setCache('masterDB', master)
   const gachaAll = await master.find('gacha_data')
   const eventAll = await master.find('event_data')
@@ -55,12 +66,12 @@ export default async function readMaster (masterFile: string/* , config: Mishiro
   const scoreManifest = await manifestDB.find('manifests', ['name', 'hash'], { name: { $like: 'musicscores_m___.bdb' } })
 
   // let gachaLimited = await master._all('SELECT gacha_id, reward_id FROM gacha_available WHERE limited_flag = 1 ORDER BY reward_id')
-  let gachaLimited = await master.find('gacha_available', ['gacha_id', 'reward_id'], { limited_flag: 1 }, { reward_id: 1 })
+  const gachaLimited = await master.find('gacha_available', ['gacha_id', 'reward_id'], { limited_flag: 1 }, { reward_id: 1 })
   // let eventLimited = await master._all('SELECT event_id, reward_id FROM event_available ORDER BY reward_id')
-  let eventLimited = await master.find('event_available', ['event_id', 'reward_id'], undefined, { reward_id: 1 })
+  const eventLimited = await master.find('event_available', ['event_id', 'reward_id'], undefined, { reward_id: 1 })
 
   let userLevel = await master.find('user_level', ['level', 'stamina', 'total_exp'])
-  let liveData = await master.find('live_data', ['id', 'music_data_id'])
+  const liveData = await master.find('live_data', ['id', 'music_data_id'])
   // master.close((err: Error) => {
   //   if (err) throw err
   //   master = void 0
@@ -68,11 +79,11 @@ export default async function readMaster (masterFile: string/* , config: Mishiro
 
   await master.close()
 
-  let { gachaLimitedCard, eventLimitedCard } = getLimitedCard(eventAll, gachaAll, eventLimited, gachaLimited)
+  const { gachaLimitedCard, eventLimitedCard } = getLimitedCard(eventAll, gachaAll, eventLimited, gachaLimited)
   charaData = resolveCharaData(charaData, textData)
   cardData = resolveCardData(cardData, charaData, skillData, leaderSkillData, eventLimitedCard, gachaLimitedCard)
 
-  let audioManifest = resolveAudioManifest(bgmManifest, liveManifest, musicData, charaData, liveData, scoreManifest)
+  const audioManifest = resolveAudioManifest(bgmManifest, liveManifest, musicData, charaData, liveData, scoreManifest)
   bgmManifest = audioManifest.bgmManifest
   liveManifest = audioManifest.liveManifest
 

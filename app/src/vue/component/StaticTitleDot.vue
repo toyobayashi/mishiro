@@ -1,8 +1,8 @@
 <template>
 <span>
-  <span class="title-dot">
-  </span><span class="title-dot">
-  </span><span class="title-dot"></span>
+  <span :class="['title-dot']">
+  </span><span :class="['title-dot']">
+  </span><span :class="['title-dot']"></span>
 </span>
 </template>
 

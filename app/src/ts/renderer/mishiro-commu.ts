@@ -31,7 +31,7 @@ class BannerRenderer {
     // document.body.append(this.svg)
   }
 
-  render (data: any, icon: string, emblem: string, callback?: () => void) {
+  render (data: any, icon: string, emblem: string, callback?: () => void): void {
     const root = this.svg
     const xlink = 'http://www.w3.org/1999/xlink'
 
@@ -39,7 +39,7 @@ class BannerRenderer {
     setIcon('data:image/png;base64,' + (icon || ''))
     setEmblem('data:image/png;base64,' + (emblem || ''))
 
-    function setText (id: string, value: string, grp: boolean = false) {
+    function setText (id: string, value: string, grp: boolean = false): boolean {
       let dom
       if (grp) {
         dom = root.querySelectorAll(`g#${id}>text>tspan`)
@@ -59,11 +59,11 @@ class BannerRenderer {
       return false
     }
 
-    function setIcon (href: string) {
+    function setIcon (href: string): void {
       root.querySelector('image#icon')!.setAttributeNS(xlink, 'xlink:href', href)
     }
 
-    function setEmblem (href: string) {
+    function setEmblem (href: string): void {
       root.querySelector('image#emblem')!.setAttributeNS(xlink, 'xlink:href', href)
     }
 
@@ -101,7 +101,6 @@ class BannerRenderer {
     }
 
     (['f', 'e', 'd', 'c', 'b', 'a', 's', 'ss', 'sss']).forEach((rank, i) => {
-
       if ((i + 1) !== data.rank && !(rank === 'sss' && data.rank === 100)) {
         // root.querySelectorAll(`g#rk_${rank}`)[0].innerHTML = ''
         root.querySelector(`g#rk_${rank}`)!.setAttribute('style', 'display: none')
@@ -135,11 +134,11 @@ export default class extends Vue {
   isSearching: boolean = false
   dler = new this.core.Downloader()
 
-  openOrigin () {
-    window.node.electron.shell.openExternal('https://deresute.me/') // .catch(err => console.log(err))
+  openOrigin (): void {
+    window.node.electron.shell.openExternal('https://deresute.me/').catch(err => console.log(err))
   }
 
-  async query () {
+  async query (): Promise<void> {
     this.playSe(this.enterSe)
     if (!this.queryString) {
       this.event.$emit('alert', this.$t('home.errorTitle'), this.$t('commu.notfound'))
@@ -180,7 +179,7 @@ export default class extends Vue {
         const config = this.configurer.getConfig()
         if (!config.card || config.card === 'default') {
           const record = await window.preload.getManifestDB()!.findOne('manifests', ['name', 'hash'], { name: `card_${data.leader_card.id}_m.unity3d` })
-          let asset = await this.dler.downloadAsset(record.hash, cacheName)
+          const asset = await this.dler.downloadAsset(record.hash, cacheName)
           if (asset) {
             await remove(cacheName)
             await unpackTexture2D(asset)
@@ -196,7 +195,7 @@ export default class extends Vue {
         emblemB64 = readFileSync(emblemCache + '.png').toString('base64')
       } else {
         const record = await window.preload.getManifestDB()!.findOne('manifests', ['name', 'hash'], { name: `emblem_${data.emblem_id}_l.unity3d` })
-        let asset = await this.dler.downloadAsset(record.hash, emblemCache)
+        const asset = await this.dler.downloadAsset(record.hash, emblemCache)
         if (asset) {
           await remove(emblemCache)
           await unpackTexture2D(asset)
@@ -214,7 +213,7 @@ export default class extends Vue {
     })
   }
 
-  save () {
+  save (): void {
     this.playSe(this.enterSe)
     if (!this.renderer || !this.renderer.canvas) {
       this.event.$emit('alert', this.$t('home.errorTitle'), this.$t('commu.notfound'))
@@ -222,7 +221,7 @@ export default class extends Vue {
     }
     this.renderer.canvas.toBlob((blob) => {
       const a = document.createElement('a')
-      a.download = `test.png`
+      a.download = 'test.png'
       a.href = URL.createObjectURL(blob)
       const event = new MouseEvent('click', {
         view: window,
@@ -235,6 +234,7 @@ export default class extends Vue {
   }
 }
 
+// eslint-disable-next-line @typescript-eslint/explicit-function-return-type
 function createBannerData (profileData: any) {
   const cleared = {
     debut: 0,
@@ -250,7 +250,7 @@ function createBannerData (profileData: any) {
     master: 0,
     master_plus: 0
   }
-  profileData.user_live_difficulty_list.forEach((item: { clear_number: number; difficulty_type: number; full_combo_number: number; 'null': number; viewer_id: number }) => {
+  profileData.user_live_difficulty_list.forEach((item: { clear_number: number, difficulty_type: number, full_combo_number: number, 'null': number, viewer_id: number }) => {
     if (item.difficulty_type === 1) {
       cleared.debut = item.clear_number
       fullCombo.debut = item.full_combo_number

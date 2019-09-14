@@ -19,7 +19,7 @@ export default class extends Vue {
   @Prop() limit: [number, number]
 
   onInput (target: HTMLInputElement) {
-    let v = target.value
+    const v = target.value
     if (this.limit && this.limit.length) {
       if (Number(v) > this.limit[1]) {
         this.$emit('input', this.limit[1])

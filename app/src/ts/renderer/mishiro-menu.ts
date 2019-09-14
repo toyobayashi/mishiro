@@ -11,28 +11,32 @@ const { dataDir } = getPath
 export default class extends Vue {
   @Prop() resVer: string | number
 
-  showOption (btn: HTMLElement) {
+  showOption (btn: HTMLElement): void {
     btn.blur()
     this.playSe(this.enterSe)
     this.event.$emit('option')
   }
-  showAbout () {
+
+  showAbout (): void {
     this.playSe(this.enterSe)
     this.event.$emit('showAbout')
   }
-  showLicense () {
+
+  showLicense (): void {
     this.playSe(this.enterSe)
     // tslint:disable-next-line: no-floating-promises
     import(/* webpackChunkName: "marked" */ 'marked').then((marked) => {
       this.event.$emit('license')
       this.event.$emit('alert', this.$t('menu.license'), (marked as any).default(license), 900)
-    })
+    }).catch(err => console.log(err))
   }
-  showVar () {
+
+  showVar (): void {
     this.playSe(this.enterSe)
     this.event.$emit('alert', this.$t('menu.var'), this.$t('menu.varCon'))
   }
-  async update () {
+
+  async update (): Promise<void> {
     this.playSe(this.enterSe)
     if (!navigator.onLine) {
       this.event.$emit('alert', this.$t('home.errorTitle'), this.$t('home.noNetwork'))
@@ -95,20 +99,24 @@ export default class extends Vue {
     //   }
     // })
   }
-  relaunch () {
+
+  relaunch (): void {
     this.playSe(this.enterSe)
     remote.app.relaunch({ args: ['.'] })
     remote.app.exit(0)
   }
-  calculator () {
+
+  calculator (): void {
     this.playSe(this.enterSe)
     this.event.$emit('openCal')
   }
-  exit () {
+
+  exit (): void {
     remote.app.exit(0)
     this.playSe(this.cancelSe)
   }
-  cacheClear () {
+
+  cacheClear (): void {
     this.playSe(this.enterSe)
     const files = fs.readdirSync(dataDir())
     const deleteItem = []
@@ -121,5 +129,4 @@ export default class extends Vue {
       }).catch(err => this.event.$emit('alert', this.$t('home.errorTitle'), err && err.message))
     } else this.event.$emit('alert', this.$t('menu.cacheClear'), this.$t('menu.noCache'))
   }
-
 }
