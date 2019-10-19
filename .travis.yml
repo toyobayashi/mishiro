@@ -1,6 +1,6 @@
 language: node_js
 node_js:
-  - 10.16.1
+  - 10.16.3
 os:
   - windows
   - linux
@@ -9,7 +9,7 @@ before_install:
   - if [ "$TRAVIS_OS_NAME" = "windows" ]; then choco install innosetup; fi
   - node -v
   - npm -v
-  - npm install -g node-gyp
+  - npm install -g node-gyp@5
   - node-gyp -v
   - if [ "$TRAVIS_OS_NAME" = "windows" ]; then npm config set node_gyp "`npm prefix -g`\\node_modules\\node-gyp\\bin\\node-gyp.js"; else npm config set node_gyp "`npm prefix -g`/lib/node_modules/node-gyp/bin/node-gyp.js"; fi
   - node-gyp install --target=$(node -p require\(\'./app/package.json\'\).devDependencies.electron) --dist-url=https://atom.io/download/electron

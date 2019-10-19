@@ -31,7 +31,8 @@ module.exports = {
     sourceType: 'module',
     project: './tsconfig.json',
     tsconfigRootDir: __dirname,
-    extraFileExtensions: ['.vue']
+    extraFileExtensions: ['.vue'],
+    createDefaultProgram: true
   },
   globals: {
     __non_webpack_require__: false
