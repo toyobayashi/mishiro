@@ -2,8 +2,8 @@ import ProgressBar from '../../vue/component/ProgressBar.vue'
 import TabSmall from '../../vue/component/TabSmall.vue'
 import InputText from '../../vue/component/InputText.vue'
 
-import { MasterData } from '../main/on-master-read'
-import { Vue, Component, Prop } from 'vue-property-decorator'
+// import { MasterData } from '../main/on-master-read'
+import { Vue, Component } from 'vue-property-decorator'
 import { ProgressInfo } from 'mishiro-core'
 import { unpackTexture2D } from './unpack-texture-2d'
 
@@ -37,7 +37,7 @@ export default class extends Vue {
     after: 'idol.after'
   }
 
-  @Prop({ default: () => ({}), type: Object }) master!: MasterData
+  // @Prop({ default: () => ({}), type: Object }) master!: MasterData
 
   blood (v: any): string {
     switch (v) {
@@ -161,11 +161,11 @@ export default class extends Vue {
   }
 
   get cardData (): any[] {
-    return this.master.cardData
+    return this.$store.state.master.cardData || []
   }
 
   get voiceManifest (): any[] {
-    return this.master.voiceManifest
+    return this.$store.state.master.voiceManifest || []
   }
 
   get rarity (): string {

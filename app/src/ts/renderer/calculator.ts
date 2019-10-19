@@ -7,7 +7,7 @@ import privateStatus from './calculator-data'
 
 import Component, { mixins } from 'vue-class-component'
 import { Prop, Watch } from 'vue-property-decorator'
-import { MasterData } from '../main/on-master-read'
+// import { MasterData } from '../main/on-master-read'
 
 const { ipcRenderer } = window.node.electron
 
@@ -41,15 +41,19 @@ export default class extends mixins(modalMixin) {
 
   privateStatus: any = privateStatus
 
-  @Prop({ default: () => ({}), type: Object }) master: MasterData
+  // @Prop({ default: () => ({}), type: Object }) master: MasterData
   @Prop({ default: new Date().getTime() }) time: number
 
   get eventData (): any {
-    return this.master.eventData/*  ? this.master.eventData : {} */
+    return this.$store.state.master.eventData /*  ? this.master.eventData : {} */
   }
 
   get userLevel (): any[] {
-    return this.master.userLevel
+    return this.$store.state.master.userLevel
+  }
+
+  get timeOffset (): number {
+    return this.$store.state.master.timeOffset || 0
   }
 
   get eventTimeTotal (): number {
@@ -59,7 +63,7 @@ export default class extends mixins(modalMixin) {
 
   get eventTimeGone (): number {
     if (!this.eventData) return 0
-    return this.time - (new Date(this.eventData.event_start).getTime() - this.master.timeOffset)
+    return this.time - (new Date(this.eventData.event_start).getTime() - this.timeOffset)
   }
 
   get eventTimeLeft (): number {
@@ -256,7 +260,7 @@ export default class extends mixins(modalMixin) {
     const eUse = Number(evtDi[0])
     const eGet = Number(evtDi[1])
 
-    let dateOffset = new Date(this.time + this.eventTimeLeft + this.master.timeOffset).getDate() - new Date(this.time + this.master.timeOffset).getDate()
+    let dateOffset = new Date(this.time + this.eventTimeLeft + this.timeOffset).getDate() - new Date(this.time + this.timeOffset).getDate()
     if (dateOffset < 0) dateOffset += new Date(new Date().getFullYear(), new Date().getMonth() + 1, 0).getDate()
     const loginItem = 300 * dateOffset
     // console.log('loginItem = ' + loginItem)
@@ -323,7 +327,7 @@ export default class extends mixins(modalMixin) {
 
     let tsuikaritsu = 0
 
-    let dateOffset = new Date(this.time + this.eventTimeLeft + this.master.timeOffset).getDate() - new Date(this.time + this.master.timeOffset).getDate()
+    let dateOffset = new Date(this.time + this.eventTimeLeft + this.timeOffset).getDate() - new Date(this.time + this.timeOffset).getDate()
     if (dateOffset < 0) dateOffset += new Date(new Date().getFullYear(), new Date().getMonth() + 1, 0).getDate()
     const loginStamina = 50 * dateOffset
 
@@ -393,7 +397,7 @@ export default class extends mixins(modalMixin) {
     const evtDi = this.privateStatus['3'].input.eventDifficulty.model.split(' ')
     const hkyr = this.privateStatus['3'].input.hakoyureLevel.model.split(' ')
 
-    let dateOffset = new Date(this.time + this.eventTimeLeft + this.master.timeOffset).getDate() - new Date(this.time + this.master.timeOffset).getDate()
+    let dateOffset = new Date(this.time + this.eventTimeLeft + this.timeOffset).getDate() - new Date(this.time + this.timeOffset).getDate()
     if (dateOffset < 0) dateOffset += new Date(new Date().getFullYear(), new Date().getMonth() + 1, 0).getDate()
     const loginStamina = 50 * dateOffset
     // console.log('loginItem = ' + loginItem)
@@ -418,7 +422,7 @@ export default class extends mixins(modalMixin) {
     const useArr = this.privateStatus['5'].input.areaStamina.model.split(' ')
     const liveOption = this.privateStatus['5'].input.liveOption.model
 
-    let dateOffset = new Date(this.time + this.eventTimeLeft + this.master.timeOffset).getDate() - new Date(this.time + this.master.timeOffset).getDate()
+    let dateOffset = new Date(this.time + this.eventTimeLeft + this.timeOffset).getDate() - new Date(this.time + this.timeOffset).getDate()
     if (dateOffset < 0) dateOffset += new Date(new Date().getFullYear(), new Date().getMonth() + 1, 0).getDate()
     const loginStamina = 50 * dateOffset
     // console.log('loginItem = ' + loginItem)

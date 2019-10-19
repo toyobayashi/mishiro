@@ -1,11 +1,11 @@
 import { Event } from 'electron'
-import { Vue, Component, Prop } from 'vue-property-decorator'
+import { Vue, Component } from 'vue-property-decorator'
 
 import TaskLoading from '../../vue/component/TaskLoading.vue'
 import InputText from '../../vue/component/InputText.vue'
 // import { generateObjectId } from '../common/object-id'
 
-import { MasterData } from '../main/on-master-read'
+// import { MasterData } from '../main/on-master-read'
 
 const fs = window.node.fs
 const path = window.node.path
@@ -48,14 +48,16 @@ export default class extends Vue {
   allLyrics: Array<{ time: number, lyrics: string, size: any}> = []
   lyrics: Array<{ time: number, lyrics: string, size: any}> = []
 
-  @Prop({ default: () => ({}) }) master: MasterData
+  // @Prop({ default: () => ({}) }) master: MasterData
 
   get liveManifest (): any[] {
-    return this.master.liveManifest ? this.master.liveManifest : []
+    return this.$store.state.master.liveManifest || []
+    // return this.master.liveManifest ? this.master.liveManifest : []
   }
 
   get bgmManifest (): any[] {
-    return this.master.bgmManifest ? this.master.bgmManifest : []
+    return this.$store.state.master.bgmManifest || []
+    // return this.master.bgmManifest ? this.master.bgmManifest : []
   }
 
   get wavProgress (): boolean {

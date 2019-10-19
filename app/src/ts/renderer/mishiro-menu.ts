@@ -1,4 +1,4 @@
-import { Vue, Component, Prop } from 'vue-property-decorator'
+import { Vue, Component } from 'vue-property-decorator'
 import license from './license'
 
 const fs = window.node.fs
@@ -9,8 +9,6 @@ const { dataDir } = getPath
 
 @Component
 export default class extends Vue {
-  @Prop() resVer: string | number
-
   showOption (btn: HTMLElement): void {
     btn.blur()
     this.playSe(this.enterSe)
@@ -121,7 +119,7 @@ export default class extends Vue {
     const files = fs.readdirSync(dataDir())
     const deleteItem = []
     for (let i = 0; i < files.length; i++) {
-      if (!new RegExp(`${this.resVer}`).test(files[i])) deleteItem.push(dataDir(files[i]))
+      if (!new RegExp(`${this.$store.state.resVer === -1 ? 'Unknown' : this.$store.state.resVer}`).test(files[i])) deleteItem.push(dataDir(files[i]))
     }
     if (deleteItem.length) {
       Promise.all(deleteItem.map(item => fs.remove(item))).then(() => {

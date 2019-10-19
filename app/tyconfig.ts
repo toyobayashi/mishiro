@@ -5,7 +5,7 @@ import * as webpack from 'webpack'
 
 const CopyWebpackPlugin = require('copy-webpack-plugin')
 
-export default {
+const config: ty.Configuration = {
   target: 'electron',
   entry: {
     main: {
@@ -103,4 +103,6 @@ export default {
       })
     }
   }
-} as ty.Configuration
+}
+
+export default config

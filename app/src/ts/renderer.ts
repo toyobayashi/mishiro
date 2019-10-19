@@ -7,6 +7,7 @@ import zh from './i18n/zh-CN'
 import ja from './i18n/ja-JP'
 import en from './i18n/en-US'
 import vueGlobal from './renderer/vue-global'
+import store from './renderer/store'
 
 if (process.env.NODE_ENV !== 'production') Object.defineProperty(window, 'ELECTRON_DISABLE_SECURITY_WARNINGS', { value: true })
 
@@ -24,6 +25,7 @@ const vm = new Vue({
       en
     }
   }),
+  store,
   render: (h) => h(Mishiro)
 })
 vm.$mount('#app')

@@ -1,5 +1,5 @@
-import { Vue, Component, Prop } from 'vue-property-decorator'
-import { MasterData } from '../main/on-master-read'
+import { Vue, Component } from 'vue-property-decorator'
+// import { MasterData } from '../main/on-master-read'
 
 const fs = window.node.fs
 const getPath = window.preload.getPath
@@ -70,10 +70,10 @@ export default class extends Vue {
   isShow: boolean = false
   playing: any = bgmList.anni
 
-  @Prop({ type: Object, default: () => ({}) }) master!: MasterData
+  // @Prop({ type: Object, default: () => ({}) }) master!: MasterData
 
   get eventInfo (): any {
-    return this.master.eventData
+    return this.$store.state.master.eventData
   }
 
   get bgmList (): BGMList {
@@ -228,7 +228,7 @@ export default class extends Vue {
               }
               break
             case 'live':
-              if (this.master.eventHappening) {
+              if (this.$store.state.master.eventHappening) {
                 if (Number(this.eventInfo.type) === 2) {
                   if (this.playing.src !== bgmList.caravan.src) {
                     this.play(bgmList.caravan)
