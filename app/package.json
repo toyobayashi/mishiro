@@ -5,7 +5,7 @@
   "main": "./main/mishiro.main.js",
   "scripts": {
     "dev": "ty dev",
-    "serve": "ty serve",
+    "serve": "ty serve --progress",
     "build": "ty build",
     "start": "cross-env NODE_ENV=production ty start",
     "pack:ia32": "ty pack --arch=ia32",
