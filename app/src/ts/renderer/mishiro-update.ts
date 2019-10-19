@@ -3,6 +3,7 @@ import { ProgressInfo } from 'mishiro-core'
 import { MasterData } from '../main/on-master-read'
 import ProgressBar from '../../vue/component/ProgressBar.vue'
 import check from './check'
+import { setLatestResVer, setMaster, setResVer } from './store'
 
 import MishiroIdol from './mishiro-idol'
 // import { bgmList } from './the-player'
@@ -36,7 +37,7 @@ export default class extends Vue {
     return this.core.config.getProgressCallback()
   }
 
-  @Prop() value!: { resVer: number | string, latestResVer: number | string, master: MasterData | any }
+  // @Prop() value!: { resVer: number | string, latestResVer: number | string, master: MasterData | any }
   @Prop() isTouched!: boolean
 
   getEventCardId (eventAvailable: any[], eventData: any): number[] {
@@ -161,14 +162,9 @@ export default class extends Vue {
     const config = this.configurer.getConfig()
     const downloader = new this.core.Downloader()
     // const toName = (p: string) => path.parse(p).name
-    const sync = {
-      ...(this.value || {}),
-      master: masterData,
-      latestResVer: config.latestResVer
-    }
-    // this.appData.master = masterData
-    // this.appData.latestResVer = config.latestResVer as number
-    this.$emit('input', sync)
+
+    setMaster(masterData)
+    setLatestResVer(config.latestResVer || -1)
 
     const bgmManifest = masterData.bgmManifest
     // for (let k in bgmList) {
@@ -350,12 +346,7 @@ export default class extends Vue {
             }
           }
 
-          const sync = {
-            ...(this.value || {}),
-            resVer: Number(resVer)
-          }
-          // this.appData.resVer = Number(resVer)
-          this.$emit('input', sync)
+          setResVer(Number(resVer))
           const manifestFile = await this.getManifest(resVer)
           if (manifestFile) {
             const masterHash = await (window.preload.readManifest as any)(manifestFile)
@@ -367,12 +358,7 @@ export default class extends Vue {
           }
         } else {
           const resVer = this.configurer.getConfig().latestResVer as number
-          const sync = {
-            ...(this.value || {}),
-            resVer: Number(resVer)
-          }
-          // this.appData.resVer = Number(resVer)
-          this.$emit('input', sync)
+          setResVer(Number(resVer))
           if (fs.existsSync(manifestPath(resVer, '.db')) && fs.existsSync(masterPath(resVer, '.db'))) {
             const manifestFile = manifestPath(resVer, '.db')
             if (manifestFile) {

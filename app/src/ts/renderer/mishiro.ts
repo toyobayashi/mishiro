@@ -4,7 +4,7 @@ import { Vue, Component } from 'vue-property-decorator'
 import MishiroUpdate from '../../vue/view/MishiroUpdate.vue'
 // import MishiroHome from '../../vue/view/MishiroHome.vue'
 // import MishiroIdol from '../../vue/view/MishiroIdol.vue'
-// import MishiroLive from '../../vue/view/MishiroLive.vue'
+import MishiroLive from '../../vue/view/MishiroLive.vue'
 // import MishiroGacha from '../../vue/view/MishiroGacha.vue'
 // import MishiroMenu from '../../vue/view/MishiroMenu.vue'
 
@@ -36,13 +36,15 @@ const i18nTabs: any = {
 // const useResVer = window.preload.configurer.getConfig().latestResVer
 const useResVer = undefined
 
+const skip = false // process.env.NODE_ENV !== 'production'
+
 @Component({
   components: {
     MishiroEntry: () => import(/* webpackChunkName: "mishiro-entry" */ '../../vue/view/MishiroEntry.vue'),
     MishiroUpdate,
     MishiroHome: () => import(/* webpackChunkName: "mishiro-home" */ '../../vue/view/MishiroHome.vue'),
     MishiroIdol: () => import(/* webpackChunkName: "mishiro-idol" */ '../../vue/view/MishiroIdol.vue'),
-    MishiroLive: () => import(/* webpackChunkName: "mishiro-live" */ '../../vue/view/MishiroLive.vue'),
+    MishiroLive,
     // MishiroGacha: () => import(/* webpackChunkName: "mishiro-gacha" */ '../../vue/view/MishiroGacha.vue'),
     MishiroCommu: () => import(/* webpackChunkName: "mishiro-commu" */ '../../vue/view/MishiroCommu.vue'),
     MishiroMenu: () => import(/* webpackChunkName: "mishiro-menu" */ '../../vue/view/MishiroMenu.vue'),
@@ -68,8 +70,8 @@ const useResVer = undefined
   }
 })
 export default class extends Vue {
-  isEntered: boolean = process.env.NODE_ENV !== 'production'
-  isTouched: boolean = process.env.NODE_ENV !== 'production'
+  isEntered: boolean = skip
+  isTouched: boolean = skip
   isReady: boolean = false
   show: boolean = true
   currentBlock: string = 'home'
@@ -116,7 +118,7 @@ export default class extends Vue {
 
   mounted (): void {
     this.$nextTick(() => {
-      if (process.env.NODE_ENV !== 'production') this.afterEnter(useResVer)
+      if (skip) this.afterEnter(useResVer)
       setInterval(() => {
         this.time = new Date().getTime()
       }, 1000)

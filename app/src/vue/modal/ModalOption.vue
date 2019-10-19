@@ -81,9 +81,17 @@ export default class extends mixins(modalMixin) {
     en: 'i18n.english'
   }
 
-  @Prop({ default: () => ({}), type: Object }) master: MasterData
-  @Prop({ required: true }) latestResVer: string | number
+  // @Prop({ default: () => ({}), type: Object }) master: MasterData
+  // @Prop({ required: true }) latestResVer: string | number
   @Prop() value: string
+
+  get master (): MasterData {
+    return this.$store.state.master
+  }
+
+  get latestResVer (): number {
+    return this.$store.state.latestResVer
+  }
 
   get cardData (): any {
     return this.master.cardData ? this.master.cardData : {}
