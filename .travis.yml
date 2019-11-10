@@ -7,6 +7,8 @@ os:
   - osx
 before_install:
   - if [ "$TRAVIS_OS_NAME" = "windows" ]; then choco install innosetup; fi
+  - if [ "$TRAVIS_OS_NAME" = "windows" ]; then choco install git-lfs; fi
+  - if [ "$TRAVIS_OS_NAME" = "osx" ]; then brew install git-lfs; fi
   - node -v
   - npm -v
   - npm install -g node-gyp@5
@@ -18,6 +20,8 @@ before_install:
   - npm config ls
 install:
   - npm install
+before_script:
+  - if [ "$TRAVIS_OS_NAME" != "linux" ]; then git lfs pull; fi
 script: 
   - npm run build
 before_deploy:
