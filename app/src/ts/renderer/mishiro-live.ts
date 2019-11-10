@@ -86,6 +86,7 @@ export default class extends Vue {
         if (navigator.onLine) {
           this.dler.stop()
           this.activeAudio = audio
+          const needAwb = !!audio.awbHash
           let result: string | boolean = false
           try {
             // result = await this.dler.downloadOne(
@@ -103,10 +104,25 @@ export default class extends Vue {
               bgmDir(path.basename(audio.name)),
               (prog) => {
                 this.text = prog.name as string
-                this.current = prog.loading / (this.wavProgress ? 2 : 1)
-                this.total = prog.loading / (this.wavProgress ? 2 : 1)
+                if (!needAwb) {
+                  this.current = prog.loading / (this.wavProgress ? 2 : 1)
+                  this.total = prog.loading / (this.wavProgress ? 2 : 1)
+                }
               }
             )
+
+            if (needAwb) {
+              result = await this.dler.downloadSound(
+                'b',
+                audio.awbHash,
+                bgmDir(path.parse(audio.name).name + '.awb'),
+                (prog) => {
+                  this.text = prog.name as string
+                  this.current = prog.loading / (this.wavProgress ? 2 : 1)
+                  this.total = prog.loading / (this.wavProgress ? 2 : 1)
+                }
+              )
+            }
           } catch (errorPath) {
             this.event.$emit('alert', this.$t('home.errorTitle'), (this.$t('home.downloadFailed') as string) + '<br/>' + (errorPath as string))
           }
@@ -138,6 +154,7 @@ export default class extends Vue {
         }
         this.dler.stop()
         this.activeAudio = audio
+        const needAwb = !!audio.awbHash
         let result: string | boolean = false
         try {
           // result = await this.dler.downloadOne(
@@ -155,10 +172,25 @@ export default class extends Vue {
             liveDir(path.basename(audio.name)),
             (prog) => {
               this.text = prog.name as string
-              this.current = prog.loading / (this.wavProgress ? 2 : 1)
-              this.total = prog.loading / (this.wavProgress ? 2 : 1)
+              if (!needAwb) {
+                this.current = prog.loading / (this.wavProgress ? 2 : 1)
+                this.total = prog.loading / (this.wavProgress ? 2 : 1)
+              }
             }
           )
+
+          if (needAwb) {
+            result = await this.dler.downloadSound(
+              'l',
+              audio.awbHash,
+              liveDir(path.parse(audio.name).name + '.awb'),
+              (prog) => {
+                this.text = prog.name as string
+                this.current = prog.loading / (this.wavProgress ? 2 : 1)
+                this.total = prog.loading / (this.wavProgress ? 2 : 1)
+              }
+            )
+          }
         } catch (errorPath) {
           this.event.$emit('alert', this.$t('home.errorTitle'), (this.$t('home.downloadFailed') as string) + '<br/>' + (errorPath as string))
           return

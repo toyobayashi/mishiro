@@ -1,3 +1,5 @@
+import * as path from 'path'
+
 interface Manifest {
   name: string
   hash: string
@@ -5,6 +7,7 @@ interface Manifest {
 
 interface BGM extends Manifest {
   fileName: string
+  awbHash?: string
 }
 
 interface Live extends Manifest {
@@ -12,6 +15,7 @@ interface Live extends Manifest {
   score?: string
   scoreHash?: string
   bpm?: number
+  awbHash?: string
 }
 
 interface Music {
@@ -24,19 +28,53 @@ export default function (bgmManifest: BGM[], liveManifest: Live[], musicData: Mu
   bgmManifest: BGM[]
   liveManifest: Live[]
 } {
+  const streamingList: string[] = []
+  const streamingHash: string[] = []
+
   for (let i = 0; i < bgmManifest.length; i++) {
     const bgm = bgmManifest[i]
+    if (path.extname(bgm.name) === '.awb') {
+      const tmp = bgm.name.split('.')
+      tmp[tmp.length - 1] = 'acb'
+      streamingList.push(tmp.join('.'))
+      streamingHash.push(bgm.hash)
+      continue
+    }
     const fileName = bgm.name.split('/')[1].split('.')[0] + '.mp3'
     bgmManifest[i].fileName = fileName
   }
 
+  for (let i = 0; i < bgmManifest.length; i++) {
+    const pos = streamingList.indexOf(bgmManifest[i].name)
+    if (pos !== -1) {
+      bgmManifest[i].awbHash = streamingHash[pos]
+    }
+  }
+
+  streamingList.length = 0
+  streamingHash.length = 0
   for (let i = 0; i < liveManifest.length; i++) {
     const song = liveManifest[i]
-    const name: string = song.name.split('/')[1].split('.')[0]
+    // const name: string = song.name.split('/')[1].split('.')[0]
+    if (path.extname(song.name) === '.awb') {
+      const tmp = song.name.split('.')
+      tmp[tmp.length - 1] = 'acb'
+      streamingList.push(tmp.join('.'))
+      streamingHash.push(song.hash)
+      liveManifest.splice(i, 1)
+      i--
+      continue
+    }
+    const name: string = path.parse(song.name).name
     const arr: string[] = name.split('_')
     let fileName: string = ''
-    if (Number(arr[1]) < 1000) {
+    if (arr[0] === 'song' && Number(arr[1]) < 1000) {
       fileName = name + '.mp3'
+    } else if (arr[0] === 'inst') {
+      fileName = 'inst_' + arr[2] + '-' + musicData.filter(row => Number(row.id) === Number(arr[2]))[0].name.replace(/\\n|\\|\/|<|>|\*|\?|:|"|\|/g, '') + '.mp3'
+    } else if (arr[0] === 'vo' && arr[1] === 'solo') {
+      const charaName = charaData.filter(row => Number(row.chara_id) === Number(arr[3]))[0]
+      fileName = 'vo_solo_' + arr[2] + musicData.filter(row => Number(row.id) === Number(arr[2]))[0].name.replace(/\\n|\\|\/|<|>|\*|\?|:|"|\|/g, '') + '（' + (charaName ? charaName.name as string : arr[3]) + '）.mp3'
     } else {
       if (arr.length > 2) {
         if (isNaN(Number(arr[2]))) {
@@ -71,6 +109,13 @@ export default function (bgmManifest: BGM[], liveManifest: Live[], musicData: Mu
       }
     }
     liveManifest[i].fileName = fileName
+  }
+
+  for (let i = 0; i < liveManifest.length; i++) {
+    const pos = streamingList.indexOf(liveManifest[i].name)
+    if (pos !== -1) {
+      liveManifest[i].awbHash = streamingHash[pos]
+    }
   }
   return { bgmManifest, liveManifest }
 }

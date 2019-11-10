@@ -164,7 +164,7 @@ export default class extends Vue {
 
           this.current = 0
           this.text = ''
-          if (suffix !== '.acb') {
+          if (suffix !== '.acb' && suffix !== '.awb') {
             if (fs.existsSync(filepath)) {
               fs.removeSync(filepath)
               this.event.$emit('completeTask', name + suffix)

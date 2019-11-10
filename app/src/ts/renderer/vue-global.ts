@@ -61,10 +61,12 @@ const install: PluginFunction<undefined> = function (Vue) {
     const mp3list = await window.node.mishiroCore.audio.acb2mp3(acbPath, undefined, onProgress)
     const mp3 = mp3list[0]
     const dest = path.join(path.dirname(acbPath), rename || path.basename(mp3))
+    const awbPath = path.join(path.dirname(acbPath), path.parse(acbPath).name + '.awb')
     await fs.move(mp3, dest)
     await Promise.all([
       fs.remove(path.dirname(mp3)),
-      fs.remove(acbPath)
+      fs.remove(acbPath),
+      fs.existsSync(awbPath) ? fs.remove(awbPath) : Promise.resolve()
     ])
     return dest
   }
