@@ -7,8 +7,7 @@ os:
   - osx
 before_install:
   - if [ "$TRAVIS_OS_NAME" = "windows" ]; then choco install innosetup; fi
-  - if [ "$TRAVIS_OS_NAME" = "windows" ]; then choco install git-lfs; fi
-  - if [ "$TRAVIS_OS_NAME" = "osx" ]; then brew install git-lfs; fi
+  - if [ "$TRAVIS_OS_NAME" = "osx" ]; then export HOMEBREW_NO_AUTO_UPDATE=true && brew install git-lfs && git lfs install; fi
   - node -v
   - npm -v
   - npm install -g node-gyp@5
