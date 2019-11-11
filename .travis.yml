@@ -1,13 +1,12 @@
 language: node_js
 node_js:
-  - 10.16.3
+  - lts/*
 os:
   - windows
   - linux
   - osx
 before_install:
   - if [ "$TRAVIS_OS_NAME" = "windows" ]; then choco install innosetup; fi
-  - if [ "$TRAVIS_OS_NAME" = "osx" ]; then export HOMEBREW_NO_AUTO_UPDATE=true && brew install git-lfs && git lfs install; fi
   - node -v
   - npm -v
   - npm install -g node-gyp@5
@@ -19,11 +18,11 @@ before_install:
   - npm config ls
 install:
   - npm install
-before_script:
-  - if [ "$TRAVIS_OS_NAME" != "linux" ]; then git lfs pull; fi
 script: 
   - npm run build
 before_deploy:
+  - if [ "$TRAVIS_OS_NAME" = "osx" ]; then export HOMEBREW_NO_AUTO_UPDATE=true && brew install git-lfs && git lfs install; fi
+  - if [ "$TRAVIS_OS_NAME" != "linux" ]; then git lfs pull; fi
   - npm run pack:x64
   - if [ "$TRAVIS_OS_NAME" = "windows" ]; then npm run pack:ia32; fi
 deploy:
