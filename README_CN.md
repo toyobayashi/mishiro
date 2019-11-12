@@ -53,6 +53,8 @@
 
     ``` bash 
     $ git clone https://github.com/toyobayashi/mishiro.git
+    $ npm run get # 获取开发所需要的额外的资源
+
     $ git pull
     ```
 

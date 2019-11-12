@@ -95,7 +95,8 @@ const config: ty.Configuration = {
         'mishiro-core/binding.gyp',
         'mishiro-core/index.d.ts',
         'mishiro-core/README.md',
-        '../package-lock.json'
+        '../package-lock.json',
+        '../../config.json'
       ]
       removeList.map(p => {
         const tmpPath = path.join(nodeModulesDir, p)

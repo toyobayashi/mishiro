@@ -12,7 +12,8 @@
     "pack:x64": "ty pack --arch=x64",
     "count": "ts-node -P ./script/tsconfig.json ./script/source-count.ts",
     "dlc": "ts-node -P ./script/tsconfig.json ./script/release-download-count.ts",
-    "rm": "ts-node -P ./script/tsconfig.json ./script/rm.ts"
+    "rm": "ts-node -P ./script/tsconfig.json ./script/rm.ts",
+    "get": "ts-node -P ./script/tsconfig.json ./script/get-external-resources.ts"
   },
   "repository": {
     "type": "git",
