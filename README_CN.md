@@ -79,6 +79,10 @@
         > npm config set registry http://registry.npm.taobao.org/
         > npm config set electron_mirror https://npm.taobao.org/mirrors/electron/
 
+        REM 特别的，如果安装的 VC++ 构建工具集版本不是 v140 (VS 2015)
+        REM 需要全局设置一下 toolset 变量让 sqlite3 能够编译通过
+        > npm config set toolset v142
+
         REM 安装 node-gyp@5
         > npm install -g node-gyp
 
