@@ -90,6 +90,10 @@ Repo: [mishiro-score-viewer](https://github.com/toyobayashi/mishiro-score-viewer
         ``` bat
         > cd mishiro/app
 
+        REM set global npm config toolset variable
+        REM if your VC++ toolset is not v140 (VS 2015)
+        > npm config set toolset v142
+
         REM install node-gyp@5
         > npm install -g node-gyp
 
