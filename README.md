@@ -70,6 +70,8 @@ Repo: [mishiro-score-viewer](https://github.com/toyobayashi/mishiro-score-viewer
 
     ``` bash 
     $ git clone https://github.com/toyobayashi/mishiro.git
+    $ npm run get # get external resources
+
     $ git pull
     ```
 

@@ -21,8 +21,7 @@ install:
 script: 
   - npm run build
 before_deploy:
-  - if [ "$TRAVIS_OS_NAME" = "osx" ]; then export HOMEBREW_NO_AUTO_UPDATE=true && brew install git-lfs && git lfs install; fi
-  - if [ "$TRAVIS_OS_NAME" != "linux" ]; then git lfs pull; fi
+  - npm run get
   - npm run pack:x64
   - if [ "$TRAVIS_OS_NAME" = "windows" ]; then npm run pack:ia32; fi
 deploy:
