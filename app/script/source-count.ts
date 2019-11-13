@@ -3,7 +3,7 @@ import * as path from 'path'
 
 function countFile (filePath: string): number {
   const data = fs.readFileSync(filePath, 'utf8')
-  let match: null | RegExpMatchArray = data.match(/\r?\n/g)
+  const match: null | RegExpMatchArray = data.match(/\r?\n/g)
   if (match) return match.length + 1
   return 1
 }
@@ -15,12 +15,12 @@ interface CountInfo {
 }
 
 function count (folderPath: string, resolve: string[], exclude?: RegExp): CountInfo[] {
-  let result: CountInfo[] = []
+  const result: CountInfo[] = []
   for (const ext of resolve) {
     result.push({ language: ext, fileCount: 0, lineCount: 0 })
   }
-  function countFolder (folderPath: string, resolve: string[]) {
-    let list = fs.readdirSync(folderPath)
+  function countFolder (folderPath: string, resolve: string[]): void {
+    const list = fs.readdirSync(folderPath)
     for (const name of list) {
       const absPath = path.join(folderPath, name)
       if (!exclude || !exclude.test(absPath)) {
@@ -36,7 +36,7 @@ function count (folderPath: string, resolve: string[], exclude?: RegExp): CountI
   }
   countFolder(folderPath, resolve)
 
-  let total: CountInfo = { fileCount: 0, lineCount: 0 }
+  const total: CountInfo = { fileCount: 0, lineCount: 0 }
   for (const c of result) {
     total.fileCount += c.fileCount
     total.lineCount += c.lineCount
@@ -45,7 +45,7 @@ function count (folderPath: string, resolve: string[], exclude?: RegExp): CountI
   return result
 }
 
-const getPath = (r: string) => path.join(__dirname, '..', r)
+const getPath = (r: string): string => path.join(__dirname, '..', r)
 
 console.log(count(
   getPath('.'),

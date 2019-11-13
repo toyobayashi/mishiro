@@ -1,11 +1,14 @@
 import { MishiroConfig } from '../main/config'
-export default function (gachaAll: any[], config: MishiroConfig, now: number, timeOffset: number) {
+export default function (gachaAll: any[], config: MishiroConfig, now: number, timeOffset: number): {
+  gachaNow: any
+  gachaData: any
+} {
   gachaAll.sort((a, b) => new Date(b.start_date).getTime() - new Date(a.start_date).getTime())
 
-  let gachaNowArray = []
+  const gachaNowArray = []
 
   for (let i = 0; i < gachaAll.length; i++) {
-    let gacha = gachaAll[i]
+    const gacha = gachaAll[i]
     if (gacha.id > 30000 && gacha.id < 40000) {
       const start = new Date(gacha.start_date).getTime() - timeOffset
       const end = new Date(gacha.end_date).getTime() - timeOffset
@@ -22,7 +25,7 @@ export default function (gachaAll: any[], config: MishiroConfig, now: number, ti
   } else gachaNowArray.sort((a, b) => a.id - b.id)
 
   // let gachaNowArray = master._exec("SELECT * FROM gacha_data WHERE start_date = (SELECT MAX(start_date) FROM gacha_data WHERE id LIKE '3%') AND id LIKE '3%'")
-  let gachaNow = gachaNowArray[gachaNowArray.length - 1]
+  const gachaNow = gachaNowArray[gachaNowArray.length - 1]
   let gachaData = null
 
   if (config && config.gacha) {

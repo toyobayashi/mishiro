@@ -16,7 +16,7 @@ window.mishiro = {
   decode: mishiroCore.Client.cryptoGrapher.decode,
   _decryptBody: mishiroCore.Client.decryptBody,
   decryptBody (body, udid) {
-    if (!(/^[0-9a-f\-]{36}$/.test(udid))) {
+    if (!(/^[0-9a-f-]{36}$/.test(udid))) {
       udid = mishiroCore.Client.cryptoGrapher.decode(udid)
     }
     return mishiroCore.Client.decryptBody(body, Buffer.from(udid.replace(/-/g, ''), 'hex'))

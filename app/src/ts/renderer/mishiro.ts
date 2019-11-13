@@ -4,12 +4,12 @@ import { Vue, Component } from 'vue-property-decorator'
 import MishiroUpdate from '../../vue/view/MishiroUpdate.vue'
 // import MishiroHome from '../../vue/view/MishiroHome.vue'
 // import MishiroIdol from '../../vue/view/MishiroIdol.vue'
-// import MishiroLive from '../../vue/view/MishiroLive.vue'
+import MishiroLive from '../../vue/view/MishiroLive.vue'
 // import MishiroGacha from '../../vue/view/MishiroGacha.vue'
 // import MishiroMenu from '../../vue/view/MishiroMenu.vue'
 
 // import ThePlayer from '../../vue/component/ThePlayer.vue'
-// import TheBackground from '../../vue/component/TheBackground.vue'
+import TheBackground from '../../vue/component/TheBackground.vue'
 // import TheToggleButton from '../../vue/component/TheToggleButton.vue'
 // import TheFooter from '../../vue/component/TheFooter.vue'
 // import TheVersion from '../../vue/component/TheVersion.vue'
@@ -33,8 +33,10 @@ const i18nTabs: any = {
   en: 'i18n.english'
 }
 
-const useResVer = window.preload.configurer.getConfig().latestResVer
-// const useResVer = void 0
+// const useResVer = window.preload.configurer.getConfig().latestResVer
+const useResVer = undefined
+
+const skip = false // process.env.NODE_ENV !== 'production'
 
 @Component({
   components: {
@@ -42,33 +44,34 @@ const useResVer = window.preload.configurer.getConfig().latestResVer
     MishiroUpdate,
     MishiroHome: () => import(/* webpackChunkName: "mishiro-home" */ '../../vue/view/MishiroHome.vue'),
     MishiroIdol: () => import(/* webpackChunkName: "mishiro-idol" */ '../../vue/view/MishiroIdol.vue'),
-    MishiroLive: () => import(/* webpackChunkName: "mishiro-live" */ '../../vue/view/MishiroLive.vue'),
-    MishiroGacha: () => import(/* webpackChunkName: "mishiro-gacha" */ '../../vue/view/MishiroGacha.vue'),
+    MishiroLive,
+    // MishiroGacha: () => import(/* webpackChunkName: "mishiro-gacha" */ '../../vue/view/MishiroGacha.vue'),
+    MishiroCommu: () => import(/* webpackChunkName: "mishiro-commu" */ '../../vue/view/MishiroCommu.vue'),
     MishiroMenu: () => import(/* webpackChunkName: "mishiro-menu" */ '../../vue/view/MishiroMenu.vue'),
 
     ThePlayer: () => import(/* webpackChunkName: "the-player" */ '../../vue/component/ThePlayer.vue'),
-    TheBackground: () => import(/* webpackChunkName: "the-background" */ '../../vue/component/TheBackground.vue'),
+    TheBackground,
     TheToggleButton: () => import(/* webpackChunkName: "the-toggle-button" */ '../../vue/component/TheToggleButton.vue'),
     TheFooter: () => import(/* webpackChunkName: "the-footer" */ '../../vue/component/TheFooter.vue'),
     TheVersion: () => import(/* webpackChunkName: "the-version" */ '../../vue/component/TheVersion.vue'),
     TabSmall,
 
     ModalAlert: () => import(/* webpackChunkName: "modal-alert" */ '../../vue/modal/ModalAlert.vue'),
-    ModalGachaHistory: () => import(/* webpackChunkName: "modal-gacha-history" */ '../../vue/modal/ModalGachaHistory.vue'),
-    ModalGachaCard: () => import(/* webpackChunkName: "modal-gacha-card" */ '../../vue/modal/ModalGachaCard.vue'),
-    ModalGachaInformation: () => import(/* webpackChunkName: "modal-gacha-information" */ '../../vue/modal/ModalGachaInformation.vue'),
+    // ModalGachaHistory: () => import(/* webpackChunkName: "modal-gacha-history" */ '../../vue/modal/ModalGachaHistory.vue'),
+    // ModalGachaCard: () => import(/* webpackChunkName: "modal-gacha-card" */ '../../vue/modal/ModalGachaCard.vue'),
+    // ModalGachaInformation: () => import(/* webpackChunkName: "modal-gacha-information" */ '../../vue/modal/ModalGachaInformation.vue'),
     ModalAbout: () => import(/* webpackChunkName: "modal-about" */ '../../vue/modal/ModalAbout.vue'),
     ModalVersion: () => import(/* webpackChunkName: "modal-version" */ '../../vue/modal/ModalVersion.vue'),
     ModalOption: () => import(/* webpackChunkName: "modal-option" */ '../../vue/modal/ModalOption.vue'),
     ModalCalculator: () => import(/* webpackChunkName: "modal-calculator" */ '../../vue/modal/ModalCalculator.vue'),
-    ModalLiveDifficulty: () => import(/* webpackChunkName: "modal-live-difficulty" */ '../../vue/modal/ModalLiveDifficulty.vue'),
-    ModalScore: () => import(/* webpackChunkName: "modal-score" */ '../../vue/modal/ModalScore.vue'),
-    ModalLiveResult: () => import(/* webpackChunkName: "modal-live-result" */ '../../vue/modal/ModalLiveResult.vue')
+    // ModalLiveDifficulty: () => import(/* webpackChunkName: "modal-live-difficulty" */ '../../vue/modal/ModalLiveDifficulty.vue'),
+    ModalScore: () => import(/* webpackChunkName: "modal-score" */ '../../vue/modal/ModalScore.vue')
+    // ModalLiveResult: () => import(/* webpackChunkName: "modal-live-result" */ '../../vue/modal/ModalLiveResult.vue')
   }
 })
 export default class extends Vue {
-  isEntered: boolean = process.env.NODE_ENV !== 'production'
-  isTouched: boolean = process.env.NODE_ENV !== 'production'
+  isEntered: boolean = skip
+  isTouched: boolean = skip
   isReady: boolean = false
   show: boolean = true
   currentBlock: string = 'home'
@@ -80,12 +83,14 @@ export default class extends Vue {
     latestResVer: 'Unknown',
     master: {}
   }
+
   time: number = new Date().getTime()
 
-  enter () {
+  enter (): void {
     this.isEntered = true
   }
-  changeLanguage (language: string) {
+
+  changeLanguage (language: string): void {
     switch (language) {
       case 'i18n.japanese': this._i18n._vm.locale = 'ja'; break
       case 'i18n.chinese': this._i18n._vm.locale = 'zh'; break
@@ -93,8 +98,9 @@ export default class extends Vue {
     }
     // this.$el.parentNode.parentNode.getElementsByTagName("title")[0].innerHTML = this.$t("title");
   }
-  showBackground () {
-    const cb = () => {
+
+  showBackground (): void {
+    const cb = (): void => {
       this.show = !this.show
       document.removeEventListener('click', cb, false)
     }
@@ -105,13 +111,14 @@ export default class extends Vue {
       }
     }, 0)
   }
-  afterEnter (devResVer?: number) {
+
+  afterEnter (devResVer?: number): void {
     this.event.$emit('enter', devResVer)
   }
 
-  mounted () {
+  mounted (): void {
     this.$nextTick(() => {
-      if (process.env.NODE_ENV !== 'production') this.afterEnter(useResVer)
+      if (skip) this.afterEnter(useResVer)
       setInterval(() => {
         this.time = new Date().getTime()
       }, 1000)

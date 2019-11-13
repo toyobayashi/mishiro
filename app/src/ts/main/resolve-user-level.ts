@@ -1,4 +1,4 @@
-export default function (userLevel: any[]) {
+export default function (userLevel: any[]): any[] {
   userLevel.sort((a, b) => a.level - b.level)
 
   for (let i = 0; i < userLevel.length; i++) {

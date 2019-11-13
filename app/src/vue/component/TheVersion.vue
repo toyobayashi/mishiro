@@ -2,10 +2,12 @@
 <div class="version white-bg">{{$t("home.resVer")}}: {{resVer}}</div>
 </template>
 <script lang="ts">
-import { Vue, Component, Prop } from 'vue-property-decorator'
+import { Vue, Component } from 'vue-property-decorator'
 @Component
 export default class extends Vue {
-  @Prop({ required: true }) resVer: number | string
+  get resVer (): string {
+    return this.$store.state.resVer === -1 ? 'Unknown' : this.$store.state.resVer.toString()
+  }
 }
 </script>
 <style scoped>

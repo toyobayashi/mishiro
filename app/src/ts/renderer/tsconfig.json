@@ -2,7 +2,11 @@
   "extends": "../../../tsconfig.json",
   "include": [
     "./**/*",
+    "../renderer.ts",
     "../typings/**/*",
     "../../vue/**/*"
+  ],
+  "exclude": [
+    "../../vue/modal/ModalGachaInformation.vue"
   ]
 }

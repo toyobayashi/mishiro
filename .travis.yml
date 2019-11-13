@@ -1,20 +1,40 @@
 language: node_js
 node_js:
-  - '10.16.0'
+  - lts/*
 os:
+  - windows
   - linux
   - osx
 before_install:
+  - if [ "$TRAVIS_OS_NAME" = "windows" ]; then choco install innosetup; fi
   - node -v
-  - if [[ "$TRAVIS_OS_NAME" == "osx" ]]; then brew install yarn --ignore-dependencies; fi
-  - yarn --verison
-  - cd app
-  - yarn global add node-gyp@3
-  - node-gyp install --target=4.2.6 --dist-url=https://atom.io/download/electron
+  - npm -v
+  - npm install -g node-gyp@5
+  - node-gyp -v
+  - if [ "$TRAVIS_OS_NAME" = "windows" ]; then npm config set node_gyp "`npm prefix -g`\\node_modules\\node-gyp\\bin\\node-gyp.js"; else npm config set node_gyp "`npm prefix -g`/lib/node_modules/node-gyp/bin/node-gyp.js"; fi
+  - node-gyp install --target=$(node -p require\(\'./app/package.json\'\).devDependencies.electron) --dist-url=https://atom.io/download/electron
+  - cd ./app
+  - rm -rf ./package-lock.json
+  - npm config ls
 install:
-  - yarn
-script:
-  - yarn run pack:x64
-branches:
-  only:
-  - master
+  - npm install
+script: 
+  - npm run build
+before_deploy:
+  - npm run get
+  - npm run pack:x64
+  - if [ "$TRAVIS_OS_NAME" = "windows" ]; then npm run pack:ia32; fi
+deploy:
+  provider: releases
+  api_key:
+    secure: BuOGRX9GVcPFPNm/6aU5PRYUz76FGYZsJpQRP6Bv+RMd2ynzY+PJMHeWCSvqJJQ/Zm1PeuTelvY2tJPFbQt9+rNxCJzNv7O6TGxmpXlZcXmi1xhYQLbtFbw4r23D5yKKVBGFtAkTkuUASdDSpvk151HWVssRVTrONxwXuIRCSrVwGDIWD8U0CvIVDWkZZ+5ANrfboKwCYKWPfHB8yc9+vvrluetbIipnZYJTV36VDfY73aZTS23mreMNzOXe/j/3vQMVh5ju40oGS+u68K/RzrgcmfXbEyHk+oHpb64dd2L4pmzvUV3HSk/49ljdnftp4+wq3EwxS1aHfEz++wKkNanZb1yA4UdaSNVZauX29SAW2K8bxZclmKh/2DlWh5hlxQBvg9hISMOi0mWuzmtSNPwDQ/prD15Tw7cn478HWqGXccFzifrWwm7FJZApEOqIJ0Pg6Y7ike8gdK1VmX8229q9tHFp/jvdVxI10rJN7WGoL3qndVp9GvrVatXNE0sFTDtDuVN6CvcEhFpRPuXRZ3UFsCzHszt9MZ5DlPRWnUhqPk3Xo+0rZhZWisJlP3mK603WBs5dQnMSWe+9rOSNcqupBoVNpQREff1oUrJFhRbMdfn6TeP9cYyAvbZU2Qbvyr3hpHouLlnDnaB01q4q+IsoLThiDzPXZQTQi+ai6CM=
+  file: 
+    - ../dist/*.zip
+    - ../dist/*.deb
+    - ../dist/*.exe
+  file_glob: true
+  skip_cleanup: true
+  draft: true
+  on:
+    repo: toyobayashi/mishiro
+    tags: true
