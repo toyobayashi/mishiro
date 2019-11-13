@@ -27,7 +27,7 @@ class Global {
   public noteWidthFlip: number = 125
   public scale: number = 3
   public saveSpeed: number = 12
-  private _notePng: string = ''
+  private readonly _notePng: string = ''
 
   public tapCanvas: HTMLCanvasElement = document.createElement('canvas')
   public longLoopCanvas: HTMLCanvasElement = document.createElement('canvas')
@@ -39,13 +39,13 @@ class Global {
   private _seOk: HTMLAudioElement | null = null
 
   private static _instance: Global | null = null
-  public static newImage (src: string) {
+  public static newImage (src: string): HTMLImageElement {
     const img = new Image()
     img.src = src
     return img
   }
 
-  public static createAudio (src: string) {
+  public static createAudio (src: string): HTMLAudioElement {
     const audio = new Audio(src)
     audio.preload = 'auto'
     return audio
@@ -79,30 +79,31 @@ class Global {
     return this
   }
 
-  get noteWidthDelta () {
+  get noteWidthDelta (): number {
     return this.noteWidthFlip - this.noteWidth
   }
 
-  get noteWidthHalf () {
+  get noteWidthHalf (): number {
     return this.noteWidth / 2
   }
 
-  get noteHeightHalf () {
+  get noteHeightHalf (): number {
     return this.noteHeight / 2
   }
 
-  public getInstance () {
+  public getInstance (): Global {
     if (!Global._instance) throw new Error('Global instance null.')
     return Global._instance
   }
 
-  public playSe () {
+  public playSe (): void {
     if (this._se) {
       this._se.currentTime = 0
       this._se.play().catch(err => console.log(err))
     }
   }
-  public playSeOk () {
+
+  public playSeOk (): void {
     if (this._seOk) {
       this._seOk.currentTime = 0
       this._seOk.play().catch(err => console.log(err))

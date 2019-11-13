@@ -12,7 +12,7 @@ abstract class Note {
   protected _y: number
   protected _connection: ScoreNoteWithNoteInstance | null
   protected _synchronizedNote: ScoreNoteWithNoteInstance | null
-  private _connectionHeight = 12
+  private readonly _connectionHeight = 12
 
   constructor (note: ScoreNote) {
     this._sec = note.sec
@@ -22,19 +22,19 @@ abstract class Note {
     this._synchronizedNote = null
   }
 
-  public setY (y: number) {
+  public setY (y: number): void {
     this._y = y
   }
 
-  public getX () {
+  public getX (): number {
     return this._x
   }
 
-  public setX (x: number) {
+  public setX (x: number): void {
     this._x = x
   }
 
-  public saveDrawSync (sv: ScoreViewer) {
+  public saveDrawSync (sv: ScoreViewer): void{
     if (!this._synchronizedNote) return
 
     const syncX = ScoreViewer.X[this._synchronizedNote.finishPos - 1] + globalInstance.noteWidthHalf
@@ -43,7 +43,7 @@ abstract class Note {
     sv.saveCtx.fillRect((selfX < syncX ? selfX : syncX) + globalInstance.noteWidthHalf, syncY, (selfX < syncX ? syncX - selfX : selfX - syncX) - globalInstance.noteWidth, this._connectionHeight / globalInstance.scale)
   }
 
-  public drawSync (sv: ScoreViewer) {
+  public drawSync (sv: ScoreViewer): void {
     if (!this._synchronizedNote) return
 
     const syncX = ScoreViewer.X[this._synchronizedNote.finishPos - 1] + globalInstance.noteWidthHalf

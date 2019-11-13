@@ -1,13 +1,5 @@
-app/node_modules/
-app/script/manifest.json
-app/public/node/
-app/public/*
+node_modules
 !app/public/LICENSE.md
-asset/*
-!asset/chara_title.asar
-!asset/font.asar
-!asset/img.asar
-!asset/se.asar
 dist/*
 !dist/mishiro.nsi
 !dist/mishiro.iss

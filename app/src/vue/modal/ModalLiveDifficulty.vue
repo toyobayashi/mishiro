@@ -18,7 +18,7 @@
             </div>
           </div>
         </form>
-        
+
       </div>
       <div class="modal-footer">
         <button type="button" class="cgss-btn cgss-btn-ok" @click="start">{{$t("live.start")}}</button>

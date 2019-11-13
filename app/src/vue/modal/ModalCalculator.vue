@@ -67,8 +67,8 @@
                   @focus.native="$event.target.select()"/> / {{maxExp}}
               </div>
             </div>
-            <div v-for="(tab, type) in eventType" v-show="currentEventTab === tab">
-              <div class="arg-row" v-for="(playerStatus, name) in privateStatus[type].input">
+            <div v-for="(tab, type) in eventType" :key="'input-' + type" v-show="currentEventTab === tab">
+              <div class="arg-row" v-for="(playerStatus, name) in privateStatus[type].input" :key="'inputl-' + type + '-' + name">
                 <label>{{$t(`event.${name}`)}}</label>
                 <InputText v-if="playerStatus.type === 'text'" v-model="playerStatus.model" :height="30" class="event-input" :limit="playerStatus.limit" @focus.native="$event.target.select()"/>
                 <div class="radio-group" v-if="playerStatus.type === 'radio'">
@@ -85,8 +85,8 @@
             </div>
           </div>
           <div class="progress-wrap">
-            <div v-for="(tab, type) in eventType" v-show="currentEventTab === tab" class="result-for-div">
-              <div class="arg-row" v-for="(result, key) in privateStatus[type].output">
+            <div v-for="(tab, type) in eventType" :key="'output-' + type" v-show="currentEventTab === tab" class="result-for-div">
+              <div class="arg-row" v-for="(result, key) in privateStatus[type].output" :key="'outputl-' + type + '-' + key">
                 <span>{{$t(`event.${key}`)}}</span>
                 <span class="cal-result">{{result}}</span>
               </div>
@@ -115,7 +115,7 @@
 </div>
 </template>
 
-<script lang="ts" src="../../ts/renderer/calculator">
+<script lang="ts" src="../../ts/renderer/calculator.ts">
 </script>
 
 <style scoped>

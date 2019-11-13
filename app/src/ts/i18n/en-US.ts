@@ -184,5 +184,10 @@ export default {
     official: 'official',
     kirara: 'kirara',
     arch: 'Architecture'
+  },
+  commu: {
+    id: 'Enter ID',
+    notfound: 'Please enter correct id',
+    newVersion: 'New resource version found, please relaunch mishiro.'
   }
 }

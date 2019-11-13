@@ -3,7 +3,7 @@
   <div class="clearfix">
     <InputText class="live-query" v-model="queryString" :placeholder="$t('live.input')"/>
     <button class="cgss-btn-lg cgss-btn-lg-star pull-right margin-left-10" @click="opendir">{{$t("home.opendir")}}</button>
-    <button class="cgss-btn cgss-btn-star pull-right margin-left-10" @click="startGame">{{$t("live.live")}}</button>
+    <!-- <button class="cgss-btn cgss-btn-star pull-right margin-left-10" @click="startGame">{{$t("live.live")}}</button> -->
     <button class="cgss-btn cgss-btn-star pull-right margin-left-10" @click="startScore">{{$t("live.score")}}</button>
     <button class="cgss-btn cgss-btn-ok pull-right margin-left-10" @click="query">{{$t("home.search")}}</button>
   </div>
@@ -22,12 +22,12 @@
       </ul>
     </div>
   </div>
-  
+
   <div class="margin-top-20 clearfix live-bottom">
     <TaskLoading :total-loading="total" :current-loading="current" :text="text" :single="true" class="absolute-left" :color="'live'"/>
     <div class="gray-bg absolute-right timebar">
       <div style="width: 100%;">
-        <input type="range" ref="playProg" :max="duration" min="0" :value="currentTime" @input="oninput()" style="width: calc(100% - 130px);" :style="{ 'background-size': 100 * (currentTime / duration) + '% 100%' }">
+        <input type="range" ref="playProg" :max="duration" min="0" :value="currentTime" @input="oninput($event.target)" style="width: calc(100% - 130px);" :style="{ 'background-size': 100 * (currentTime / duration) + '% 100%' }">
         <span style="display: inline-block; margin-left: 10px;">{{Math.floor(currentTime) | time}} / {{Math.floor(duration) | time}}</span>
       </div>
       <div class="lyrics" v-if="allLyrics.length">
@@ -79,7 +79,7 @@
 }
 .live-query{
   margin: 12px 0;
-  width: calc(100% - 690px);
+  width: calc(100% - 530px);
 }
 .live-result>ul>li{
   cursor: pointer;

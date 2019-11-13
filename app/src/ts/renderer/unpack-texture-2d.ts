@@ -40,6 +40,7 @@ export function unpackTexture2D (assetbundle: string): Promise<string[]> {
       fs.removeSync(assetbundle)
       resolve(result)
     }).catch((e: Error) => {
+      // eslint-disable-next-line prefer-promise-reject-errors
       reject({
         message: e.message,
         stack: e.stack

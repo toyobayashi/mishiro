@@ -5,36 +5,37 @@
       "type": "node",
       "request": "attach",
       "port": 9222,
-      "name": "attach main",
+      "name": "Attach to Main Process",
       "processId": "${command:PickProcess}"
-    },
-    {
-      "name": "main",
-      "type": "node",
-      "request": "launch",
-      "cwd": "${workspaceRoot}",
-      "console": "integratedTerminal",
-      "runtimeExecutable": "${workspaceRoot}/node_modules/.bin/electron",
-      "windows": {
-        "runtimeExecutable": "${workspaceRoot}/node_modules/.bin/electron.cmd"
-      },
-      "runtimeArgs": [
-        "--remote-debugging-port=9222",
-        "${workspaceRoot}"
-      ],
-      "sourceMaps": true,
-      "protocol": "inspector"
     },
     {
       "type": "chrome",
       "request": "attach",
-      "name": "attach renderer",
+      "name": "Attach to Renderer Process",
       "port": 9222,
-      "webRoot": "${workspaceFolder}/..",
+      "webRoot": "${workspaceFolder}/resources",
       "sourceMaps": true,
       "sourceMapPathOverrides": {
-        "webpack:///./*": "${webRoot}/app/*"
+        "webpack:///*": "${workspaceFolder}/*",
+        "webpack:///./*": "${workspaceFolder}/*"
       }
+    },
+    {
+      "name": "Launch Main Process",
+      "type": "node",
+      "request": "launch",
+      "cwd": "${workspaceFolder}",
+      "runtimeExecutable": "${workspaceFolder}/node_modules/.bin/electron",
+      "console": "integratedTerminal",
+      "windows": {
+        "runtimeExecutable": "${workspaceFolder}\\node_modules\\.bin\\electron.cmd"
+      },
+      "runtimeArgs": [
+        "--remote-debugging-port=9222",
+        "${workspaceFolder}/resources/app"
+      ],
+      "sourceMaps": true,
+      "protocol": "inspector"
     }
   ]
 }

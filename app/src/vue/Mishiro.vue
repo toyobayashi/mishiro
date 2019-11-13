@@ -4,31 +4,32 @@
     <MishiroEntry v-if="!isEntered" @enter="isEntered = !isEntered" @touch="isTouched = true"/>
   </transition>
   <transition name="fade">
-    <MishiroUpdate v-if="!isReady" @ready="isReady = !isReady" v-model="appData" :is-touched="isTouched"/>
+    <MishiroUpdate v-if="!isReady" @ready="isReady = !isReady" :is-touched="isTouched"/>
   </transition>
   <TheBackground v-show="isReady"/>
   <div id="mainBlock" v-show="show && isReady">
-    <MishiroHome v-show="currentBlock === 'home'"/>
-    <MishiroIdol v-show="currentBlock === 'idol'" :master="appData.master"/>
-    <MishiroLive v-show="currentBlock === 'live'" :master="appData.master"/>
-    <MishiroGacha v-show="currentBlock === 'gacha'" :master="appData.master"/>
-    <MishiroMenu v-show="currentBlock === 'menu'" @checking="checking = true" @checked="checking = false" :resVer="appData.resVer"/>
+    <MishiroHome v-show="currentBlock === 'home'" />
+    <MishiroIdol v-show="currentBlock === 'idol'" />
+    <MishiroLive v-show="currentBlock === 'live'" />
+    <!-- <MishiroGacha v-show="currentBlock === 'gacha'" :master="appData.master"/> -->
+    <MishiroCommu v-show="currentBlock === 'commu'" />
+    <MishiroMenu v-show="currentBlock === 'menu'" @checking="checking = true" @checked="checking = false" />
     <TheToggleButton @toggle="showBackground"/>
-    <TheVersion :resVer="appData.resVer"/>
-    <ThePlayer :master="appData.master"/>
+    <TheVersion />
+    <ThePlayer />
     <TabSmall :tab="i18nTabs" v-model="currentLanguage" id="i18nTab" @tabClicked="changeLanguage"/>
     <TheFooter v-model="currentBlock"/>
   </div>
-  <ModalCalculator :master="appData.master" :time="time"/>
+  <ModalCalculator :time="time"/>
   <ModalVersion/>
   <ModalAbout/>
-  <ModalLiveDifficulty/>
+  <!-- <ModalLiveDifficulty/> -->
   <ModalScore/>
-  <ModalLiveResult/>
-  <ModalGachaInformation :master="appData.master"/>
-  <ModalGachaHistory/>
-  <ModalGachaCard :master="appData.master"/>
-  <ModalOption :master="appData.master" :latestResVer="appData.latestResVer" v-model="currentLanguage"/>
+  <!-- <ModalLiveResult/> -->
+  <!-- <ModalGachaInformation :master="appData.master"/> -->
+  <!-- <ModalGachaHistory/> -->
+  <!-- <ModalGachaCard :master="appData.master"/> -->
+  <ModalOption v-model="currentLanguage"/>
   <ModalAlert/>
   <img v-if="checking" :src="'../../asset/img.asar/spinner.gif'" class="spinner" />
 </div>

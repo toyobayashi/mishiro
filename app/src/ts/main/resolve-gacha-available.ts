@@ -11,11 +11,19 @@ function getRarity (id: number, cardData: any[]): number {
   return -1
 }
 
-export default async function (gachaAvailable: any[], cardData: any[], gachaData: any) {
+export default async function (gachaAvailable: any[], cardData: any[], gachaData: any): Promise<{
+  gachaAvailable: any[]
+  count: {
+    R: number
+    SR: number
+    SSR: number
+    fes: boolean
+  }
+}> {
   let R = 0
   let SR = 0
   let SSR = 0
-  let fes = new RegExp('シンデレラフェス').test(gachaData.dicription)
+  const fes = new RegExp('シンデレラフェス').test(gachaData.dicription)
   let SSR_UP = 0
   let SR_UP = 0
   let REC = 0
@@ -23,17 +31,18 @@ export default async function (gachaAvailable: any[], cardData: any[], gachaData
   // 数据库没有数据时，直接从接口获取数据，不做数据统计
   if (!gachaAvailable.length) {
     try {
-      let gachaResponse = await client.getGachaRate(gachaData.id)
+      // let gachaResponse = await client.getGachaRate(gachaData.id)
+      const gachaResponse = { data_headers: { result_code: 0 }, data: [] }
       if (gachaResponse.data_headers.result_code !== 1) {
-        console.log('Get gacha odds failed. Code: ' + gachaResponse.data_headers.result_code)
+        console.log(`Get gacha odds failed. Code: ${gachaResponse.data_headers.result_code}`)
         return {
           gachaAvailable,
           count: { R, SR, SSR, fes }
         }
       }
 
-      let idolList = (gachaResponse.data as any).idol_list
-      let totalList = [...(idolList.r || []), ...(idolList.sr || []), ...(idolList.ssr || [])]
+      const idolList = (gachaResponse.data as any).idol_list
+      const totalList = [...(idolList.r || []), ...(idolList.sr || []), ...(idolList.ssr || [])]
 
       for (let i = 0; i < totalList.length; i++) {
         const rarity = getRarity(totalList[i].card_id, cardData)
@@ -52,7 +61,7 @@ export default async function (gachaAvailable: any[], cardData: any[], gachaData
           SSR++
         }
       }
-      console.log('gachaAvailable: ' + totalList.length)
+      console.log(`gachaAvailable: ${totalList.length}`)
       return {
         gachaAvailable,
         count: { R, SR, SSR, fes }
@@ -63,7 +72,7 @@ export default async function (gachaAvailable: any[], cardData: any[], gachaData
   }
 
   for (let i = 0; i < gachaAvailable.length; i++) {
-    let v = gachaAvailable[i]
+    const v = gachaAvailable[i]
     gachaAvailable[i].rarity = getRarity(v.reward_id, cardData)
     if (gachaAvailable[i].rarity === 3) {
       R++
@@ -83,12 +92,12 @@ export default async function (gachaAvailable: any[], cardData: any[], gachaData
     }
   }
 
-  if (gachaAvailable.length && gachaAvailable[0]['relative_odds'] === 0) {
+  if (gachaAvailable.length && gachaAvailable[0].relative_odds === 0) {
     try {
-      let gachaResponse = await client.getGachaRate(gachaData.id)
+      const gachaResponse = await client.getGachaRate(gachaData.id)
       if (gachaResponse.data_headers.result_code === 1) {
-        let idolList = (gachaResponse.data as any).idol_list
-        let totalList = [...idolList.r, ...idolList.sr, ...idolList.ssr]
+        const idolList = (gachaResponse.data as any).idol_list
+        const totalList = [...idolList.r, ...idolList.sr, ...idolList.ssr]
         if (totalList.length === gachaAvailable.length) {
           for (let i = 0; i < totalList.length; i++) {
             for (let j = 0; j < gachaAvailable.length; j++) {
@@ -99,7 +108,7 @@ export default async function (gachaAvailable: any[], cardData: any[], gachaData
               }
             }
           }
-          console.log('gachaAvailable: ' + totalList.length)
+          console.log(`gachaAvailable: ${totalList.length}`)
           return {
             gachaAvailable,
             count: { R, SR, SSR, fes }
@@ -147,39 +156,39 @@ export default async function (gachaAvailable: any[], cardData: any[], gachaData
     }
 
     for (let i = 0; i < gachaAvailable.length; i++) {
-      let v = gachaAvailable[i]
+      const v = gachaAvailable[i]
       if (v.rarity === 3) {
-        gachaAvailable[i]['relative_odds'] = Math.round(R_ODDS / R)
-        gachaAvailable[i]['relative_sr_odds'] = Math.round(R_ODDS_SR / R)
+        gachaAvailable[i].relative_odds = Math.round(R_ODDS / R)
+        gachaAvailable[i].relative_sr_odds = Math.round(R_ODDS_SR / R)
       } else if (v.rarity === 5) {
         if (Number(v.up_value) === 1) {
-          gachaAvailable[i]['relative_odds'] = Math.round(SR_UP_ODDS / SR_UP)
-          gachaAvailable[i]['relative_sr_odds'] = Math.round(SR_UP_ODDS_SR / SR_UP)
+          gachaAvailable[i].relative_odds = Math.round(SR_UP_ODDS / SR_UP)
+          gachaAvailable[i].relative_sr_odds = Math.round(SR_UP_ODDS_SR / SR_UP)
         } else {
-          gachaAvailable[i]['relative_odds'] = Math.round((SR_ODDS - SR_UP_ODDS) / (SR - SR_UP))
-          gachaAvailable[i]['relative_sr_odds'] = Math.round((SR_ODDS_SR - SR_UP_ODDS_SR) / (SR - SR_UP))
+          gachaAvailable[i].relative_odds = Math.round((SR_ODDS - SR_UP_ODDS) / (SR - SR_UP))
+          gachaAvailable[i].relative_sr_odds = Math.round((SR_ODDS_SR - SR_UP_ODDS_SR) / (SR - SR_UP))
         }
       } else if (v.rarity === 7) {
         if (fes) {
           if (Number(v.up_value) === 1) {
             if (v.recommend_order > 0) {
-              gachaAvailable[i]['relative_odds'] = (SSR_UP_ODDS - 7500) / REC
-              gachaAvailable[i]['relative_sr_odds'] = (SSR_UP_ODDS - 7500) / REC
+              gachaAvailable[i].relative_odds = (SSR_UP_ODDS - 7500) / REC
+              gachaAvailable[i].relative_sr_odds = (SSR_UP_ODDS - 7500) / REC
             } else {
-              gachaAvailable[i]['relative_odds'] = Math.round(7500 / (SSR_UP - REC))
-              gachaAvailable[i]['relative_sr_odds'] = Math.round(7500 / (SSR_UP - REC))
+              gachaAvailable[i].relative_odds = Math.round(7500 / (SSR_UP - REC))
+              gachaAvailable[i].relative_sr_odds = Math.round(7500 / (SSR_UP - REC))
             }
           } else {
-            gachaAvailable[i]['relative_odds'] = Math.round((SSR_ODDS - SSR_UP_ODDS) / (SSR - SSR_UP))
-            gachaAvailable[i]['relative_sr_odds'] = Math.round((SSR_ODDS_SR - SSR_UP_ODDS) / (SSR - SSR_UP))
+            gachaAvailable[i].relative_odds = Math.round((SSR_ODDS - SSR_UP_ODDS) / (SSR - SSR_UP))
+            gachaAvailable[i].relative_sr_odds = Math.round((SSR_ODDS_SR - SSR_UP_ODDS) / (SSR - SSR_UP))
           }
         } else {
           if (Number(v.up_value) === 1) {
-            gachaAvailable[i]['relative_odds'] = Math.round(SSR_UP_ODDS / SSR_UP)
-            gachaAvailable[i]['relative_sr_odds'] = Math.round(SSR_UP_ODDS / SSR_UP)
+            gachaAvailable[i].relative_odds = Math.round(SSR_UP_ODDS / SSR_UP)
+            gachaAvailable[i].relative_sr_odds = Math.round(SSR_UP_ODDS / SSR_UP)
           } else {
-            gachaAvailable[i]['relative_odds'] = Math.round((SSR_ODDS - SSR_UP_ODDS) / (SSR - SSR_UP))
-            gachaAvailable[i]['relative_sr_odds'] = Math.round((SSR_ODDS_SR - SSR_UP_ODDS) / (SSR - SSR_UP))
+            gachaAvailable[i].relative_odds = Math.round((SSR_ODDS - SSR_UP_ODDS) / (SSR - SSR_UP))
+            gachaAvailable[i].relative_sr_odds = Math.round((SSR_ODDS_SR - SSR_UP_ODDS) / (SSR - SSR_UP))
           }
         }
       }

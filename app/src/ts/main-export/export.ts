@@ -13,7 +13,7 @@ export function clearCache (): void {
 }
 
 export function removeCache (name: string): void {
-  if (cache.hasOwnProperty(name)) {
+  if (Object.prototype.hasOwnProperty.call(cache, name)) {
     delete cache[name]
   }
 }

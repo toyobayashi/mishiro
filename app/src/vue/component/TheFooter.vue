@@ -45,17 +45,23 @@
 .cgss-footer ul li:nth-child(2).active{
   background-position: -132px -66px;
 }
-.cgss-footer ul li:nth-child(3){
+.cgss-footer ul li:nth-child(4){
   background-position: -364px 0;
 }
-.cgss-footer ul li:nth-child(3).active{
+.cgss-footer ul li:nth-child(4).active{
   background-position: -364px -66px;
 }
-.cgss-footer ul li:nth-child(4){
+/* .cgss-footer ul li:nth-child(4){
   background-position: -712px 0;
 }
 .cgss-footer ul li:nth-child(4).active{
   background-position: -712px -66px;
+} */
+.cgss-footer ul li:nth-child(3){
+  background-position: -248px 0;
+}
+.cgss-footer ul li:nth-child(3).active{
+  background-position: -248px -66px;
 }
 .cgss-footer ul li:nth-child(5){
   width: 132px;

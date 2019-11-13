@@ -1,5 +1,5 @@
 export default {
-  '1': {
+  1: {
     timer: 0,
     input: {
       itemNumber: {
@@ -121,7 +121,7 @@ export default {
       extraStamina: 0
     }
   },
-  '2': {
+  2: {
     timer: 0,
     input: {
       currentMedal: {
@@ -174,7 +174,7 @@ export default {
       extraStamina: 0
     }
   },
-  '3': {
+  3: {
     timer: 0,
     input: {
       currentPt: {
@@ -260,7 +260,7 @@ export default {
       extraStamina: 0
     }
   },
-  '5': {
+  5: {
     timer: 0,
     input: {
       currentAudience: {

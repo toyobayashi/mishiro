@@ -76,6 +76,7 @@
 }
 .idol-info{
   height: calc(100% - 93px);
+  font-family: "CGSS-B";
 }
 .idol-info>div>.cgss-progress-stamina{
   width: calc(100% - 200px);
@@ -90,7 +91,7 @@
 }
 .idol-result{
   width: 300px;
-  height: calc(100% - 20px);
+  height: calc(100% - 18px);
 }
 .idol-result>ul>li{
   cursor: pointer;
