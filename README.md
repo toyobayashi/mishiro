@@ -70,7 +70,6 @@ Repo: [mishiro-score-viewer](https://github.com/toyobayashi/mishiro-score-viewer
 
     ``` bash 
     $ git clone https://github.com/toyobayashi/mishiro.git
-    $ npm run get # get external resources
 
     $ git pull
     ```
@@ -105,6 +104,8 @@ Repo: [mishiro-score-viewer](https://github.com/toyobayashi/mishiro-score-viewer
 
         REM install dependencies
         > npm install
+        REM get external resources
+        > npm run get
         ```
     
     * Linux / MacOS
@@ -117,6 +118,7 @@ Repo: [mishiro-score-viewer](https://github.com/toyobayashi/mishiro-score-viewer
         $ node-gyp install --target=$(node -p require\(\'./package.json\'\).devDependencies.electron) --dist-url=https://atom.io/download/electron
 
         $ npm install
+        $ npm run get # get external resources
         ```
 
     If run `npm install` error, remove `package-lock.json` then try again.
