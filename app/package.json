@@ -32,7 +32,7 @@
   },
   "license": "MIT",
   "devDependencies": {
-    "@tybys/ty": "^0.6.3",
+    "@tybys/ty": "^0.7.1",
     "@types/fs-extra": "^8.0.1",
     "@types/got": "^9.6.7",
     "@types/marked": "^0.6.5",
@@ -45,7 +45,7 @@
     "chromium-pickle-js": "^0.2.0",
     "cross-env": "^5.2.1",
     "cuint": "^0.2.2",
-    "electron": "6.1.2",
+    "electron": "6.1.5",
     "eslint": "^6.6.0",
     "eslint-config-standard-with-typescript": "^10.0.0",
     "eslint-plugin-html": "^6.0.0",
@@ -69,6 +69,6 @@
     "fs-extra": "^8.1.0",
     "mishiro-core": "^4.1.7",
     "got": "^9.6.0",
-    "sqlite3": "^4.1.0"
+    "sqlite3": "^4.1.1"
   }
 }

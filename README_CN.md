@@ -53,7 +53,6 @@
 
     ``` bash 
     $ git clone https://github.com/toyobayashi/mishiro.git
-    $ npm run get # 获取开发所需要的额外的资源
 
     $ git pull
     ```
@@ -95,6 +94,8 @@
 
         REM 安装依赖
         > npm install
+        REM 获取开发所需要的额外的资源
+        > npm run get
         ```
 
     * Linux / MacOS
@@ -110,6 +111,7 @@
         $ node-gyp install --target=$(node -p require\(\'./package.json\'\).devDependencies.electron) --dist-url=https://npm.taobao.org/mirrors/atom-shell
 
         $ npm install
+        $ npm run get # 获取开发所需要的额外的资源
         ```
 
     如果 `npm install` 失败，请检查下面几种情况：
