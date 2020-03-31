@@ -3,13 +3,12 @@
 ## 下载
 
 * [从 Github 下载](https://github.com/toyobayashi/mishiro/releases)  
-* [从码云下载（中国大陆地区推荐，由于众所周知的原因 Github 上可能无法下载）](https://gitee.com/toyobayashi/mishiro/releases)  
+<!-- * [从码云下载（中国大陆地区推荐，由于众所周知的原因 Github 上可能无法下载）](https://gitee.com/toyobayashi/mishiro/releases)   -->
 
 注意：
 
 * 不推荐将 mishiro 安装或解压在包含汉字的路径下，可能会出现一些问题。
-* 由于我没有 mac 电脑，所以很抱歉 mac 用户请参照请按照下面的步骤和[Electron分发应用](http://electronjs.org/docs/tutorial/application-distribution)自行编译打包。
-
+<!-- * 由于我没有 mac 电脑，所以很抱歉 mac 用户请参照请按照下面的步骤和[Electron分发应用](http://electronjs.org/docs/tutorial/application-distribution)自行编译打包。 -->
 
 ## 特性
 
@@ -28,14 +27,14 @@
 ### Windows 需要
 
 * __Windows 7 以上__
-* __Node.js 10+__
+* __Node.js 12+__
 * __Python 2.7__ （`node-gyp` 现在不支持 3.x ）
 * __Visual Studio 2015/2017/2019 并安装`使用 C++ 的桌面开发`工作负载或 `VC++ v140+ 构建工具集`__
 * __.NET 和 Powershell__ （Windows 10 有自带）
 
 ### Linux 需要
 
-* __Node.js 10+__
+* __Node.js 12+__
 * __Python 2.7__
 * __gcc & g++__
 * __make__
@@ -43,7 +42,7 @@
 
 ### MacOS 需要  （这部分未测试）
 
-* __Node.js 10+__
+* __Node.js 12+__
 * __Python 2.7__
 * __Xcode__ （终端运行 ```xcode-select --install``` 安装Command Line Tools）
 

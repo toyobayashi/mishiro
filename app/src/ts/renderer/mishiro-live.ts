@@ -129,7 +129,7 @@ export default class extends Vue {
           if (result) {
             this.total = (this.wavProgress ? 50 : 99.99)
             this.current = (this.wavProgress ? 50 : 99.99)
-            this.text += this.$t('live.decoding')
+            this.text += this.$t('live.decoding') as string
             await this.acb2mp3(bgmDir(path.basename(audio.name)), audio.fileName, (_c, _t, prog) => {
               this.current = 50 + prog.loading / 2
               this.total = 50 + prog.loading / 2
@@ -200,7 +200,7 @@ export default class extends Vue {
 
         this.total = (this.wavProgress ? 50 : 99.99)
         this.current = (this.wavProgress ? 50 : 99.99)
-        this.text += this.$t('live.decoding')
+        this.text += this.$t('live.decoding') as string
         await this.acb2mp3(liveDir(path.basename(audio.name)), audio.fileName, (_c, _t, prog) => {
           this.current = 50 + prog.loading / 2
           this.total = 50 + prog.loading / 2

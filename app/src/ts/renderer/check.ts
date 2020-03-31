@@ -87,7 +87,7 @@ async function check (progressing: (prog: ProgressInfo) => void): Promise<number
         const temp = arr
         let isContinue = false
         for (let i = temp.length - 1; i >= 0; i--) {
-          if (temp[i].isExisting === true) {
+          if (temp[i].isExisting) {
             isContinue = true
             resVer = temp[i].version
             checkVersion(temp[temp.length - 1].version)

@@ -8,7 +8,7 @@
       </div>
       <div class="modal-body" :style="{ maxHeight: bodyMaxHeight }">
         <table class="table-bordered" border="1">
-          <tr><td width="25%">{{$t('menu.appname')}}</td><td width="75%">{{app.getName()}}</td></tr>
+          <tr><td width="25%">{{$t('menu.appname')}}</td><td width="75%">{{app.name}}</td></tr>
           <tr><td width="25%">{{$t('menu.appver')}}</td><td width="75%">{{app.getVersion()}}</td></tr>
           <tr><td width="25%">{{$t('menu.commitHash')}}</td><td width="75%">{{commit}}</td></tr>
           <tr><td width="25%">{{$t('menu.commitDate')}}</td><td width="75%">{{commitDate}}</td></tr>

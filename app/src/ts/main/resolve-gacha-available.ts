@@ -23,7 +23,7 @@ export default async function (gachaAvailable: any[], cardData: any[], gachaData
   let R = 0
   let SR = 0
   let SSR = 0
-  const fes = new RegExp('シンデレラフェス').test(gachaData.dicription)
+  const fes = (gachaData.dicription as string).includes('シンデレラフェス')
   let SSR_UP = 0
   let SR_UP = 0
   let REC = 0

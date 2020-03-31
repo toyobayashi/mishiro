@@ -13,7 +13,7 @@
       "request": "attach",
       "name": "Attach to Renderer Process",
       "port": 9222,
-      "webRoot": "${workspaceFolder}/resources",
+      "webRoot": "${workspaceFolder}/local_resources",
       "sourceMaps": true,
       "sourceMapPathOverrides": {
         "webpack:///*": "${workspaceFolder}/*",
@@ -32,7 +32,7 @@
       },
       "runtimeArgs": [
         "--remote-debugging-port=9222",
-        "${workspaceFolder}/resources/app"
+        "${workspaceFolder}/local_resources/app"
       ],
       "sourceMaps": true,
       "protocol": "inspector"
