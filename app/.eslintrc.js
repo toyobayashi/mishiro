@@ -15,6 +15,12 @@ module.exports = {
   ],
   rules: {
     'no-irregular-whitespace': 'off',
+    '@typescript-eslint/restrict-template-expressions': 'off',
+    '@typescript-eslint/prefer-optional-chain': 'off',
+    '@typescript-eslint/no-base-to-string': 'off',
+    '@typescript-eslint/return-await': 'off',
+    '@typescript-eslint/no-dynamic-delete': 'off',
+    '@typescript-eslint/prefer-nullish-coalescing': 'off',
     '@typescript-eslint/no-unused-vars': 'error',
     '@typescript-eslint/strict-boolean-expressions': 'off',
     '@typescript-eslint/no-var-requires': 'off',

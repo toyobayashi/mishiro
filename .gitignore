@@ -6,3 +6,4 @@ dist/*
 !dist/build.bat
 /config.json
 /app/.cache/*
+/app/local_resources

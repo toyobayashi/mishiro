@@ -8,19 +8,19 @@
 <!-- [![Vue](https://img.shields.io/badge/dynamic/json.svg?label=vue&url=https%3A%2F%2Fraw.githubusercontent.com%2Ftoyobayashi%2Fmishiro%2Fmaster%2Fapp%2Fpackage.json&query=%24.dependencies.vue&colorB=41b883)](https://vuejs.org/)
 [![Webpack](https://img.shields.io/badge/dynamic/json.svg?label=webpack&url=https%3A%2F%2Fraw.githubusercontent.com%2Ftoyobayashi%2Fmishiro%2Fmaster%2Fapp%2Fpackage.json&query=%24.devDependencies.webpack&colorB=55a7dd)](https://webpack.js.org/) -->
 
-<font color="green" size=5>**Latest Available Version: [1.9.1](https://github.com/toyobayashi/mishiro/releases/tag/v1.9.1)**</font>
+<font color="green" size=5>**Latest Available Version: [1.9.1](https://github.com/toyobayashi/mishiro/releases/tag/v2.0.0-pre2)**</font>
 
 [中文 README](https://github.com/toyobayashi/mishiro/blob/master/README_CN.md)
 
 ## Download
 
 * [Download from Github Release](https://github.com/toyobayashi/mishiro/releases)  
-* [Download from Gitee Release (Chinese user)](https://gitee.com/toyobayashi/mishiro/releases)  
+<!-- * [Download from Gitee Release (Chinese user)](https://gitee.com/toyobayashi/mishiro/releases)   -->
 
 Note：
 
 * Do not install mishiro in a path which includes Chinese or Japanese characters.
-* Mac users please refer to the following building steps and [Electron's document](http://electronjs.org/docs/tutorial/application-distribution) to compile and pack mishiro.
+<!-- * Mac users please refer to the following building steps and [Electron's document](http://electronjs.org/docs/tutorial/application-distribution) to compile and pack mishiro. -->
 
 ## Screenshot
 
@@ -45,14 +45,14 @@ Repo: [mishiro-score-viewer](https://github.com/toyobayashi/mishiro-score-viewer
 ### Windows Require
 
 * __Windows 7+__
-* __Node.js 10+__
+* __Node.js 12+__
 * __Python 2.7__ ( 3.x is not supported by `node-gyp` yet)
 * __Visual Studio 2015/2017/2019 with C++ Desktop workload installed__
 * __.NET & Powershell__  
 
 ### Linux Require
 
-* __Node.js 10+__
+* __Node.js 12+__
 * __Python 2.7__
 * __gcc & g++__
 * __make__
@@ -60,7 +60,7 @@ Repo: [mishiro-score-viewer](https://github.com/toyobayashi/mishiro-score-viewer
 
 ### MacOS Require (This part is not tested)
  
-* __Node.js 10+__
+* __Node.js 12+__
 * __Python 2.7__
 * __Xcode__ (install Command Line Tools by running ```xcode-select --install``` in your terminal)
 
