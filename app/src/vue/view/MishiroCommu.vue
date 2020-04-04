@@ -10,7 +10,7 @@
     <img v-if="isSearching" :src="'../../asset/img.asar/spinner.gif'" class="id-loading" />
   </div>
   <div class="black-bg intro">
-    Original Site: <span class="link" @click="openOrigin">プロデューサー検索 - deresute.me https://deresute.me</span>
+    {{$t("commu.originalSite")}}: <span class="link" @click="openOrigin">プロデューサー検索 - deresute.me https://deresute.me</span>
   </div>
 </div>
 </template>
