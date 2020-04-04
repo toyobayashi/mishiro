@@ -8,15 +8,20 @@
       </div>
       <div class="modal-body" :style="{ maxHeight: bodyMaxHeight }">
         <table class="table-bordered" border="1">
-          <tr><td width="25%">{{$t('menu.appname')}}</td><td width="75%">{{app.name}}</td></tr>
-          <tr><td width="25%">{{$t('menu.appver')}}</td><td width="75%">{{app.getVersion()}}</td></tr>
-          <tr><td width="25%">{{$t('menu.commitHash')}}</td><td width="75%">{{commit}}</td></tr>
-          <tr><td width="25%">{{$t('menu.commitDate')}}</td><td width="75%">{{commitDate}}</td></tr>
-          <tr><td width="25%">Electron</td><td width="75%">{{versions.electron}}</td></tr>
-          <tr><td width="25%">Chrome</td><td width="75%">{{versions.chrome}}</td></tr>
-          <tr><td width="25%">Node</td><td width="75%">{{versions.node}}</td></tr>
-          <tr><td width="25%">{{$t('menu.arch')}}</td><td width="75%">{{arch}}</td></tr>
-          <tr><td width="25%">{{$t('menu.description')}}</td><td width="75%">{{$t('menu.descCon')}}</td></tr>
+          <tr><td width="20%">{{$t('menu.appname')}}</td><td width="80%" colspan="3">{{app.name}}</td></tr>
+          <tr><td width="20%">{{$t('menu.appver')}}</td><td width="80%" colspan="3">{{app.getVersion()}}</td></tr>
+          <tr><td width="20%">{{$t('menu.commitHash')}}</td><td width="80%" colspan="3">{{commit}}</td></tr>
+          <tr><td width="20%">{{$t('menu.commitDate')}}</td><td width="80%" colspan="3">{{commitDate}}</td></tr>
+          <tr>
+            <td width="20%">Electron</td><td width="20%">{{versions.electron}}</td>
+            <td width="20%">Chrome</td><td width="40%">{{versions.chrome}}</td>
+          </tr>
+          <tr>
+            <td width="20%">Node.js</td><td width="20%">{{versions.node}}</td>
+            <td width="20%">V8</td><td width="40%">{{versions.v8}}</td>
+          </tr>
+          <tr><td width="20%">OS</td><td width="80%" colspan="3">{{osinfo}}</td></tr>
+          <tr><td width="20%">{{$t('menu.description')}}</td><td width="80%" colspan="3">{{$t('menu.descCon')}}</td></tr>
         </table>
       </div>
       <div class="modal-footer">

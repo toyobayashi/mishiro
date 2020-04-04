@@ -2,6 +2,8 @@ import * as electron from 'electron'
 
 const cache = electron.remote.require('./export.js')
 
+const os: typeof import('os') = electron.remote.require('os')
+
 process.once('loaded', function () {
   window.preload = {
     package: electron.remote.require('../package.json'),
@@ -32,6 +34,10 @@ process.once('loaded', function () {
     electron,
     mishiroCore: electron.remote.require('mishiro-core'),
     fs: electron.remote.require('fs-extra'),
+    os: {
+      type: os.type,
+      release: os.release
+    },
     path: electron.remote.require('path'),
     url: electron.remote.require('url'),
     childProcess: {
