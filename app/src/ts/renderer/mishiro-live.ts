@@ -79,7 +79,8 @@ export default class extends Vue {
 
     if (audio.name.split('/')[0] === 'b') {
       if (!fs.existsSync(bgmDir(audio.fileName))) {
-        if (fs.existsSync(getPath(`../asset/bgm.asar/${audio.fileName}`))) {
+        const targetPath = getPath(`../asset/bgm.asar/${audio.fileName}`)
+        if (fs.existsSync(targetPath)) {
           this.event.$emit('liveSelect', { src: `../../asset/bgm.asar/${audio.fileName}` })
           return
         }
@@ -270,7 +271,7 @@ export default class extends Vue {
     const dirl = liveDir()
     if (!fs.existsSync(dirb)) fs.mkdirsSync(dirb)
     if (!fs.existsSync(dirl)) fs.mkdirsSync(dirl)
-    if (process.platform === 'win32') {
+    if (window.node.process.platform === 'win32') {
       shell.openExternal(dirb).catch(err => console.log(err))
       shell.openExternal(dirl).catch(err => console.log(err))
     } else {

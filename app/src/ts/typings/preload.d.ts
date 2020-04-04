@@ -18,6 +18,7 @@ declare interface Window {
     process: {
       versions: typeof process.versions
       arch: typeof process.arch
+      platform: typeof process.platform
     }
     got: typeof import('got')
     electron: typeof import('electron')

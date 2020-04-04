@@ -25,7 +25,8 @@ process.once('loaded', function () {
   window.node = {
     process: {
       arch: process.arch,
-      versions: process.versions
+      versions: process.versions,
+      platform: process.platform
     },
     got: electron.remote.require('got'),
     electron,
