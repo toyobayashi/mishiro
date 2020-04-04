@@ -10,7 +10,7 @@ import { Vue, Component } from 'vue-property-decorator'
 const fs = window.node.fs
 const path = window.node.path
 const getPath = window.preload.getPath
-const { shell, remote } = window.node.electron
+const { shell } = window.node.electron
 const { downloadDir } = getPath
 
 @Component({
@@ -82,8 +82,6 @@ export default class extends Vue {
       this.data = []
       this.canDownloadRows = []
       // this.event.$emit('alert', this.$t('home.errorTitle'), this.$t('home.noEmptyString'))
-    } else if (this.queryString === 'dev') {
-      remote.getCurrentWindow().webContents.openDevTools()
     } else {
       const manifestDB = window.preload.getManifestDB()
       if (!manifestDB) return

@@ -1,5 +1,5 @@
 import './common/asar'
-import { app, BrowserWindow, ipcMain, BrowserWindowConstructorOptions, nativeImage, Menu, MenuItem } from 'electron'
+import { app, BrowserWindow, ipcMain, BrowserWindowConstructorOptions, nativeImage, Menu, MenuItem, globalShortcut } from 'electron'
 import { join } from 'path'
 import { existsSync } from 'fs-extra'
 import * as url from 'url'
@@ -60,7 +60,6 @@ function createWindow (): void {
     if (!mainWindow) return
     mainWindow.show()
     mainWindow.focus()
-    if (process.env.NODE_ENV !== 'production') mainWindow.webContents.openDevTools()
   })
 
   mainWindow.on('closed', function () {
@@ -72,8 +71,11 @@ function createWindow (): void {
     mainWindow && mainWindow.flashFrame(false)
   })
 
+  if (process.platform !== 'darwin') {
+    (mainWindow as any).removeMenu ? (mainWindow as any).removeMenu() : mainWindow.setMenu(null)
+  }
+
   if (process.env.NODE_ENV !== 'production') {
-    // const config = require('../../script/config').default
     const res: any = mainWindow.loadURL('http://localhost:8090/app/renderer/')
 
     if (res !== undefined && typeof res.then === 'function' && typeof res.catch === 'function') {
@@ -82,7 +84,6 @@ function createWindow (): void {
       })
     }
   } else {
-    (mainWindow as any).removeMenu ? (mainWindow as any).removeMenu() : mainWindow.setMenu(null)
     const res: any = mainWindow.loadURL(url.format({
       pathname: join(__dirname, '../renderer/index.html'),
       protocol: 'file:',
@@ -120,6 +121,7 @@ ipcMain.on('mainWindowId', (event) => {
 typeof (app as any).whenReady === 'function' ? (app as any).whenReady().then(main) : app.on('ready', main)
 
 function main (): void {
+  registerGlobalShortcut()
   if (process.platform === 'darwin') {
     const template: MenuItem[] = [
       new MenuItem({
@@ -135,4 +137,26 @@ function main (): void {
   }
   ipc()
   if (!mainWindow) createWindow()
+}
+
+function registerGlobalShortcut (): void {
+  globalShortcut.register('CommandOrControl+Shift+I', function () {
+    const win = BrowserWindow.getFocusedWindow()
+    if (win) {
+      if (win.webContents.isDevToolsOpened()) {
+        win.webContents.closeDevTools()
+      } else {
+        win.webContents.openDevTools()
+      }
+    }
+  })
+
+  if (process.env.NODE_ENV !== 'production') {
+    globalShortcut.register('CommandOrControl+R', function () {
+      const win = BrowserWindow.getFocusedWindow()
+      if (win) {
+        win.webContents.reload()
+      }
+    })
+  }
 }
