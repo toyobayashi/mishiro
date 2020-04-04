@@ -58,7 +58,6 @@ export default class extends mixins(modalMixin) {
     } else {
       // const config = require('../../../script/config.ts').default
       win.loadURL('http://localhost:8090/app/renderer/score.html').catch(err => console.log(err))
-      win.webContents.openDevTools()
     }
 
     win.on('close', () => {
@@ -108,7 +107,6 @@ export default class extends mixins(modalMixin) {
       //   } else {
       //     const config = require('../../../script/config.ts').default
       //     win.loadURL(`http://${config.devServerHost}:${config.devServerPort}${config.publicPath}score.html`)
-      //     win.webContents.openDevTools()
       //   }
 
       //   win.on('close', () => {
