@@ -1,5 +1,5 @@
 import './common/asar'
-import { app, BrowserWindow, ipcMain, BrowserWindowConstructorOptions, nativeImage } from 'electron'
+import { app, BrowserWindow, ipcMain, BrowserWindowConstructorOptions, nativeImage, Menu, MenuItem } from 'electron'
 import { join } from 'path'
 import { existsSync } from 'fs-extra'
 import * as url from 'url'
@@ -12,7 +12,6 @@ app.commandLine.appendSwitch('autoplay-policy', 'no-user-gesture-required')
 let mainWindow: BrowserWindow | null
 
 function createWindow (): void {
-  // Menu.setApplicationMenu(null)
   const browerWindowOptions: BrowserWindowConstructorOptions = {
     width: 1296,
     height: 863,
@@ -43,11 +42,15 @@ function createWindow (): void {
     if (process.env.NODE_ENV !== 'production') {
       let icon: string = ''
 
-      const iconPath = join(__dirname, `../../../src/res/icon/app.${process.platform === 'win32' ? 'ico' : 'icns'}`)
+      const iconPath = join(__dirname, `../../../src/res/icon/${process.platform === 'darwin' ? '1024x1024.png' : 'app.ico'}`)
       if (existsSync(iconPath)) icon = iconPath
 
       if (icon) {
-        browerWindowOptions.icon = nativeImage.createFromPath(icon)
+        if (process.platform === 'darwin') {
+          app.dock.setIcon(icon)
+        } else {
+          browerWindowOptions.icon = nativeImage.createFromPath(icon)
+        }
       }
     }
   }
@@ -114,10 +117,22 @@ ipcMain.on('mainWindowId', (event) => {
   event.returnValue = mainWindow && mainWindow.id
 })
 
-// tslint:disable-next-line: strict-type-predicates
 typeof (app as any).whenReady === 'function' ? (app as any).whenReady().then(main) : app.on('ready', main)
 
 function main (): void {
+  if (process.platform === 'darwin') {
+    const template: MenuItem[] = [
+      new MenuItem({
+        label: app.name,
+        submenu: [
+          { role: 'quit' }
+        ]
+      })
+    ]
+
+    const menu = Menu.buildFromTemplate(template)
+    Menu.setApplicationMenu(menu)
+  }
   ipc()
   if (!mainWindow) createWindow()
 }

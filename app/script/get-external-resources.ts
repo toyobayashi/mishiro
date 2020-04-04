@@ -6,12 +6,14 @@ import { unzipSync } from '@tybys/cross-zip'
 (function () {
   const target = join(__dirname, '../tmp/mishiro-ex.zip')
   const tmpDir = dirname(target)
+
+  if (fs.existsSync(target)) {
+    unzipSync(target, join(__dirname, '../..'))
+    return
+  }
+
   if (fs.existsSync(tmpDir)) {
     fs.removeSync(tmpDir)
-  }
-  if (fs.existsSync(target)) {
-    unzipSync(target, join(__dirname, '..'))
-    return
   }
   const stream = got.stream('https://github.com/toyobayashi/mishiro/releases/download/v1.0.0/mishiro-ex.zip', {
     headers: {
