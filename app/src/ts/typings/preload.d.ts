@@ -24,6 +24,10 @@ declare interface Window {
     electron: typeof import('electron')
     mishiroCore: typeof import('mishiro-core')
     fs: typeof import('fs-extra')
+    os: {
+      type: typeof import('os').type
+      release: typeof import('os').release
+    }
     path: typeof import('path')
     url: typeof import('url')
     childProcess: {
