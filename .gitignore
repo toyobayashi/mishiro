@@ -7,3 +7,4 @@ dist/*
 /config.json
 /app/.cache/*
 /app/local_resources
+.DS_Store
