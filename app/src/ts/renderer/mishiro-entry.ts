@@ -6,7 +6,7 @@ const getPath = window.preload.getPath
 export default class extends Vue {
   bg: boolean | null = null
   isTouched: boolean = false
-  coverSrc: string = '../../asset/img.asar/3rd_anniversary.png'
+  coverSrc: string = '../../asset/img.asar/title_bg_10006.png'
 
   enter (): void {
     if (!this.isTouched) {
@@ -23,9 +23,13 @@ export default class extends Vue {
     this.$nextTick(() => {
       const msrEvent = localStorage.getItem('msrEvent')
       if (msrEvent) {
-        const o = JSON.parse(msrEvent)
-        if (fs.existsSync(getPath.cardDir(`bg_${o.card}.png`))) {
-          this.coverSrc = `../../asset/card/bg_${o.card}.png`
+        try {
+          const o = JSON.parse(msrEvent)
+          if (fs.existsSync(getPath.cardDir(`bg_${o.card}.png`))) {
+            this.coverSrc = `../../asset/card/bg_${o.card}.png`
+          }
+        } catch (_) {
+          localStorage.clear()
         }
       }
     })

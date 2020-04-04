@@ -41,7 +41,7 @@ export default class extends Vue {
   @Prop() isTouched!: boolean
 
   getEventCardId (eventAvailable: any[], eventData: any): number[] {
-    if (!eventAvailable.length) return [Number(eventData.bg_id) - 1]
+    if (!eventAvailable.length) return (eventData.bg_id as string).split(',').map((id: string) => (Number(id) - 1))
     eventAvailable.sort(function (a, b) {
       return a.recommend_order - b.recommend_order
     })
@@ -232,7 +232,10 @@ export default class extends Vue {
     const cardId = this.getEventCardId(masterData.eventAvailable, masterData.eventData)
 
     if (masterData.eventHappening) {
-      localStorage.setItem('msrEvent', `{"id":${masterData.eventData.id},"card":${Number(cardId[0]) + 1}}`)
+      const storageCardId: number = Number(cardId[0]) + 1
+      if (!isNaN(storageCardId)) {
+        localStorage.setItem('msrEvent', `{"id":${masterData.eventData.id},"card":${storageCardId}}`)
+      }
     } else {
       localStorage.removeItem('msrEvent')
     }

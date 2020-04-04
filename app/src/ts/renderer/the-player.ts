@@ -17,9 +17,9 @@ interface BGMList {
 
 export const bgmList: BGMList = {
   anni: {
-    src: '../../asset/bgm.asar/bgm_event_3023.mp3',
-    start: 13.90,
-    end: 95.00
+    src: '../../asset/bgm.asar/bgm_event_anniversary_004.mp3',
+    start: 6.1,
+    end: 105.00
   },
   day: {
     src: '../../asset/bgm.asar/bgm_studio_day.mp3',
@@ -68,7 +68,11 @@ export default class extends Vue {
   endTime: number = 0
   isPlaying: boolean = false
   isShow: boolean = false
-  playing: any = bgmList.anni
+  playing: {
+    src: string
+    start?: number
+    end?: number
+  } = bgmList.anni
 
   // @Prop({ type: Object, default: () => ({}) }) master!: MasterData
 
@@ -77,13 +81,20 @@ export default class extends Vue {
   }
 
   get bgmList (): BGMList {
-    const list: BGMList = {}
-    for (const k in bgmList) {
-      if (!bgmList[k].hidden) {
-        list[k] = { ...bgmList[k] }
+    const list: any = {}
+    const bgmListCopy: BGMList = JSON.parse(JSON.stringify(bgmList))
+    for (const k in bgmListCopy) {
+      if (!bgmListCopy[k].hidden) {
+        list[k] = { ...bgmListCopy[k] }
+        list[k].displayName = list[k].src.slice((list[k].src as string).lastIndexOf('/') + 1)
+        list[k].id = list[k].displayName.split('.')[0]
       }
     }
     return list
+  }
+
+  get currentPlayingDisplay (): string {
+    return this.playing ? this.playing.src.slice(this.playing.src.lastIndexOf('/') + 1) : ''
   }
 
   initSrc (): string {
@@ -167,7 +178,13 @@ export default class extends Vue {
     this.$nextTick(() => {
       const msrEvent = localStorage.getItem('msrEvent')
       if (msrEvent) {
-        const o = JSON.parse(msrEvent)
+        let o: any
+        try {
+          o = JSON.parse(msrEvent)
+        } catch (_) {
+          this.set(bgmList.anni)
+          return
+        }
         if ((o.id.toString()).charAt(0) !== '2' && (o.id.toString()).charAt(0) !== '6') {
           if (fs.existsSync(bgmDir(`bgm_event_${o.id}.mp3`))) {
             this.set({ src: `../../asset/bgm/bgm_event_${o.id}.mp3` })

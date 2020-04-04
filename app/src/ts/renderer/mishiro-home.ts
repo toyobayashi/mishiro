@@ -68,7 +68,7 @@ export default class extends Vue {
     this.playSe(this.enterSe)
     const dir = downloadDir()
     if (!fs.existsSync(dir)) fs.mkdirsSync(dir)
-    if (process.platform === 'win32') {
+    if (window.node.process.platform === 'win32') {
       shell.openExternal(dir).catch(err => console.log(err))
     } else {
       shell.showItemInFolder(dir + '/.')
@@ -76,6 +76,7 @@ export default class extends Vue {
   }
 
   query (): void {
+    this.playSe(this.enterSe)
     if (this.queryString === '') {
       this.page = 0
       this.data = []
@@ -102,7 +103,6 @@ export default class extends Vue {
       })
       // ipcRenderer.send('queryManifest', this.queryString)
     }
-    // this.playSe(this.enterSe)
   }
 
   filterOnClick (): void {

@@ -262,7 +262,9 @@ export default class extends Vue {
         }
       }
     } else {
-      this.searchResult = [].concat(this.cardData.filter(card => (Number(card.id) === this.eventCard[0] || Number(card.id) === this.eventCard[1])) as any)
+      this.searchResult = this.cardData.filter(card => {
+        return this.eventCard.includes(Number(card.id))
+      })
     }
   }
 
@@ -491,7 +493,7 @@ export default class extends Vue {
     this.playSe(this.enterSe)
     const dir = cardDir()
     if (!fs.existsSync(dir)) fs.mkdirsSync(dir)
-    if (process.platform === 'win32') {
+    if (window.node.process.platform === 'win32') {
       shell.openExternal(dir).catch(err => console.log(err))
     } else {
       shell.showItemInFolder(dir + '/.')
@@ -531,7 +533,9 @@ export default class extends Vue {
       })
       this.event.$on('eventRewardCard', (cardId: number[]) => {
         this.eventCard = cardId
-        this.searchResult = [].concat(this.cardData.filter(card => (Number(card.id) === cardId[0] || Number(card.id) === cardId[1])) as any)
+        this.searchResult = this.cardData.filter(card => {
+          return cardId.includes(Number(card.id))
+        })
       })
       this.event.$on('enterKey', (block: string) => {
         if (block === 'idol') {
