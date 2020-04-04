@@ -52,6 +52,7 @@
 .bgm-select-bar>button:nth-child(1) > span {
   overflow: hidden;
   text-overflow: ellipsis;
+  white-space: nowrap;
   width: 100%;
 }
 .bgm-select-bar>button:nth-child(2){
@@ -96,6 +97,7 @@
   height: 28px;
   line-height: 28px;
   overflow: hidden;
+  white-space: nowrap;
   text-overflow: ellipsis;
   padding: 0 5px;
 }

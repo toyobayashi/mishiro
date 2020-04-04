@@ -193,7 +193,7 @@ export default class extends Vue {
 
   get hp (): string {
     if (this.information.hp_min && this.information.hp_max && this.information.bonus_hp) {
-      return `${this.information.hp_min}～${this.information.hp_max} (+${this.information.bonus_hp})'`
+      return `${this.information.hp_min}～${this.information.hp_max} (+${this.information.bonus_hp})`
     } else {
       return ''
     }
@@ -201,7 +201,7 @@ export default class extends Vue {
 
   get vocal (): string {
     if (this.information.vocal_min && this.information.vocal_max && this.information.bonus_vocal) {
-      return `${this.information.vocal_min}～${this.information.vocal_max} (+${this.information.bonus_vocal})'`
+      return `${this.information.vocal_min}～${this.information.vocal_max} (+${this.information.bonus_vocal})`
     } else {
       return ''
     }
@@ -209,7 +209,7 @@ export default class extends Vue {
 
   get dance (): string {
     if (this.information.dance_min && this.information.dance_max && this.information.bonus_dance) {
-      return `${this.information.dance_min}～${this.information.dance_max} (+${this.information.bonus_dance})'`
+      return `${this.information.dance_min}～${this.information.dance_max} (+${this.information.bonus_dance})`
     } else {
       return ''
     }
@@ -217,7 +217,7 @@ export default class extends Vue {
 
   get visual (): string {
     if (this.information.visual_min && this.information.visual_max && this.information.bonus_visual) {
-      return `${this.information.visual_min}～${this.information.visual_max} (+${this.information.bonus_visual})'`
+      return `${this.information.visual_min}～${this.information.visual_max} (+${this.information.bonus_visual})`
     } else {
       return ''
     }
