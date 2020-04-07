@@ -32,7 +32,7 @@
   },
   "license": "MIT",
   "devDependencies": {
-    "@tybys/ty": "^0.9.1",
+    "@tybys/ty": "^0.9.3",
     "@types/fs-extra": "^8.1.0",
     "@types/got": "^9.6.9",
     "@types/marked": "^0.7.3",
