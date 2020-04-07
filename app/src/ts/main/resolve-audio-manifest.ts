@@ -14,6 +14,8 @@ interface Live extends Manifest {
   fileName: string
   score?: string
   scoreHash?: string
+  jacket?: string
+  jacketHash?: string
   bpm?: number
   awbHash?: string
 }
@@ -24,7 +26,7 @@ interface Music {
   bpm: number
 }
 
-export default function (bgmManifest: BGM[], liveManifest: Live[], musicData: Music[], charaData: any[], liveData: any[], scoreManifest: Manifest[]): {
+export default function (bgmManifest: BGM[], liveManifest: Live[], musicData: Music[], charaData: any[], liveData: any[], scoreManifest: Manifest[], jacketManifest: Manifest[]): {
   bgmManifest: BGM[]
   liveManifest: Live[]
 } {
@@ -106,6 +108,12 @@ export default function (bgmManifest: BGM[], liveManifest: Live[], musicData: Mu
         liveManifest[i].score = scoreExists[0].name
         liveManifest[i].scoreHash = scoreExists[0].hash
         liveManifest[i].bpm = musicData.filter(row => Number(row.id) === Number(arr[1]))[0].bpm
+      }
+
+      const jacketExists = jacketManifest.filter(row => row.name === `jacket_${arr[1]}.unity3d`)
+      if (jacketExists.length) {
+        liveManifest[i].jacket = jacketExists[0].name
+        liveManifest[i].jacketHash = jacketExists[0].hash
       }
     }
     liveManifest[i].fileName = fileName

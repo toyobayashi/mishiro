@@ -36,7 +36,8 @@ process.once('loaded', function () {
     fs: electron.remote.require('fs-extra'),
     os: {
       type: os.type,
-      release: os.release
+      release: os.release,
+      EOL: os.EOL
     },
     path: electron.remote.require('path'),
     url: electron.remote.require('url'),

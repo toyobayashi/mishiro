@@ -20,6 +20,7 @@ namespace getPath {
   export const voiceDir = (...relative: string[]): string => getPath('../asset/voice', ...relative)
   export const bgmDir = (...relative: string[]): string => getPath('../asset/bgm', ...relative)
   export const liveDir = (...relative: string[]): string => getPath('../asset/live', ...relative)
+  export const jacketDir = (...relative: string[]): string => getPath('../asset/jacket', ...relative)
 }
 
 setCache('getPath', getPath)

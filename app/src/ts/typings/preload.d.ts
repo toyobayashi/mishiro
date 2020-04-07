@@ -27,6 +27,7 @@ declare interface Window {
     os: {
       type: typeof import('os').type
       release: typeof import('os').release
+      EOL: typeof import('os').EOL
     }
     path: typeof import('path')
     url: typeof import('url')

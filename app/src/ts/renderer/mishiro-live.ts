@@ -3,15 +3,17 @@ import { Vue, Component } from 'vue-property-decorator'
 
 import TaskLoading from '../../vue/component/TaskLoading.vue'
 import InputText from '../../vue/component/InputText.vue'
+import { unpackTexture2D } from './unpack-texture-2d'
 // import { generateObjectId } from '../common/object-id'
 
 // import { MasterData } from '../main/on-master-read'
 
 const fs = window.node.fs
 const path = window.node.path
+const os = window.node.os
 const getPath = window.preload.getPath
 const { shell, ipcRenderer, clipboard } = window.node.electron
-const { scoreDir, bgmDir, liveDir } = getPath
+const { scoreDir, bgmDir, liveDir, jacketDir } = getPath
 
 @Component({
   components: {
@@ -35,6 +37,7 @@ const { scoreDir, bgmDir, liveDir } = getPath
 export default class extends Vue {
   dler = new this.core.Downloader()
   scoreDownloader = new this.core.Downloader()
+  jacketDownloader = new this.core.Downloader()
   queryString: string = ''
   total: number = 0
   current: number = 0
@@ -47,6 +50,7 @@ export default class extends Vue {
   isGameRunning: boolean = false
   allLyrics: Array<{ time: number, lyrics: string, size: any}> = []
   lyrics: Array<{ time: number, lyrics: string, size: any}> = []
+  jacketSrc: string = ''
 
   // @Prop({ default: () => ({}) }) master: MasterData
 
@@ -217,34 +221,64 @@ export default class extends Vue {
 
       this.lyrics = []
       this.allLyrics = []
+      this.jacketSrc = ''
 
-      if (!this.activeAudio.score) return
-
-      if (!fs.existsSync(scoreDir(this.activeAudio.score))) {
-        if (!navigator.onLine) {
-          this.event.$emit('alert', this.$t('home.errorTitle'), this.$t('home.noNetwork'))
-          return
-        }
-        try {
-          const scoreBdb = await this.scoreDownloader.downloadDatabase(
-            this.activeAudio.scoreHash,
-            scoreDir(this.activeAudio.score.split('.')[0])
-          )
-          if (scoreBdb) {
-            // this.core.util.lz4dec(scoreBdb as string, 'bdb')
-            fs.removeSync(scoreDir(this.activeAudio.score.split('.')[0]))
-          } else {
-            this.event.$emit('alert', this.$t('home.errorTitle'), 'Error!')
-            return
+      if (this.activeAudio.score && navigator.onLine) {
+        await (async () => {
+          if (!fs.existsSync(scoreDir(this.activeAudio.score))) {
+            try {
+              const scoreBdb = await this.scoreDownloader.downloadDatabase(
+                this.activeAudio.scoreHash,
+                scoreDir(this.activeAudio.score.split('.')[0])
+              )
+              if (scoreBdb) {
+                // this.core.util.lz4dec(scoreBdb as string, 'bdb')
+                fs.removeSync(scoreDir(this.activeAudio.score.split('.')[0]))
+              } else {
+                this.event.$emit('alert', this.$t('home.errorTitle'), 'Error!')
+                return
+              }
+            } catch (errorPath) {
+              this.event.$emit('alert', this.$t('home.errorTitle'), (this.$t('home.downloadFailed') as string) + '<br/>' + (errorPath as string))
+              return
+            }
           }
-        } catch (errorPath) {
-          this.event.$emit('alert', this.$t('home.errorTitle'), (this.$t('home.downloadFailed') as string) + '<br/>' + (errorPath as string))
-          return
-        }
+
+          // ipcRenderer.send('lyrics', scoreDir(this.activeAudio.score))
+          this.allLyrics = await window.preload.getLyrics(scoreDir(this.activeAudio.score))
+        })()
       }
 
-      // ipcRenderer.send('lyrics', scoreDir(this.activeAudio.score))
-      this.allLyrics = await window.preload.getLyrics(scoreDir(this.activeAudio.score))
+      if (this.activeAudio.jacket && navigator.onLine) {
+        await (async () => {
+          const name = path.parse(this.activeAudio.jacket).name
+          const jacketlz4 = jacketDir(name)
+          const pngName = name + '_m.png'
+          const pngPath = jacketDir(pngName)
+          if (!fs.existsSync(pngPath)) {
+            try {
+              const jacketu3d = await this.jacketDownloader.downloadAsset(
+                this.activeAudio.jacketHash,
+                jacketlz4
+              )
+              if (jacketu3d) {
+                // this.core.util.lz4dec(scoreBdb as string, 'bdb')
+                await fs.remove(jacketlz4)
+                await unpackTexture2D(jacketu3d)
+                await fs.remove(jacketDir(name + '_s.png'))
+              } else {
+                this.event.$emit('alert', this.$t('home.errorTitle'), 'Error!')
+                return
+              }
+            } catch (errorPath) {
+              this.event.$emit('alert', this.$t('home.errorTitle'), (this.$t('home.downloadFailed') as string) + '<br/>' + (errorPath as string))
+              return
+            }
+          }
+
+          this.jacketSrc = path.posix.relative(getPath('renderer').replace(/\\/g, '/'), pngPath.replace(/\\/g, '/')).replace(/\\/g, '/')
+        })()
+      }
     }
   }
 
@@ -282,11 +316,15 @@ export default class extends Vue {
 
   openLyrics (): void {
     const self = this
-    this.event.$emit('alert', path.parse(this.activeAudio.fileName).name, this.allLyrics.map(line => line.lyrics).join('<br/>'), undefined, {
+    let bodyhtml = this.allLyrics.map(line => line.lyrics).join('<br/>')
+    if (this.jacketSrc) {
+      bodyhtml = `<div style="text-align:center" ><img src="${this.jacketSrc}" /></div>${bodyhtml}`
+    }
+    this.event.$emit('alert', path.parse(this.activeAudio.fileName).name, bodyhtml, undefined, {
       text: this.$t('live.copy'),
       cb () {
         self.playSe(self.enterSe)
-        clipboard.writeText(self.allLyrics.map(line => line.lyrics).join('\n'))
+        clipboard.writeText(self.allLyrics.map(line => line.lyrics).join(os.EOL))
       }
     })
   }
