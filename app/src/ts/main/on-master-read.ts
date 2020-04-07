@@ -72,6 +72,7 @@ export default async function readMaster (masterFile: string/* , config: Mishiro
 
   let userLevel = await master.find('user_level', ['level', 'stamina', 'total_exp'])
   const liveData = await master.find('live_data', ['id', 'music_data_id'])
+  const jacketManifest = await manifestDB.find('manifests', ['name', 'hash'], { name: { $like: 'jacket%unity3d' } })
   // master.close((err: Error) => {
   //   if (err) throw err
   //   master = void 0
@@ -83,7 +84,7 @@ export default async function readMaster (masterFile: string/* , config: Mishiro
   charaData = resolveCharaData(charaData, textData)
   cardData = resolveCardData(cardData, charaData, skillData, leaderSkillData, eventLimitedCard, gachaLimitedCard)
 
-  const audioManifest = resolveAudioManifest(bgmManifest, liveManifest, musicData, charaData, liveData, scoreManifest)
+  const audioManifest = resolveAudioManifest(bgmManifest, liveManifest, musicData, charaData, liveData, scoreManifest, jacketManifest)
   bgmManifest = audioManifest.bgmManifest
   liveManifest = audioManifest.liveManifest
 
