@@ -53,9 +53,11 @@ const config: ty.Configuration = {
     preload (config: webpack.Configuration) {
       config.plugins = [
         ...(config.plugins || []),
-        new CopyWebpackPlugin([
-          { from: path.join(__dirname, 'src/res/banner.svg') }
-        ])
+        new CopyWebpackPlugin({
+          patterns: [
+            { from: path.join(__dirname, 'src/res/banner.svg') }
+          ]
+        })
       ]
     }
   },

@@ -3,3 +3,4 @@ node_modules
 /resources/asset/*
 /resources/config.json
 /tmp
+package-lock.json
