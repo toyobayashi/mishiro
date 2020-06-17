@@ -6,8 +6,8 @@ declare interface Window {
     encode: typeof mishiroCore.Client.cryptoGrapher.encode
     decode: typeof mishiroCore.Client.cryptoGrapher.decode
     _decryptBody: typeof mishiroCore.Client.decryptBody
-    decryptBody (body: string, udid: string): any
-    getProfile (viewer: string | number): Promise<import('mishiro-core').ServerResponse>
+    decryptBody: (body: string, udid: string) => any
+    getProfile: (viewer: string | number) => Promise<import('mishiro-core').ServerResponse>
   }
 }
 
