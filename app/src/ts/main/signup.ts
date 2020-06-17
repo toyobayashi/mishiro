@@ -5,7 +5,7 @@ import { randomBytes } from 'crypto'
 
 declare module 'mishiro-core' {
   export interface Client {
-    signup (cb?: (step: number) => void): Promise<string>
+    signup: (cb?: (step: number) => void) => Promise<string>
   }
 }
 
