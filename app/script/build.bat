@@ -10,5 +10,5 @@ for /f "delims=" %%P in ('node -p "require('./app/package.json').devDependencies
 
 cd .\app
 call npm.cmd ci
-call npm.cmd build
+call npm.cmd run build
 cd ..
