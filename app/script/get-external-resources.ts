@@ -21,9 +21,11 @@ import { unzipSync } from '@tybys/cross-zip'
     }
   })
 
-  stream.on('downloadProgress', (progress) => {
-    process.stdout.write(`\x1b[666D\x1b[0KDownload mishiro-ex.zip: ${(Math.floor(progress.percent * 10000) / 100).toFixed(2)}%`)
-  })
+  if (!process.env.MISHIRO_NO_PROGRESS) {
+    stream.on('downloadProgress', (progress) => {
+      process.stdout.write(`\x1b[666D\x1b[0KDownload mishiro-ex.zip: ${(Math.floor(progress.percent * 10000) / 100).toFixed(2)}%`)
+    })
+  }
 
   stream.on('error', (err) => {
     console.error(err)
