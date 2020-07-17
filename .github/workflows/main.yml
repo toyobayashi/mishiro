@@ -40,15 +40,17 @@ jobs:
 
     - name: Get assets
       if: ${{ startsWith(github.event.ref, 'refs/tags') }}
-      run: cd app&&npm run get&&cd..
+      run: cd app&&npm run get&&cd ..
+      env:
+        MISHIRO_NO_PROGRESS: '1'
 
     - name: Pack x64
       if: ${{ startsWith(github.event.ref, 'refs/tags') }}
-      run: cd app&&npm run pack:x64&&cd..
+      run: cd app&&npm run pack:x64&&cd ..
 
     - name: Pack ia32
       if: ${{ startsWith(github.event.ref, 'refs/tags') && matrix.os == 'windows-latest' }}
-      run: cd app&&npm run pack:ia32&&cd..
+      run: cd app&&npm run pack:ia32&&cd ..
 
     - name: Create release
       if: ${{ startsWith(github.event.ref, 'refs/tags') }}
