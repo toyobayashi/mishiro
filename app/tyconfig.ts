@@ -3,8 +3,7 @@ import * as path from 'path'
 import * as fs from 'fs-extra'
 import * as webpack from 'webpack'
 
-const wrapPlugin = require('@tybys/ty/util/plugin.js')
-const CopyWebpackPlugin = wrapPlugin('CopyWebpackPlugin', require('copy-webpack-plugin'))
+const CopyWebpackPlugin = ty.wrapPlugin('CopyWebpackPlugin', require('copy-webpack-plugin'))
 
 const config: ty.Configuration = {
   target: 'electron',

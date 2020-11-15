@@ -34,7 +34,7 @@ abstract class Note {
     this._x = x
   }
 
-  public saveDrawSync (sv: ScoreViewer): void{
+  public saveDrawSync (sv: ScoreViewer): void {
     if (!this._synchronizedNote) return
 
     const syncX = ScoreViewer.X[this._synchronizedNote.finishPos - 1] + globalInstance.noteWidthHalf
