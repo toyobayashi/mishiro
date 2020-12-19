@@ -27,7 +27,7 @@ class BannerRenderer {
   constructor (canvasid: string) {
     this.canvas = document.getElementById(canvasid) as HTMLCanvasElement
     this.ctx = this.canvas && this.canvas.getContext('2d')
-    this.svg = createSVGElement(readFileSync(getPath('preload/banner.svg'), 'utf8'))
+    this.svg = createSVGElement(readFileSync(getPath('main/banner.svg'), 'utf8'))
     // document.body.append(this.svg)
   }
 

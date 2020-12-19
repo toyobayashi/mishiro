@@ -1,11 +1,11 @@
 import './common/asar'
-import { app, BrowserWindow, ipcMain, BrowserWindowConstructorOptions, nativeImage, Menu, MenuItem, globalShortcut } from 'electron'
+import { app, BrowserWindow, ipcMain, BrowserWindowConstructorOptions, Menu, MenuItem, globalShortcut } from 'electron'
 import { join } from 'path'
-import { existsSync } from 'fs-extra'
 import * as url from 'url'
 import './main/get-path'
 import './main/core'
 import ipc from './main/ipc'
+import setIcon from './main/icon'
 
 app.commandLine.appendSwitch('autoplay-policy', 'no-user-gesture-required')
 
@@ -20,40 +20,18 @@ function createWindow (): void {
     show: false,
     backgroundColor: '#000000',
     webPreferences: {
-      nodeIntegration: false,
-      contextIsolation: false,
-      preload: join(__dirname, '../preload/preload.js'),
+      nodeIntegration: true,
+      enableRemoteModule: true,
+      // contextIsolation: false,
+      // preload: join(__dirname, '../preload/preload.js'),
       defaultFontFamily: {
         standard: 'Microsoft YaHei'
       }
     }
   }
-  if (process.platform === 'linux') {
-    let linuxIcon: string
-    try {
-      linuxIcon = join(__dirname, '../../icon/1024x1024.png')
-    } catch (_) {
-      linuxIcon = ''
-    }
-    if (linuxIcon) {
-      browerWindowOptions.icon = nativeImage.createFromPath(join(__dirname, linuxIcon))
-    }
-  } else {
-    if (process.env.NODE_ENV !== 'production') {
-      let icon: string = ''
 
-      const iconPath = join(__dirname, `../../../src/res/icon/${process.platform === 'darwin' ? '1024x1024.png' : 'app.ico'}`)
-      if (existsSync(iconPath)) icon = iconPath
+  setIcon(browerWindowOptions)
 
-      if (icon) {
-        if (process.platform === 'darwin') {
-          app.dock.setIcon(icon)
-        } else {
-          browerWindowOptions.icon = nativeImage.createFromPath(icon)
-        }
-      }
-    }
-  }
   mainWindow = new BrowserWindow(browerWindowOptions)
 
   mainWindow.on('ready-to-show', function () {
@@ -105,23 +83,29 @@ app.on('window-all-closed', function () {
 })
 
 app.on('activate', function () {
-  if (mainWindow === null) {
+  if (BrowserWindow.getAllWindows().length === 0) {
     createWindow()
   }
 })
 
-ipcMain.on('flash', () => {
-  mainWindow && mainWindow.flashFrame(true)
-})
-
-ipcMain.on('mainWindowId', (event) => {
-  event.returnValue = mainWindow && mainWindow.id
-})
-
-typeof (app as any).whenReady === 'function' ? (app as any).whenReady().then(main) : app.on('ready', main)
-
-function main (): void {
+async function main (): Promise<void> {
+  await app.whenReady()
   registerGlobalShortcut()
+  setMenu()
+  ipc()
+
+  ipcMain.on('flash', () => {
+    mainWindow && mainWindow.flashFrame(true)
+  })
+
+  ipcMain.on('mainWindowId', (event) => {
+    event.returnValue = mainWindow && mainWindow.id
+  })
+
+  if (!mainWindow) createWindow()
+}
+
+function setMenu (): void {
   if (process.platform === 'darwin') {
     const template: MenuItem[] = [
       new MenuItem({
@@ -135,8 +119,6 @@ function main (): void {
     const menu = Menu.buildFromTemplate(template)
     Menu.setApplicationMenu(menu)
   }
-  ipc()
-  if (!mainWindow) createWindow()
 }
 
 function registerGlobalShortcut (): void {
@@ -160,3 +142,12 @@ function registerGlobalShortcut (): void {
     })
   }
 }
+
+// process.on('warning', (warning) => {
+//   console.log(warning.stack)
+// })
+
+main().catch(err => {
+  console.error(err)
+  process.exit(1)
+})

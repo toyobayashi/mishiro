@@ -1,3 +1,5 @@
+import './renderer/preload'
+
 import '../css/mishiro.css'
 import './renderer/developer-api'
 import Vue from 'vue'
