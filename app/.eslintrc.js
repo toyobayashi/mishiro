@@ -8,13 +8,14 @@ module.exports = {
   plugins: [
     // '@typescript-eslint',
     'html',
-    'vue',
+    'vue'
   ],
   extends: [
     'standard-with-typescript'
   ],
   rules: {
     'no-irregular-whitespace': 'off',
+    '@typescript-eslint/method-signature-style': 'off',
     '@typescript-eslint/restrict-template-expressions': 'off',
     '@typescript-eslint/prefer-optional-chain': 'off',
     '@typescript-eslint/no-base-to-string': 'off',

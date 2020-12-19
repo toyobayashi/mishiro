@@ -6,17 +6,23 @@
     "editor.defaultFormatter": "dbaeumer.vscode-eslint",
   },
   "[typescript]": {
-    "editor.defaultFormatter": "vscode.typescript-language-features",
+    "editor.defaultFormatter": "dbaeumer.vscode-eslint",
   },
   "[vue]": {
     "editor.defaultFormatter": "octref.vetur"
   },
+  "eslint.validate": [
+    "javascript",
+    "typescript",
+    "vue"
+  ],
   "eslint.format.enable": true,
   "editor.formatOnSave": false,
   "javascript.format.semicolons": "remove",
   "typescript.format.semicolons": "remove",
+  "vetur.validation.script": true,
   "vetur.format.defaultFormatter.js": "dbaeumer.vscode-eslint",
-  "vetur.format.defaultFormatter.ts": "vscode-typescript",
+  "vetur.format.defaultFormatter.ts": "dbaeumer.vscode-eslint",
   "typescript.format.insertSpaceAfterConstructor": true,
   "javascript.format.insertSpaceAfterConstructor": true,
   "javascript.format.insertSpaceBeforeFunctionParenthesis": true,

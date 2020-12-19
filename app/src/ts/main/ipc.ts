@@ -11,6 +11,8 @@ import getLyrics from './on-lyrics'
 // import getPath from './get-path'
 // import configurer from './config'
 
+import batchDownload from './batch-download'
+
 let initialized = false
 
 export default function ipc (): void {
@@ -48,6 +50,11 @@ export default function ipc (): void {
       masterData = await readMaster(masterFile/* , configurer.getConfig(), manifests */)
     }
     event.sender.send('readMaster', masterData)
+  })
+
+  ipcMain.on('batchDownload', async () => {
+    // TODO
+    await batchDownload()
   })
 
   // ipcMain.on('game', (event: Event, scoreFile: string, difficulty: string, bpm: number, audioFile: string) => {
