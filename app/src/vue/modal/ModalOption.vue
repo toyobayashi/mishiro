@@ -44,6 +44,7 @@
             <InputText class="option-input" placeholder="123456789:987654321:0a1b2c3d-5c6d-4e7f-8a9b-0e1f2a3b4c5d" v-model="account" />
           </div>
         </form>
+        <div @click="batchDownload">123</div>
       </div>
       <div class="modal-footer">
         <button type="button" class="cgss-btn cgss-btn-ok" @click="save">{{$t("menu.save")}}</button>
@@ -61,6 +62,9 @@ import InputText from '../component/InputText.vue'
 import Component, { mixins } from 'vue-class-component'
 import { Prop } from 'vue-property-decorator'
 import { MasterData } from '../../ts/main/on-master-read'
+
+const { ipcRenderer } = window.node.electron
+
 @Component({
   components: {
     InputRadio,
@@ -103,6 +107,10 @@ export default class extends mixins(modalMixin) {
   // get gachaNow (): any {
   //   return this.master.gachaNow ? this.master.gachaNow : {}
   // }
+
+  batchDownload () {
+    ipcRenderer.send('batchDownload')
+  }
 
   save () {
     this.playSe(this.enterSe)

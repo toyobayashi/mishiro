@@ -1,4 +1,4 @@
-let cache: { [key: string]: any } = {}
+let cache: Record<string, any> = Object.create(null)
 
 export function getCache (name: string): any {
   return cache[name]
@@ -9,7 +9,7 @@ export function setCache (name: string, value: any): void {
 }
 
 export function clearCache (): void {
-  cache = {}
+  cache = Object.create(null)
 }
 
 export function removeCache (name: string): void {

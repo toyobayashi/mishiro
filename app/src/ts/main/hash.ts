@@ -37,5 +37,9 @@ class HashResult extends Writable {
 }
 
 export function md5File (path: string): Promise<string> {
-  return createReadStream(path).pipe(createHash('md5')).pipe(new HashResult()).promise
+  try {
+    return createReadStream(path).pipe(createHash('md5')).pipe(new HashResult()).promise
+  } catch (err) {
+    return Promise.reject(err)
+  }
 }
