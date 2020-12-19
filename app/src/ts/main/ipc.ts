@@ -12,6 +12,7 @@ import getLyrics from './on-lyrics'
 // import configurer from './config'
 
 import batchDownload from './batch-download'
+import openScoreWindow from './open-score-window'
 
 let initialized = false
 
@@ -44,6 +45,10 @@ export default function ipc (): void {
   //   }
   //   event.sender.send('readManifest', masterHash, resVer)
   // })
+
+  ipcMain.on('openScoreWindow', function () {
+    openScoreWindow()
+  })
 
   ipcMain.on('readMaster', async (event, masterFile: string/* , resVer: number */) => {
     if (!masterData) {

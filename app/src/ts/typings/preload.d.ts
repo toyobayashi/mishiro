@@ -15,24 +15,14 @@ declare interface Window {
     getScore: typeof import('../main/on-score').default
   }
   node: {
-    process: {
-      versions: typeof process.versions
-      arch: typeof process.arch
-      platform: typeof process.platform
-    }
+    process: typeof process
     got: typeof import('got')
     electron: typeof import('electron')
     mishiroCore: typeof import('mishiro-core')
     fs: typeof import('fs-extra')
-    os: {
-      type: typeof import('os').type
-      release: typeof import('os').release
-      EOL: typeof import('os').EOL
-    }
+    os: typeof import('os')
     path: typeof import('path')
     url: typeof import('url')
-    childProcess: {
-      execSync: typeof import('child_process').execSync
-    }
+    childProcess: typeof import('child_process')
   }
 }

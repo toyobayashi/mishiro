@@ -15,15 +15,15 @@ const config: ty.Configuration = {
     renderer: {
       'mishiro.renderer': [path.join(__dirname, 'src/ts/renderer.ts')],
       'mishiro.score': [path.join(__dirname, 'src/ts/renderer-score.ts')]
-    },
+    }/* ,
     preload: {
       preload: [path.join(__dirname, 'src/ts/preload/preload.ts')]
-    }
+    } */
   },
   tsconfig: {
     main: path.join(__dirname, 'src/ts/main/tsconfig.json'),
-    renderer: path.join(__dirname, 'src/ts/renderer/tsconfig.json'),
-    preload: path.join(__dirname, 'src/ts/preload/tsconfig.json')
+    renderer: path.join(__dirname, 'src/ts/renderer/tsconfig.json')/* ,
+    preload: path.join(__dirname, 'src/ts/preload/tsconfig.json') */
   },
   indexHtml: [
     {
@@ -50,7 +50,7 @@ const config: ty.Configuration = {
     //     })
     //   ]
     // },
-    preload (config: webpack.Configuration) {
+    main (config: webpack.Configuration) {
       config.plugins = [
         ...(config.plugins || []),
         new CopyWebpackPlugin({
