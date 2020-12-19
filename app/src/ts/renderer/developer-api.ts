@@ -1,13 +1,14 @@
-
 const mishiroCore = window.node.mishiroCore
 
-declare interface Window {
-  mishiro: {
-    encode: typeof mishiroCore.Client.cryptoGrapher.encode
-    decode: typeof mishiroCore.Client.cryptoGrapher.decode
-    _decryptBody: typeof mishiroCore.Client.decryptBody
-    decryptBody: (body: string, udid: string) => any
-    getProfile: (viewer: string | number) => Promise<import('mishiro-core').ServerResponse>
+declare global {
+  interface Window {
+    mishiro: {
+      encode: typeof mishiroCore.Client.cryptoGrapher.encode
+      decode: typeof mishiroCore.Client.cryptoGrapher.decode
+      _decryptBody: typeof mishiroCore.Client.decryptBody
+      decryptBody: (body: string, udid: string) => any
+      getProfile: (viewer: string | number) => Promise<import('mishiro-core').ServerResponse>
+    }
   }
 }
 
@@ -25,3 +26,5 @@ window.mishiro = {
     return window.preload.client.post('/profile/get_profile', { friend_id: viewer.toString() })
   }
 }
+
+export {}
