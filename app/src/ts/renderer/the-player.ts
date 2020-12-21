@@ -1,8 +1,7 @@
 import { Vue, Component } from 'vue-property-decorator'
 // import { MasterData } from '../main/on-master-read'
-
+import getPath from './get-path'
 const fs = window.node.fs
-const getPath = window.preload.getPath
 
 const { bgmDir } = getPath
 

@@ -9,9 +9,9 @@ import MishiroIdol from './mishiro-idol'
 // import { bgmList } from './the-player'
 // import { unpackTexture2D } from './unpack-texture-2d'
 // import { Client } from './typings/main'
+import getPath from './get-path'
 const fs = window.node.fs
 // const path = window.node.path
-const getPath = window.preload.getPath
 const { manifestPath, masterPath, bgmDir/* , iconDir */ } = getPath
 const ipcRenderer = window.node.electron.ipcRenderer
 

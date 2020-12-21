@@ -1,10 +1,10 @@
 import { PluginFunction } from 'vue'
-
+import getPath from './get-path'
 const { ipcRenderer } = window.node.electron
 const fs = window.node.fs
 const path = window.node.path
 
-const { iconDir } = window.preload.getPath
+const { iconDir } = getPath
 
 // const gameHostBase = 'http://storage.game.starlight-stage.jp/dl/resources'
 const imgHostBase = 'https://truecolor.kirara.ca'

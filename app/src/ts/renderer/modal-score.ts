@@ -3,9 +3,10 @@ import InputRadio from '../../vue/component/InputRadio.vue'
 
 import modalMixin from './modal-mixin'
 import Component, { mixins } from 'vue-class-component'
+import getPath from './get-path'
 
 const { ipcRenderer } = window.node.electron
-const getPath = window.preload.getPath
+
 const { scoreDir, liveDir } = getPath
 
 @Component({
