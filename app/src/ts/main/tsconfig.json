@@ -3,6 +3,7 @@
   "include": [
     "./**/*",
     "../main.ts",
-    "../typings/**/*"
+    "../typings/**/*",
+    "../common/db.ts"
   ]
 }

@@ -1,4 +1,4 @@
-import DB from './db'
+import DB from '../common/db'
 import getPath from './get-path'
 import { existsSync } from 'fs-extra'
 import { md5File } from './hash'

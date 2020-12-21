@@ -1,6 +1,5 @@
 import { Vue, Component, Prop, Emit } from 'vue-property-decorator'
 import { ProgressInfo } from 'mishiro-core'
-import { MasterData } from '../main/on-master-read'
 import ProgressBar from '../../vue/component/ProgressBar.vue'
 import check from './check'
 import { setLatestResVer, setMaster, setResVer } from './store'
@@ -11,10 +10,11 @@ import MishiroIdol from './mishiro-idol'
 // import { Client } from './typings/main'
 import getPath from './get-path'
 import configurer from './config'
+import { getMasterHash, openManifestDatabase, readMasterData } from './ipc-back'
 const fs = window.node.fs
 // const path = window.node.path
 const { manifestPath, masterPath, bgmDir/* , iconDir */ } = getPath
-const ipcRenderer = window.node.electron.ipcRenderer
+// const ipcRenderer = window.node.electron.ipcRenderer
 
 @Component({
   components: {
@@ -153,7 +153,7 @@ export default class extends Vue {
   //   }
   // }
 
-  async afterMasterRead (masterData: MasterData): Promise<void> {
+  async afterMasterRead (masterData: import('./back/on-master-read').MasterData): Promise<void> {
     // console.log(masterData);
     const downloader = new this.core.Downloader()
     // const toName = (p: string) => path.parse(p).name
@@ -302,9 +302,9 @@ export default class extends Vue {
         //   const masterFile = await this.getMaster(resVer, masterHash)
         //   if (masterFile) ipcRenderer.send('readMaster', masterFile, resVer)
         // })
-        ipcRenderer.once('readMaster', async (_event: Event, masterData: MasterData) => {
-          await this.afterMasterRead(masterData)
-        })
+        // ipcRenderer.once('readMaster', async (_event: Event, masterData: MasterData) => {
+        //   await this.afterMasterRead(masterData)
+        // })
 
         // if (!client.user) {
         // try {
@@ -345,10 +345,14 @@ export default class extends Vue {
           setResVer(Number(resVer))
           const manifestFile = await this.getManifest(resVer)
           if (manifestFile) {
-            const masterHash = await (window.preload.readManifest as any)(manifestFile)
-            delete window.preload.readManifest
+            await openManifestDatabase(manifestFile)
+            const masterHash = await getMasterHash()
             const masterFile = await this.getMaster(resVer, masterHash)
-            if (masterFile) ipcRenderer.send('readMaster', masterFile, resVer)
+            if (masterFile) {
+              // ipcRenderer.send('readMaster', masterFile, resVer)
+              const data = await readMasterData(masterFile)
+              await this.afterMasterRead(data)
+            }
             // const masterData = await window.preload.readMaster(masterFile)
             // await this.afterMasterRead(masterData)
           }
@@ -358,10 +362,14 @@ export default class extends Vue {
           if (fs.existsSync(manifestPath(resVer, '.db')) && fs.existsSync(masterPath(resVer, '.db'))) {
             const manifestFile = manifestPath(resVer, '.db')
             if (manifestFile) {
-              const masterHash: string = await (window.preload.readManifest as any)(manifestFile)
-              delete window.preload.readManifest
+              await openManifestDatabase(manifestFile)
+              const masterHash = await getMasterHash()
               const masterFile = await this.getMaster(resVer, masterHash)
-              if (masterFile) ipcRenderer.send('readMaster', masterFile, resVer)
+              if (masterFile) {
+                // ipcRenderer.send('readMaster', masterFile, resVer)
+                const data = await readMasterData(masterFile)
+                await this.afterMasterRead(data)
+              }
               // const masterData = await window.preload.readMaster(masterFile)
               // await this.afterMasterRead(masterData)
             }

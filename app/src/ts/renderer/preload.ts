@@ -1,14 +1,6 @@
 import * as electron from 'electron'
 
-const cache = electron.remote.require('./export.js')
-
 // process.once('loaded', function () {
-window.preload = {
-  getManifestDB () {
-    return cache.getCache('manifestDB')
-  },
-  readManifest: cache.getCache('readManifest')
-}
 window.node = {
   process: process,
   got: __non_webpack_require__('got'),

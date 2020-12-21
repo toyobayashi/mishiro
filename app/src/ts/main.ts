@@ -9,7 +9,8 @@ import setIcon from './main/icon'
 
 app.commandLine.appendSwitch('autoplay-policy', 'no-user-gesture-required')
 
-let mainWindow: BrowserWindow | null
+let mainWindow: BrowserWindow | null = null
+let backWindow: BrowserWindow | null = null
 
 function createWindow (): void {
   const browerWindowOptions: BrowserWindowConstructorOptions = {
@@ -21,7 +22,7 @@ function createWindow (): void {
     backgroundColor: '#000000',
     webPreferences: {
       nodeIntegration: true,
-      enableRemoteModule: true,
+      enableRemoteModule: false,
       contextIsolation: false,
       // preload: join(__dirname, '../preload/preload.js'),
       defaultFontFamily: {
@@ -53,26 +54,43 @@ function createWindow (): void {
     (mainWindow as any).removeMenu ? (mainWindow as any).removeMenu() : mainWindow.setMenu(null)
   }
 
-  if (process.env.NODE_ENV !== 'production') {
-    const res: any = mainWindow.loadURL('http://localhost:8090/app/renderer/')
-
-    if (res !== undefined && typeof res.then === 'function' && typeof res.catch === 'function') {
-      res.catch((err: Error) => {
-        console.log(err)
-      })
+  backWindow = new BrowserWindow({
+    show: false,
+    // parent: mainWindow,
+    webPreferences: {
+      nodeIntegration: true,
+      enableRemoteModule: false,
+      contextIsolation: false
     }
+  })
+
+  backWindow.on('closed', function () {
+    backWindow = null
+  })
+
+  if (process.env.NODE_ENV !== 'production') {
+    mainWindow.loadURL('http://localhost:8090/app/renderer/').catch((err) => {
+      console.log(err)
+    })
+    backWindow.loadURL('http://localhost:8090/app/renderer/back.html').catch((err) => {
+      console.log(err)
+    })
   } else {
-    const res: any = mainWindow.loadURL(url.format({
+    mainWindow.loadURL(url.format({
       pathname: join(__dirname, '../renderer/index.html'),
       protocol: 'file:',
       slashes: true
-    }))
+    })).catch((err) => {
+      console.log(err)
+    })
 
-    if (res !== undefined && typeof res.then === 'function' && typeof res.catch === 'function') {
-      res.catch((err: Error) => {
-        console.log(err)
-      })
-    }
+    backWindow.loadURL(url.format({
+      pathname: join(__dirname, '../renderer/back.html'),
+      protocol: 'file:',
+      slashes: true
+    })).catch((err) => {
+      console.log(err)
+    })
   }
 }
 
@@ -100,6 +118,9 @@ async function main (): Promise<void> {
 
   ipcMain.on('mainWindowId', (event) => {
     event.returnValue = mainWindow && mainWindow.id
+  })
+  ipcMain.on('backWindowId', (event) => {
+    event.returnValue = backWindow && backWindow.id
   })
 
   if (!mainWindow) createWindow()

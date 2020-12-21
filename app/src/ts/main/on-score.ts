@@ -1,4 +1,4 @@
-import DB from './db'
+import DB from '../common/db'
 // import { openSqlite } from './sqlite3'
 import { ipcMain } from 'electron'
 

@@ -1,6 +1,4 @@
 import { ipcMain, SaveDialogOptions, dialog, app, RelaunchOptions } from 'electron'
-import readManifest from './on-manifest-read'
-import readMaster, { MasterData } from './on-master-read'
 // import onManifestQuery from './on-manifest-query'
 // import onManifestSearch from './on-manifest-search'
 // import onGame from './on-game'
@@ -11,7 +9,7 @@ import getLyrics from './on-lyrics'
 // import getPath from './get-path'
 // import configurer from './config'
 
-import batchDownload from './batch-download'
+// import batchDownload from './batch-download'
 import openScoreWindow from './open-score-window'
 import configurer, { Configurer } from './config'
 import { client } from './core'
@@ -43,13 +41,10 @@ function registerIpcConfig (configurer: Configurer): void {
 export default function ipc (): void {
   if (initialized) return
 
-  const { setCache } = __non_webpack_require__('./export.js')
-
   // let manifestData: any = {}
   // let manifests: any[] = []
   // let version: number = -1
   // let masterHash: string = ''
-  let masterData: MasterData
 
   // ipcMain.on('queryManifest', (event: Event, queryString: string) => {
   //   onManifestQuery(event, queryString, manifests)
@@ -74,16 +69,9 @@ export default function ipc (): void {
     openScoreWindow()
   })
 
-  ipcMain.on('readMaster', async (event, masterFile: string/* , resVer: number */) => {
-    if (!masterData) {
-      masterData = await readMaster(masterFile/* , configurer.getConfig(), manifests */)
-    }
-    event.sender.send('readMaster', masterData)
-  })
-
   ipcMain.on('batchDownload', async () => {
     // TODO
-    await batchDownload()
+    // await batchDownload()
   })
 
   ipcMain.handle('showSaveDialog', (_event, options: SaveDialogOptions) => {
@@ -156,25 +144,6 @@ export default function ipc (): void {
   ipcMain.handle('getLyrics', async (_event, scoreFile: string) => {
     return getLyrics(scoreFile)
   })
-  setCache('readManifest', readManifest)
-  // setCache('readMaster', readMaster)
-  // setCache('queryManifest', function queryManifest (queryString: string) {
-  //   const manifestArr = []
-  //   for (let i = 0; i < manifests.length; i++) {
-  //     if (manifests[i].name.indexOf(queryString) !== -1) {
-  //       manifestArr.push(manifests[i])
-  //     }
-  //   }
-  //   return manifestArr
-  // })
-
-  // ipcMain.on('lyrics', (event: Event, scoreFile: string) => {
-  //   onLyrics(event, scoreFile).catch(err => console.log(err))
-  // })
-
-  // ipcMain.on('checkFile', (event: Event, id: string, manifest: any[]) => {
-  //   event.sender.send('checkFile', id, manifest.filter(row => !existsSync(getPath.downloadDir(basename(row.name)))))
-  // })
 
   initialized = true
 }

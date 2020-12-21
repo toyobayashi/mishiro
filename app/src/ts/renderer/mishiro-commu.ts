@@ -5,6 +5,7 @@ import { unpackTexture2D } from './unpack-texture-2d'
 import { getProfile } from './ipc'
 import getPath from './get-path'
 import configurer from './config'
+import { getEmblemHash, getIconHash } from './ipc-back'
 
 // /* const template =  */require('../../res/banner.svg')
 const { existsSync, readFileSync, remove } = window.node.fs
@@ -181,8 +182,8 @@ export default class extends Vue {
       } else {
         const card = configurer.get('card')
         if (!card || card === 'default') {
-          const record = await window.preload.getManifestDB()!.findOne('manifests', ['name', 'hash'], { name: `card_${data.leader_card.id}_m.unity3d` })
-          const asset = await this.dler.downloadAsset(record.hash, cacheName)
+          const hash = await getIconHash(data.leader_card.id)
+          const asset = await this.dler.downloadAsset(hash, cacheName)
           if (asset) {
             await remove(cacheName)
             await unpackTexture2D(asset)
@@ -197,8 +198,8 @@ export default class extends Vue {
       if (existsSync(emblemCache + '.png')) {
         emblemB64 = readFileSync(emblemCache + '.png').toString('base64')
       } else {
-        const record = await window.preload.getManifestDB()!.findOne('manifests', ['name', 'hash'], { name: `emblem_${data.emblem_id}_l.unity3d` })
-        const asset = await this.dler.downloadAsset(record.hash, emblemCache)
+        const hash = await getEmblemHash(data.emblem_id)
+        const asset = await this.dler.downloadAsset(hash, emblemCache)
         if (asset) {
           await remove(emblemCache)
           await unpackTexture2D(asset)

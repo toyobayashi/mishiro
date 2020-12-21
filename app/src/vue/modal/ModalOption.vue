@@ -62,7 +62,8 @@ import InputRadio from '../component/InputRadio.vue'
 import InputText from '../component/InputText.vue'
 import Component, { mixins } from 'vue-class-component'
 import { Prop } from 'vue-property-decorator'
-import { MasterData } from '../../ts/main/on-master-read'
+
+import { MasterData } from '../../ts/renderer/back/on-master-read'
 
 const { ipcRenderer } = window.node.electron
 
