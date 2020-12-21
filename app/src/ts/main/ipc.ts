@@ -13,8 +13,29 @@ import getLyrics from './on-lyrics'
 
 import batchDownload from './batch-download'
 import openScoreWindow from './open-score-window'
+import configurer, { Configurer, MishiroConfigKey } from './config'
 
 let initialized = false
+
+function registerIpcConfig (configurer: Configurer): void {
+  ipcMain.on('configurer#getAll', (event) => {
+    event.returnValue = configurer.getConfig()
+  })
+
+  ipcMain.on('configurer#get', (event, key: MishiroConfigKey) => {
+    event.returnValue = configurer.getConfig()[key]
+  })
+
+  ipcMain.on('configurer#set', (event, key, value) => {
+    configurer.configure(key, value)
+    event.returnValue = undefined
+  })
+
+  ipcMain.on('configurer#remove', (event, key) => {
+    event.returnValue = configurer.remove(key)
+    event.returnValue = undefined
+  })
+}
 
 export default function ipc (): void {
   if (initialized) return
@@ -85,6 +106,8 @@ export default function ipc (): void {
   ipcMain.on('package.json', (event) => {
     event.returnValue = __non_webpack_require__('../package.json')
   })
+
+  registerIpcConfig(configurer)
 
   // ipcMain.on('game', (event: Event, scoreFile: string, difficulty: string, bpm: number, audioFile: string) => {
   //   onGame(event, scoreFile, difficulty, bpm, audioFile).catch(err => console.log(err))

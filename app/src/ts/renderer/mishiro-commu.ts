@@ -176,8 +176,8 @@ export default class extends Vue {
       if (existsSync(cacheName + '.png')) {
         iconB64 = readFileSync(cacheName + '.png').toString('base64')
       } else {
-        const config = this.configurer.getConfig()
-        if (!config.card || config.card === 'default') {
+        const card = window.preload.configurer.get('card')
+        if (!card || card === 'default') {
           const record = await window.preload.getManifestDB()!.findOne('manifests', ['name', 'hash'], { name: `card_${data.leader_card.id}_m.unity3d` })
           const asset = await this.dler.downloadAsset(record.hash, cacheName)
           if (asset) {

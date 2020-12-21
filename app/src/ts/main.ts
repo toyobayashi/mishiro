@@ -22,7 +22,7 @@ function createWindow (): void {
     webPreferences: {
       nodeIntegration: true,
       enableRemoteModule: true,
-      // contextIsolation: false,
+      contextIsolation: false,
       // preload: join(__dirname, '../preload/preload.js'),
       defaultFontFamily: {
         standard: 'Microsoft YaHei'

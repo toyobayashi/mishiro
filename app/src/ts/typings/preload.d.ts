@@ -1,6 +1,12 @@
 declare interface Window {
   preload: {
-    configurer: import('../main/config').Configurer
+    configurer: {
+      getAll (): import('../main/config').MishiroConfig
+      get<K extends import('../main/config').MishiroConfigKey> (key: K): import('../main/config').MishiroConfig[K]
+      set (key: import('../main/config').MishiroConfig): void
+      set<K extends import('../main/config').MishiroConfigKey> (key: K, value: import('../main/config').MishiroConfig[K]): void
+      remove (key: import('../main/config').MishiroConfigKey): void
+    }
     client: import('mishiro-core').Client
     getPath: typeof import('../main/get-path').default
     updater: import('electron-github-asar-updater')

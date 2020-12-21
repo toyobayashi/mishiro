@@ -201,7 +201,7 @@ export default class extends mixins(modalMixin) {
 
     this.$emit('input', this.language[this.lang])
     this._i18n._vm.locale = this.lang
-    this.configurer.configure({
+    window.preload.configurer.set({
       language: this.lang,
       resVer: Number(resVer),
       // gacha: Number(gachaId),
@@ -216,7 +216,7 @@ export default class extends mixins(modalMixin) {
   mounted () {
     this.$nextTick(() => {
       this.event.$on('option', async () => {
-        const config = this.configurer.getConfig()
+        const config = window.preload.configurer.getAll()
         this.lang = config.language || 'zh'
         this.resVer = config.resVer ? config.resVer.toString() : ''
         this.gachaId = config.gacha ? config.gacha.toString() : ''

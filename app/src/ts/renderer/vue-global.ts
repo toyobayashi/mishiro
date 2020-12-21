@@ -23,7 +23,6 @@ const install: PluginFunction<undefined> = function (Vue) {
   Vue.prototype.bgm = new Audio() // 背景音乐
   Vue.prototype.enterSe = new Audio('../../asset/se.asar/se_common_enter.mp3') // 确认音效
   Vue.prototype.cancelSe = new Audio('../../asset/se.asar/se_common_cancel.mp3') // 取消音效
-  Vue.prototype.configurer = window.preload.configurer
   Vue.prototype.core = window.node.mishiroCore
   Vue.prototype.updater = window.preload.updater
 

@@ -20,7 +20,7 @@ Vue.use(vueGlobal)
 
 const vm = new Vue({
   i18n: new VueI18n({
-    locale: window.preload.configurer.getConfig().language,
+    locale: window.preload.configurer.get('language') || 'zh',
     messages: {
       zh,
       ja,

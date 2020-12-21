@@ -50,25 +50,26 @@ function httpGetVersion (resVer: number, progressing: (prog: ProgressInfo) => vo
 }
 
 async function check (progressing: (prog: ProgressInfo) => void): Promise<number> {
-  const config = window.preload.configurer.getConfig()
-  if (config.resVer) {
-    return config.resVer
+  const resVer = window.preload.configurer.get('resVer')
+  if (resVer) {
+    return resVer
   }
   const res = await window.preload.client.check()
   if (res !== 0) {
-    if (res > (window.preload.configurer.getConfig().latestResVer as number)) {
-      console.log(`/load/check [New Version] ${window.preload.configurer.getConfig().latestResVer as number} => ${res}`)
+    const latestResVer = window.preload.configurer.get('latestResVer')!
+    if (res > latestResVer) {
+      console.log(`/load/check [New Version] ${latestResVer} => ${res}`)
     } else {
       console.log(`/load/check [Latest Version] ${res}`)
     }
-    window.preload.configurer.configure('latestResVer', res)
+    window.preload.configurer.set('latestResVer', res)
     window.preload.client.resVer = res.toString()
     return res
   } else {
     console.log('/load/check failed')
   }
 
-  const versionFrom = (config.latestResVer as number) - 100
+  const versionFrom = window.preload.configurer.get('latestResVer')! - 100
 
   return new Promise<number>((resolve, reject) => {
     let resVer = versionFrom
@@ -95,7 +96,7 @@ async function check (progressing: (prog: ProgressInfo) => void): Promise<number
           }
         }
         if (!isContinue) {
-          window.preload.configurer.configure('latestResVer', resVer)
+          window.preload.configurer.set('latestResVer', resVer)
           window.preload.client.resVer = resVer.toString()
           resolve(resVer)
         }
