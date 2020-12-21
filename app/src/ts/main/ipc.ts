@@ -13,21 +13,23 @@ import getLyrics from './on-lyrics'
 
 import batchDownload from './batch-download'
 import openScoreWindow from './open-score-window'
-import configurer, { Configurer, MishiroConfigKey } from './config'
+import configurer, { Configurer } from './config'
+import { client } from './core'
+import { updaterIpc } from './updater'
 
 let initialized = false
 
 function registerIpcConfig (configurer: Configurer): void {
   ipcMain.on('configurer#getAll', (event) => {
-    event.returnValue = configurer.getConfig()
+    event.returnValue = configurer.getAll()
   })
 
-  ipcMain.on('configurer#get', (event, key: MishiroConfigKey) => {
-    event.returnValue = configurer.getConfig()[key]
+  ipcMain.on('configurer#get', (event, key) => {
+    event.returnValue = configurer.get(key)
   })
 
   ipcMain.on('configurer#set', (event, key, value) => {
-    configurer.configure(key, value)
+    configurer.set(key, value)
     event.returnValue = undefined
   })
 
@@ -107,7 +109,29 @@ export default function ipc (): void {
     event.returnValue = __non_webpack_require__('../package.json')
   })
 
+  ipcMain.handle('checkResourceVersion', async () => {
+    const res = await client.check()
+    if (res !== 0) {
+      const latestResVer = configurer.get('latestResVer')
+      if (!latestResVer || (res > latestResVer)) {
+        console.log(`/load/check [New Version] ${latestResVer} => ${res}`)
+      } else {
+        console.log(`/load/check [Latest Version] ${res}`)
+      }
+      configurer.set('latestResVer', res)
+      client.resVer = res.toString()
+    } else {
+      console.log('/load/check failed')
+    }
+    return res
+  })
+
+  ipcMain.handle('getProfile', async (_event, viewer: string) => {
+    return client.getProfile(viewer)
+  })
+
   registerIpcConfig(configurer)
+  updaterIpc()
 
   // ipcMain.on('game', (event: Event, scoreFile: string, difficulty: string, bpm: number, audioFile: string) => {
   //   onGame(event, scoreFile, difficulty, bpm, audioFile).catch(err => console.log(err))

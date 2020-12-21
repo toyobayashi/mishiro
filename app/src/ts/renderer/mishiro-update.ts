@@ -15,8 +15,6 @@ const getPath = window.preload.getPath
 const { manifestPath, masterPath, bgmDir/* , iconDir */ } = getPath
 const ipcRenderer = window.node.electron.ipcRenderer
 
-const client = window.preload.client
-
 @Component({
   components: {
     ProgressBar
@@ -55,10 +53,7 @@ export default class extends Vue {
   }
 
   async getResVer (): Promise<number> {
-    const resVer = await check(prog => { // 检查资源版本，回调更新进度条
-      this.text = (this.$t('update.check') as string) + `${prog.current} / ${prog.max}`
-      this.loading = prog.loading
-    })
+    const resVer = await check()
     return resVer
   }
 
@@ -310,25 +305,22 @@ export default class extends Vue {
           await this.afterMasterRead(masterData)
         })
 
-        if (!client.user) {
-          // try {
-          //   this.text = 'Loading...'
-          //   this.loading = 0
-          //   const acc = await client.signup((step) => {
-          //     this.loading = step
-          //   })
-          //   if (acc !== '') {
-          //     window.preload.configurer.set('account', acc)
-          //   } else {
-          //     throw new Error('')
-          //   }
-          // } catch (err) {
-          //   console.log(err)
-          client.user = '506351535'
-          client.viewer = '141935962'
-          client.udid = 'edb05dd4-9d13-4f76-b860-95f7a79de44e'
-          // }
-        }
+        // if (!client.user) {
+        // try {
+        //   this.text = 'Loading...'
+        //   this.loading = 0
+        //   const acc = await client.signup((step) => {
+        //     this.loading = step
+        //   })
+        //   if (acc !== '') {
+        //     window.preload.configurer.set('account', acc)
+        //   } else {
+        //     throw new Error('')
+        //   }
+        // } catch (err) {
+        //   console.log(err)
+        // }
+        // }
 
         if (navigator.onLine) {
           let resVer: number

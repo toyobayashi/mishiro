@@ -24,7 +24,6 @@ const install: PluginFunction<undefined> = function (Vue) {
   Vue.prototype.enterSe = new Audio('../../asset/se.asar/se_common_enter.mp3') // 确认音效
   Vue.prototype.cancelSe = new Audio('../../asset/se.asar/se_common_cancel.mp3') // 取消音效
   Vue.prototype.core = window.node.mishiroCore
-  Vue.prototype.updater = window.preload.updater
 
   // 全局方法
   Vue.prototype.playSe = function (se: HTMLAudioElement) { // 播放音效

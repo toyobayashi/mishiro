@@ -2,6 +2,7 @@ import { Vue, Component } from 'vue-property-decorator'
 import InputText from '../../vue/component/InputText.vue'
 import { ServerResponse } from 'mishiro-core'
 import { unpackTexture2D } from './unpack-texture-2d'
+import { getProfile } from './ipc'
 
 // /* const template =  */require('../../res/banner.svg')
 const { existsSync, readFileSync, remove } = window.node.fs
@@ -148,7 +149,7 @@ export default class extends Vue {
 
     let res: ServerResponse
     try {
-      res = await window.preload.client.getProfile(/* '646406677' */this.queryString)
+      res = await getProfile(/* '646406677' */this.queryString)
     } catch (err) {
       this.isSearching = false
       this.event.$emit('alert', this.$t('home.errorTitle'), err.message)

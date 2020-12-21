@@ -2,6 +2,7 @@ import modalMixin from './modal-mixin'
 import ProgressBar from '../../vue/component/ProgressBar.vue'
 
 import Component, { mixins } from 'vue-class-component'
+import updater from './updater'
 
 const { shell } = window.node.electron
 
@@ -16,7 +17,7 @@ export default class extends mixins(modalMixin) {
   btnDisabled: boolean = false
 
   cancel (): void {
-    this.updater.abort()
+    updater.abort()
     this.close()
   }
 
@@ -25,16 +26,19 @@ export default class extends mixins(modalMixin) {
     if (this.versionData.appZipUrl && process.env.NODE_ENV === 'production') {
       this.btnDisabled = true
       try {
-        const result = await this.updater.download((status: any) => {
+        updater.onDownload((status) => {
           this.updateProgress = status.loading
         })
+        const result = await updater.download()
+        updater.onDownload(null)
         if (result) {
-          this.updater.relaunch()
+          updater.relaunch()
         } else {
           this.btnDisabled = false
           this.updateProgress = 0
         }
       } catch (err) {
+        updater.onDownload(null)
         this.btnDisabled = false
         this.event.$emit('alert', this.$t('home.errorTitle'), err.message)
       }

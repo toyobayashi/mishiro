@@ -7,9 +7,7 @@ declare interface Window {
       set<K extends import('../main/config').MishiroConfigKey> (key: K, value: import('../main/config').MishiroConfig[K]): void
       remove (key: import('../main/config').MishiroConfigKey): void
     }
-    client: import('mishiro-core').Client
     getPath: typeof import('../main/get-path').default
-    updater: import('electron-github-asar-updater')
     getManifestDB (): import('../main/db').default | undefined
     // getMasterDB (): import('../main/db').default | undefined
     readManifest?: typeof import('../main/on-manifest-read').default

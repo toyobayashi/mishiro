@@ -1,3 +1,5 @@
+import { getProfile } from './ipc'
+
 const mishiroCore = window.node.mishiroCore
 
 declare global {
@@ -23,7 +25,7 @@ window.mishiro = {
     return mishiroCore.Client.decryptBody(body, Buffer.from(udid.replace(/-/g, ''), 'hex'))
   },
   getProfile (viewer) {
-    return window.preload.client.post('/profile/get_profile', { friend_id: viewer.toString() })
+    return getProfile(String(viewer))
   }
 }
 
