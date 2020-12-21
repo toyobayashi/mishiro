@@ -26,7 +26,13 @@ import DB from './db'
 //   event.sender.send('lyrics', lyrics)
 // }
 
-export default async function getLyrics (scoreFile: string): Promise<Array<{ time: number, lyrics: string, size: number }>> {
+export interface Lyric {
+  time: number
+  lyrics: string
+  size: number
+}
+
+export default async function getLyrics (scoreFile: string): Promise<Lyric[]> {
   const bdb = new DB(scoreFile)
   const rows = await bdb.find<{ name: string, data: Buffer | string }>('blobs', ['name', 'data'])
   await bdb.close()
@@ -37,7 +43,7 @@ export default async function getLyrics (scoreFile: string): Promise<Array<{ tim
   const nameField = `${musicscores}/${mxxx}/${mxxx}_lyrics.csv`
   const data = rows.filter((row: any) => row.name === nameField)[0].data.toString()
   const list = data.split('\n')
-  const lyrics: Array<{ time: number, lyrics: string, size: number }> = []
+  const lyrics: Lyric[] = []
   for (let i = 1; i < list.length - 1; i++) {
     const line = list[i].split(',')
     lyrics.push({

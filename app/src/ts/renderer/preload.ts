@@ -7,15 +7,7 @@ window.preload = {
   getManifestDB () {
     return cache.getCache('manifestDB')
   },
-  // getMasterDB () {
-  //   return cache.getCache('masterDB')
-  // },
-  readManifest: cache.getCache('readManifest'),
-  // readMaster: cache.getCache('readMaster'),
-  // queryManifest: cache.getCache('queryManifest'),
-  getLyrics: cache.getCache('getLyrics'),
-  getScoreDifficulties: cache.getCache('getScoreDifficulties'),
-  getScore: cache.getCache('getScore')
+  readManifest: cache.getCache('readManifest')
 }
 window.node = {
   process: process,
