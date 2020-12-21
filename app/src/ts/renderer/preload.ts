@@ -1,10 +1,16 @@
 import * as electron from 'electron'
+const ipcRenderer = electron.ipcRenderer
 
 const cache = electron.remote.require('./export.js')
 
 // process.once('loaded', function () {
 window.preload = {
-  configurer: cache.getCache('configurer'),
+  configurer: {
+    getAll () { return ipcRenderer.sendSync('configurer#getAll') },
+    get<K extends import('../main/config').MishiroConfigKey> (key: K) { return ipcRenderer.sendSync('configurer#get', key) },
+    set<K extends import('../main/config').MishiroConfigKey> (key: K | import('../main/config').MishiroConfig, value?: import('../main/config').MishiroConfig[K]) { return ipcRenderer.sendSync('configurer#set', key, value) },
+    remove (key: import('../main/config').MishiroConfigKey) { return ipcRenderer.sendSync('configurer#remove', key) }
+  },
   client: cache.getCache('client'),
   getPath: cache.getCache('getPath'),
   updater: cache.getCache('updater'),

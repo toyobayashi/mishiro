@@ -424,9 +424,9 @@ export default class extends Vue {
     let downloadResult: string = ''
 
     if (!fs.existsSync(cardDir(`bg_${id}.png`))) {
-      const config = this.configurer.getConfig()
+      const card = window.preload.configurer.get('card')
       try {
-        if (!config.card || config.card === 'default') {
+        if (!card || card === 'default') {
           // let hash: string = ipcRenderer.sendSync('searchManifest', `card_bg_${id}.unity3d`)[0].hash
           const manifestDB = window.preload.getManifestDB()
           if (!manifestDB) throw new Error('Manifest database is not available.')

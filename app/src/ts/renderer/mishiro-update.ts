@@ -133,14 +133,14 @@ export default class extends Vue {
   // }
 
   // async getGachaIcon (icons: { name: string; hash: string; [x: string]: any }[]) {
-  //   const config = this.configurer.getConfig()
+  //   const card = window.preload.configurer.get('card')
   //   for (let i = 0; i < icons.length; i++) {
   //     let cacheName = iconDir(path.parse(icons[i].name).name)
-  //     this.text = ((!config.card || config.card === 'default') ? icons[i].name : path.basename(cacheName + '.png')) + '　' + i + '/' + icons.length
+  //     this.text = ((!card || card === 'default') ? icons[i].name : path.basename(cacheName + '.png')) + '　' + i + '/' + icons.length
   //     this.loading = 100 * i / icons.length
   //     if (!fs.existsSync(cacheName + '.png')) {
   //       try {
-  //         if (!config.card || config.card === 'default') {
+  //         if (!card || card === 'default') {
   //           let asset = await this.dler.downloadAsset(icons[i].hash, cacheName)
   //           if (asset) {
   //             fs.removeSync(cacheName)
@@ -159,12 +159,11 @@ export default class extends Vue {
 
   async afterMasterRead (masterData: MasterData): Promise<void> {
     // console.log(masterData);
-    const config = this.configurer.getConfig()
     const downloader = new this.core.Downloader()
     // const toName = (p: string) => path.parse(p).name
 
     setMaster(masterData)
-    setLatestResVer(config.latestResVer || -1)
+    setLatestResVer(window.preload.configurer.get('latestResVer') || -1)
 
     const bgmManifest = masterData.bgmManifest
     // for (let k in bgmList) {
@@ -268,8 +267,9 @@ export default class extends Vue {
       }
     }
 
-    if (config.background) {
-      await getBackground(config.background)
+    const background = window.preload.configurer.get('background')
+    if (background) {
+      await getBackground(background)
     } else {
       // const cardIdEvolution = [(Number(cardId[0]) + 1), (Number(cardId[1]) + 1)];
       if (masterData.eventHappening) {
@@ -318,7 +318,7 @@ export default class extends Vue {
           //     this.loading = step
           //   })
           //   if (acc !== '') {
-          //     this.configurer.configure('account', acc)
+          //     window.preload.configurer.set('account', acc)
           //   } else {
           //     throw new Error('')
           //   }
@@ -345,7 +345,7 @@ export default class extends Vue {
                 this.event.$emit('alert', this.$t('home.errorTitle'), 'Current account has been banned. Please use another account.')
                 return
               }
-              resVer = this.configurer.getConfig().latestResVer as number
+              resVer = window.preload.configurer.get('latestResVer')!
             }
           }
 
@@ -360,7 +360,7 @@ export default class extends Vue {
             // await this.afterMasterRead(masterData)
           }
         } else {
-          const resVer = this.configurer.getConfig().latestResVer as number
+          const resVer = window.preload.configurer.get('latestResVer')!
           setResVer(Number(resVer))
           if (fs.existsSync(manifestPath(resVer, '.db')) && fs.existsSync(masterPath(resVer, '.db'))) {
             const manifestFile = manifestPath(resVer, '.db')
