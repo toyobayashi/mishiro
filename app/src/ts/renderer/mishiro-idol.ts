@@ -8,6 +8,7 @@ import { ProgressInfo } from 'mishiro-core'
 import { unpackTexture2D } from './unpack-texture-2d'
 
 import getPath from './get-path'
+import configurer from './config'
 const { /* ipcRenderer,  */shell } = window.node.electron
 const fs = window.node.fs
 const path = window.node.path
@@ -424,7 +425,7 @@ export default class extends Vue {
     let downloadResult: string = ''
 
     if (!fs.existsSync(cardDir(`bg_${id}.png`))) {
-      const card = window.preload.configurer.get('card')
+      const card = configurer.get('card')
       try {
         if (!card || card === 'default') {
           // let hash: string = ipcRenderer.sendSync('searchManifest', `card_bg_${id}.unity3d`)[0].hash

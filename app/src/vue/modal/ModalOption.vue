@@ -57,6 +57,7 @@
 
 <script lang="ts">
 import modalMixin from '../../ts/renderer/modal-mixin'
+import configurer from '../../ts/renderer/config'
 import InputRadio from '../component/InputRadio.vue'
 import InputText from '../component/InputText.vue'
 import Component, { mixins } from 'vue-class-component'
@@ -201,7 +202,7 @@ export default class extends mixins(modalMixin) {
 
     this.$emit('input', this.language[this.lang])
     this._i18n._vm.locale = this.lang
-    window.preload.configurer.set({
+    configurer.set({
       language: this.lang,
       resVer: Number(resVer),
       // gacha: Number(gachaId),
@@ -216,7 +217,7 @@ export default class extends mixins(modalMixin) {
   mounted () {
     this.$nextTick(() => {
       this.event.$on('option', async () => {
-        const config = window.preload.configurer.getAll()
+        const config = configurer.getAll()
         this.lang = config.language || 'zh'
         this.resVer = config.resVer ? config.resVer.toString() : ''
         this.gachaId = config.gacha ? config.gacha.toString() : ''

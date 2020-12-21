@@ -1,12 +1,5 @@
 declare interface Window {
   preload: {
-    configurer: {
-      getAll (): import('../main/config').MishiroConfig
-      get<K extends import('../main/config').MishiroConfigKey> (key: K): import('../main/config').MishiroConfig[K]
-      set (key: import('../main/config').MishiroConfig): void
-      set<K extends import('../main/config').MishiroConfigKey> (key: K, value: import('../main/config').MishiroConfig[K]): void
-      remove (key: import('../main/config').MishiroConfigKey): void
-    }
     getManifestDB (): import('../main/db').default | undefined
     // getMasterDB (): import('../main/db').default | undefined
     readManifest?: typeof import('../main/on-manifest-read').default

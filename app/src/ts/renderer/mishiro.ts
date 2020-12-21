@@ -14,6 +14,7 @@ import TheBackground from '../../vue/component/TheBackground.vue'
 // import TheFooter from '../../vue/component/TheFooter.vue'
 // import TheVersion from '../../vue/component/TheVersion.vue'
 import TabSmall from '../../vue/component/TabSmall.vue'
+import configurer from './config'
 
 // import ModalAlert from '../../vue/modal/ModalAlert.vue'
 // import ModalGachaHistory from '../../vue/modal/ModalGachaHistory.vue'
@@ -33,7 +34,7 @@ const i18nTabs: any = {
   en: 'i18n.english'
 }
 
-// const useResVer = window.preload.configurer.get('latestResVer')
+// const useResVer = configurer.get('latestResVer')
 const useResVer = undefined
 
 const skip = false // process.env.NODE_ENV !== 'production'
@@ -76,7 +77,7 @@ export default class extends Vue {
   show: boolean = true
   currentBlock: string = 'home'
   checking: boolean = false
-  currentLanguage: boolean = i18nTabs[window.preload.configurer.get('language')!]
+  currentLanguage: boolean = i18nTabs[configurer.get('language')!]
   i18nTabs = i18nTabs
   appData: any = {
     resVer: 'Unknown',

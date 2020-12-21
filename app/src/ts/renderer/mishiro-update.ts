@@ -10,6 +10,7 @@ import MishiroIdol from './mishiro-idol'
 // import { unpackTexture2D } from './unpack-texture-2d'
 // import { Client } from './typings/main'
 import getPath from './get-path'
+import configurer from './config'
 const fs = window.node.fs
 // const path = window.node.path
 const { manifestPath, masterPath, bgmDir/* , iconDir */ } = getPath
@@ -128,7 +129,7 @@ export default class extends Vue {
   // }
 
   // async getGachaIcon (icons: { name: string; hash: string; [x: string]: any }[]) {
-  //   const card = window.preload.configurer.get('card')
+  //   const card = configurer.get('card')
   //   for (let i = 0; i < icons.length; i++) {
   //     let cacheName = iconDir(path.parse(icons[i].name).name)
   //     this.text = ((!card || card === 'default') ? icons[i].name : path.basename(cacheName + '.png')) + '　' + i + '/' + icons.length
@@ -158,7 +159,7 @@ export default class extends Vue {
     // const toName = (p: string) => path.parse(p).name
 
     setMaster(masterData)
-    setLatestResVer(window.preload.configurer.get('latestResVer') || -1)
+    setLatestResVer(configurer.get('latestResVer') || -1)
 
     const bgmManifest = masterData.bgmManifest
     // for (let k in bgmList) {
@@ -262,7 +263,7 @@ export default class extends Vue {
       }
     }
 
-    const background = window.preload.configurer.get('background')
+    const background = configurer.get('background')
     if (background) {
       await getBackground(background)
     } else {
@@ -313,7 +314,7 @@ export default class extends Vue {
         //     this.loading = step
         //   })
         //   if (acc !== '') {
-        //     window.preload.configurer.set('account', acc)
+        //     configurer.set('account', acc)
         //   } else {
         //     throw new Error('')
         //   }
@@ -337,7 +338,7 @@ export default class extends Vue {
                 this.event.$emit('alert', this.$t('home.errorTitle'), 'Current account has been banned. Please use another account.')
                 return
               }
-              resVer = window.preload.configurer.get('latestResVer')!
+              resVer = configurer.get('latestResVer')!
             }
           }
 
@@ -352,7 +353,7 @@ export default class extends Vue {
             // await this.afterMasterRead(masterData)
           }
         } else {
-          const resVer = window.preload.configurer.get('latestResVer')!
+          const resVer = configurer.get('latestResVer')!
           setResVer(Number(resVer))
           if (fs.existsSync(manifestPath(resVer, '.db')) && fs.existsSync(masterPath(resVer, '.db'))) {
             const manifestFile = manifestPath(resVer, '.db')
