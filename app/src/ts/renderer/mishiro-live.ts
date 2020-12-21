@@ -9,6 +9,7 @@ import { unpackTexture2D } from './unpack-texture-2d'
 // import { MasterData } from '../main/on-master-read'
 
 import getPath from './get-path'
+import { getLyrics, getScoreDifficulties } from './ipc'
 const fs = window.node.fs
 const path = window.node.path
 const os = window.node.os
@@ -245,7 +246,7 @@ export default class extends Vue {
           }
 
           // ipcRenderer.send('lyrics', scoreDir(this.activeAudio.score))
-          this.allLyrics = await window.preload.getLyrics(scoreDir(this.activeAudio.score))
+          this.allLyrics = await getLyrics(scoreDir(this.activeAudio.score))
         })()
       }
 
@@ -381,7 +382,7 @@ export default class extends Vue {
     this.playSe(this.enterSe)
     const result = await this.gameOrScore()
     if (!result) return
-    const difficulties = await window.preload.getScoreDifficulties(scoreDir(this.activeAudio.score))
+    const difficulties = await getScoreDifficulties(scoreDir(this.activeAudio.score))
     this.event.$emit('score', this.activeAudio, difficulties)
   }
 

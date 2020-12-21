@@ -1,13 +1,7 @@
 declare interface Window {
   preload: {
     getManifestDB (): import('../main/db').default | undefined
-    // getMasterDB (): import('../main/db').default | undefined
     readManifest?: typeof import('../main/on-manifest-read').default
-    // readMaster: typeof import('../main/on-master-read').default
-    // queryManifest (queryString: string): any[]
-    getLyrics: typeof import('../main/on-lyrics').default
-    getScoreDifficulties: typeof import('../main/on-check-score').default
-    getScore: typeof import('../main/on-score').default
   }
   node: {
     process: typeof process

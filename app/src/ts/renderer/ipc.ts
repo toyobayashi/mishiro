@@ -34,3 +34,15 @@ export function checkResourceVersion (): Promise<number> {
 export function getProfile (viewer: string): Promise<ServerResponse> {
   return ipcRenderer.invoke('getProfile', viewer)
 }
+
+export function getLyrics (scoreFile: string): Promise<Array<import('../main/on-lyrics').Lyric>> {
+  return ipcRenderer.invoke('getLyrics', scoreFile)
+}
+
+export function getScoreDifficulties (scoreFile: string): Promise<any> {
+  return ipcRenderer.invoke('getScoreDifficulties', scoreFile)
+}
+
+export function getScore (scoreFile: string, difficulty: number | string, bpm: number, src: string): Promise<any> {
+  return ipcRenderer.invoke('getScore', scoreFile, difficulty, bpm, src)
+}

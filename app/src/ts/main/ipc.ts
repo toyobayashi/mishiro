@@ -146,9 +146,16 @@ export default function ipc (): void {
   // ipcMain.on('score', (event: Event, scoreFile: string, difficulty: string, bpm: number, audioFile: string) => {
   //   onScore(event, scoreFile, difficulty, bpm, audioFile).catch(err => console.log(err))
   // })
-  setCache('getScore', getScore)
-  setCache('getScoreDifficulties', getScoreDifficulties)
-  setCache('getLyrics', getLyrics)
+
+  ipcMain.handle('getScore', async (_event, scoreFile: string, difficulty: number | string, bpm: number, src: string) => {
+    return getScore(scoreFile, difficulty, bpm, src)
+  })
+  ipcMain.handle('getScoreDifficulties', async (_event, scoreFile: string) => {
+    return getScoreDifficulties(scoreFile)
+  })
+  ipcMain.handle('getLyrics', async (_event, scoreFile: string) => {
+    return getLyrics(scoreFile)
+  })
   setCache('readManifest', readManifest)
   // setCache('readMaster', readMaster)
   // setCache('queryManifest', function queryManifest (queryString: string) {

@@ -4,6 +4,7 @@ import InputRadio from '../../vue/component/InputRadio.vue'
 import modalMixin from './modal-mixin'
 import Component, { mixins } from 'vue-class-component'
 import getPath from './get-path'
+import { getScore } from './ipc'
 
 const { ipcRenderer } = window.node.electron
 
@@ -21,7 +22,7 @@ export default class extends mixins(modalMixin) {
 
   async start (): Promise<void> {
     this.playSe(this.enterSe)
-    const res = await window.preload.getScore(
+    const res = await getScore(
       scoreDir(this.live.score), // scoreFile)
       this.difficulty, // difficulty
       this.live.bpm, // bpm
