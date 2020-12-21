@@ -1,7 +1,8 @@
+import configurer from './config'
 import { checkResourceVersion } from './ipc'
 
 async function check (): Promise<number> {
-  const resVer = window.preload.configurer.get('resVer')
+  const resVer = configurer.get('resVer')
   if (resVer) {
     return resVer
   }

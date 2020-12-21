@@ -10,6 +10,7 @@ import ja from './i18n/ja-JP'
 import en from './i18n/en-US'
 import vueGlobal from './renderer/vue-global'
 import store from './renderer/store'
+import configurer from './renderer/config'
 
 if (process.env.NODE_ENV !== 'production') Object.defineProperty(window, 'ELECTRON_DISABLE_SECURITY_WARNINGS', { value: true })
 
@@ -20,7 +21,7 @@ Vue.use(vueGlobal)
 
 const vm = new Vue({
   i18n: new VueI18n({
-    locale: window.preload.configurer.get('language') || 'zh',
+    locale: configurer.get('language') || 'zh',
     messages: {
       zh,
       ja,
