@@ -1,4 +1,3 @@
-import configurer from '../main/config'
 import getEventData from './get-event-data'
 // import getGachaData from './get-gacha-data'
 import getLimitedCard from './get-limited-card'
@@ -25,7 +24,7 @@ export default async function readMaster (masterFile: string/* , config: Mishiro
   timeOffset: any
 }> {
   // if (masterData) return masterData
-  const config = configurer.getConfig()
+  // const config = configurer.getConfig()
   const { getCache } = __non_webpack_require__('./export.js')
 
   const manifestDB: DB = getCache('manifestDB')
@@ -35,11 +34,10 @@ export default async function readMaster (masterFile: string/* , config: Mishiro
 
   // let master: any = await openSqlite(masterFile)
   const master = new DB(masterFile)
-  // setCache('masterDB', master)
   const gachaAll = await master.find('gacha_data')
   const eventAll = await master.find('event_data')
 
-  const { eventData, eventHappening } = getEventData(eventAll, config, now, timeOffset)
+  const { eventData, eventHappening } = getEventData(eventAll, now, timeOffset)
   console.log(`eventID: ${eventData.id}`)
   const eventAvailable = await master.find('event_available', undefined, { event_id: eventData.id })
 

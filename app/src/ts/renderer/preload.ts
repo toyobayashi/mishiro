@@ -11,9 +11,7 @@ window.preload = {
     set<K extends import('../main/config').MishiroConfigKey> (key: K | import('../main/config').MishiroConfig, value?: import('../main/config').MishiroConfig[K]) { return ipcRenderer.sendSync('configurer#set', key, value) },
     remove (key: import('../main/config').MishiroConfigKey) { return ipcRenderer.sendSync('configurer#remove', key) }
   },
-  client: cache.getCache('client'),
   getPath: cache.getCache('getPath'),
-  updater: cache.getCache('updater'),
   getManifestDB () {
     return cache.getCache('manifestDB')
   },

@@ -1,23 +1,20 @@
 import configurer from './config'
 import * as core from 'mishiro-core'
-import * as Updater from 'electron-github-asar-updater'
 
-const { setCache } = __non_webpack_require__('./export.js')
+const confver = configurer.get('latestResVer')
+const confacc = configurer.get('account')
 
-const updater = new Updater('toyobayashi/mishiro', 'resources')
-
-setCache('mishiroCore', core)
-
-const config = configurer.getConfig()
-
-const confver = config.latestResVer
-const confacc = config.account
-
-setCache('client', new core.Client(
+const client = new core.Client(
   confacc || '::',
   confver !== undefined ? (confver/*  - 100 */).toString() : undefined
-))
+)
 
-setCache('updater', updater)
+if (!client.user) {
+  client.user = '506351535'
+  client.viewer = '141935962'
+  client.udid = 'edb05dd4-9d13-4f76-b860-95f7a79de44e'
+}
 
 export * from 'mishiro-core'
+
+export { client }

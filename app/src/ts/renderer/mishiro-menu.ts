@@ -1,6 +1,7 @@
 import { Vue, Component } from 'vue-property-decorator'
 import { exit, relaunch } from './ipc'
 import license from './license'
+import updater from './updater'
 
 const fs = window.node.fs
 const getPath = window.preload.getPath
@@ -42,11 +43,12 @@ export default class extends Vue {
     }
     this.$emit('checking')
 
-    await this.updater.check()
+    await updater.check()
     this.$emit('checked')
 
-    if (this.updater.getUpdateInfo()) {
-      this.event.$emit('versionCheck', this.updater.getUpdateInfo())
+    const info = updater.getUpdateInfo()
+    if (info) {
+      this.event.$emit('versionCheck', info)
     } else {
       this.event.$emit('alert', this.$t('menu.update'), this.$t('menu.noUpdate'))
     }
@@ -100,7 +102,7 @@ export default class extends Vue {
 
   relaunch (): void {
     this.playSe(this.enterSe)
-    relaunch({ args: ['.'] })
+    relaunch({ args: [getPath()] })
     exit(0)
   }
 

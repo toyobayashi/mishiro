@@ -1,4 +1,5 @@
 import { RelaunchOptions, SaveDialogOptions, SaveDialogReturnValue } from 'electron'
+import { ServerResponse } from 'mishiro-core'
 
 const { ipcRenderer } = window.node.electron
 
@@ -24,4 +25,12 @@ export function getAppVersion (): string {
 
 export function getPackageJson (): Record<string, any> {
   return ipcRenderer.sendSync('package.json')
+}
+
+export function checkResourceVersion (): Promise<number> {
+  return ipcRenderer.invoke('checkResourceVersion')
+}
+
+export function getProfile (viewer: string): Promise<ServerResponse> {
+  return ipcRenderer.invoke('getProfile', viewer)
 }

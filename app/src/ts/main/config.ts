@@ -34,11 +34,17 @@ export class Configurer {
     fs.writeJsonSync(configFile, this.config, { spaces: 2 })
   }
 
-  getConfig (): MishiroConfig {
+  getAll (): MishiroConfig {
     return this.config
   }
 
-  configure (obj: MishiroConfigKey | MishiroConfig, value?: any): MishiroConfig {
+  get<K extends MishiroConfigKey> (key: K): MishiroConfig[K] {
+    return this.config[key]
+  }
+
+  set (obj: MishiroConfig): void
+  set<K extends MishiroConfigKey> (obj: K | MishiroConfig, value: MishiroConfig[K]): void
+  set<K extends MishiroConfigKey> (obj: K | MishiroConfig, value?: MishiroConfig[K]): void {
     if (typeof obj === 'string') {
       this.config[obj] = value
       fs.writeJsonSync(this.configFile, this.config, { spaces: 2 })
@@ -55,19 +61,16 @@ export class Configurer {
       }
       fs.writeJsonSync(this.configFile, this.config, { spaces: 2 })
     }
-    return this.config
   }
 
-  remove (key: MishiroConfigKey): MishiroConfig {
+  remove (key: MishiroConfigKey): void {
     if (this.config[key] !== undefined) {
       delete this.config[key]
       fs.writeJsonSync(this.configFile, this.config, { spaces: 2 })
     }
-    return this.config
   }
 }
 
 const configurer = new Configurer(getPath.configPath)
-__non_webpack_require__('./export.js').setCache('configurer', configurer)
 
 export default configurer

@@ -1,13 +1,15 @@
-import { MishiroConfig } from '../main/config'
-export default function getEventData (eventAll: any[], config: MishiroConfig, now: number, timeOffset: number): {
+import configurer from './config'
+
+export default function getEventData (eventAll: any[], now: number, timeOffset: number): {
   eventData: any
   eventHappening: boolean
 } {
   eventAll.sort((a, b) => new Date(b.event_start).getTime() - new Date(a.event_start).getTime())
 
-  if (config && config.event) {
+  const event = configurer.get('event')
+  if (event != null) {
     for (let i = 0; i < eventAll.length; i++) {
-      if (config.event === Number(eventAll[i].id)) return { eventData: eventAll[i], eventHappening: true }
+      if (event === Number(eventAll[i].id)) return { eventData: eventAll[i], eventHappening: true }
     }
   }
 
