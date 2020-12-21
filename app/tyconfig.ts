@@ -69,6 +69,11 @@ const config: ty.Configuration = {
     url: 'https://github.com/toyobayashi/mishiro'
   },
   distPath: '../dist',
+  nodeExternals: {
+    renderer: {
+      allowlist: ['webpack/hot/dev-server', 'marked', /^vue/]
+    }
+  },
   packHook: {
     afterInstall (_self, root) {
       const nodeModulesDir = path.join(root, 'node_modules')

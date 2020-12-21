@@ -1,4 +1,4 @@
-import { ipcMain } from 'electron'
+import { ipcMain, SaveDialogOptions, dialog } from 'electron'
 import readManifest from './on-manifest-read'
 import readMaster, { MasterData } from './on-master-read'
 // import onManifestQuery from './on-manifest-query'
@@ -60,6 +60,10 @@ export default function ipc (): void {
   ipcMain.on('batchDownload', async () => {
     // TODO
     await batchDownload()
+  })
+
+  ipcMain.handle('showSaveDialog', (_event, options: SaveDialogOptions) => {
+    return dialog.showSaveDialog(options)
   })
 
   // ipcMain.on('game', (event: Event, scoreFile: string, difficulty: string, bpm: number, audioFile: string) => {
