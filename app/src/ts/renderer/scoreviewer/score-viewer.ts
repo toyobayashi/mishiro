@@ -9,7 +9,7 @@ import LongMoveNote from './long-move-note'
 const { relative, parse } = window.node.path
 const fs = window.node.fs
 const getPath = window.preload.getPath
-const { remote, ipcRenderer } = window.node.electron
+const { ipcRenderer } = window.node.electron
 
 interface Song<ScoreType> {
   src: string
@@ -26,8 +26,7 @@ interface Option {
 class ScoreViewer {
   public static main (): void {
     window.addEventListener('beforeunload', () => {
-      const mainwindow = remote.BrowserWindow.fromId(ipcRenderer.sendSync('mainWindowId'))
-      mainwindow.webContents.send('liveEnd', null, false)
+      ipcRenderer.sendTo(ipcRenderer.sendSync('mainWindowId'), 'liveEnd', null, false)
     })
 
     const song = ipcRenderer.sendSync('getSong')
@@ -390,14 +389,7 @@ class ScoreViewer {
       })
     }
 
-    /* remote.dialog.showSaveDialog({
-      title: 'Save Score - ' + name + '-' + this.song.difficulty,
-      defaultPath: getPath.scoreDir(name + '-' + this.song.difficulty + '.png')
-    }, (filename) => {
-      filename && _drawAndSave(filename)
-    }) */
-
-    remote.dialog.showSaveDialog({
+    ipcRenderer.invoke('showSaveDialog', {
       title: 'Save Score - ' + name + '-' + this.song.difficulty,
       defaultPath: getPath.scoreDir(name + '-' + this.song.difficulty + '.png')
     }).then((res) => {
