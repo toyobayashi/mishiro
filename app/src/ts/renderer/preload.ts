@@ -4,7 +4,6 @@ const cache = electron.remote.require('./export.js')
 
 // process.once('loaded', function () {
 window.preload = {
-  package: electron.remote.require('../package.json'),
   configurer: cache.getCache('configurer'),
   client: cache.getCache('client'),
   getPath: cache.getCache('getPath'),

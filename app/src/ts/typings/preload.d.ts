@@ -1,6 +1,5 @@
 declare interface Window {
   preload: {
-    package: any
     configurer: import('../main/config').Configurer
     client: import('mishiro-core').Client
     getPath: typeof import('../main/get-path').default

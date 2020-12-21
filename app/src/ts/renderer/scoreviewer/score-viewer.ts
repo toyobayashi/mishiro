@@ -5,6 +5,7 @@ import TapNote from './tap-note'
 import FlipNote from './flip-note'
 import LongNote from './long-note'
 import LongMoveNote from './long-move-note'
+import { showSaveDialog } from '../ipc'
 
 const { relative, parse } = window.node.path
 const fs = window.node.fs
@@ -389,7 +390,7 @@ class ScoreViewer {
       })
     }
 
-    ipcRenderer.invoke('showSaveDialog', {
+    showSaveDialog({
       title: 'Save Score - ' + name + '-' + this.song.difficulty,
       defaultPath: getPath.scoreDir(name + '-' + this.song.difficulty + '.png')
     }).then((res) => {

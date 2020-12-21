@@ -1,4 +1,4 @@
-import { ipcMain, SaveDialogOptions, dialog } from 'electron'
+import { ipcMain, SaveDialogOptions, dialog, app, RelaunchOptions } from 'electron'
 import readManifest from './on-manifest-read'
 import readMaster, { MasterData } from './on-master-read'
 // import onManifestQuery from './on-manifest-query'
@@ -64,6 +64,26 @@ export default function ipc (): void {
 
   ipcMain.handle('showSaveDialog', (_event, options: SaveDialogOptions) => {
     return dialog.showSaveDialog(options)
+  })
+
+  ipcMain.on('relaunch', (event, options: RelaunchOptions | undefined) => {
+    event.returnValue = app.relaunch(options)
+  })
+
+  ipcMain.on('exit', (event, exitCode?: number) => {
+    event.returnValue = app.exit(exitCode)
+  })
+
+  ipcMain.on('appName', (event) => {
+    event.returnValue = app.name
+  })
+
+  ipcMain.on('appVersion', (event) => {
+    event.returnValue = app.getVersion()
+  })
+
+  ipcMain.on('package.json', (event) => {
+    event.returnValue = __non_webpack_require__('../package.json')
   })
 
   // ipcMain.on('game', (event: Event, scoreFile: string, difficulty: string, bpm: number, audioFile: string) => {
