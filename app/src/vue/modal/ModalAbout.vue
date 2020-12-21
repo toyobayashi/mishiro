@@ -8,8 +8,8 @@
       </div>
       <div class="modal-body" :style="{ maxHeight: bodyMaxHeight }">
         <table class="table-bordered" border="1">
-          <tr><td width="20%">{{$t('menu.appname')}}</td><td width="80%" colspan="3">{{app.name}}</td></tr>
-          <tr><td width="20%">{{$t('menu.appver')}}</td><td width="80%" colspan="3">{{app.getVersion()}}</td></tr>
+          <tr><td width="20%">{{$t('menu.appname')}}</td><td width="80%" colspan="3">{{appName}}</td></tr>
+          <tr><td width="20%">{{$t('menu.appver')}}</td><td width="80%" colspan="3">{{appVersion}}</td></tr>
           <tr><td width="20%">{{$t('menu.commitHash')}}</td><td width="80%" colspan="3">{{commit}}</td></tr>
           <tr><td width="20%">{{$t('menu.commitDate')}}</td><td width="80%" colspan="3">{{commitDate}}</td></tr>
           <tr>

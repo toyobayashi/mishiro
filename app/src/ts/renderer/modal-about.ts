@@ -1,14 +1,18 @@
 import modalMixin from './modal-mixin'
 import Component, { mixins } from 'vue-class-component'
+import { getAppName, getAppVersion, getPackageJson } from './ipc'
+
+const pkg = getPackageJson()
 
 @Component
 export default class extends mixins(modalMixin) {
-  app = window.node.electron.remote.app
+  appName = getAppName()
+  appVersion = getAppVersion()
   versions = window.node.process.versions
   arch = window.node.process.arch
   osinfo!: string
-  commit = process.env.NODE_ENV === 'production' ? window.preload.package._commit : window.node.childProcess.execSync('git rev-parse HEAD', { cwd: window.preload.getPath() }).toString().replace(/[\r\n]/g, '')
-  commitDate = process.env.NODE_ENV === 'production' ? window.preload.package._commitDate : new Date((window.node.childProcess.execSync('git log -1', { cwd: window.preload.getPath() }).toString().match(/Date:\s*(.*?)\n/) as RegExpMatchArray)[1]).toISOString()
+  commit = process.env.NODE_ENV === 'production' ? pkg._commit : window.node.childProcess.execSync('git rev-parse HEAD', { cwd: window.preload.getPath() }).toString().replace(/[\r\n]/g, '')
+  commitDate = process.env.NODE_ENV === 'production' ? pkg._commitDate : new Date((window.node.childProcess.execSync('git log -1', { cwd: window.preload.getPath() }).toString().match(/Date:\s*(.*?)\n/) as RegExpMatchArray)[1]).toISOString()
 
   showRepo (): void {
     window.node.electron.shell.openExternal('https://github.com/toyobayashi/mishiro').catch(err => console.log(err))

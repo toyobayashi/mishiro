@@ -35,7 +35,3 @@ vm.$mount('#app')
 if (process.env.NODE_ENV !== 'production') {
   if ((module as any).hot) (module as any).hot.accept()
 }
-
-// window.addEventListener('beforeunload', () => {
-//   remote.app.quit()
-// })

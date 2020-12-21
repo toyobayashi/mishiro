@@ -17,7 +17,6 @@ export default function openScoreWindow (): void {
     // minHeight: 759,
     // maxWidth: 1296,
     // maxHeight: 759,
-    // parent: remote.BrowserWindow.fromId(windowID),
     show: false,
     backgroundColor: '#000000',
     webPreferences: {

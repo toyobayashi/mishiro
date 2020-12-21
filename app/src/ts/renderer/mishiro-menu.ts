@@ -1,9 +1,9 @@
 import { Vue, Component } from 'vue-property-decorator'
+import { exit, relaunch } from './ipc'
 import license from './license'
 
 const fs = window.node.fs
 const getPath = window.preload.getPath
-const remote = window.node.electron.remote
 
 const { dataDir } = getPath
 
@@ -67,7 +67,7 @@ export default class extends Vue {
     //   if (!err) {
     //     const latest = body[0]
     //     const version = latest.tag_name.substr(1)
-    //     if (remote.app.getVersion() >= version) {
+    //     if (getVersion() >= version) {
     //       this.$emit('checked')
     //       this.event.$emit('alert', this.$t('menu.update'), this.$t('menu.noUpdate'))
     //     } else {
@@ -100,8 +100,8 @@ export default class extends Vue {
 
   relaunch (): void {
     this.playSe(this.enterSe)
-    remote.app.relaunch({ args: ['.'] })
-    remote.app.exit(0)
+    relaunch({ args: ['.'] })
+    exit(0)
   }
 
   calculator (): void {
@@ -110,7 +110,7 @@ export default class extends Vue {
   }
 
   exit (): void {
-    remote.app.exit(0)
+    exit(0)
     this.playSe(this.cancelSe)
   }
 
