@@ -16,6 +16,7 @@ import openScoreWindow from './open-score-window'
 import configurer, { Configurer } from './config'
 import { client } from './core'
 import { updaterIpc } from './updater'
+import { pathIpc } from './get-path'
 
 let initialized = false
 
@@ -130,6 +131,7 @@ export default function ipc (): void {
     return client.getProfile(viewer)
   })
 
+  pathIpc()
   registerIpcConfig(configurer)
   updaterIpc()
 

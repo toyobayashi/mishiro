@@ -7,10 +7,10 @@ import { Vue, Component } from 'vue-property-decorator'
 import { ProgressInfo } from 'mishiro-core'
 import { unpackTexture2D } from './unpack-texture-2d'
 
+import getPath from './get-path'
 const { /* ipcRenderer,  */shell } = window.node.electron
 const fs = window.node.fs
 const path = window.node.path
-const getPath = window.preload.getPath
 const { cardDir, voiceDir } = getPath
 
 @Component({

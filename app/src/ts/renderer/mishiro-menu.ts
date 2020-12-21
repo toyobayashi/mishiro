@@ -3,8 +3,8 @@ import { exit, relaunch } from './ipc'
 import license from './license'
 import updater from './updater'
 
+import getPath from './get-path'
 const fs = window.node.fs
-const getPath = window.preload.getPath
 
 const { dataDir } = getPath
 

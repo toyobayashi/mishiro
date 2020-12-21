@@ -8,10 +8,10 @@ import { unpackTexture2D } from './unpack-texture-2d'
 
 // import { MasterData } from '../main/on-master-read'
 
+import getPath from './get-path'
 const fs = window.node.fs
 const path = window.node.path
 const os = window.node.os
-const getPath = window.preload.getPath
 const { shell, ipcRenderer, clipboard } = window.node.electron
 const { scoreDir, bgmDir, liveDir, jacketDir } = getPath
 

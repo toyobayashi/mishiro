@@ -3,10 +3,11 @@ import InputText from '../../vue/component/InputText.vue'
 import { ServerResponse } from 'mishiro-core'
 import { unpackTexture2D } from './unpack-texture-2d'
 import { getProfile } from './ipc'
+import getPath from './get-path'
 
 // /* const template =  */require('../../res/banner.svg')
 const { existsSync, readFileSync, remove } = window.node.fs
-const getPath = window.preload.getPath
+
 const { iconDir, emblemDir } = getPath
 // const { join } = window.node.path
 

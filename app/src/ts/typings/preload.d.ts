@@ -7,7 +7,6 @@ declare interface Window {
       set<K extends import('../main/config').MishiroConfigKey> (key: K, value: import('../main/config').MishiroConfig[K]): void
       remove (key: import('../main/config').MishiroConfigKey): void
     }
-    getPath: typeof import('../main/get-path').default
     getManifestDB (): import('../main/db').default | undefined
     // getMasterDB (): import('../main/db').default | undefined
     readManifest?: typeof import('../main/on-manifest-read').default
