@@ -2,7 +2,7 @@
 // import * as path from 'path'
 // import { Event } from 'electron'
 import { parse } from 'path'
-import DB from './db'
+import DB from '../common/db'
 // export default async function (event: Event, scoreFile: string) {
 //   let bdb = await openSqlite(scoreFile)
 //   let rows = await bdb._all('SELECT name, data FROM blobs')

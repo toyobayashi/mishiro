@@ -8,6 +8,7 @@ import { Vue, Component } from 'vue-property-decorator'
 // import { generateObjectId } from '../common/object-id'
 // import { ProgressInfo } from 'mishiro-core'
 import getPath from './get-path'
+import { searchResources } from './ipc-back'
 const fs = window.node.fs
 const path = window.node.path
 const { shell } = window.node.electron
@@ -83,9 +84,7 @@ export default class extends Vue {
       this.canDownloadRows = []
       // this.event.$emit('alert', this.$t('home.errorTitle'), this.$t('home.noEmptyString'))
     } else {
-      const manifestDB = window.preload.getManifestDB()
-      if (!manifestDB) return
-      manifestDB.find<{ name: string, hash: string }>('manifests', ['name', 'hash'], { name: { $like: `%${this.queryString.trim()}%` } }).then(manifestArr => {
+      searchResources(this.queryString.trim()).then(manifestArr => {
         this.page = 0
         this.data = manifestArr
         if (!this.notDownloadedOnly) {

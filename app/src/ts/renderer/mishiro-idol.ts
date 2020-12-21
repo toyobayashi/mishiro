@@ -9,6 +9,7 @@ import { unpackTexture2D } from './unpack-texture-2d'
 
 import getPath from './get-path'
 import configurer from './config'
+import { getCardHash } from './ipc-back'
 const { /* ipcRenderer,  */shell } = window.node.electron
 const fs = window.node.fs
 const path = window.node.path
@@ -429,10 +430,7 @@ export default class extends Vue {
       try {
         if (!card || card === 'default') {
           // let hash: string = ipcRenderer.sendSync('searchManifest', `card_bg_${id}.unity3d`)[0].hash
-          const manifestDB = window.preload.getManifestDB()
-          if (!manifestDB) throw new Error('Manifest database is not available.')
-          const dbres: Array<{ hash: string }> = (await manifestDB.find('manifests', ['hash'], { name: `card_bg_${id}.unity3d` }))
-          const hash = dbres[0].hash
+          const hash = await getCardHash(id)
           downloadResult = await this.dler.downloadAsset(
             hash,
             cardDir(`card_bg_${id}`),

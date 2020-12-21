@@ -1,6 +1,7 @@
 import Vue from 'vue'
 import Vuex from 'vuex'
-import { MasterData } from '../main/on-master-read'
+
+import { MasterData } from './back/on-master-read'
 
 Vue.use(Vuex)
 

@@ -3,6 +3,21 @@ import * as sqlite3 from 'sqlite3'
 class DB {
   private _db: sqlite3.Database | null = null
 
+  public static async open (dbPath: string, mode: number = sqlite3.OPEN_READONLY): Promise<DB> {
+    return new Promise<DB>((resolve, reject) => {
+      let db: sqlite3.Database | null = new sqlite3.Database(dbPath, mode, (err: Error | null) => {
+        if (err) {
+          reject(err)
+          db = null
+        } else {
+          const _db = new DB(dbPath)
+          _db._db = db
+          resolve(_db)
+        }
+      })
+    })
+  }
+
   constructor (private readonly _dbPath: string) {
     this._db = new sqlite3.Database(this._dbPath, sqlite3.OPEN_READONLY, (err: Error | null) => {
       if (err) {

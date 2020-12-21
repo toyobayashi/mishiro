@@ -1,4 +1,4 @@
-const { ipcRenderer } = window.node.electron
+import { ipcRenderer } from 'electron'
 
 export class Configurer {
   public getAll (): import('../main/config').MishiroConfig {

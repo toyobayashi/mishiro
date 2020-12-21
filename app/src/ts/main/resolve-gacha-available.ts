@@ -1,6 +1,4 @@
-import { Client } from 'mishiro-core'
-
-const client: Client = __non_webpack_require__('./export.js').getCache('client')
+import { client } from './core'
 
 function getRarity (id: number, cardData: any[]): number {
   for (let i = 0; i < cardData.length; i++) {

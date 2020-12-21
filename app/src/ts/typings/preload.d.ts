@@ -1,8 +1,4 @@
 declare interface Window {
-  preload: {
-    getManifestDB (): import('../main/db').default | undefined
-    readManifest?: typeof import('../main/on-manifest-read').default
-  }
   node: {
     process: typeof process
     got: typeof import('got')

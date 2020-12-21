@@ -7,11 +7,11 @@ import resolveAudioManifest from './resolve-audio-manifest'
 // import resolveGachaAvailable from './resolve-gacha-available'
 import resolveUserLevel from './resolve-user-level'
 // import { openSqlite } from './sqlite3'
-import DB from './db'
+import DB from '../../common/db'
 
 // let masterData: MasterData | null = null
 
-export default async function readMaster (masterFile: string/* , config: MishiroConfig, manifests: { name: string; hash: string; [x: string]: any }[] */): Promise<{
+export default async function readMaster (master: DB, manifestDB: DB): Promise<{
   eventAll: any
   eventData: any
   eventAvailable: any
@@ -23,17 +23,9 @@ export default async function readMaster (masterFile: string/* , config: Mishiro
   userLevel: any
   timeOffset: any
 }> {
-  // if (masterData) return masterData
-  // const config = configurer.getConfig()
-  const { getCache } = __non_webpack_require__('./export.js')
-
-  const manifestDB: DB = getCache('manifestDB')
-
   const timeOffset = (9 - (-(new Date().getTimezoneOffset() / 60))) * 60 * 60 * 1000
   const now = new Date().getTime()
 
-  // let master: any = await openSqlite(masterFile)
-  const master = new DB(masterFile)
   const gachaAll = await master.find('gacha_data')
   const eventAll = await master.find('event_data')
 
@@ -75,8 +67,6 @@ export default async function readMaster (masterFile: string/* , config: Mishiro
   //   if (err) throw err
   //   master = void 0
   // })
-
-  await master.close()
 
   const { gachaLimitedCard, eventLimitedCard } = getLimitedCard(eventAll, gachaAll, eventLimited, gachaLimited)
   charaData = resolveCharaData(charaData, textData)

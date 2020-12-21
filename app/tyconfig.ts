@@ -9,12 +9,12 @@ const config: ty.Configuration = {
   target: 'electron',
   entry: {
     main: {
-      'mishiro.main': [path.join(__dirname, 'src/ts/main.ts')],
-      export: [path.join(__dirname, 'src/ts/main-export/export.ts')]
+      'mishiro.main': [path.join(__dirname, 'src/ts/main.ts')]
     },
     renderer: {
       'mishiro.renderer': [path.join(__dirname, 'src/ts/renderer.ts')],
-      'mishiro.score': [path.join(__dirname, 'src/ts/renderer-score.ts')]
+      'mishiro.score': [path.join(__dirname, 'src/ts/renderer-score.ts')],
+      'mishiro.back': [path.join(__dirname, 'src/ts/renderer-back.ts')]
     }/* ,
     preload: {
       preload: [path.join(__dirname, 'src/ts/preload/preload.ts')]
@@ -35,6 +35,11 @@ const config: ty.Configuration = {
       template: 'src/ts/template/score.template.ts',
       filename: 'score.html',
       chunks: ['mishiro.score', 'node-modules']
+    },
+    {
+      template: 'src/ts/template/back.template.ts',
+      filename: 'back.html',
+      chunks: ['mishiro.back', 'node-modules']
     }
   ],
   cssLoaderOptions: {

@@ -1,6 +1,6 @@
 // import { openSqlite } from './sqlite3'
 // import { Event } from 'electron'
-import DB from './db'
+import DB from '../common/db'
 
 // export default async function (event: Event, objectId: string, scoreFile: string) {
 //   let bdb = await openSqlite(scoreFile)

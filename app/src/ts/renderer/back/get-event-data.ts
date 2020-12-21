@@ -1,4 +1,4 @@
-import configurer from './config'
+import configurer from '../config'
 
 export default function getEventData (eventAll: any[], now: number, timeOffset: number): {
   eventData: any
