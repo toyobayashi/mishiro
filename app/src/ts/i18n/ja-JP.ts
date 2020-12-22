@@ -183,7 +183,9 @@ export default {
     getCardFrom: '何処からカードを',
     official: '公式',
     kirara: 'kirara',
-    arch: 'Architecture'
+    arch: 'Architecture',
+    batchStart: '一括DL',
+    batchStop: '中止'
   },
   commu: {
     id: 'ID入力',

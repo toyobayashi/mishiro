@@ -6,7 +6,7 @@ import FlipNote from './flip-note'
 import LongNote from './long-note'
 import LongMoveNote from './long-move-note'
 import { showSaveDialog } from '../ipc'
-import getPath from '../get-path'
+import getPath from '../../common/get-path'
 const { relative, parse } = window.node.path
 const fs = window.node.fs
 const { ipcRenderer } = window.node.electron

@@ -1,8 +1,8 @@
 import { ipcRenderer } from 'electron'
 import DB from './common/db'
+import { batchDownload, batchStop } from './renderer/back/batch-download'
+import mainWindowId from './renderer/back/main-window-id'
 import readMaster from './renderer/back/on-master-read'
-
-const mainWindowId = ipcRenderer.sendSync('mainWindowId')
 
 let manifest: DB | null = null
 let master: DB | null = null
@@ -85,6 +85,28 @@ ipcRenderer.on('searchResources', async (event, callbackChannel: string, querySt
   try {
     const res = await manifest!.find<{ name: string, hash: string }>('manifests', ['name', 'hash'], { name: { $like: `%${queryString.trim()}%` } })
     event.sender.sendTo(mainWindowId, callbackChannel, null, res)
+  } catch (err) {
+    event.sender.sendTo(mainWindowId, callbackChannel, err.message, '')
+  }
+})
+
+let batchDownloading = false
+
+ipcRenderer.on('startBatchDownload', async (event, callbackChannel: string) => {
+  try {
+    batchDownloading = true
+    await batchDownload(manifest!)
+    event.sender.sendTo(mainWindowId, callbackChannel, null, batchDownloading)
+  } catch (err) {
+    event.sender.sendTo(mainWindowId, callbackChannel, err.message, '')
+  }
+})
+
+ipcRenderer.on('stopBatchDownload', async (event, callbackChannel: string) => {
+  try {
+    await batchStop()
+    batchDownloading = false
+    event.sender.sendTo(mainWindowId, callbackChannel, null, batchDownloading)
   } catch (err) {
     event.sender.sendTo(mainWindowId, callbackChannel, err.message, '')
   }

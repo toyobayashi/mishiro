@@ -1,11 +1,9 @@
-import * as sqlite3 from 'sqlite3'
-
 class DB {
-  private _db: sqlite3.Database | null = null
+  private _db: import('sqlite3').Database | null = null
 
-  public static async open (dbPath: string, mode: number = sqlite3.OPEN_READONLY): Promise<DB> {
+  public static async open (dbPath: string): Promise<DB> {
     return new Promise<DB>((resolve, reject) => {
-      let db: sqlite3.Database | null = new sqlite3.Database(dbPath, mode, (err: Error | null) => {
+      let db: import('sqlite3').Database | null = new (require('sqlite3').Database)(dbPath, require('sqlite3').OPEN_READONLY, (err: Error | null) => {
         if (err) {
           reject(err)
           db = null
@@ -19,7 +17,7 @@ class DB {
   }
 
   constructor (private readonly _dbPath: string) {
-    this._db = new sqlite3.Database(this._dbPath, sqlite3.OPEN_READONLY, (err: Error | null) => {
+    this._db = new (require('sqlite3').Database)(this._dbPath, require('sqlite3').OPEN_READONLY, (err: Error | null) => {
       if (err) {
         console.log(err)
         this._db = null
@@ -41,7 +39,7 @@ class DB {
     })
   }
 
-  findEach<T = any> (table: string, columns?: string[], query?: { [column: string]: any }, orderBy?: { [column: string]: 1 | -1 }, eachCall?: (this: sqlite3.Statement, err: Error | null, row: T) => void): Promise<T[]> {
+  findEach<T = any> (table: string, columns?: string[], query?: { [column: string]: any }, orderBy?: { [column: string]: 1 | -1 }, eachCall?: (this: import('sqlite3').Statement, err: Error | null, row: T) => void): Promise<T[]> {
     return new Promise<T[]>((resolve, reject) => {
       if (!this._db) {
         reject(new Error(`Database ${this._dbPath} is not available.`))

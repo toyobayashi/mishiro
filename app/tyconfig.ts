@@ -76,7 +76,7 @@ const config: ty.Configuration = {
   distPath: '../dist',
   nodeExternals: {
     renderer: {
-      allowlist: ['webpack/hot/dev-server', 'marked', /^vue/]
+      allowlist: [/webpack/, 'marked', /^vue/]
     }
   },
   packHook: {

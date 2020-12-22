@@ -8,7 +8,7 @@ import MishiroIdol from './mishiro-idol'
 // import { bgmList } from './the-player'
 // import { unpackTexture2D } from './unpack-texture-2d'
 // import { Client } from './typings/main'
-import getPath from './get-path'
+import getPath from '../common/get-path'
 import configurer from './config'
 import { getMasterHash, openManifestDatabase, readMasterData } from './ipc-back'
 const fs = window.node.fs

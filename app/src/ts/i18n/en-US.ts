@@ -183,7 +183,9 @@ export default {
     getCardFrom: 'GET CARD FROM',
     official: 'official',
     kirara: 'kirara',
-    arch: 'Architecture'
+    arch: 'Architecture',
+    batchStart: 'DL ALL',
+    batchStop: 'STOP'
   },
   commu: {
     id: 'Enter ID',

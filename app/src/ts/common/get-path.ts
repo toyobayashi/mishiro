@@ -1,5 +1,4 @@
 import { join } from 'path'
-import { ipcMain } from 'electron'
 
 export interface GetPath {
   (...relative: string[]): string
@@ -19,8 +18,16 @@ export interface GetPath {
   batchDir: (...relative: string[]) => string
 }
 
+const appRoot: string = process.type === 'browser' ? join(__dirname, '..') : require('electron').ipcRenderer.sendSync('appRoot')
+
+if (process.type === 'browser') {
+  require('electron').ipcMain.on('appRoot', (event) => {
+    event.returnValue = appRoot
+  })
+}
+
 const getPath: GetPath = function getPath (...relative: string[]): string {
-  return join(__dirname, '..', ...relative)
+  return join(appRoot, ...relative)
 }
 
 getPath.configPath = getPath('../config.json')
@@ -37,11 +44,5 @@ getPath.bgmDir = (...relative) => getPath('../asset/bgm', ...relative)
 getPath.liveDir = (...relative) => getPath('../asset/live', ...relative)
 getPath.jacketDir = (...relative) => getPath('../asset/jacket', ...relative)
 getPath.batchDir = (...relative) => getPath('../asset/batch', ...relative)
-
-export function pathIpc (): void {
-  ipcMain.on('getPath', (event, type: any, ...args: any[]) => {
-    event.returnValue = type === '' ? getPath(...args) : (getPath as any)[type](...args)
-  })
-}
 
 export default getPath
