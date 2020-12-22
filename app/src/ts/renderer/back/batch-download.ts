@@ -1,6 +1,6 @@
 import DB from '../../common/db'
 import getPath from '../../common/get-path'
-import { existsSync } from 'fs-extra'
+import { existsSync, removeSync } from 'fs-extra'
 import { md5File } from './hash'
 import { Downloader, ResourceType } from 'mishiro-core'
 import { ipcRenderer } from 'electron'
@@ -19,13 +19,17 @@ interface ManifestResouceWithPath extends ManifestResouce {
 
 let stopBatch = false
 
-async function checkFiles (manifest: DB): Promise<ManifestResouceWithPath[]> {
-  warn('check')
+async function checkFiles (manifest: DB): Promise<{
+  list: ManifestResouceWithPath[]
+  count: number
+}> {
   const records = await manifest.find<ManifestResouce>('manifests', ['name', 'hash', 'size'])
 
   const res: ManifestResouceWithPath[] = []
 
   let t = Date.now()
+
+  let completeCount = 0
 
   for (let i = 0; i < records.length; i++) {
     const resource = records[i] as ManifestResouceWithPath
@@ -36,7 +40,10 @@ async function checkFiles (manifest: DB): Promise<ManifestResouceWithPath[]> {
     } else {
       const md5 = await md5File(path)
       if (md5 !== resource.hash) {
+        removeSync(path)
         res.push(resource)
+      } else {
+        completeCount++
       }
     }
     const n = Date.now()
@@ -45,19 +52,26 @@ async function checkFiles (manifest: DB): Promise<ManifestResouceWithPath[]> {
       ipcRenderer.sendTo(mainWindowId, 'setBatchStatus', {
         name: 'Checking',
         status: `${i + 1} / ${records.length}`,
+        status2: `${completeCount} / ${records.length}`,
         curprog: 100 * (i + 1) / records.length,
         totalprog: 0
       })
     }
   }
 
-  return res
+  return {
+    list: res,
+    count: records.length - res.length
+  }
 }
 
 let list: ManifestResouceWithPath[] = []
 
 export async function batchDownload (manifest: DB): Promise<void> {
-  list = await checkFiles(manifest)
+  const info = await checkFiles(manifest)
+  list = info.list
+  const count = info.count
+  const totalCount = list.length + count
   if (stopBatch) {
     stopBatch = false
     list.length = 0
@@ -71,19 +85,22 @@ export async function batchDownload (manifest: DB): Promise<void> {
       warn(`Unknown resource type: ${resource.name}`)
       continue
     }
+    const status2 = `${i + count} / ${totalCount}`
     ipcRenderer.sendTo(mainWindowId, 'setBatchStatus', {
       name: resource.name,
-      status: `${list.length}`,
+      status: '',
+      status2: status2,
       curprog: 0,
-      totalprog: 100 * i / list.length
+      totalprog: 100 * (i + count) / totalCount
     })
     try {
       await downloader.downloadOneRaw(type, resource.hash, resource.path, (prog) => {
         ipcRenderer.sendTo(mainWindowId, 'setBatchStatus', {
           name: resource.name ?? '',
-          status: `${list.length} ${formatByte(prog.current)} / ${formatByte(prog.max)}`,
+          status: `${formatByte(prog.current)} / ${formatByte(prog.max)}`,
+          status2: status2,
           curprog: prog.loading,
-          totalprog: 100 * i / list.length + prog.loading / list.length
+          totalprog: 100 * (i + count) / totalCount + prog.loading / totalCount
         })
       })
     } catch (err /* cancel? */) {
@@ -115,6 +132,7 @@ function resetBatchStatus (): void {
   ipcRenderer.sendTo(mainWindowId, 'setBatchStatus', {
     name: '',
     status: '',
+    status2: '',
     curprog: 0,
     totalprog: 0
   })

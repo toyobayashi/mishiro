@@ -54,7 +54,11 @@
               <div>{{$store.state.batchStatus.name}}</div>
               <div>{{$store.state.batchStatus.status}}</div>
             </div>
-            <ProgressBar class="cgss-progress-load" style="margin-bottom: 10px" :percent="$store.state.batchStatus.curprog"/>
+            <ProgressBar class="cgss-progress-load" :percent="$store.state.batchStatus.curprog"/>
+            <div class="status">
+              <div></div>
+              <div>{{$store.state.batchStatus.status2}}</div>
+            </div>
             <ProgressBar class="cgss-progress-load" :percent="$store.state.batchStatus.totalprog"/>
           </div>
         </div>
@@ -127,6 +131,7 @@ export default class extends mixins(modalMixin) {
   // }
 
   async batchDownload () {
+    this.playSe(this.enterSe)
     this.batchDownloading = true
     try {
       await startBatchDownload()
@@ -137,6 +142,7 @@ export default class extends mixins(modalMixin) {
   }
 
   async batchStop () {
+    this.playSe(this.cancelSe)
     await stopBatchDownload()
     this.batchDownloading = false
   }

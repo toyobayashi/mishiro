@@ -23,6 +23,7 @@ const store = new Vuex.Store<{
   batchStatus: {
     name: string
     status: string
+    status2: string
     curprog: number
     totalprog: number
   }
@@ -36,6 +37,7 @@ const store = new Vuex.Store<{
     batchStatus: {
       name: '',
       status: '',
+      status2: '',
       curprog: 0,
       totalprog: 0
     }
@@ -56,6 +58,7 @@ const store = new Vuex.Store<{
     [Action.SET_BATCH_STATUS] (state, status) {
       state.batchStatus.name = status.name ?? ''
       state.batchStatus.status = status.status ?? ''
+      state.batchStatus.status2 = status.status2 ?? ''
       state.batchStatus.curprog = status.curprog ?? 0
       state.batchStatus.totalprog = status.totalprog ?? 0
     }
