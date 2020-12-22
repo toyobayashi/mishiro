@@ -8,7 +8,7 @@
 <!-- [![Vue](https://img.shields.io/badge/dynamic/json.svg?label=vue&url=https%3A%2F%2Fraw.githubusercontent.com%2Ftoyobayashi%2Fmishiro%2Fmaster%2Fapp%2Fpackage.json&query=%24.dependencies.vue&colorB=41b883)](https://vuejs.org/)
 [![Webpack](https://img.shields.io/badge/dynamic/json.svg?label=webpack&url=https%3A%2F%2Fraw.githubusercontent.com%2Ftoyobayashi%2Fmishiro%2Fmaster%2Fapp%2Fpackage.json&query=%24.devDependencies.webpack&colorB=55a7dd)](https://webpack.js.org/) -->
 
-<font color="green" size=5>**Latest Available Version: [2.0.0](https://github.com/toyobayashi/mishiro/releases/tag/v2.0.0)**</font>
+<!-- <font color="green" size=5>**Latest Available Version: [2.0.0](https://github.com/toyobayashi/mishiro/releases/tag/v2.0.0)**</font> -->
 
 [中文 README](https://github.com/toyobayashi/mishiro/blob/master/README_CN.md)
 
@@ -20,6 +20,8 @@
 Note：
 
 * Do not install mishiro in a path which includes Chinese or Japanese characters.
+
+* If you have trouble to launch or experience any error, try to install the latest version.
 <!-- * Mac users please refer to the following building steps and [Electron's document](http://electronjs.org/docs/tutorial/application-distribution) to compile and pack mishiro. -->
 
 ## Screenshot
@@ -79,6 +81,7 @@ Repo: [mishiro-score-viewer](https://github.com/toyobayashi/mishiro-score-viewer
     * `/app/node_modules/mishiro-core`
     * `/app/node_modules/sqlite3`
     * `/app/node_modules/hca-decoder`
+    * `/app/node_modules/spdlog`
 
     You can also just run `npm run rm` to do this.
 
