@@ -1,5 +1,5 @@
 import { Vue, Component } from 'vue-property-decorator'
-import getPath from './get-path'
+import getPath from '../common/get-path'
 const fs = window.node.fs
 
 @Component

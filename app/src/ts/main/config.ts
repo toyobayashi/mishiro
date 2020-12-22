@@ -1,5 +1,5 @@
 import * as fs from 'fs-extra'
-import getPath from './get-path'
+import getPath from '../common/get-path'
 
 export interface MishiroConfig {
   latestResVer?: number

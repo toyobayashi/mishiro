@@ -3,7 +3,7 @@ import InputText from '../../vue/component/InputText.vue'
 import { ServerResponse } from 'mishiro-core'
 import { unpackTexture2D } from './unpack-texture-2d'
 import { getProfile } from './ipc'
-import getPath from './get-path'
+import getPath from '../common/get-path'
 import configurer from './config'
 import { getEmblemHash, getIconHash } from './ipc-back'
 

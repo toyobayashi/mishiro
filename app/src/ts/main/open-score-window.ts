@@ -1,6 +1,6 @@
 import { BrowserWindow } from 'electron'
 import { format } from 'url'
-import getPath from './get-path'
+import getPath from '../common/get-path'
 import setIcon from './icon'
 
 let win: BrowserWindow | null = null

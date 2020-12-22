@@ -8,7 +8,7 @@ import { unpackTexture2D } from './unpack-texture-2d'
 
 // import { MasterData } from '../main/on-master-read'
 
-import getPath from './get-path'
+import getPath from '../common/get-path'
 import { getLyrics, getScoreDifficulties } from './ipc'
 const fs = window.node.fs
 const path = window.node.path

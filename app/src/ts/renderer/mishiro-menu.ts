@@ -3,7 +3,7 @@ import { exit, relaunch } from './ipc'
 import license from './license'
 import updater from './updater'
 
-import getPath from './get-path'
+import getPath from '../common/get-path'
 const fs = window.node.fs
 
 const { dataDir } = getPath

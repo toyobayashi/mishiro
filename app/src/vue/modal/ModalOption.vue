@@ -44,7 +44,20 @@
             <InputText class="option-input" placeholder="123456789:987654321:0a1b2c3d-5c6d-4e7f-8a9b-0e1f2a3b4c5d" v-model="account" />
           </div>
         </form>
-        <div @click="batchDownload">123</div>
+        <div class="batch-area">
+          <div class="batch-btn">
+            <button type="button" v-if="!batchDownloading" class="cgss-btn cgss-btn-ok" @click="batchDownload">{{$t("menu.batchStart")}}</button>
+            <button type="button" v-else class="cgss-btn cgss-btn-default" @click="batchStop">{{$t("menu.batchStop")}}</button>
+          </div>
+          <div class="batch-prog">
+            <div class="status">
+              <div>{{$store.state.batchStatus.name}}</div>
+              <div>{{$store.state.batchStatus.status}}</div>
+            </div>
+            <ProgressBar class="cgss-progress-load" style="margin-bottom: 10px" :percent="$store.state.batchStatus.curprog"/>
+            <ProgressBar class="cgss-progress-load" :percent="$store.state.batchStatus.totalprog"/>
+          </div>
+        </div>
       </div>
       <div class="modal-footer">
         <button type="button" class="cgss-btn cgss-btn-ok" @click="save">{{$t("menu.save")}}</button>
@@ -63,14 +76,16 @@ import InputText from '../component/InputText.vue'
 import Component, { mixins } from 'vue-class-component'
 import { Prop } from 'vue-property-decorator'
 
-import { MasterData } from '../../ts/renderer/back/on-master-read'
+import ProgressBar from '../component/ProgressBar.vue'
 
-const { ipcRenderer } = window.node.electron
+import { MasterData } from '../../ts/renderer/back/on-master-read'
+import { startBatchDownload, stopBatchDownload } from '../../ts/renderer/ipc-back'
 
 @Component({
   components: {
     InputRadio,
-    InputText
+    InputText,
+    ProgressBar
   }
 })
 export default class extends mixins(modalMixin) {
@@ -87,6 +102,7 @@ export default class extends mixins(modalMixin) {
     en: 'i18n.english'
   }
 
+  batchDownloading = false
   // @Prop({ default: () => ({}), type: Object }) master: MasterData
   // @Prop({ required: true }) latestResVer: string | number
   @Prop() value: string
@@ -110,8 +126,15 @@ export default class extends mixins(modalMixin) {
   //   return this.master.gachaNow ? this.master.gachaNow : {}
   // }
 
-  batchDownload () {
-    ipcRenderer.send('batchDownload')
+  async batchDownload () {
+    this.batchDownloading = true
+    await startBatchDownload()
+    this.batchDownloading = false
+  }
+
+  async batchStop () {
+    await stopBatchDownload()
+    this.batchDownloading = false
   }
 
   save () {
@@ -256,5 +279,24 @@ export default class extends mixins(modalMixin) {
 }
 .margin-left-50 {
   margin-left: 50px;
+}
+
+.batch-area {
+  display: flex;
+  align-items: flex-end;
+}
+
+.batch-area .batch-btn {
+  flex: 3
+}
+.batch-area .batch-prog {
+  flex: 7
+}
+.batch-area .batch-prog .status {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  font-size: 14px;
+  height: 30px;
 }
 </style>

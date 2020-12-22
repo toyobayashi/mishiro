@@ -1,7 +1,6 @@
 declare interface Window {
   node: {
     process: typeof process
-    got: typeof import('got')
     electron: typeof import('electron')
     mishiroCore: typeof import('mishiro-core')
     fs: typeof import('fs-extra')

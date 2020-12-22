@@ -3,7 +3,7 @@ import InputRadio from '../../vue/component/InputRadio.vue'
 
 import modalMixin from './modal-mixin'
 import Component, { mixins } from 'vue-class-component'
-import getPath from './get-path'
+import getPath from '../common/get-path'
 import { getScore } from './ipc'
 
 const { ipcRenderer } = window.node.electron

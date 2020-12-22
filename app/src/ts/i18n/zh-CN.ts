@@ -183,7 +183,9 @@ export default {
     getCardFrom: '従何処獲取卡面',
     official: '官方',
     kirara: 'kirara',
-    arch: '架構'
+    arch: '架構',
+    batchStart: '下載全部',
+    batchStop: '中止'
   },
   commu: {
     id: '請輸入ID',

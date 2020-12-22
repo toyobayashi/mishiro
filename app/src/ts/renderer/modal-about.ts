@@ -1,7 +1,7 @@
 import modalMixin from './modal-mixin'
 import Component, { mixins } from 'vue-class-component'
 import { getAppName, getAppVersion, getPackageJson } from './ipc'
-import getPath from './get-path'
+import getPath from '../common/get-path'
 const pkg = getPackageJson()
 
 @Component

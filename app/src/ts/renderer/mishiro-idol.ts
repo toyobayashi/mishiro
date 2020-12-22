@@ -7,7 +7,7 @@ import { Vue, Component } from 'vue-property-decorator'
 import { ProgressInfo } from 'mishiro-core'
 import { unpackTexture2D } from './unpack-texture-2d'
 
-import getPath from './get-path'
+import getPath from '../common/get-path'
 import configurer from './config'
 import { getCardHash } from './ipc-back'
 const { /* ipcRenderer,  */shell } = window.node.electron

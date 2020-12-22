@@ -2,12 +2,17 @@ import './common/asar'
 import { app, BrowserWindow, ipcMain, BrowserWindowConstructorOptions, Menu, MenuItem, globalShortcut } from 'electron'
 import { join } from 'path'
 import * as url from 'url'
-import './main/get-path'
+import './common/get-path'
 import './main/core'
 import ipc from './main/ipc'
 import setIcon from './main/icon'
 
 app.commandLine.appendSwitch('autoplay-policy', 'no-user-gesture-required')
+
+if (process.env.NODE_ENV !== 'production') {
+  // https://github.com/mapbox/node-sqlite3/issues/1370
+  app.allowRendererProcessReuse = false
+}
 
 let mainWindow: BrowserWindow | null = null
 let backWindow: BrowserWindow | null = null
@@ -55,7 +60,7 @@ function createWindow (): void {
   }
 
   backWindow = new BrowserWindow({
-    show: false,
+    show: true,
     // parent: mainWindow,
     webPreferences: {
       nodeIntegration: true,

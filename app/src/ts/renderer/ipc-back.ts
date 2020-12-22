@@ -85,3 +85,25 @@ export function searchResources (query: string): Promise<Array<{ name: string, h
     ipcRenderer.sendTo(backWindowId, 'searchResources', callbackChannel, query)
   })
 }
+
+export function startBatchDownload (): Promise<boolean> {
+  return new Promise((resolve, reject) => {
+    const callbackChannel = createChannelName()
+    ipcRenderer.once(callbackChannel, (_event, errmsg, downloading) => {
+      if (errmsg) reject(new Error(errmsg))
+      else resolve(downloading)
+    })
+    ipcRenderer.sendTo(backWindowId, 'startBatchDownload', callbackChannel)
+  })
+}
+
+export function stopBatchDownload (): Promise<boolean> {
+  return new Promise((resolve, reject) => {
+    const callbackChannel = createChannelName()
+    ipcRenderer.once(callbackChannel, (_event, errmsg, downloading) => {
+      if (errmsg) reject(new Error(errmsg))
+      else resolve(downloading)
+    })
+    ipcRenderer.sendTo(backWindowId, 'stopBatchDownload', callbackChannel)
+  })
+}

@@ -1,5 +1,5 @@
 import { PluginFunction } from 'vue'
-import getPath from './get-path'
+import getPath from '../common/get-path'
 const { ipcRenderer } = window.node.electron
 const fs = window.node.fs
 const path = window.node.path
