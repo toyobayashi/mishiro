@@ -6,7 +6,7 @@ const fs = window.node.fs
 export default class extends Vue {
   bg: boolean | null = null
   isTouched: boolean = false
-  coverSrc: string = '../../asset/img.asar/title_bg_10006.png'
+  coverSrc: string = '../../asset/img.asar/title_bg_10008.png'
 
   enter (): void {
     if (!this.isTouched) {

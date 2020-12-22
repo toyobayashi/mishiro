@@ -16,9 +16,9 @@ interface BGMList {
 
 export const bgmList: BGMList = {
   anni: {
-    src: '../../asset/bgm.asar/bgm_event_anniversary_004.mp3',
-    start: 6.1,
-    end: 105.00
+    src: '../../asset/bgm.asar/bgm_event_anniversary_005.mp3',
+    start: 15,
+    end: 87.65
   },
   day: {
     src: '../../asset/bgm.asar/bgm_studio_day.mp3',
