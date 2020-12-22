@@ -8,6 +8,8 @@
 注意：
 
 * 不推荐将 mishiro 安装或解压在包含汉字的路径下，可能会出现一些问题。
+
+* 如果遇到无法启动或其它任何报错，请尝试安装最新版本。
 <!-- * 由于我没有 mac 电脑，所以很抱歉 mac 用户请参照请按照下面的步骤和[Electron分发应用](http://electronjs.org/docs/tutorial/application-distribution)自行编译打包。 -->
 
 ## 特性
@@ -61,6 +63,7 @@
     * `/app/node_modules/mishiro-core`
     * `/app/node_modules/sqlite3`
     * `/app/node_modules/hca-decoder`
+    * `/app/node_modules/spdlog`
 
     也可以直接跑 `npm run rm` 来完成。
 
