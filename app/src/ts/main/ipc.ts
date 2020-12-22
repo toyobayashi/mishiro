@@ -14,6 +14,7 @@ import openScoreWindow from './open-score-window'
 import configurer, { Configurer } from './config'
 import { client } from './core'
 import { updaterIpc } from './updater'
+import * as log from './log'
 
 let initialized = false
 
@@ -120,6 +121,11 @@ export default function ipc (): void {
 
   registerIpcConfig(configurer)
   updaterIpc()
+
+  ipcMain.on('log', (event, level: keyof typeof log, msg: string) => {
+    log[level](msg)
+    event.returnValue = undefined
+  })
 
   // ipcMain.on('game', (event: Event, scoreFile: string, difficulty: string, bpm: number, audioFile: string) => {
   //   onGame(event, scoreFile, difficulty, bpm, audioFile).catch(err => console.log(err))

@@ -7,6 +7,8 @@ import { ipcRenderer } from 'electron'
 import mainWindowId from './main-window-id'
 import { extname } from 'path'
 
+import { warn } from '../log'
+
 const { batchDir } = getPath
 
 const downloader = new Downloader()
@@ -18,6 +20,7 @@ interface ManifestResouceWithPath extends ManifestResouce {
 let stopBatch = false
 
 async function checkFiles (manifest: DB): Promise<ManifestResouceWithPath[]> {
+  warn('check')
   const records = await manifest.find<ManifestResouce>('manifests', ['name', 'hash', 'size'])
 
   const res: ManifestResouceWithPath[] = []
@@ -65,7 +68,7 @@ export async function batchDownload (manifest: DB): Promise<void> {
     const resource = list[i]
     const type = toType(resource.name)
     if (type === -1) {
-      // TODO
+      warn(`Unknown resource type: ${resource.name}`)
       continue
     }
     ipcRenderer.sendTo(mainWindowId, 'setBatchStatus', {

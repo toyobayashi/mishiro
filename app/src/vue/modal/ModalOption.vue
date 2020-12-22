@@ -128,7 +128,11 @@ export default class extends mixins(modalMixin) {
 
   async batchDownload () {
     this.batchDownloading = true
-    await startBatchDownload()
+    try {
+      await startBatchDownload()
+    } catch (err) {
+      this.event.$emit('alert', this.$t('home.errorTitle'), err.message)
+    }
     this.batchDownloading = false
   }
 

@@ -3,6 +3,7 @@ import { join } from 'path'
 export interface GetPath {
   (...relative: string[]): string
   configPath: string
+  logPath: string
   dataDir: (...relative: string[]) => string
   manifestPath: (resVer: number, db?: string) => string
   masterPath: (resVer: number, db?: string) => string
@@ -31,6 +32,7 @@ const getPath: GetPath = function getPath (...relative: string[]): string {
 }
 
 getPath.configPath = getPath('../config.json')
+getPath.logPath = getPath('../log.txt')
 getPath.dataDir = (...relative) => getPath('../asset/data', ...relative)
 getPath.manifestPath = (resVer, db = '') => getPath.dataDir(`manifest_${resVer}${db}`)
 getPath.masterPath = (resVer, db = '') => getPath.dataDir(`master_${resVer}${db}`)
