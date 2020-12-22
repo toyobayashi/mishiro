@@ -1,5 +1,5 @@
 import { join, dirname } from 'path'
-import * as got from 'got'
+import got from 'got'
 import * as fs from 'fs-extra'
 import { unzipSync } from '@tybys/cross-zip'
 

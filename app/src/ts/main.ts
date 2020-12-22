@@ -60,7 +60,7 @@ function createWindow (): void {
   }
 
   backWindow = new BrowserWindow({
-    show: true,
+    show: false,
     // parent: mainWindow,
     webPreferences: {
       nodeIntegration: true,

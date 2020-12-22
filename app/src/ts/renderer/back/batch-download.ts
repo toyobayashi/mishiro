@@ -83,10 +83,11 @@ export async function batchDownload (manifest: DB): Promise<void> {
           totalprog: 100 * i / list.length + prog.loading / list.length
         })
       })
-    } catch (err) {
-      console.log(err)
+    } catch (err /* cancel? */) {
       if (stopBatch) {
         break
+      } else {
+        throw err
       }
     }
     if (stopBatch) {
@@ -102,12 +103,7 @@ export function batchStop (): Promise<void> {
   return new Promise((resolve) => {
     stopBatch = true
     list.length = 0
-    downloader.stop()
-    // if (downloader.req) {
-    //   downloader.req.abort()
-    //   downloader.rename = false
-    //   downloader.req = null
-    // }
+    downloader.stopCurrent()
     resolve()
   })
 }
