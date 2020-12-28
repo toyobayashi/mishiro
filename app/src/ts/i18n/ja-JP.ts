@@ -24,7 +24,11 @@ export default {
     msg: 'メッセージ',
     stmnFull: 'スタミナが回復しました。',
     all: '全部',
-    canDownload: 'ﾀﾞｳﾝﾛｰﾄﾞ可能'
+    canDownload: 'ﾀﾞｳﾝﾛｰﾄﾞ可能',
+    autoDecLz4: 'LZ4解凍',
+    cName: 'ファイル名',
+    cHash: 'ハッシュ',
+    cSize: 'サイズ'
   },
   event: {
     atapon: 'アタポン',

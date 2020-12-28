@@ -14,6 +14,12 @@
           <ProgressBar class="cgss-progress-event" :percent="current"/>
           <ProgressBar class="cgss-progress-event" :percent="total"/>
         </div>
+        <div class="dl-options">
+          <div class="auto-dec-lz4">
+            <input type="checkbox" id="autoDecLz4" v-model="dler.autoDecLz4" /><label for="autoDecLz4"></label>
+            <label for="autoDecLz4">{{$t('home.autoDecLz4')}}</label>
+          </div>
+        </div>
         <button class="cgss-btn-lg cgss-btn-lg-ok" @click="filterOnClick">{{notDownloadedOnly ? $t("home.canDownload") : $t('home.all')}}</button>
         <div class="page-content">
           <span class="arrow previous" @click="previousPage"></span>
@@ -22,7 +28,7 @@
         </div>
       </div>
     </div>
-    <TheTable :data="canDownloadRows.slice(page * recordPerPage, (page + 1) * recordPerPage)" @change="tableChange" :is-disabled="isDisabled" />
+    <TheTable :data="canDownloadRows.slice(page * recordPerPage, (page + 1) * recordPerPage)" @change="tableChange" :is-disabled="isDisabled" :formatter="tableFormatter" :header-formatter="headerFormatter" />
   </div>
   <!-- <TaskLoading :total-loading="total" :current-loading="current" :text="text" class="margin-top-20" :color="'event'"/> -->
 </div>
@@ -65,11 +71,23 @@
   align-items: center;
 }
 .page-progress > .progress-wrapper {
-  width: calc(100% - 440px);
+  width: calc(100% - 590px);
   height: 66px;
   display: flex;
   flex-direction: column;
   justify-content: space-around;
+}
+.page-progress .dl-options {
+  width: 150px;
+  display: flex;
+  flex-direction: column;
+  /* justify-content: center; */
+}
+.page-progress .auto-dec-lz4 {
+  font-family: 'CGSS-B';
+}
+.page-progress .auto-dec-lz4 > * {
+  vertical-align: middle;
 }
 .manifest-query{
   margin: 12px 0;

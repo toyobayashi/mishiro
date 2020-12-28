@@ -8,6 +8,7 @@ import { Vue, Component } from 'vue-property-decorator'
 // import { generateObjectId } from '../common/object-id'
 // import { ProgressInfo } from 'mishiro-core'
 import getPath from '../common/get-path'
+import { formatSize } from '../common/util'
 import { searchResources } from './ipc-back'
 const fs = window.node.fs
 const path = window.node.path
@@ -104,6 +105,24 @@ export default class extends Vue {
     }
   }
 
+  tableFormatter (key: string, value: any): string {
+    switch (key) {
+      case 'size':
+        return formatSize(value)
+      default:
+        return value
+    }
+  }
+
+  headerFormatter (key: string): string {
+    switch (key) {
+      case 'name': return this.$t("home.cName") as string
+      case 'hash': return this.$t("home.cHash") as string
+      case 'size': return this.$t("home.cSize") as string
+      default: return key
+    }
+  }
+
   filterOnClick (): void {
     this.notDownloadedOnly = !this.notDownloadedOnly
     if (!this.notDownloadedOnly) {
@@ -168,10 +187,17 @@ export default class extends Vue {
           this.current = 0
           this.text = ''
           if (suffix !== '.acb' && suffix !== '.awb' && suffix !== '.usm') {
-            if (fs.existsSync(filepath)) {
-              fs.removeSync(filepath)
-              this.event.$emit('completeTask', name + suffix)
-            } else this.event.$emit('completeTask', name + suffix, false)
+            if (this.dler.autoDecLz4) {
+              if (fs.existsSync(filepath)) {
+                fs.removeSync(filepath)
+                this.event.$emit('completeTask', name + suffix)
+              } else this.event.$emit('completeTask', name + suffix, false)
+            } else {
+              if (fs.existsSync(filepath)) {
+                fs.renameSync(filepath, filepath + suffix)
+                this.event.$emit('completeTask', name + suffix)
+              } else this.event.$emit('completeTask', name + suffix, false)
+            }
           } else {
             if (fs.existsSync(filepath)) this.event.$emit('completeTask', name)
             else this.event.$emit('completeTask', name, false)

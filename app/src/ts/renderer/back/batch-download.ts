@@ -1,4 +1,5 @@
 import DB from '../../common/db'
+import { formatSize } from '../../common/util'
 import getPath from '../../common/get-path'
 import { existsSync, removeSync } from 'fs-extra'
 import { md5File } from './hash'
@@ -97,7 +98,7 @@ export async function batchDownload (manifest: DB): Promise<void> {
       await downloader.downloadOneRaw(type, resource.hash, resource.path, (prog) => {
         ipcRenderer.sendTo(mainWindowId, 'setBatchStatus', {
           name: resource.name ?? '',
-          status: `${formatByte(prog.current)} / ${formatByte(prog.max)}`,
+          status: `${formatSize(prog.current)} / ${formatSize(prog.max)}`,
           status2: status2,
           curprog: prog.loading,
           totalprog: 100 * (i + count) / totalCount + prog.loading / totalCount
@@ -136,14 +137,6 @@ function resetBatchStatus (): void {
     curprog: 0,
     totalprog: 0
   })
-}
-
-function formatByte (b: number): string {
-  if (b < 1024) return `${b} B`
-  if (b < 1024 * 1024) return `${Math.floor(b / 1024)} KB`
-  if (b < 1024 * 1024 * 1024) return `${Math.floor(b / 1024 / 1024 * 100) / 100} MB`
-  if (b < 1024 * 1024 * 1024 * 1024) return `${Math.floor(b / 1024 / 1024 / 1024 * 100) / 100} GB`
-  return `${b}`
 }
 
 function toType (name: string): ResourceType {

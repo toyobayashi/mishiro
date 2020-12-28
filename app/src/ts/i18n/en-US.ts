@@ -24,7 +24,11 @@ export default {
     msg: 'MESSAGE',
     stmnFull: 'Stamina healed.',
     all: 'ALL',
-    canDownload: 'CAN DL'
+    canDownload: 'CAN DL',
+    autoDecLz4: 'LZ4 dec',
+    cName: 'name',
+    cHash: 'hash',
+    cSize: 'size'
   },
   event: {
     atapon: 'ATAPOM',

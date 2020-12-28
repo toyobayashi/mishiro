@@ -83,7 +83,7 @@ ipcRenderer.on('getEmblemHash', async (event, callbackChannel: string, id: strin
 
 ipcRenderer.on('searchResources', async (event, callbackChannel: string, queryString: string) => {
   try {
-    const res = await manifest!.find<{ name: string, hash: string }>('manifests', ['name', 'hash'], { name: { $like: `%${queryString.trim()}%` } })
+    const res = await manifest!.find<{ name: string, hash: string }>('manifests', ['name', 'hash', 'size'], { name: { $like: `%${queryString.trim()}%` } })
     event.sender.sendTo(mainWindowId, callbackChannel, null, res)
   } catch (err) {
     event.sender.sendTo(mainWindowId, callbackChannel, err.message, '')
