@@ -64,6 +64,7 @@
     * `/app/node_modules/sqlite3`
     * `/app/node_modules/hca-decoder`
     * `/app/node_modules/spdlog`
+    * `/app/node_modules/usm-decrypter`
 
     也可以直接跑 `npm run rm` 来完成。
 
