@@ -25,10 +25,11 @@ export default {
     stmnFull: '体力已回満。',
     all: '全部',
     canDownload: '未下載',
-    autoDecLz4: 'LZ4解圧',
+    autoDecLz4: '自動LZ4解圧',
     cName: '文件名',
     cHash: '哈希値',
-    cSize: '文件大小'
+    cSize: '文件大小',
+    usmbtn: '選択USM'
   },
   event: {
     atapon: '消耗道具型',

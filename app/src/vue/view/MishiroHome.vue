@@ -19,6 +19,7 @@
             <input type="checkbox" id="autoDecLz4" v-model="dler.autoDecLz4" /><label for="autoDecLz4"></label>
             <label for="autoDecLz4">{{$t('home.autoDecLz4')}}</label>
           </div>
+          <button class="select-usm" @click="decryptUSM">{{$t('home.usmbtn')}}</button>
         </div>
         <button class="cgss-btn-lg cgss-btn-lg-ok" @click="filterOnClick">{{notDownloadedOnly ? $t("home.canDownload") : $t('home.all')}}</button>
         <div class="page-content">
@@ -82,6 +83,26 @@
   display: flex;
   flex-direction: column;
   /* justify-content: center; */
+}
+.page-progress .select-usm {
+  cursor: pointer;
+  font-family: 'CGSS-B';
+  box-sizing: border-box;
+  /* width: 30px; */
+  width: 100%;
+  height: 30px;
+  background: -webkit-linear-gradient(225deg, #f0f0f0, #d0d0d0, #c0c0c0);
+  border: 2px solid #000000;
+  border-bottom: 4px solid #000000;
+  border-radius: 5px;
+  display: inline-block;
+  position: relative;
+}
+.page-progress .select-usm:active {
+  height: 28px;
+  top: 2px;
+  border-bottom: 2px solid #000000;
+  background: -webkit-linear-gradient(225deg, #f0f0f0, #d0d0d0, #c0c0c0);
 }
 .page-progress .auto-dec-lz4 {
   font-family: 'CGSS-B';
