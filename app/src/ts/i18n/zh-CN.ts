@@ -24,7 +24,11 @@ export default {
     msg: '消息',
     stmnFull: '体力已回満。',
     all: '全部',
-    canDownload: '未下載'
+    canDownload: '未下載',
+    autoDecLz4: 'LZ4解圧',
+    cName: '文件名',
+    cHash: '哈希値',
+    cSize: '文件大小'
   },
   event: {
     atapon: '消耗道具型',

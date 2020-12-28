@@ -3,13 +3,13 @@
   <thead>
     <tr>
       <th class="flex-center"><input type="checkbox" id="checkAll" v-model="selectAll" /><label for="checkAll"></label></th>
-      <th v-for="(item, key) in data[0]" :key="key">{{key}}</th>
+      <th v-for="(item, key) in data[0]" :key="key">{{headerFormatter(key)}}</th>
     </tr>
   </thead>
   <tbody>
     <tr v-for="row in data" :key="row.hash">
       <td class="flex-center"><input type="checkbox" :id="row.hash" :value="row" v-model="selected" @change="change(selected)" :disabled="isDisabled(row)" /><label :for="row.hash"></label></td>
-      <td v-for="item in row" :key="item">{{item}}</td>
+      <td v-for="(item, key) in row" :key="item">{{formatter(key, item)}}</td>
     </tr>
   </tbody>
 </table>
@@ -56,6 +56,7 @@ input[type=checkbox]{
 }
 input[type=checkbox]+label{
   box-sizing: border-box;
+  padding: 0 0 0 26px;
   width: 30px;
   height: 30px;
   background: -webkit-linear-gradient(225deg, #f0f0f0, #d0d0d0, #c0c0c0);

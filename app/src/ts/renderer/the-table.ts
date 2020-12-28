@@ -1,8 +1,28 @@
 import { Vue, Component, Prop, Watch } from 'vue-property-decorator'
 @Component
 export default class extends Vue {
-  @Prop() data: any[]
-  @Prop() isDisabled: Function
+  @Prop({
+    type: Array,
+    default: () => ([])
+  })
+  data: any[]
+
+  @Prop({ type: Function, required: true })
+  isDisabled: (obj: any) => boolean
+
+  @Prop({
+    type: Function,
+    default: (_key: string, value: any) => {
+      return value
+    }
+  })
+  formatter: (key: string, value: any) => string
+
+  @Prop({
+    type: Function,
+    default: (key: string) => key
+  })
+  headerFormatter: (key: string) => string
 
   selected: any[] = []
   selectAll: boolean = false
