@@ -1,4 +1,4 @@
-import { RelaunchOptions, SaveDialogOptions, SaveDialogReturnValue } from 'electron'
+import { OpenDialogOptions, OpenDialogReturnValue, RelaunchOptions, SaveDialogOptions, SaveDialogReturnValue } from 'electron'
 import { ServerResponse } from 'mishiro-core'
 
 const { ipcRenderer } = window.node.electron
@@ -13,6 +13,10 @@ export function exit (exitCode?: number): void {
 
 export function showSaveDialog (options: SaveDialogOptions): Promise<SaveDialogReturnValue> {
   return ipcRenderer.invoke('showSaveDialog', options)
+}
+
+export function showOpenDialog (options: OpenDialogOptions): Promise<OpenDialogReturnValue> {
+  return ipcRenderer.invoke('showOpenDialog', options)
 }
 
 export function getAppName (): string {

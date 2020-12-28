@@ -25,10 +25,11 @@ export default {
     stmnFull: 'スタミナが回復しました。',
     all: '全部',
     canDownload: 'ﾀﾞｳﾝﾛｰﾄﾞ可能',
-    autoDecLz4: 'LZ4解凍',
+    autoDecLz4: '自動LZ4解凍',
     cName: 'ファイル名',
     cHash: 'ハッシュ',
-    cSize: 'サイズ'
+    cSize: 'サイズ',
+    usmbtn: 'USMを選択'
   },
   event: {
     atapon: 'アタポン',

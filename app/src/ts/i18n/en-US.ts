@@ -25,10 +25,11 @@ export default {
     stmnFull: 'Stamina healed.',
     all: 'ALL',
     canDownload: 'CAN DL',
-    autoDecLz4: 'LZ4 dec',
+    autoDecLz4: 'LZ4 auto dec',
     cName: 'name',
     cHash: 'hash',
-    cSize: 'size'
+    cSize: 'size',
+    usmbtn: 'SELECT USM'
   },
   event: {
     atapon: 'ATAPOM',

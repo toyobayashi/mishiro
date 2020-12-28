@@ -1,4 +1,4 @@
-import { ipcMain, SaveDialogOptions, dialog, app, RelaunchOptions } from 'electron'
+import { ipcMain, SaveDialogOptions, dialog, app, RelaunchOptions, OpenDialogOptions } from 'electron'
 // import onManifestQuery from './on-manifest-query'
 // import onManifestSearch from './on-manifest-search'
 // import onGame from './on-game'
@@ -76,6 +76,10 @@ export default function ipc (): void {
 
   ipcMain.handle('showSaveDialog', (_event, options: SaveDialogOptions) => {
     return dialog.showSaveDialog(options)
+  })
+
+  ipcMain.handle('showOpenDialog', (_event, options: OpenDialogOptions) => {
+    return dialog.showOpenDialog(options)
   })
 
   ipcMain.on('relaunch', (event, options: RelaunchOptions | undefined) => {

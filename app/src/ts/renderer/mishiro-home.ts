@@ -10,6 +10,9 @@ import { Vue, Component } from 'vue-property-decorator'
 import getPath from '../common/get-path'
 import { formatSize } from '../common/util'
 import { searchResources } from './ipc-back'
+import { showOpenDialog } from './ipc'
+import { error } from './log'
+
 const fs = window.node.fs
 const path = window.node.path
 const { shell } = window.node.electron
@@ -116,10 +119,32 @@ export default class extends Vue {
 
   headerFormatter (key: string): string {
     switch (key) {
-      case 'name': return this.$t("home.cName") as string
-      case 'hash': return this.$t("home.cHash") as string
-      case 'size': return this.$t("home.cSize") as string
+      case 'name': return this.$t('home.cName') as string
+      case 'hash': return this.$t('home.cHash') as string
+      case 'size': return this.$t('home.cSize') as string
       default: return key
+    }
+  }
+
+  async decryptUSM (): Promise<void> {
+    const result = await showOpenDialog({
+      title: this.$t('home.usmbtn') as string,
+      defaultPath: downloadDir(),
+      filters: [
+        { name: 'USM', extensions: ['usm'] },
+        { name: 'All Files', extensions: ['*'] }
+      ],
+      properties: ['openFile', 'multiSelections', 'showHiddenFiles', 'dontAddToRecent']
+    })
+
+    if (result.canceled) return
+    for (let i = 0; i < result.filePaths.length; i++) {
+      const usmFile = result.filePaths[i]
+      try {
+        await this.core.movie.demuxAsync(usmFile)
+      } catch (err) {
+        error(`USM: ${err.message}`)
+      }
     }
   }
 
