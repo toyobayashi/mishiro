@@ -9,6 +9,6 @@ for /f "delims=" %%P in ('npm prefix -g') do call npm.cmd config set node_gyp "%
 for /f "delims=" %%P in ('node -p "require('./app/package.json').devDependencies.electron"') do call node-gyp.cmd install --target=%%P --disturl=https://electronjs.org/headers
 
 cd .\app
-call npm.cmd ci
+call npm.cmd ci --ignore-scripts
 call npm.cmd run build
 cd ..
