@@ -174,7 +174,8 @@ export default class extends Vue {
     this.current = 0
     this.text = ''
     this.manualStop = true
-    this.dler.stop(() => this.event.$emit('alert', this.$t('home.errorTitle'), this.$t('home.noTask')))
+    // TODO
+    // this.dler.stop(() => this.event.$emit('alert', this.$t('home.errorTitle'), this.$t('home.noTask')))
   }
 
   async downloadSelectedItem (): Promise<void> {
@@ -185,65 +186,69 @@ export default class extends Vue {
     }
     const tasks = this.selectedItem.slice(0)
 
-    if (tasks.length > 0) {
-      this.downloadBtnDisable = true
-
-      const errorList = await this.dler.batchDownload(
-        tasks,
-        downloadDir(),
-        // onStart
-        (_row, filepath) => {
-          this.current = 0
-          this.total = 100 * this.dler.index / tasks.length
-          this.text = path.basename(filepath)
-        },
-        // onData
-        prog => {
-          this.text = `${prog.name}　${Math.ceil(prog.current / 1024)}/${Math.ceil(prog.max / 1024)} KB`
-          this.current = prog.loading
-          this.total = 100 * this.dler.index / tasks.length + prog.loading / tasks.length
-        },
-        // onComplete
-        (row, filepath) => {
-          // console.log(row.name)
-          const name = path.basename(filepath)
-          const suffix = path.extname((row && row.name) || (tasks[this.dler.index] && tasks[this.dler.index].name) || '')
-
-          this.current = 0
-          this.text = ''
-          if (suffix !== '.acb' && suffix !== '.awb' && suffix !== '.usm') {
-            if (this.dler.autoDecLz4) {
-              if (fs.existsSync(filepath)) {
-                fs.removeSync(filepath)
-                this.event.$emit('completeTask', name + suffix)
-              } else this.event.$emit('completeTask', name + suffix, false)
-            } else {
-              if (fs.existsSync(filepath)) {
-                fs.renameSync(filepath, filepath + suffix)
-                this.event.$emit('completeTask', name + suffix)
-              } else this.event.$emit('completeTask', name + suffix, false)
-            }
-          } else {
-            if (fs.existsSync(filepath)) this.event.$emit('completeTask', name)
-            else this.event.$emit('completeTask', name, false)
-          }
-        },
-        // onStop
-        () => {
-          this.current = 0
-          this.text = ''
-        }
-      )
-      this.total = 0
-      this.downloadBtnDisable = false
-      if (this.manualStop) {
-        this.manualStop = false
-      } else {
-        if (errorList.length) this.event.$emit('alert', this.$t('home.download'), `Failed: ${errorList.length}`)
-      }
-    } else {
+    if (tasks.length <= 0) {
       this.event.$emit('alert', this.$t('home.errorTitle'), this.$t('home.noEmptyDownload'))
+      return
     }
+
+    this.downloadBtnDisable = true
+    this.downloadBtnDisable = false
+
+    // TODO
+
+    /* const errorList = await this.dler.batchDownload(
+      tasks,
+      downloadDir(),
+      // onStart
+      (_row, filepath) => {
+        this.current = 0
+        this.total = 100 * this.dler.index / tasks.length
+        this.text = path.basename(filepath)
+      },
+      // onData
+      prog => {
+        this.text = `${prog.name}　${Math.ceil(prog.current / 1024)}/${Math.ceil(prog.max / 1024)} KB`
+        this.current = prog.loading
+        this.total = 100 * this.dler.index / tasks.length + prog.loading / tasks.length
+      },
+      // onComplete
+      (row, filepath) => {
+        // console.log(row.name)
+        const name = path.basename(filepath)
+        const suffix = path.extname((row && row.name) || (tasks[this.dler.index] && tasks[this.dler.index].name) || '')
+
+        this.current = 0
+        this.text = ''
+        if (suffix !== '.acb' && suffix !== '.awb' && suffix !== '.usm') {
+          if (this.dler.autoDecLz4) {
+            if (fs.existsSync(filepath)) {
+              fs.removeSync(filepath)
+              this.event.$emit('completeTask', name + suffix)
+            } else this.event.$emit('completeTask', name + suffix, false)
+          } else {
+            if (fs.existsSync(filepath)) {
+              fs.renameSync(filepath, filepath + suffix)
+              this.event.$emit('completeTask', name + suffix)
+            } else this.event.$emit('completeTask', name + suffix, false)
+          }
+        } else {
+          if (fs.existsSync(filepath)) this.event.$emit('completeTask', name)
+          else this.event.$emit('completeTask', name, false)
+        }
+      },
+      // onStop
+      () => {
+        this.current = 0
+        this.text = ''
+      }
+    )
+    this.total = 0
+    this.downloadBtnDisable = false
+    if (this.manualStop) {
+      this.manualStop = false
+    } else {
+      if (errorList.length) this.event.$emit('alert', this.$t('home.download'), `Failed: ${errorList.length}`)
+    } */
   }
 
   onMouseWheel (e: WheelEvent): void {

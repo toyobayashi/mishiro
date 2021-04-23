@@ -1,3 +1,4 @@
+import './renderer/preload'
 import { ipcRenderer } from 'electron'
 import DB from './common/db'
 import { batchDownload, batchStop } from './renderer/back/batch-download'
