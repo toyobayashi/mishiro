@@ -69,11 +69,6 @@ export default function ipc (): void {
     openScoreWindow()
   })
 
-  ipcMain.on('batchDownload', async () => {
-    // TODO
-    // await batchDownload()
-  })
-
   ipcMain.handle('showSaveDialog', (_event, options: SaveDialogOptions) => {
     return dialog.showSaveDialog(options)
   })
