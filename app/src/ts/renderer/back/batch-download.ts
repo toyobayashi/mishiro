@@ -1,14 +1,15 @@
 import DB from '../../common/db'
 import { formatSize } from '../../common/util'
 import getPath from '../../common/get-path'
-import { existsSync, removeSync } from 'fs-extra'
 import { md5File } from './hash'
-import { Downloader, ResourceType } from 'mishiro-core'
+import type { DownloadPromise, ResourceType as ResourceTypeEnum } from 'mishiro-core'
 import { ipcRenderer } from 'electron'
 import mainWindowId from './main-window-id'
-import { extname } from 'path'
-
 import { warn } from '../log'
+
+const { existsSync, removeSync } = window.node.fs
+const { extname } = window.node.path
+const { Downloader, ResourceType } = window.node.mishiroCore
 
 const { batchDir } = getPath
 
@@ -67,6 +68,7 @@ async function checkFiles (manifest: DB): Promise<{
 }
 
 let list: ManifestResouceWithPath[] = []
+let currentDownloadPromise: DownloadPromise<string> | null = null
 
 export async function batchDownload (manifest: DB): Promise<void> {
   const info = await checkFiles(manifest)
@@ -95,7 +97,7 @@ export async function batchDownload (manifest: DB): Promise<void> {
       totalprog: 100 * (i + count) / totalCount
     })
     try {
-      await downloader.downloadOneRaw(type, resource.hash, resource.path, (prog) => {
+      currentDownloadPromise = downloader.downloadOneRaw(type, resource.hash, resource.path, (prog) => {
         ipcRenderer.sendTo(mainWindowId, 'setBatchStatus', {
           name: resource.name ?? '',
           status: `${formatSize(prog.current)} / ${formatSize(prog.max)}`,
@@ -104,7 +106,11 @@ export async function batchDownload (manifest: DB): Promise<void> {
           totalprog: 100 * (i + count) / totalCount + prog.loading / totalCount
         })
       })
+      await currentDownloadPromise
+      currentDownloadPromise = null
     } catch (err /* cancel? */) {
+      // TODO
+      currentDownloadPromise = null
       if (stopBatch) {
         break
       } else {
@@ -124,7 +130,7 @@ export function batchStop (): Promise<void> {
   return new Promise((resolve) => {
     stopBatch = true
     list.length = 0
-    downloader.stopCurrent()
+    currentDownloadPromise?.download.abort()
     resolve()
   })
 }
@@ -139,7 +145,7 @@ function resetBatchStatus (): void {
   })
 }
 
-function toType (name: string): ResourceType {
+function toType (name: string): ResourceTypeEnum {
   const ext = extname(name)
   switch (ext) {
     case '.unity3d': return ResourceType.ASSET

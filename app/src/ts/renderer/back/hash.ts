@@ -1,7 +1,8 @@
 
 import { Writable, WritableOptions } from 'stream'
-import { createReadStream } from 'fs-extra'
 import { createHash } from 'crypto'
+
+const { createReadStream } = window.node.fs
 
 class HashResult extends Writable {
   private _value: string

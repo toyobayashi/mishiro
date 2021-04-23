@@ -4,7 +4,7 @@ import InputText from '../../vue/component/InputText.vue'
 
 // import { MasterData } from '../main/on-master-read'
 import { Vue, Component } from 'vue-property-decorator'
-import { ProgressInfo } from 'mishiro-core'
+import type { DownloadPromise, ProgressInfo } from 'mishiro-core'
 import { unpackTexture2D } from './unpack-texture-2d'
 
 import getPath from '../common/get-path'
@@ -24,6 +24,7 @@ const { cardDir, voiceDir } = getPath
 })
 export default class extends Vue {
   dler = new this.core.Downloader()
+  cardDownloadPromise: DownloadPromise<string> | null = null
   voice: HTMLAudioElement = new Audio()
   voiceDisable: boolean = false
   queryString: string = ''
@@ -291,7 +292,7 @@ export default class extends Vue {
 
   async changeBackground (card: any): Promise<void> {
     this.imgProgress = 0
-    this.dler.stop()
+    this.cardDownloadPromise?.download.abort()
     if (Number(card.rarity) > 4) {
       if (!fs.existsSync(cardDir(`bg_${card.id}.png`))) {
         try {
@@ -431,11 +432,13 @@ export default class extends Vue {
         if (!card || card === 'default') {
           // let hash: string = ipcRenderer.sendSync('searchManifest', `card_bg_${id}.unity3d`)[0].hash
           const hash = await getCardHash(id)
-          downloadResult = await this.dler.downloadAsset(
+          this.cardDownloadPromise = this.dler.downloadAsset(
             hash,
             cardDir(`card_bg_${id}`),
             (progressing || (prog => { this.imgProgress = prog.loading }))
           )
+          downloadResult = await this.cardDownloadPromise
+          this.cardDownloadPromise = null
           if (downloadResult) {
             this.imgProgress = 99.99
             fs.removeSync(cardDir(`card_bg_${id}`))
@@ -446,20 +449,24 @@ export default class extends Vue {
             return ''
           }
         } else {
-          downloadResult = await this.dler.downloadSpread(
+          this.cardDownloadPromise = this.dler.downloadSpread(
             id.toString(),
             cardDir(`bg_${id}.png`),
             (progressing || (prog => { this.imgProgress = prog.loading }))
           )
+          downloadResult = await this.cardDownloadPromise
+          this.cardDownloadPromise = null
           return downloadResult
         }
       } catch (_err) {
         if (_err.message !== 'abort') {
-          downloadResult = await this.dler.downloadSpread(
+          this.cardDownloadPromise = this.dler.downloadSpread(
             id.toString(),
             cardDir(`bg_${id}.png`),
             (progressing || (prog => { this.imgProgress = prog.loading }))
           )
+          downloadResult = await this.cardDownloadPromise
+          this.cardDownloadPromise = null
           return downloadResult
         } else {
           throw _err
