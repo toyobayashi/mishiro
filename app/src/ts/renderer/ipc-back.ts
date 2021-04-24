@@ -107,3 +107,14 @@ export function stopBatchDownload (): Promise<boolean> {
     ipcRenderer.sendTo(backWindowId, 'stopBatchDownload', callbackChannel)
   })
 }
+
+export function getBatchErrorList (): Promise<IBatchError[]> {
+  return new Promise((resolve, reject) => {
+    const callbackChannel = createChannelName()
+    ipcRenderer.once(callbackChannel, (_event, errmsg, list) => {
+      if (errmsg) reject(new Error(errmsg))
+      else resolve(list)
+    })
+    ipcRenderer.sendTo(backWindowId, 'getBatchErrorList', callbackChannel)
+  })
+}

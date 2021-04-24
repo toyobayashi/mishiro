@@ -190,7 +190,10 @@ export default {
     kirara: 'kirara',
     arch: 'Architecture',
     batchStart: '一括DL',
-    batchStop: '中止'
+    batchStop: '中止',
+    batchErrorName: 'ファイル名',
+    batchErrorMsg: 'エラーメッセージ',
+    batchErrorCode: 'エラーコード'
   },
   commu: {
     id: 'ID入力',
