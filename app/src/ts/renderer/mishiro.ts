@@ -66,7 +66,8 @@ const skip = false // process.env.NODE_ENV !== 'production'
     ModalOption: () => import(/* webpackChunkName: "modal-option" */ '../../vue/modal/ModalOption.vue'),
     ModalCalculator: () => import(/* webpackChunkName: "modal-calculator" */ '../../vue/modal/ModalCalculator.vue'),
     // ModalLiveDifficulty: () => import(/* webpackChunkName: "modal-live-difficulty" */ '../../vue/modal/ModalLiveDifficulty.vue'),
-    ModalScore: () => import(/* webpackChunkName: "modal-score" */ '../../vue/modal/ModalScore.vue')
+    ModalScore: () => import(/* webpackChunkName: "modal-score" */ '../../vue/modal/ModalScore.vue'),
+    ModalBatchError: () => import(/* webpackChunkName: "modal-score" */ '../../vue/modal/ModalBatchError.vue')
     // ModalLiveResult: () => import(/* webpackChunkName: "modal-live-result" */ '../../vue/modal/ModalLiveResult.vue')
   }
 })

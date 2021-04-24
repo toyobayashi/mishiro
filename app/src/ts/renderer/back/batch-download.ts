@@ -8,7 +8,7 @@ import mainWindowId from './main-window-id'
 import { warn } from '../log'
 
 const { existsSync, removeSync } = window.node.fs
-const { extname } = window.node.path
+const { extname, basename } = window.node.path
 const { Downloader, ResourceType } = window.node.mishiroCore
 
 const { batchDir } = getPath
@@ -69,8 +69,14 @@ async function checkFiles (manifest: DB): Promise<{
 
 let list: ManifestResouceWithPath[] = []
 let currentDownloadPromise: DownloadPromise<string> | null = null
+let errorList: IBatchError[] = []
+
+export function getBatchErrorList (): IBatchError[] {
+  return errorList
+}
 
 export async function batchDownload (manifest: DB): Promise<void> {
+  errorList = []
   const info = await checkFiles(manifest)
   list = info.list
   const count = info.count
@@ -108,16 +114,22 @@ export async function batchDownload (manifest: DB): Promise<void> {
       })
       await currentDownloadPromise
       currentDownloadPromise = null
-    } catch (err /* cancel? */) {
-      // TODO
-      currentDownloadPromise = null
+    } catch (err) {
       if (stopBatch) {
+        currentDownloadPromise = null
         break
       } else {
-        throw err
+        const name = basename(currentDownloadPromise?.download.path ?? '')
+        errorList.push({
+          path: name,
+          message: err.message,
+          code: err.code ?? currentDownloadPromise?.download.error?.code ?? -1
+        })
+        currentDownloadPromise = null
       }
     }
     if (stopBatch) {
+      currentDownloadPromise = null
       break
     }
   }

@@ -83,7 +83,7 @@ import { Prop } from 'vue-property-decorator'
 import ProgressBar from '../component/ProgressBar.vue'
 
 import { MasterData } from '../../ts/renderer/back/on-master-read'
-import { startBatchDownload, stopBatchDownload } from '../../ts/renderer/ipc-back'
+import { startBatchDownload, stopBatchDownload, getBatchErrorList } from '../../ts/renderer/ipc-back'
 
 @Component({
   components: {
@@ -139,6 +139,10 @@ export default class extends mixins(modalMixin) {
       this.event.$emit('alert', this.$t('home.errorTitle'), err.message)
     }
     this.batchDownloading = false
+    const list = await getBatchErrorList()
+    if (list.length > 0) {
+      this.event.$emit('alertBatchError', list)
+    }
   }
 
   async batchStop () {
