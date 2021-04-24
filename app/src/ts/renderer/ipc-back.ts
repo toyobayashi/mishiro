@@ -75,7 +75,7 @@ export function getEmblemHash (id: string | number): Promise<string> {
   })
 }
 
-export function searchResources (query: string): Promise<Array<{ name: string, hash: string }>> {
+export function searchResources (query: string): Promise<ResourceData[]> {
   return new Promise((resolve, reject) => {
     const callbackChannel = createChannelName()
     ipcRenderer.once(callbackChannel, (_event, errmsg, data) => {

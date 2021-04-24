@@ -10,6 +10,7 @@ import { Vue, Component } from 'vue-property-decorator'
 import getPath from '../common/get-path'
 import { formatSize } from '../common/util'
 import { searchResources } from './ipc-back'
+import type { IDownloadProgress } from '@tybys/downloader'
 import { showOpenDialog } from './ipc'
 import { error } from './log'
 
@@ -17,6 +18,9 @@ const fs = window.node.fs
 const path = window.node.path
 const { shell } = window.node.electron
 const { downloadDir } = getPath
+
+const { Downloader, DownloadErrorCode } = window.node.tybys.downloader
+const mishiroCore = window.node.mishiroCore
 
 @Component({
   components: {
@@ -26,23 +30,24 @@ const { downloadDir } = getPath
   }
 })
 export default class extends Vue {
-  dler = new this.core.Downloader()
+  autoDecLz4: boolean = true
+  dler: InstanceType<typeof Downloader> | null = null
   downloadBtnDisable: boolean = false
   queryString: string = ''
   text: string = ''
-  data: any[] = []
-  selectedItem: any[] = []
+  data: ResourceData[] = []
+  selectedItem: ResourceData[] = []
   current: number = 0
   total: number = 0
   page: number = 0
   recordPerPage: number = 10
   notDownloadedOnly: boolean = false
-  canDownloadRows: any[] = []
+  canDownloadRows: ResourceData[] = []
 
   manualStop = false
 
   get totalPage (): number {
-    const canDownload: any[] = this.canDownloadRows
+    const canDownload = this.canDownloadRows
     if (!canDownload.length) return 0
     return canDownload.length / this.recordPerPage === Math.floor(canDownload.length / this.recordPerPage) ? canDownload.length / this.recordPerPage - 1 : Math.floor(canDownload.length / this.recordPerPage)
   }
@@ -52,7 +57,7 @@ export default class extends Vue {
   //   return this.data.filter(row => !this.isDisabled(row))
   // }
 
-  checkFile (data: any[]): any[] {
+  checkFile (data: ResourceData[]): ResourceData[] {
     // return new Promise<any[]>((resolve, reject) => {
     // const id = generateObjectId()
     // ipcRenderer.once('checkFile', (_ev: Event, oid: string, notDownloaded: any[]) => {
@@ -67,7 +72,7 @@ export default class extends Vue {
     return data.filter(row => !fs.existsSync(getPath.downloadDir(path.basename(row.name))))
   }
 
-  isDisabled (row: any): boolean {
+  isDisabled (row: ResourceData): boolean {
     return fs.existsSync(downloadDir(path.basename(row.name)))
   }
 
@@ -163,7 +168,7 @@ export default class extends Vue {
     }
   }
 
-  tableChange (val: any[]): void {
+  tableChange (val: ResourceData[]): void {
     this.selectedItem = val
   }
 
@@ -174,11 +179,15 @@ export default class extends Vue {
     this.current = 0
     this.text = ''
     this.manualStop = true
-    // TODO
-    // this.dler.stop(() => this.event.$emit('alert', this.$t('home.errorTitle'), this.$t('home.noTask')))
+    if (this.dler) {
+      this.dler.dispose()
+      this.dler = null
+    } else {
+      this.event.$emit('alert', this.$t('home.errorTitle'), this.$t('home.noTask'))
+    }
   }
 
-  async downloadSelectedItem (): Promise<void> {
+  downloadSelectedItem (): void {
     this.playSe(this.enterSe)
     if (!navigator.onLine) {
       this.event.$emit('alert', this.$t('home.errorTitle'), this.$t('home.noNetwork'))
@@ -192,63 +201,127 @@ export default class extends Vue {
     }
 
     this.downloadBtnDisable = true
-    this.downloadBtnDisable = false
 
-    // TODO
+    let completeCount = 0
+    let start = 0
 
-    /* const errorList = await this.dler.batchDownload(
-      tasks,
-      downloadDir(),
-      // onStart
-      (_row, filepath) => {
-        this.current = 0
-        this.total = 100 * this.dler.index / tasks.length
-        this.text = path.basename(filepath)
-      },
-      // onData
-      prog => {
-        this.text = `${prog.name}　${Math.ceil(prog.current / 1024)}/${Math.ceil(prog.max / 1024)} KB`
-        this.current = prog.loading
-        this.total = 100 * this.dler.index / tasks.length + prog.loading / tasks.length
-      },
-      // onComplete
-      (row, filepath) => {
-        // console.log(row.name)
-        const name = path.basename(filepath)
-        const suffix = path.extname((row && row.name) || (tasks[this.dler.index] && tasks[this.dler.index].name) || '')
-
-        this.current = 0
-        this.text = ''
-        if (suffix !== '.acb' && suffix !== '.awb' && suffix !== '.usm') {
-          if (this.dler.autoDecLz4) {
-            if (fs.existsSync(filepath)) {
-              fs.removeSync(filepath)
-              this.event.$emit('completeTask', name + suffix)
-            } else this.event.$emit('completeTask', name + suffix, false)
+    const createCompleteHandler = (row: ResourceData, compressed: boolean, p: string, suffix: string) => () => {
+      const ext = path.extname((row && row.name) || '')
+      if (compressed) {
+        if (this.autoDecLz4) {
+          if (fs.existsSync(p)) {
+            mishiroCore.util.Lz4.decompress(p, suffix)
+            fs.removeSync(p)
+            this.event.$emit('completeTask', row.hash)
           } else {
-            if (fs.existsSync(filepath)) {
-              fs.renameSync(filepath, filepath + suffix)
-              this.event.$emit('completeTask', name + suffix)
-            } else this.event.$emit('completeTask', name + suffix, false)
+            this.event.$emit('completeTask', row.hash, false)
           }
         } else {
-          if (fs.existsSync(filepath)) this.event.$emit('completeTask', name)
-          else this.event.$emit('completeTask', name, false)
+          if (fs.existsSync(p)) {
+            fs.renameSync(p, p + ext)
+            this.event.$emit('completeTask', row.hash)
+          } else {
+            this.event.$emit('completeTask', row.hash, false)
+          }
         }
-      },
-      // onStop
-      () => {
-        this.current = 0
-        this.text = ''
+      } else {
+        if (fs.existsSync(p)) {
+          this.event.$emit('completeTask', row.hash)
+        } else {
+          this.event.$emit('completeTask', row.hash, false)
+        }
       }
-    )
-    this.total = 0
-    this.downloadBtnDisable = false
-    if (this.manualStop) {
-      this.manualStop = false
-    } else {
-      if (errorList.length) this.event.$emit('alert', this.$t('home.download'), `Failed: ${errorList.length}`)
-    } */
+    }
+
+    const onStart = (name: string) => () => {
+      this.current = 0
+      this.total = 100 * completeCount / tasks.length
+      this.text = name
+    }
+
+    const updateProgress = (prog: IDownloadProgress): void => {
+      const name = path.basename(prog.path)
+      this.text = `${name}　${Math.ceil(prog.completedLength / 1024)}/${Math.ceil(prog.totalLength / 1024)} KB`
+      this.current = prog.percent
+      this.total = 100 * completeCount / tasks.length + prog.percent / tasks.length
+    }
+
+    const onProgress = (prog: IDownloadProgress): void => {
+      if (prog.completedLength === 0 || prog.percent === 100) {
+        updateProgress(prog)
+      } else {
+        const now = Date.now()
+        if ((now - start) > mishiroCore.config.getCallbackInterval()) {
+          start = now
+          updateProgress(prog)
+        }
+      }
+    }
+
+    this.dler = new Downloader()
+    this.dler.settings.headers = {
+      'User-Agent': 'Dalvik/2.1.0 (Linux; U; Android 7.0; Nexus 42 Build/XYZZ1Y)',
+      'X-Unity-Version': '2018.3.8f1',
+      'Accept-Encoding': 'gzip',
+      Connection: 'Keep-Alive'
+    }
+
+    const targetDir = downloadDir()
+    for (let i = 0; i < tasks.length; i++) {
+      const t = tasks[i]
+      const { name, hash } = t
+      const ext = path.extname(name)
+      const basename = path.basename(name, (ext !== '.acb' && ext !== '.awb' && ext !== '.usm') ? ext : '')
+      // const p = path.join(targetDir, basename)
+
+      let url: string
+
+      if (ext === '.acb' || ext === '.awb') {
+        url = mishiroCore.Downloader.getUrl(mishiroCore.ResourceType.SOUND, hash)
+        const download = this.dler.add(url, { dir: targetDir, out: basename })
+        download.on('activate', onStart(path.basename(download.path)))
+        download.once('complete', createCompleteHandler(t, false, download.path, ''))
+        download.on('progress', onProgress)
+      } else if (ext === '.unity3d') {
+        url = mishiroCore.Downloader.getUrl(mishiroCore.ResourceType.ASSET, hash)
+        const download = this.dler.add(url, { dir: targetDir, out: basename })
+        download.on('activate', onStart(path.basename(download.path)))
+        download.once('complete', createCompleteHandler(t, true, download.path, '.unity3d'))
+        download.on('progress', onProgress)
+      } else if (ext === '.bdb' || ext === '.mdb') {
+        url = mishiroCore.Downloader.getUrl(mishiroCore.ResourceType.DATABASE, hash)
+        const download = this.dler.add(url, { dir: targetDir, out: basename })
+        download.on('activate', onStart(path.basename(download.path)))
+        download.once('complete', createCompleteHandler(t, true, download.path, ext))
+        download.on('progress', onProgress)
+      } else if (ext === '.usm') {
+        url = mishiroCore.Downloader.getUrl(mishiroCore.ResourceType.MOVIE, hash)
+        const download = this.dler.add(url, { dir: targetDir, out: basename })
+        download.on('activate', onStart(path.basename(download.path)))
+        download.once('complete', createCompleteHandler(t, false, download.path, ''))
+        download.on('progress', onProgress)
+      } else {
+        continue
+      }
+    }
+
+    const downloader = this.dler
+    this.dler.on('done', (_download) => {
+      this.current = 0
+      this.text = ''
+      completeCount++
+      this.total = 100 * completeCount / tasks.length
+
+      if (downloader.countWaiting() <= 0 && downloader.countActive() <= 0) {
+        this.downloadBtnDisable = false
+        this.total = 0
+        const errorList = downloader.tellFailed().filter(d => (d.error != null) && (d.error.code !== DownloadErrorCode.ABORT))
+        if (errorList.length) this.event.$emit('alert', this.$t('home.download'), `Failed: ${errorList.length}`)
+
+        downloader.dispose()
+        this.dler = null
+      }
+    })
   }
 
   onMouseWheel (e: WheelEvent): void {
@@ -274,17 +347,6 @@ export default class extends Vue {
           this.query()
         }
       })
-      // ipcRenderer.on('queryManifest', (_event: Event, manifestArr: any[]) => {
-      //   this.page = 0
-      //   this.data = manifestArr
-      //   if (!this.notDownloadedOnly) {
-      //     this.canDownloadRows = this.data
-      //   } else {
-      //     this.checkFile(this.data).then((res) => {
-      //       this.canDownloadRows = res
-      //     }).catch(err => console.log(err))
-      //   }
-      // })
     })
   }
 }

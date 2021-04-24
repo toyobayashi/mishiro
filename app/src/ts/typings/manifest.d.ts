@@ -6,3 +6,5 @@ declare interface ManifestResouce {
   size: number
   decrypt_key: null | Buffer
 }
+
+declare type ResourceData = Pick<ManifestResouce, 'name' | 'hash' | 'size'>

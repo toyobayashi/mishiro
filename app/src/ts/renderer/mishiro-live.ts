@@ -85,6 +85,7 @@ export default class extends Vue {
     this.current = 0
     this.text = ''
 
+    this.audioDownloadPromise?.download.abort()
     if (audio.name.split('/')[0] === 'b') {
       if (!fs.existsSync(bgmDir(audio.fileName))) {
         const targetPath = getPath(`../asset/bgm.asar/${audio.fileName}`)
@@ -93,7 +94,6 @@ export default class extends Vue {
           return
         }
         if (navigator.onLine) {
-          this.audioDownloadPromise?.download.abort()
           this.activeAudio = audio
           const needAwb = !!audio.awbHash
           let result: string | boolean = false
@@ -166,7 +166,6 @@ export default class extends Vue {
           this.event.$emit('alert', this.$t('home.errorTitle'), this.$t('home.noNetwork'))
           return
         }
-        this.audioDownloadPromise?.download.abort()
         this.activeAudio = audio
         const needAwb = !!audio.awbHash
         let result: string | boolean = false

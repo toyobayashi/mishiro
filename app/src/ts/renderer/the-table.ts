@@ -5,10 +5,10 @@ export default class extends Vue {
     type: Array,
     default: () => ([])
   })
-  data: any[]
+  data: ResourceData[]
 
   @Prop({ type: Function, required: true })
-  isDisabled: (obj: any) => boolean
+  isDisabled: (obj: ResourceData) => boolean
 
   @Prop({
     type: Function,
@@ -24,10 +24,10 @@ export default class extends Vue {
   })
   headerFormatter: (key: string) => string
 
-  selected: any[] = []
+  selected: ResourceData[] = []
   selectAll: boolean = false
 
-  change (selected: any[]): void {
+  change (selected: ResourceData[]): void {
     this.$emit('change', selected)
   }
 
@@ -48,16 +48,11 @@ export default class extends Vue {
 
   mounted (): void {
     this.$nextTick(() => {
-      this.event.$on('completeTask', (name: string, disable: boolean = true) => {
+      this.event.$on('completeTask', (hash: string, disable: boolean = true) => {
         for (let i = 0; i < this.selected.length; i++) {
-          if (this.selected[i].name === name ||
-            this.selected[i].name === 'b/' + name ||
-            this.selected[i].name === 'c/' + name ||
-            this.selected[i].name === 'l/' + name ||
-            this.selected[i].name === 'r/' + name ||
-            this.selected[i].name === 'v/' + name) {
+          if (this.selected[i].hash === hash) {
             if (disable) {
-              const o = document.getElementById(this.selected[i].hash)
+              const o = document.getElementById(hash)
               if (o) o.setAttribute('disabled', 'disabled')
             }
             this.selected.splice(i, 1)
