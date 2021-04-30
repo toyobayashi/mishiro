@@ -4,6 +4,9 @@ import * as electron from 'electron'
 window.node = {
   process: process,
   electron,
+  tybys: {
+    downloader: __non_webpack_require__('@tybys/downloader')
+  },
   mishiroCore: __non_webpack_require__('mishiro-core'),
   fs: __non_webpack_require__('fs-extra'),
   os: __non_webpack_require__('os'),

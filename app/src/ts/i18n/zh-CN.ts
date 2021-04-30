@@ -190,7 +190,10 @@ export default {
     kirara: 'kirara',
     arch: '架構',
     batchStart: '下載全部',
-    batchStop: '中止'
+    batchStop: '中止',
+    batchErrorName: '文件名',
+    batchErrorMsg: '錯誤信息',
+    batchErrorCode: '錯誤碼'
   },
   commu: {
     id: '請輸入ID',

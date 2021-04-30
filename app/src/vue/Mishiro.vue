@@ -30,6 +30,7 @@
   <!-- <ModalGachaHistory/> -->
   <!-- <ModalGachaCard :master="appData.master"/> -->
   <ModalOption v-model="currentLanguage"/>
+  <ModalBatchError />
   <ModalAlert/>
   <img v-if="checking" :src="'../../asset/img.asar/spinner.gif'" class="spinner" />
 </div>

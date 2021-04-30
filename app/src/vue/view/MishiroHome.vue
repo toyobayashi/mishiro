@@ -16,7 +16,7 @@
         </div>
         <div class="dl-options">
           <div class="auto-dec-lz4">
-            <input type="checkbox" id="autoDecLz4" v-model="dler.autoDecLz4" /><label for="autoDecLz4"></label>
+            <input type="checkbox" id="autoDecLz4" v-model="autoDecLz4" /><label for="autoDecLz4"></label>
             <label for="autoDecLz4">{{$t('home.autoDecLz4')}}</label>
           </div>
           <button class="select-usm" @click="decryptUSM">{{$t('home.usmbtn')}}</button>

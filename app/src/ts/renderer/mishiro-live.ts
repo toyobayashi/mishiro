@@ -10,6 +10,8 @@ import { unpackTexture2D } from './unpack-texture-2d'
 
 import getPath from '../common/get-path'
 import { getLyrics, getScoreDifficulties } from './ipc'
+import type { DownloadPromise } from 'mishiro-core'
+
 const fs = window.node.fs
 const path = window.node.path
 const os = window.node.os
@@ -37,6 +39,7 @@ const { scoreDir, bgmDir, liveDir, jacketDir } = getPath
 })
 export default class extends Vue {
   dler = new this.core.Downloader()
+  audioDownloadPromise: DownloadPromise<string> | null = null
   scoreDownloader = new this.core.Downloader()
   jacketDownloader = new this.core.Downloader()
   queryString: string = ''
@@ -82,6 +85,7 @@ export default class extends Vue {
     this.current = 0
     this.text = ''
 
+    this.audioDownloadPromise?.download.abort()
     if (audio.name.split('/')[0] === 'b') {
       if (!fs.existsSync(bgmDir(audio.fileName))) {
         const targetPath = getPath(`../asset/bgm.asar/${audio.fileName}`)
@@ -90,7 +94,6 @@ export default class extends Vue {
           return
         }
         if (navigator.onLine) {
-          this.dler.stop()
           this.activeAudio = audio
           const needAwb = !!audio.awbHash
           let result: string | boolean = false
@@ -104,7 +107,7 @@ export default class extends Vue {
             //     this.total = prog.loading
             //   }
             // )
-            result = await this.dler.downloadSound(
+            this.audioDownloadPromise = this.dler.downloadSound(
               'b',
               audio.hash,
               bgmDir(path.basename(audio.name)),
@@ -116,9 +119,11 @@ export default class extends Vue {
                 }
               }
             )
+            result = await this.audioDownloadPromise
+            this.audioDownloadPromise = null
 
             if (needAwb) {
-              result = await this.dler.downloadSound(
+              this.audioDownloadPromise = this.dler.downloadSound(
                 'b',
                 audio.awbHash,
                 bgmDir(path.parse(audio.name).name + '.awb'),
@@ -128,8 +133,11 @@ export default class extends Vue {
                   this.total = prog.loading / (this.wavProgress ? 2 : 1)
                 }
               )
+              result = await this.audioDownloadPromise
+              this.audioDownloadPromise = null
             }
           } catch (errorPath) {
+            this.audioDownloadPromise = null
             this.event.$emit('alert', this.$t('home.errorTitle'), (this.$t('home.downloadFailed') as string) + '<br/>' + (errorPath as string))
           }
           if (result) {
@@ -158,7 +166,6 @@ export default class extends Vue {
           this.event.$emit('alert', this.$t('home.errorTitle'), this.$t('home.noNetwork'))
           return
         }
-        this.dler.stop()
         this.activeAudio = audio
         const needAwb = !!audio.awbHash
         let result: string | boolean = false
@@ -172,7 +179,7 @@ export default class extends Vue {
           //     this.total = prog.loading
           //   }
           // )
-          result = await this.dler.downloadSound(
+          this.audioDownloadPromise = this.dler.downloadSound(
             'l',
             audio.hash,
             liveDir(path.basename(audio.name)),
@@ -184,9 +191,11 @@ export default class extends Vue {
               }
             }
           )
+          result = await this.audioDownloadPromise
+          this.audioDownloadPromise = null
 
           if (needAwb) {
-            result = await this.dler.downloadSound(
+            this.audioDownloadPromise = this.dler.downloadSound(
               'l',
               audio.awbHash,
               liveDir(path.parse(audio.name).name + '.awb'),
@@ -196,8 +205,11 @@ export default class extends Vue {
                 this.total = prog.loading / (this.wavProgress ? 2 : 1)
               }
             )
+            result = await this.audioDownloadPromise
+            this.audioDownloadPromise = null
           }
         } catch (errorPath) {
+          this.audioDownloadPromise = null
           this.event.$emit('alert', this.$t('home.errorTitle'), (this.$t('home.downloadFailed') as string) + '<br/>' + (errorPath as string))
           return
         }
