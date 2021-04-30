@@ -75,7 +75,7 @@ export function getEmblemHash (id: string | number): Promise<string> {
   })
 }
 
-export function searchResources (query: string): Promise<Array<{ name: string, hash: string }>> {
+export function searchResources (query: string): Promise<ResourceData[]> {
   return new Promise((resolve, reject) => {
     const callbackChannel = createChannelName()
     ipcRenderer.once(callbackChannel, (_event, errmsg, data) => {
@@ -105,5 +105,16 @@ export function stopBatchDownload (): Promise<boolean> {
       else resolve(downloading)
     })
     ipcRenderer.sendTo(backWindowId, 'stopBatchDownload', callbackChannel)
+  })
+}
+
+export function getBatchErrorList (): Promise<IBatchError[]> {
+  return new Promise((resolve, reject) => {
+    const callbackChannel = createChannelName()
+    ipcRenderer.once(callbackChannel, (_event, errmsg, list) => {
+      if (errmsg) reject(new Error(errmsg))
+      else resolve(list)
+    })
+    ipcRenderer.sendTo(backWindowId, 'getBatchErrorList', callbackChannel)
   })
 }

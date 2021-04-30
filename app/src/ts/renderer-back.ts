@@ -1,6 +1,7 @@
+import './renderer/preload'
 import { ipcRenderer } from 'electron'
 import DB from './common/db'
-import { batchDownload, batchStop } from './renderer/back/batch-download'
+import { batchDownload, batchStop, getBatchErrorList } from './renderer/back/batch-download'
 import mainWindowId from './renderer/back/main-window-id'
 import readMaster from './renderer/back/on-master-read'
 
@@ -109,6 +110,15 @@ ipcRenderer.on('stopBatchDownload', async (event, callbackChannel: string) => {
     event.sender.sendTo(mainWindowId, callbackChannel, null, batchDownloading)
   } catch (err) {
     event.sender.sendTo(mainWindowId, callbackChannel, err.message, '')
+  }
+})
+
+ipcRenderer.on('getBatchErrorList', (event, callbackChannel: string) => {
+  try {
+    const list = getBatchErrorList()
+    event.sender.sendTo(mainWindowId, callbackChannel, null, list)
+  } catch (err) {
+    event.sender.sendTo(mainWindowId, callbackChannel, err.message, null)
   }
 })
 

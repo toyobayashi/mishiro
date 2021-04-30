@@ -190,7 +190,10 @@ export default {
     kirara: 'kirara',
     arch: 'Architecture',
     batchStart: 'DL ALL',
-    batchStop: 'STOP'
+    batchStop: 'STOP',
+    batchErrorName: 'name',
+    batchErrorMsg: 'message',
+    batchErrorCode: 'code'
   },
   commu: {
     id: 'Enter ID',
