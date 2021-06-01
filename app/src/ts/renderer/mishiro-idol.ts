@@ -10,6 +10,7 @@ import { unpackTexture2D } from './unpack-texture-2d'
 import getPath from '../common/get-path'
 import configurer from './config'
 import { getCardHash } from './ipc-back'
+import type { MishiroConfig } from '../main/config'
 const { /* ipcRenderer,  */shell } = window.node.electron
 const fs = window.node.fs
 const path = window.node.path
@@ -38,6 +39,13 @@ export default class extends Vue {
   practice: { before: string, after: string } = {
     before: 'idol.before',
     after: 'idol.after'
+  }
+
+  created (): void {
+    this.dler.setProxy(configurer.get('proxy') ?? '')
+    this.event.$on('optionSaved', (options: MishiroConfig) => {
+      this.dler.setProxy(options.proxy ?? '')
+    })
   }
 
   // @Prop({ default: () => ({}), type: Object }) master!: MasterData

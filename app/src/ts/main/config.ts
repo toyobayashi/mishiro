@@ -9,6 +9,7 @@ export interface MishiroConfig {
   language?: 'zh' | 'ja' | 'en'
   background?: number
   account?: string
+  proxy?: string
   card?: 'default' | 'kirara'
 }
 
@@ -21,13 +22,13 @@ export class Configurer {
     this.configFile = configFile
     if (!fs.existsSync(configFile)) {
       this.config = {
-        latestResVer: 10052300,
+        latestResVer: 10085200,
         language: 'zh',
         card: 'default'
       }
     } else {
       this.config = fs.readJsonSync(configFile) || {}
-      this.config.latestResVer = this.config.latestResVer || 10052300
+      this.config.latestResVer = this.config.latestResVer || 10085200
       this.config.language = this.config.language || 'zh'
       this.config.card = this.config.card || 'default'
     }

@@ -193,7 +193,8 @@ export default {
     batchStop: '中止',
     batchErrorName: 'ファイル名',
     batchErrorMsg: 'エラーメッセージ',
-    batchErrorCode: 'エラーコード'
+    batchErrorCode: 'エラーコード',
+    proxy: 'プロキシ'
   },
   commu: {
     id: 'ID入力',

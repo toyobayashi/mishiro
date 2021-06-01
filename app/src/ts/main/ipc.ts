@@ -114,6 +114,11 @@ export default function ipc (): void {
     return res
   })
 
+  ipcMain.on('updateClientProxy', (event, proxy: string) => {
+    client.setProxy(proxy)
+    event.returnValue = undefined
+  })
+
   ipcMain.handle('getProfile', async (_event, viewer: string) => {
     return client.getProfile(viewer)
   })
