@@ -132,7 +132,7 @@ const config: ty.Configuration = {
         '../package-lock.json',
         '../../config.json'
       ]
-      removeList.map(p => {
+      removeList.forEach(p => {
         const tmpPath = path.join(nodeModulesDir, p)
         if (fs.existsSync(tmpPath)) fs.removeSync(tmpPath)
       })
