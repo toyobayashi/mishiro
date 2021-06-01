@@ -25,7 +25,7 @@
           </div>
           <div class="margin-top-10 option-line">
             <label>{{$t("menu.resVer")}}</label>
-            <InputText class="option-input" :placeholder="`10012760 ≤ ${$t('menu.resVer')} ≤ ${latestResVer}`" v-model="resVer" />
+            <InputText class="option-input" :placeholder="latestResVer > 0 ? `10012760 ≤ ${$t('menu.resVer')} ≤ ${latestResVer}` : ''" v-model="resVer" />
           </div>
           <!-- <div class="margin-top-10">
             <label>{{$t("menu.gacha")}}</label>
@@ -43,8 +43,12 @@
             <label>{{$t("menu.account")}}</label>
             <InputText class="option-input" placeholder="123456789:987654321:0a1b2c3d-5c6d-4e7f-8a9b-0e1f2a3b4c5d" v-model="account" />
           </div>
+          <div class="margin-top-10 option-line">
+            <label>{{$t("menu.proxy")}}</label>
+            <InputText class="option-input" v-model="proxy" />
+          </div>
         </form>
-        <div class="batch-area">
+        <div class="batch-area" v-if="showBatchDownloadFeature">
           <div class="batch-btn">
             <button type="button" v-if="!batchDownloading" class="cgss-btn cgss-btn-ok" @click="batchDownload">{{$t("menu.batchStart")}}</button>
             <button type="button" v-else class="cgss-btn cgss-btn-default" @click="batchStop">{{$t("menu.batchStop")}}</button>
@@ -84,6 +88,7 @@ import ProgressBar from '../component/ProgressBar.vue'
 
 import { MasterData } from '../../ts/renderer/back/on-master-read'
 import { startBatchDownload, stopBatchDownload, getBatchErrorList } from '../../ts/renderer/ipc-back'
+import { updateClientProxy } from '../../ts/renderer/ipc'
 
 @Component({
   components: {
@@ -99,6 +104,9 @@ export default class extends mixins(modalMixin) {
   eventId: string = ''
   backgroundId: string = ''
   account: string = ''
+  proxy: string = ''
+
+  showBatchDownloadFeature: boolean = false
   card: 'default' | 'kirara' = 'default'
   language: any = {
     zh: 'i18n.chinese',
@@ -158,6 +166,7 @@ export default class extends mixins(modalMixin) {
     let eventId: number | ''
     let backgroundId: number | ''
     let account: string
+    let proxy: string = ''
     const card: 'default' | 'kirara' = this.card
     if (this.resVer) {
       if (
@@ -238,23 +247,40 @@ export default class extends mixins(modalMixin) {
       account = this.account
     }
 
+    if (this.proxy) {
+      if (!/^(((pac\+)?https?)|(socks[45]?)):\/\/[-A-Za-z0-9+&@#/%?=~_|!:,.;]+[-A-Za-z0-9+&@#/%=~_|]$/.test(this.proxy)) {
+        this.event.$emit(
+          'alert',
+          this.$t('home.errorTitle'),
+          'Invalid proxy'
+        )
+        return
+      }
+    }
+    proxy = this.proxy
+
     this.$emit('input', this.language[this.lang])
     this._i18n._vm.locale = this.lang
-    configurer.set({
+    const optionsToSave = {
       language: this.lang,
       resVer: Number(resVer),
       // gacha: Number(gachaId),
       event: Number(eventId),
       background: Number(backgroundId),
       account: account,
+      proxy: proxy,
       card: card
-    })
+    }
+    configurer.set(optionsToSave)
+    updateClientProxy(optionsToSave.proxy ?? '')
+    this.event.$emit('optionSaved', optionsToSave)
     this.visible = false
   }
 
   mounted () {
     this.$nextTick(() => {
-      this.event.$on('option', async () => {
+      this.event.$on('option', async (showBatchDownload: boolean) => {
+        this.showBatchDownloadFeature = showBatchDownload
         const config = configurer.getAll()
         this.lang = config.language || 'zh'
         this.resVer = config.resVer ? config.resVer.toString() : ''
@@ -262,6 +288,7 @@ export default class extends mixins(modalMixin) {
         this.eventId = config.event ? config.event.toString() : ''
         this.backgroundId = config.background ? config.background.toString() : ''
         this.account = config.account ? config.account : ''
+        this.proxy = config.proxy ? config.proxy : ''
         this.card = config.card ? config.card : 'default'
         this.show = true
         this.visible = true

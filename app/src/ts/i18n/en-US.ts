@@ -193,7 +193,8 @@ export default {
     batchStop: 'STOP',
     batchErrorName: 'name',
     batchErrorMsg: 'message',
-    batchErrorCode: 'code'
+    batchErrorCode: 'code',
+    proxy: 'PROXY'
   },
   commu: {
     id: 'Enter ID',

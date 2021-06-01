@@ -35,6 +35,12 @@ export default class extends Vue {
     })
   }
 
+  showOption (btn: HTMLElement): void {
+    btn.blur()
+    this.playSe(this.enterSe)
+    this.event.$emit('option', false)
+  }
+
   mounted (): void {
     this.$nextTick(() => {
       this.bg = (window.innerWidth / window.innerHeight >= 1280 / 824)

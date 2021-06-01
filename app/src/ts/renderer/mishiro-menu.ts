@@ -13,7 +13,7 @@ export default class extends Vue {
   showOption (btn: HTMLElement): void {
     btn.blur()
     this.playSe(this.enterSe)
-    this.event.$emit('option')
+    this.event.$emit('option', true)
   }
 
   showAbout (): void {

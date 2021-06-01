@@ -9,6 +9,8 @@ const client = new core.Client(
   confver !== undefined ? (confver/*  - 100 */).toString() : undefined
 )
 
+client.setProxy(configurer.get('proxy') ?? '')
+
 if (!client.user) {
   client.user = '506351535'
   client.viewer = '141935962'

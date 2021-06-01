@@ -11,6 +11,7 @@ import MishiroIdol from './mishiro-idol'
 import getPath from '../common/get-path'
 import configurer from './config'
 import { getMasterHash, openManifestDatabase, readMasterData } from './ipc-back'
+import type { MishiroConfig } from '../main/config'
 const fs = window.node.fs
 // const path = window.node.path
 const { manifestPath, masterPath, bgmDir/* , iconDir */ } = getPath
@@ -38,6 +39,13 @@ export default class extends Vue {
 
   // @Prop() value!: { resVer: number | string, latestResVer: number | string, master: MasterData | any }
   @Prop() isTouched!: boolean
+
+  created (): void {
+    this.dler.setProxy(configurer.get('proxy') ?? '')
+    this.event.$on('optionSaved', (options: MishiroConfig) => {
+      this.dler.setProxy(options.proxy ?? '')
+    })
+  }
 
   getEventCardId (eventAvailable: any[], eventData: any): number[] {
     if (!eventAvailable.length) return (eventData.bg_id as string).split(',').map((id: string) => (Number(id) - 1))
@@ -85,6 +93,7 @@ export default class extends Vue {
 
   downloadMaster (resVer: number, hash: string, progressing: (prog: ProgressInfo) => void): Promise<string> {
     const downloader = new this.core.Downloader()
+    downloader.setProxy(configurer.get('proxy') ?? '')
     return downloader.downloadDatabase(hash, masterPath(resVer), progressing, '.db')
     // return downloader.downloadOne(
     //   `http://storage.game.starlight-stage.jp/dl/resources/Generic/${hash}`,
@@ -156,6 +165,7 @@ export default class extends Vue {
   async afterMasterRead (masterData: import('./back/on-master-read').MasterData): Promise<void> {
     // console.log(masterData);
     const downloader = new this.core.Downloader()
+    downloader.setProxy(configurer.get('proxy') ?? '')
     // const toName = (p: string) => path.parse(p).name
 
     setMaster(masterData)

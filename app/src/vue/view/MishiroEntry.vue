@@ -6,6 +6,7 @@
   }" :src="coverSrc" />
   <img :src="'../../asset/img.asar/touch_base.png'" class="touch" id="touchBase" />
   <img :src="'../../asset/img.asar/touch.png'" id="touch" class="touch twinkle" :class="{ active: isTouched }" />
+  <button id="entryOptionBtn" class="cgss-btn-lg cgss-btn-lg-ok" @click.stop="showOption($event.target)">{{$t("menu.option")}}</button>
 </div>
 </template>
 
@@ -16,6 +17,12 @@
 #entry{
   position: absolute;
   z-index: 1000;
+}
+#entryOptionBtn {
+  position: absolute;
+  top: 20px;
+  left: 20px;
+  z-index: 1001;
 }
 .touch{
   z-index: 1000;

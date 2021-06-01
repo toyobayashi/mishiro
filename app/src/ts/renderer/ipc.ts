@@ -35,6 +35,10 @@ export function checkResourceVersion (): Promise<number> {
   return ipcRenderer.invoke('checkResourceVersion')
 }
 
+export function updateClientProxy (proxy: string): void {
+  return ipcRenderer.sendSync('updateClientProxy', proxy)
+}
+
 export function getProfile (viewer: string): Promise<ServerResponse> {
   return ipcRenderer.invoke('getProfile', viewer)
 }
