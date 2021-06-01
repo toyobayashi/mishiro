@@ -1,31 +1,34 @@
 import * as spdlog from 'spdlog'
+import * as fs from 'fs-extra'
+import { dirname } from 'path'
 import getPath from '../common/get-path'
 
-let logger: spdlog.RotatingLogger | null = null
+let logger: spdlog.Logger
 
 function init (): void {
   if (!logger) {
-    logger = spdlog.createRotatingLogger('mishiro', getPath.logPath, 1024 * 1024 * 5, 3)
+    fs.mkdirsSync(dirname(getPath.logPath))
+    logger = new spdlog.Logger('rotating', 'mishiro', getPath.logPath, 1024 * 1024 * 5, 3)
     logger.setLevel(2)
   }
 }
 
 export function info (msg: string): void {
   init()
-  logger!.info(msg)
+  logger.info(msg)
 }
 
 export function warn (msg: string): void {
   init()
-  logger!.warn(msg)
+  logger.warn(msg)
 }
 
 export function error (msg: string): void {
   init()
-  logger!.error(msg)
+  logger.error(msg)
 }
 
 export function critical (msg: string): void {
   init()
-  logger!.critical(msg)
+  logger.critical(msg)
 }
