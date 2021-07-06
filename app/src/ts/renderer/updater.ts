@@ -1,5 +1,5 @@
 import { ipcRenderer, Event, IpcRendererEvent } from 'electron'
-import * as ElectronGithubAsarUpdater from 'electron-github-asar-updater'
+import type * as ElectronGithubAsarUpdater from 'electron-github-asar-updater'
 
 class Updater {
   private _onDownloadProgress: ((event: IpcRendererEvent, data: ElectronGithubAsarUpdater.ProgressData) => void) | null = null

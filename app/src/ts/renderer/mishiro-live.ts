@@ -11,6 +11,8 @@ import { unpackTexture2D } from './unpack-texture-2d'
 import getPath from '../common/get-path'
 import { getLyrics, getScoreDifficulties } from './ipc'
 import type { DownloadPromise } from 'mishiro-core'
+import configurer from './config'
+import type { MishiroConfig } from '../main/config'
 
 const fs = window.node.fs
 const path = window.node.path
@@ -70,6 +72,19 @@ export default class extends Vue {
 
   get wavProgress (): boolean {
     return this.core.config.getProgressCallback()
+  }
+
+  created (): void {
+    const proxy = configurer.get('proxy') ?? ''
+    this.dler.setProxy(proxy)
+    this.scoreDownloader.setProxy(proxy)
+    this.jacketDownloader.setProxy(proxy)
+    this.event.$on('optionSaved', (options: MishiroConfig) => {
+      const configProxy = options.proxy ?? ''
+      this.dler.setProxy(configProxy)
+      this.scoreDownloader.setProxy(configProxy)
+      this.jacketDownloader.setProxy(configProxy)
+    })
   }
 
   oninput (target: HTMLInputElement): void {

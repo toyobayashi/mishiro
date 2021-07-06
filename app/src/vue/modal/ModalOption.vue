@@ -87,7 +87,7 @@ import { Prop } from 'vue-property-decorator'
 import ProgressBar from '../component/ProgressBar.vue'
 
 import { MasterData } from '../../ts/renderer/back/on-master-read'
-import { startBatchDownload, stopBatchDownload, getBatchErrorList } from '../../ts/renderer/ipc-back'
+import { startBatchDownload, stopBatchDownload, getBatchErrorList, setDownloaderProxy } from '../../ts/renderer/ipc-back'
 import { updateClientProxy } from '../../ts/renderer/ipc'
 
 @Component({
@@ -272,7 +272,9 @@ export default class extends mixins(modalMixin) {
       card: card
     }
     configurer.set(optionsToSave)
-    updateClientProxy(optionsToSave.proxy ?? '')
+    const configProxy = optionsToSave.proxy ?? ''
+    updateClientProxy(configProxy)
+    setDownloaderProxy(configProxy)
     this.event.$emit('optionSaved', optionsToSave)
     this.visible = false
   }

@@ -1,7 +1,7 @@
 import './renderer/preload'
 import { ipcRenderer } from 'electron'
 import DB from './common/db'
-import { batchDownload, batchStop, getBatchErrorList } from './renderer/back/batch-download'
+import { batchDownload, batchStop, getBatchErrorList, setDownloaderProxy } from './renderer/back/batch-download'
 import mainWindowId from './renderer/back/main-window-id'
 import readMaster from './renderer/back/on-master-read'
 
@@ -119,6 +119,15 @@ ipcRenderer.on('getBatchErrorList', (event, callbackChannel: string) => {
     event.sender.sendTo(mainWindowId, callbackChannel, null, list)
   } catch (err) {
     event.sender.sendTo(mainWindowId, callbackChannel, err.message, null)
+  }
+})
+
+ipcRenderer.on('setDownloaderProxy', (event, callbackChannel: string, proxy: string) => {
+  try {
+    setDownloaderProxy(proxy)
+    event.sender.sendTo(mainWindowId, callbackChannel, null)
+  } catch (err) {
+    event.sender.sendTo(mainWindowId, callbackChannel, err.message)
   }
 })
 

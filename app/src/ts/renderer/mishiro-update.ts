@@ -40,11 +40,17 @@ export default class extends Vue {
   // @Prop() value!: { resVer: number | string, latestResVer: number | string, master: MasterData | any }
   @Prop() isTouched!: boolean
 
+  onOptionSaved = (options: MishiroConfig): void => {
+    this.dler.setProxy(options.proxy ?? '')
+  }
+
   created (): void {
     this.dler.setProxy(configurer.get('proxy') ?? '')
-    this.event.$on('optionSaved', (options: MishiroConfig) => {
-      this.dler.setProxy(options.proxy ?? '')
-    })
+    this.event.$on('optionSaved', this.onOptionSaved)
+  }
+
+  beforeDestroy (): void {
+    this.event.$off('optionSaved', this.onOptionSaved)
   }
 
   getEventCardId (eventAvailable: any[], eventData: any): number[] {

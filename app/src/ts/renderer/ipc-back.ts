@@ -118,3 +118,14 @@ export function getBatchErrorList (): Promise<IBatchError[]> {
     ipcRenderer.sendTo(backWindowId, 'getBatchErrorList', callbackChannel)
   })
 }
+
+export function setDownloaderProxy (proxy: string): Promise<void> {
+  return new Promise((resolve, reject) => {
+    const callbackChannel = createChannelName()
+    ipcRenderer.once(callbackChannel, (_event, errmsg, list) => {
+      if (errmsg) reject(new Error(errmsg))
+      else resolve(list)
+    })
+    ipcRenderer.sendTo(backWindowId, 'setDownloaderProxy', proxy)
+  })
+}
