@@ -6,6 +6,7 @@ import type { DownloadPromise, ResourceType as ResourceTypeEnum } from 'mishiro-
 import { ipcRenderer } from 'electron'
 import mainWindowId from './main-window-id'
 import { warn } from '../log'
+import configurer from '../config'
 
 const { existsSync, removeSync } = window.node.fs
 const { extname, basename } = window.node.path
@@ -14,6 +15,7 @@ const { Downloader, ResourceType } = window.node.mishiroCore
 const { batchDir } = getPath
 
 const downloader = new Downloader()
+downloader.setProxy(configurer.get('proxy') ?? '')
 
 interface ManifestResouceWithPath extends ManifestResouce {
   path: string
@@ -73,6 +75,10 @@ let errorList: IBatchError[] = []
 
 export function getBatchErrorList (): IBatchError[] {
   return errorList
+}
+
+export function setDownloaderProxy (proxy: string): void {
+  downloader.setProxy(proxy)
 }
 
 export async function batchDownload (manifest: DB): Promise<void> {
@@ -157,7 +163,7 @@ function resetBatchStatus (): void {
   })
 }
 
-function toType (name: string): ResourceTypeEnum {
+function toType (name: string): ResourceTypeEnum | -1 {
   const ext = extname(name)
   switch (ext) {
     case '.unity3d': return ResourceType.ASSET

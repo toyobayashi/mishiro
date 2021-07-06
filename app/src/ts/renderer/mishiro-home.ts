@@ -13,6 +13,8 @@ import { searchResources } from './ipc-back'
 import type { IDownloadProgress } from '@tybys/downloader'
 import { showOpenDialog } from './ipc'
 import { error } from './log'
+import type { MishiroConfig } from '../main/config'
+import configurer from './config'
 
 const fs = window.node.fs
 const path = window.node.path
@@ -50,6 +52,14 @@ export default class extends Vue {
     const canDownload = this.canDownloadRows
     if (!canDownload.length) return 0
     return canDownload.length / this.recordPerPage === Math.floor(canDownload.length / this.recordPerPage) ? canDownload.length / this.recordPerPage - 1 : Math.floor(canDownload.length / this.recordPerPage)
+  }
+
+  created (): void {
+    this.event.$on('optionSaved', (options: MishiroConfig) => {
+      if (this.dler) {
+        this.dler.settings.agent = options.proxy ?? ''
+      }
+    })
   }
 
   // get canDownloadRows () {
@@ -259,6 +269,7 @@ export default class extends Vue {
     }
 
     this.dler = new Downloader()
+    this.dler.settings.agent = configurer.get('proxy') ?? ''
     this.dler.settings.headers = {
       'User-Agent': 'Dalvik/2.1.0 (Linux; U; Android 7.0; Nexus 42 Build/XYZZ1Y)',
       'X-Unity-Version': '2018.3.8f1',

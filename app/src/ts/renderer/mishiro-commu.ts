@@ -6,6 +6,7 @@ import { getProfile } from './ipc'
 import getPath from '../common/get-path'
 import configurer from './config'
 import { getEmblemHash, getIconHash } from './ipc-back'
+import type { MishiroConfig } from '../main/config'
 
 // /* const template =  */require('../../res/banner.svg')
 const { existsSync, readFileSync, remove } = window.node.fs
@@ -137,6 +138,13 @@ export default class extends Vue {
   renderer: BannerRenderer | null
   isSearching: boolean = false
   dler = new this.core.Downloader()
+
+  created (): void {
+    this.dler.setProxy(configurer.get('proxy') ?? '')
+    this.event.$on('optionSaved', (options: MishiroConfig) => {
+      this.dler.setProxy(options.proxy ?? '')
+    })
+  }
 
   openOrigin (): void {
     window.node.electron.shell.openExternal('https://deresute.me/').catch(err => console.log(err))
