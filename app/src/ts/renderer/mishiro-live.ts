@@ -9,7 +9,7 @@ import { unpackTexture2D } from './unpack-texture-2d'
 // import { MasterData } from '../main/on-master-read'
 
 import getPath from '../common/get-path'
-import { getLyrics, getScoreDifficulties } from './ipc'
+import { getLyrics, getScoreDifficulties, showSaveDialog } from './ipc'
 import type { DownloadPromise } from 'mishiro-core'
 import configurer from './config'
 import type { MishiroConfig } from '../main/config'
@@ -17,8 +17,25 @@ import type { MishiroConfig } from '../main/config'
 const fs = window.node.fs
 const path = window.node.path
 const os = window.node.os
+const iconvLite = window.node.iconvLite
 const { shell, ipcRenderer, clipboard } = window.node.electron
 const { scoreDir, bgmDir, liveDir, jacketDir } = getPath
+
+function filterTime (second: number, float = false): string {
+  let min: string | number = Math.floor(second / 60)
+  let sec: string | number = Math.floor(second % 60)
+  if (min < 10) {
+    min = `0${min}`
+  }
+  if (sec < 10) {
+    sec = `0${sec}`
+  }
+  if (float) {
+    const floatPart = String(second).split('.')[1]
+    return floatPart ? `${min}:${sec}.${('0' + floatPart).slice(-2)}` : `${min}:${sec}`
+  }
+  return `${min}:${sec}`
+}
 
 @Component({
   components: {
@@ -27,15 +44,7 @@ const { scoreDir, bgmDir, liveDir, jacketDir } = getPath
   },
   filters: {
     time (second: number) {
-      let min: string | number = Math.floor(second / 60)
-      let sec: string | number = Math.floor(second % 60)
-      if (min < 10) {
-        min = `0${min}`
-      }
-      if (sec < 10) {
-        sec = `0${sec}`
-      }
-      return `${min}:${sec}`
+      return filterTime(second, false)
     }
   }
 })
@@ -345,14 +354,36 @@ export default class extends Vue {
   openLyrics (): void {
     const self = this
     let bodyhtml = this.allLyrics.map(line => line.lyrics).join('<br/>')
+    console.log(this.allLyrics)
     if (this.jacketSrc) {
       bodyhtml = `<div style="text-align:center" ><img src="${this.jacketSrc}" /></div>${bodyhtml}`
     }
-    this.event.$emit('alert', path.parse(this.activeAudio.fileName).name, bodyhtml, undefined, {
+    const title = path.parse(this.activeAudio.fileName).name
+    this.event.$emit('alert', title, bodyhtml, undefined, {
       text: this.$t('live.copy'),
       cb () {
         self.playSe(self.enterSe)
         clipboard.writeText(self.allLyrics.map(line => line.lyrics).join(os.EOL))
+      }
+    }, {
+      text: this.$t('live.export'),
+      cb: () => {
+        self.playSe(self.enterSe)
+
+        showSaveDialog({
+          title: 'Save LRC - ' + title,
+          defaultPath: getPath.scoreDir(title + '.lrc')
+        }).then((res) => {
+          if (res.filePath) {
+            const lyricsArr = this.allLyrics.map(line => `[${filterTime(line.time, true)}]${line.lyrics}`)
+            lyricsArr.unshift('[by:mishiro]')
+            const lrcstr = lyricsArr.join(os.EOL)
+            const data = iconvLite.encode(lrcstr, configurer.get('lrcEncoding') || 'utf8')
+            fs.writeFileSync(res.filePath, data)
+          }
+        }).catch((err: any) => {
+          console.log(err)
+        })
       }
     })
   }

@@ -24,6 +24,16 @@
             </div>
           </div>
           <div class="margin-top-10 option-line">
+            <label>{{$t("menu.lrcEncoding")}}</label>
+            <div class="option-input">
+              <InputRadio text="utf8" value="utf8" v-model="lrcEncoding" lable-id="utf8"/>
+              <InputRadio text="cp932" value="Windows932" v-model="lrcEncoding" lable-id="Windows932"/>
+              <InputRadio text="cp936" value="Windows936" v-model="lrcEncoding" lable-id="Windows936"/>
+              <!-- <InputRadio text="cp949" value="Windows949" v-model="lrcEncoding" lable-id="Windows949"/>
+              <InputRadio text="cp950" value="Windows950" v-model="lrcEncoding" lable-id="Windows950"/> -->
+            </div>
+          </div>
+          <div class="margin-top-10 option-line">
             <label>{{$t("menu.resVer")}}</label>
             <InputText class="option-input" :placeholder="latestResVer > 0 ? `10012760 ≤ ${$t('menu.resVer')} ≤ ${latestResVer}` : ''" v-model="resVer" />
           </div>
@@ -108,6 +118,7 @@ export default class extends mixins(modalMixin) {
 
   showBatchDownloadFeature: boolean = false
   card: 'default' | 'kirara' = 'default'
+  lrcEncoding: 'utf8' | 'Windows932' | 'Windows936' = 'utf8'
   language: any = {
     zh: 'i18n.chinese',
     ja: 'i18n.japanese',
@@ -269,7 +280,8 @@ export default class extends mixins(modalMixin) {
       background: Number(backgroundId),
       account: account,
       proxy: proxy,
-      card: card
+      card: card,
+      lrcEncoding: this.lrcEncoding
     }
     configurer.set(optionsToSave)
     const configProxy = optionsToSave.proxy ?? ''
@@ -292,6 +304,7 @@ export default class extends mixins(modalMixin) {
         this.account = config.account ? config.account : ''
         this.proxy = config.proxy ? config.proxy : ''
         this.card = config.card ? config.card : 'default'
+        this.lrcEncoding = config.lrcEncoding ? config.lrcEncoding : 'utf8'
         this.show = true
         this.visible = true
       })

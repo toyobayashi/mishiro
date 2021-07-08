@@ -132,7 +132,8 @@ export default {
     gameRunning: 'LIVE正在進行。',
     liveResult: 'LIVE成績',
     copy: '複製',
-    noLyrics: '無歌詞'
+    noLyrics: '無歌詞',
+    export: '導出'
   },
   gacha: {
     ikkai: '単抽',
@@ -194,7 +195,8 @@ export default {
     batchErrorName: '文件名',
     batchErrorMsg: '錯誤信息',
     batchErrorCode: '錯誤碼',
-    proxy: '代理'
+    proxy: '代理',
+    lrcEncoding: '歌詞字符集'
   },
   commu: {
     id: '請輸入ID',

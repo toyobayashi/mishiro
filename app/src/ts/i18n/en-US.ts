@@ -132,7 +132,8 @@ export default {
     gameRunning: 'Live is being held。',
     liveResult: 'LIVE RESULT',
     copy: 'COPY',
-    noLyrics: 'NO LYRICS'
+    noLyrics: 'NO LYRICS',
+    export: 'EXPORT'
   },
   gacha: {
     ikkai: 'ONCE',
@@ -194,7 +195,8 @@ export default {
     batchErrorName: 'name',
     batchErrorMsg: 'message',
     batchErrorCode: 'code',
-    proxy: 'PROXY'
+    proxy: 'PROXY',
+    lrcEncoding: 'LRC Charset'
   },
   commu: {
     id: 'Enter ID',

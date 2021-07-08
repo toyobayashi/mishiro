@@ -11,6 +11,7 @@ export interface MishiroConfig {
   account?: string
   proxy?: string
   card?: 'default' | 'kirara'
+  lrcEncoding?: 'utf8' | 'Windows932' | 'Windows936'
 }
 
 export type MishiroConfigKey = keyof MishiroConfig
@@ -24,13 +25,15 @@ export class Configurer {
       this.config = {
         latestResVer: 10085200,
         language: 'zh',
-        card: 'default'
+        card: 'default',
+        lrcEncoding: 'utf8'
       }
     } else {
       this.config = fs.readJsonSync(configFile) || {}
       this.config.latestResVer = this.config.latestResVer || 10085200
       this.config.language = this.config.language || 'zh'
       this.config.card = this.config.card || 'default'
+      this.config.lrcEncoding = this.config.lrcEncoding || 'utf8'
     }
     fs.writeJsonSync(configFile, this.config, { spaces: 2 })
   }
