@@ -126,6 +126,6 @@ export function setDownloaderProxy (proxy: string): Promise<void> {
       if (errmsg) reject(new Error(errmsg))
       else resolve(list)
     })
-    ipcRenderer.sendTo(backWindowId, 'setDownloaderProxy', proxy)
+    ipcRenderer.sendTo(backWindowId, 'setDownloaderProxy', callbackChannel, proxy)
   })
 }

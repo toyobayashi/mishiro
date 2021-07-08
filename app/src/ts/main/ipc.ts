@@ -13,7 +13,7 @@ import getLyrics from './on-lyrics'
 import openScoreWindow from './open-score-window'
 import configurer, { Configurer } from './config'
 import { client } from './core'
-import { updaterIpc } from './updater'
+import { setUpdaterProxy, updaterIpc } from './updater'
 import * as log from './log'
 
 let initialized = false
@@ -116,6 +116,7 @@ export default function ipc (): void {
 
   ipcMain.on('updateClientProxy', (event, proxy: string) => {
     client.setProxy(proxy)
+    setUpdaterProxy(proxy)
     event.returnValue = undefined
   })
 
