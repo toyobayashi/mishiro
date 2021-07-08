@@ -2,6 +2,8 @@ import * as ty from '@tybys/ty'
 import * as path from 'path'
 import * as fs from 'fs-extra'
 import * as webpack from 'webpack'
+import * as HtmlWebpackPlugin from 'html-webpack-plugin'
+import * as TerserWebpackPlugin from 'terser-webpack-plugin'
 
 const CopyWebpackPlugin = ty.wrapPlugin('CopyWebpackPlugin', require('copy-webpack-plugin'))
 
@@ -137,6 +139,11 @@ const config: ty.Configuration = {
         if (fs.existsSync(tmpPath)) fs.removeSync(tmpPath)
       })
     }
+  },
+  pluginImplementation: {
+    // for webpack 5
+    HtmlWebpackPlugin: HtmlWebpackPlugin,
+    TerserWebpackPlugin: TerserWebpackPlugin
   }
 }
 
