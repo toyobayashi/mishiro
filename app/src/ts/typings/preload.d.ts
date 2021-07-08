@@ -11,5 +11,6 @@ declare interface Window {
     path: typeof import('path')
     url: typeof import('url')
     childProcess: typeof import('child_process')
+    iconvLite: typeof import('iconv-lite')
   }
 }

@@ -132,7 +132,8 @@ export default {
     gameRunning: 'ライブ進行中です。',
     liveResult: 'ライブ成績',
     copy: 'コピー',
-    noLyrics: '歌詞なし'
+    noLyrics: '歌詞なし',
+    export: '書き出し'
   },
   gacha: {
     ikkai: '1回引く',
@@ -194,7 +195,8 @@ export default {
     batchErrorName: 'ファイル名',
     batchErrorMsg: 'エラーメッセージ',
     batchErrorCode: 'エラーコード',
-    proxy: 'プロキシ'
+    proxy: 'プロキシ',
+    lrcEncoding: '歌詞文字セット'
   },
   commu: {
     id: 'ID入力',

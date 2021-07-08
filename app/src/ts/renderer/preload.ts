@@ -12,6 +12,7 @@ window.node = {
   os: __non_webpack_require__('os'),
   path: __non_webpack_require__('path'),
   url: __non_webpack_require__('url'),
-  childProcess: __non_webpack_require__('child_process')
+  childProcess: __non_webpack_require__('child_process'),
+  iconvLite: __non_webpack_require__('iconv-lite')
 }
 // })

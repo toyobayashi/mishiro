@@ -9,7 +9,8 @@
       <div class="modal-body" :style="{ maxHeight: bodyMaxHeight }" v-html="body"></div>
       <div class="modal-footer">
         <button v-if="additionalBtn.text" type="button" class="cgss-btn cgss-btn-ok" @click="additionalBtn.cb(title, body)">{{additionalBtn.text}}</button>
-        <button type="button" class="cgss-btn cgss-btn-default" :class="{ ' margin-left-50': !!additionalBtn.text }" @click="close">{{$t("home.close")}}</button>
+        <button v-if="additionalBtn2.text" type="button" class="cgss-btn cgss-btn-ok" @click="additionalBtn2.cb(title, body)">{{additionalBtn2.text}}</button>
+        <button type="button" class="cgss-btn cgss-btn-default" @click="close">{{$t("home.close")}}</button>
       </div>
     </div>
   </transition>
@@ -34,22 +35,33 @@ export default class extends mixins(modalMixin) {
     cb: null
   }
 
+  additionalBtn2: AdditionalBtn = {
+    text: '',
+    cb: null
+  }
+
   afterLeave () {
     this.show = false
     this.title = ''
     this.body = ''
     this.additionalBtn.text = ''
     this.additionalBtn.cb = null
+    this.additionalBtn2.text = ''
+    this.additionalBtn2.cb = null
     this.modalWidth = '600px'
   }
 
   mounted () {
     this.$nextTick(() => {
-      this.event.$on('alert', (title: string, body: string, width?: number, additionalBtn?: AdditionalBtn) => {
+      this.event.$on('alert', (title: string, body: string, width?: number, additionalBtn?: AdditionalBtn, additionalBtn2?: AdditionalBtn) => {
         if (width) this.modalWidth = width + 'px'
         if (additionalBtn) {
           this.additionalBtn.text = additionalBtn.text
           this.additionalBtn.cb = additionalBtn.cb
+        }
+        if (additionalBtn2) {
+          this.additionalBtn2.text = additionalBtn2.text
+          this.additionalBtn2.cb = additionalBtn2.cb
         }
         this.title = title
         this.body = body
@@ -110,7 +122,7 @@ export default class extends mixins(modalMixin) {
   border-radius: 0 0 10px 10px;
   /* text-align: center; */
   display: flex;
-  justify-content: center;
+  justify-content: space-around;
   align-content: center;
 }
 </style>
