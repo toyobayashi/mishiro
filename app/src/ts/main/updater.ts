@@ -1,7 +1,9 @@
 import { ipcMain } from 'electron'
 import * as Updater from 'electron-github-asar-updater'
+import configurer from './config'
 
 const updater = new Updater('toyobayashi/mishiro', 'resources')
+updater.setProxy(configurer.get('proxy') ?? '')
 
 export function updaterIpc (): void {
   ipcMain.on('updater#relaunch', (event) => {
@@ -27,4 +29,8 @@ export function updaterIpc (): void {
       event.sender.send('updater#onDownloadProgress', progress)
     })
   })
+}
+
+export function setUpdaterProxy (proxy: string): void {
+  updater.setProxy(proxy)
 }
