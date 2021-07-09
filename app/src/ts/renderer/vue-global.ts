@@ -68,6 +68,32 @@ const install: PluginFunction<undefined> = function (Vue) {
     ])
     return dest
   }
+  Vue.prototype.acb2wav = async function (acbPath: string, rename?: string, onProgress?: (current: number, total: number, filename: string) => void) {
+    const wavList = await window.node.mishiroCore.audio.acb2wav(acbPath, onProgress)
+    const wav = wavList[0]
+    const dest = path.join(path.dirname(acbPath), rename || path.basename(wav))
+    const awbPath = path.join(path.dirname(acbPath), path.parse(acbPath).name + '.awb')
+    await fs.move(wav, dest)
+    await Promise.all([
+      fs.remove(path.dirname(wav)),
+      fs.remove(acbPath),
+      fs.existsSync(awbPath) ? fs.remove(awbPath) : Promise.resolve()
+    ])
+    return dest
+  }
+  Vue.prototype.acb2aac = async function (acbPath: string, rename?: string, onProgress?: (current: number, total: number, prog: import('mishiro-core').ProgressInfo) => void) {
+    const aaclist = await window.node.mishiroCore.audio.acb2aac(acbPath, undefined, onProgress)
+    const aac = aaclist[0]
+    const dest = path.join(path.dirname(acbPath), rename || path.basename(aac))
+    const awbPath = path.join(path.dirname(acbPath), path.parse(acbPath).name + '.awb')
+    await fs.move(aac, dest)
+    await Promise.all([
+      fs.remove(path.dirname(aac)),
+      fs.remove(acbPath),
+      fs.existsSync(awbPath) ? fs.remove(awbPath) : Promise.resolve()
+    ])
+    return dest
+  }
 }
 
 export default {

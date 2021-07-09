@@ -6,12 +6,14 @@ export interface Manifest {
 }
 
 export interface BGM extends Manifest {
-  fileName: string
+  fileName: string // without suffix
+  // percent: number
   awbHash?: string
 }
 
 export interface Live extends Manifest {
-  fileName: string
+  fileName: string // without suffix
+  // percent: number
   score?: string
   scoreHash?: string
   jacket?: string
@@ -42,8 +44,10 @@ export default function (bgmManifest: BGM[], liveManifest: Live[], musicData: Mu
       streamingHash.push(bgm.hash)
       continue
     }
-    const fileName = bgm.name.split('/')[1].split('.')[0] + '.mp3'
+    const fileName = path.posix.parse(bgm.name).name
     bgmManifest[i].fileName = fileName
+    // bgmManifest[i].active = false
+    // bgmManifest[i].percent = 0
   }
 
   for (let i = 0; i < bgmManifest.length; i++) {
@@ -71,21 +75,21 @@ export default function (bgmManifest: BGM[], liveManifest: Live[], musicData: Mu
     const arr: string[] = name.split('_')
     let fileName: string = ''
     if (arr[0] === 'song' && Number(arr[1]) < 1000) {
-      fileName = name + '.mp3'
+      fileName = name
     } else if (arr[0] === 'inst') {
-      fileName = 'inst_' + arr[2] + '-' + musicData.filter(row => Number(row.id) === Number(arr[2]))[0].name.replace(/\\n|\\|\/|<|>|\*|\?|:|"|\|/g, '') + '.mp3'
+      fileName = 'inst_' + arr[2] + '-' + musicData.filter(row => Number(row.id) === Number(arr[2]))[0].name.replace(/\\n|\\|\/|<|>|\*|\?|:|"|\|/g, '')
     } else if (arr[0] === 'vo' && arr[1] === 'solo') {
       const charaName = charaData.filter(row => Number(row.chara_id) === Number(arr[3]))[0]
-      fileName = 'vo_solo_' + arr[2] + musicData.filter(row => Number(row.id) === Number(arr[2]))[0].name.replace(/\\n|\\|\/|<|>|\*|\?|:|"|\|/g, '') + '（' + (charaName ? charaName.name as string : arr[3]) + '）.mp3'
+      fileName = 'vo_solo_' + arr[2] + musicData.filter(row => Number(row.id) === Number(arr[2]))[0].name.replace(/\\n|\\|\/|<|>|\*|\?|:|"|\|/g, '') + '（' + (charaName ? charaName.name as string : arr[3]) + '）'
     } else {
       if (arr.length > 2) {
         if (isNaN(Number(arr[2]))) {
-          fileName = arr[1] + '_' + arr[2] + '-' + musicData.filter(row => Number(row.id) === Number(arr[1]))[0].name.replace(/\\n|\\|\/|<|>|\*|\?|:|"|\|/g, '') + '.mp3'
+          fileName = arr[1] + '_' + arr[2] + '-' + musicData.filter(row => Number(row.id) === Number(arr[1]))[0].name.replace(/\\n|\\|\/|<|>|\*|\?|:|"|\|/g, '')
         } else {
-          fileName = arr[1] + '_' + arr[2] + '-' + musicData.filter(row => Number(row.id) === Number(arr[1]))[0].name.replace(/\\n|\\|\/|<|>|\*|\?|:|"|\|/g, '') + '（' + (charaData.filter(row => Number(row.chara_id) === Number(arr[2]))[0].name as string) + '）.mp3'
+          fileName = arr[1] + '_' + arr[2] + '-' + musicData.filter(row => Number(row.id) === Number(arr[1]))[0].name.replace(/\\n|\\|\/|<|>|\*|\?|:|"|\|/g, '') + '（' + (charaData.filter(row => Number(row.chara_id) === Number(arr[2]))[0].name as string) + '）'
         }
       } else {
-        fileName = arr[1] + '-' + musicData.filter(row => Number(row.id) === Number(arr[1]))[0].name.replace(/\\n|\\|\/|<|>|\*|\?|:|"|\|/g, '') + '.mp3'
+        fileName = arr[1] + '-' + musicData.filter(row => Number(row.id) === Number(arr[1]))[0].name.replace(/\\n|\\|\/|<|>|\*|\?|:|"|\|/g, '')
       }
       const liveDataArr = liveData.filter(row => Number(row.music_data_id) === Number(arr[1]))
       let id: any = null
@@ -117,6 +121,8 @@ export default function (bgmManifest: BGM[], liveManifest: Live[], musicData: Mu
       }
     }
     liveManifest[i].fileName = fileName
+    // liveManifest[i].active = false
+    // liveManifest[i].percent = 0
   }
 
   for (let i = 0; i < liveManifest.length; i++) {

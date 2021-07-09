@@ -23,6 +23,8 @@ declare module 'vue/types/vue' {
     getIconUrl: (id: string | number) => string
     mainWindowId: number
     acb2mp3: (acbPath: string, rename?: string, onProgress?: (current: number, total: number, prog: import('mishiro-core').ProgressInfo) => void) => Promise<string>
+    acb2wav: (acbPath: string, rename?: string, onProgress?: (current: number, total: number, filename: string) => void) => Promise<string>
+    acb2aac: (acbPath: string, rename?: string, onProgress?: (current: number, total: number, prog: import('mishiro-core').ProgressInfo) => void) => Promise<string>
     // Downloader: typeof Downloader
   }
 }
