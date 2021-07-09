@@ -123,7 +123,7 @@ export default {
   },
   live: {
     decoding: '　解碼中...',
-    input: '捜索Live曲',
+    input: '按曲名捜索',
     live: 'LIVE',
     score: '譜面',
     noScore: '這首曲子没有譜面。',

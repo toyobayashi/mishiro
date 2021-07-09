@@ -1,6 +1,8 @@
 import { Event } from 'electron'
 import { Vue, Component } from 'vue-property-decorator'
 
+import TabSmall from '../../vue/component/TabSmall.vue'
+
 import TaskLoading from '../../vue/component/TaskLoading.vue'
 import InputText from '../../vue/component/InputText.vue'
 import { unpackTexture2D } from './unpack-texture-2d'
@@ -13,6 +15,7 @@ import { getLyrics, getScoreDifficulties, showSaveDialog } from './ipc'
 import type { DownloadPromise } from 'mishiro-core'
 import configurer from './config'
 import type { MishiroConfig } from '../main/config'
+import type { Live, BGM } from './back/resolve-audio-manifest'
 
 const fs = window.node.fs
 const path = window.node.path
@@ -40,7 +43,8 @@ function filterTime (second: number, float = false): string {
 @Component({
   components: {
     TaskLoading,
-    InputText
+    InputText,
+    TabSmall
   },
   filters: {
     time (second: number) {
@@ -61,20 +65,29 @@ export default class extends Vue {
   duration: number = 100
   currentTime: number = 0
   allLive: boolean = true
-  liveQueryList: any[] = []
+  liveQueryList: Live[] = []
+  bgmQueryList: BGM[] = []
   isGameRunning: boolean = false
   allLyrics: Array<{ time: number, lyrics: string, size: any}> = []
   lyrics: Array<{ time: number, lyrics: string, size: any}> = []
   jacketSrc: string = ''
 
+  audioTypeTabs = {
+    bgm: 'BGM',
+    live: 'LIVE'
+  }
+
+  currentAudioType = 'BGM'
+  audioDownloading = false
+
   // @Prop({ default: () => ({}) }) master: MasterData
 
-  get liveManifest (): any[] {
+  get liveManifest (): Live[] {
     return this.$store.state.master.liveManifest || []
     // return this.master.liveManifest ? this.master.liveManifest : []
   }
 
-  get bgmManifest (): any[] {
+  get bgmManifest (): BGM[] {
     return this.$store.state.master.bgmManifest || []
     // return this.master.bgmManifest ? this.master.bgmManifest : []
   }
@@ -100,7 +113,25 @@ export default class extends Vue {
     this.bgm.currentTime = Number(target.value)
   }
 
-  async selectAudio (audio: any): Promise<void> {
+  stopDownload (): void {
+    // TODO
+    this.playSe(this.cancelSe)
+  }
+
+  downloadSelectedItem (): void {
+    // TODO
+    this.playSe(this.enterSe)
+  }
+
+  formatJson (obj: any): string {
+    try {
+      return JSON.stringify(obj, null, 2)
+    } catch (err) {
+      return err.message
+    }
+  }
+
+  async selectAudio (audio: BGM | Live): Promise<void> {
     if (this.activeAudio.hash === audio.hash) return
 
     this.playSe(this.enterSe)
@@ -149,7 +180,7 @@ export default class extends Vue {
             if (needAwb) {
               this.audioDownloadPromise = this.dler.downloadSound(
                 'b',
-                audio.awbHash,
+                audio.awbHash!,
                 bgmDir(path.parse(audio.name).name + '.awb'),
                 (prog) => {
                   this.text = prog.name as string
@@ -221,7 +252,7 @@ export default class extends Vue {
           if (needAwb) {
             this.audioDownloadPromise = this.dler.downloadSound(
               'l',
-              audio.awbHash,
+              audio.awbHash!,
               liveDir(path.parse(audio.name).name + '.awb'),
               (prog) => {
                 this.text = prog.name as string
@@ -319,21 +350,45 @@ export default class extends Vue {
     }
   }
 
-  query (): void {
-    this.playSe(this.enterSe)
+  onAudioTypeChange (): void {
+    this.query(true)
+  }
+
+  query (quiet: boolean): void {
+    if (!quiet) {
+      this.playSe(this.enterSe)
+    }
     if (this.queryString) {
       this.allLive = false
-      this.liveQueryList = []
-      const re = new RegExp(this.queryString)
-      for (let i = 0; i < this.liveManifest.length; i++) {
-        if (re.test(this.liveManifest[i].fileName)) {
-          this.liveQueryList.push(this.liveManifest[i])
+      if (this.currentAudioType === 'BGM') {
+        const arr = []
+        const re = new RegExp(this.queryString)
+        for (let i = 0; i < this.bgmManifest.length; i++) {
+          if (re.test(this.bgmManifest[i].fileName)) {
+            arr.push(this.bgmManifest[i])
+          }
         }
+        this.bgmQueryList = arr
+      } else if (this.currentAudioType === 'LIVE') {
+        const arr = []
+        const re = new RegExp(this.queryString)
+        for (let i = 0; i < this.liveManifest.length; i++) {
+          if (re.test(this.liveManifest[i].fileName)) {
+            arr.push(this.liveManifest[i])
+          }
+        }
+        this.liveQueryList = arr
       }
     } else {
       this.allLive = true
       this.liveQueryList = []
+      this.bgmQueryList = []
     }
+    this.$nextTick(() => {
+      if (this.$refs.audioList) {
+        (this.$refs.audioList as HTMLDivElement).scrollTop = 0
+      }
+    })
   }
 
   opendir (): void {
@@ -483,7 +538,7 @@ export default class extends Vue {
       })
       this.event.$on('enterKey', (block: string) => {
         if (block === 'live') {
-          this.query()
+          this.query(false)
         }
       })
       ipcRenderer.on('liveEnd', (_event: Event, liveResult: any, isCompleted: boolean) => {

@@ -123,7 +123,7 @@ export default {
   },
   live: {
     decoding: '　decoding...',
-    input: 'SEARCH LIVE',
+    input: 'SEARCH BY NAME',
     live: 'LIVE',
     score: 'SCORE',
     noScore: 'Score not found.',
