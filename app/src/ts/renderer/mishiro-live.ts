@@ -36,7 +36,7 @@ function filterTime (second: number, float = false): string {
   }
   if (float) {
     const floatPart = String(second).split('.')[1]
-    return floatPart ? `${min}:${sec}.${('0' + floatPart).slice(-2)}` : `${min}:${sec}`
+    return floatPart ? `${min}:${sec}.${('0' + floatPart).slice(-2)}` : `${min}:${sec}.00`
   }
   return `${min}:${sec}`
 }
@@ -495,6 +495,7 @@ export default class extends Vue {
           if (res.filePath) {
             const lyricsArr = this.allLyrics.map(line => `[${filterTime(line.time, true)}]${line.lyrics}`)
             lyricsArr.unshift('[by:mishiro]')
+            lyricsArr.push('')
             const lrcstr = lyricsArr.join(os.EOL)
             const data = iconvLite.encode(lrcstr, configurer.get('lrcEncoding') || 'utf8')
             fs.writeFileSync(res.filePath, data)
