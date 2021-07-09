@@ -1,25 +1,37 @@
 <template>
 <div class="main-block-style">
   <div class="clearfix">
+    <TabSmall class="audio-type" :tab="audioTypeTabs" :noTranslation="true" v-model="currentAudioType" @tabClicked="onAudioTypeChange" />
     <InputText class="live-query" v-model="queryString" :placeholder="$t('live.input')"/>
     <button class="cgss-btn-lg cgss-btn-lg-star pull-right margin-left-10" @click="opendir">{{$t("home.opendir")}}</button>
     <!-- <button class="cgss-btn cgss-btn-star pull-right margin-left-10" @click="startGame">{{$t("live.live")}}</button> -->
+    <button class="cgss-btn cgss-btn-default pull-right margin-left-10" @click="stopDownload" v-if="audioDownloading">{{$t("home.stop")}}</button>
+    <button class="cgss-btn cgss-btn-star pull-right margin-left-10" @click="downloadSelectedItem" v-else>{{$t("home.download")}}</button>
     <button class="cgss-btn cgss-btn-star pull-right margin-left-10" @click="startScore">{{$t("live.score")}}</button>
-    <button class="cgss-btn cgss-btn-ok pull-right margin-left-10" @click="query">{{$t("home.search")}}</button>
+    <button class="cgss-btn cgss-btn-ok pull-right margin-left-10" @click="query(false)">{{$t("home.search")}}</button>
   </div>
   <div class="margin-top-10 clearfix live-middle">
-    <div class="black-bg live-result absolute-left">
-      <ul>
-        <li :class="{active:activeAudio.fileName === i.fileName}" v-for="i in bgmManifest" :key="i.hash" v-text="i.fileName" @click="selectAudio(i)"></li>
-      </ul>
+    <div class="black-bg live-result absolute-left" ref="audioList">
+      <template v-if="currentAudioType === 'BGM'">
+        <ul v-if="allLive">
+          <li :class="{active:activeAudio.fileName === i.fileName}" v-for="i in bgmManifest" :key="i.hash" v-text="i.fileName" @click="selectAudio(i)"></li>
+        </ul>
+        <ul v-else>
+          <li :class="{active:activeAudio.fileName === i.fileName}" v-for="i in bgmQueryList" :key="i.hash" v-text="i.fileName" @click="selectAudio(i)"></li>
+        </ul>
+      </template>
+      <template v-else-if="currentAudioType === 'LIVE'">
+        <ul v-if="allLive">
+          <li :class="{active:activeAudio.fileName === i.fileName}" v-for="i in liveManifest" :key="i.hash" v-text="i.fileName" @click="selectAudio(i)"></li>
+        </ul>
+        <ul v-else>
+          <li :class="{active:activeAudio.fileName === i.fileName}" v-for="i in liveQueryList" :key="i.hash" v-text="i.fileName" @click="selectAudio(i)"></li>
+        </ul>
+      </template>
     </div>
-    <div class="black-bg live-result absolute-right">
-      <ul v-if="allLive">
-        <li :class="{active:activeAudio.fileName === i.fileName}" v-for="i in liveManifest" :key="i.hash" v-text="i.fileName" @click="selectAudio(i)"></li>
-      </ul>
-      <ul v-else>
-        <li :class="{active:activeAudio.fileName === i.fileName}" v-for="i in liveQueryList" :key="i.hash" v-text="i.fileName" @click="selectAudio(i)"></li>
-      </ul>
+    <div class="black-bg absolute-right audio-info">
+      <img :src="jacketSrc" />
+      <pre class="precode">{{formatJson(activeAudio)}}</pre>
     </div>
   </div>
 
@@ -77,9 +89,22 @@
   height: 110px;
   width: 100%;
 }
+.audio-type {
+  display: inline-block;
+  vertical-align: middle;
+  margin-right: 8px;
+}
 .live-query{
   margin: 12px 0;
-  width: calc(100% - 530px);
+  width: calc(100% - 900px);
+}
+.precode {
+  font-family: Consolas;
+}
+.audio-info {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
 }
 .live-result>ul>li{
   cursor: pointer;

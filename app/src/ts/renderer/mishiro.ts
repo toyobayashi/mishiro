@@ -28,12 +28,6 @@ import configurer from './config'
 // import ModalScore from '../../vue/modal/ModalScore.vue'
 // import ModalLiveResult from '../../vue/modal/ModalLiveResult.vue'
 
-const i18nTabs: any = {
-  zh: 'i18n.chinese',
-  ja: 'i18n.japanese',
-  en: 'i18n.english'
-}
-
 // const useResVer = configurer.get('latestResVer')
 const useResVer = undefined
 
@@ -78,8 +72,13 @@ export default class extends Vue {
   show: boolean = true
   currentBlock: string = 'home'
   checking: boolean = false
-  currentLanguage: boolean = i18nTabs[configurer.get('language')!]
-  i18nTabs = i18nTabs
+  i18nTabs = {
+    zh: 'i18n.chinese',
+    ja: 'i18n.japanese',
+    en: 'i18n.english'
+  }
+
+  currentLanguage = this.i18nTabs[configurer.get('language') ?? 'zh']
   appData: any = {
     resVer: 'Unknown',
     latestResVer: 'Unknown',

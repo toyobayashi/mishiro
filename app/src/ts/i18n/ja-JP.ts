@@ -123,7 +123,7 @@ export default {
   },
   live: {
     decoding: '　デコード中...',
-    input: 'ライブ曲検索',
+    input: '曲名で検索',
     live: 'ライブ',
     score: '譜面',
     noScore: 'この曲は譜面がないので、プレイできません。',

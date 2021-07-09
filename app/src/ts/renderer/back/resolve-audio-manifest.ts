@@ -1,16 +1,16 @@
 import * as path from 'path'
 
-interface Manifest {
+export interface Manifest {
   name: string
   hash: string
 }
 
-interface BGM extends Manifest {
+export interface BGM extends Manifest {
   fileName: string
   awbHash?: string
 }
 
-interface Live extends Manifest {
+export interface Live extends Manifest {
   fileName: string
   score?: string
   scoreHash?: string
@@ -20,7 +20,7 @@ interface Live extends Manifest {
   awbHash?: string
 }
 
-interface Music {
+export interface Music {
   id: number
   name: string
   bpm: number
