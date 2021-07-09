@@ -34,6 +34,14 @@
             </div>
           </div>
           <div class="margin-top-10 option-line">
+            <label>{{$t("menu.audioExport")}}</label>
+            <div class="option-input">
+              <InputRadio text="WAV" value="wav" v-model="audioExport" lable-id="wav"/>
+              <InputRadio text="MP3" value="mp3" v-model="audioExport" lable-id="mp3"/>
+              <InputRadio text="AAC" value="aac" v-model="audioExport" lable-id="aac"/>
+            </div>
+          </div>
+          <div class="margin-top-10 option-line">
             <label>{{$t("menu.resVer")}}</label>
             <InputText class="option-input" :placeholder="latestResVer > 0 ? `10012760 ≤ ${$t('menu.resVer')} ≤ ${latestResVer}` : ''" v-model="resVer" />
           </div>
@@ -119,6 +127,7 @@ export default class extends mixins(modalMixin) {
   showBatchDownloadFeature: boolean = false
   card: 'default' | 'kirara' = 'default'
   lrcEncoding: 'utf8' | 'Windows932' | 'Windows936' = 'utf8'
+  audioExport: 'wav' | 'mp3' | 'aac' = 'wav'
   language: any = {
     zh: 'i18n.chinese',
     ja: 'i18n.japanese',
@@ -281,7 +290,8 @@ export default class extends mixins(modalMixin) {
       account: account,
       proxy: proxy,
       card: card,
-      lrcEncoding: this.lrcEncoding
+      lrcEncoding: this.lrcEncoding,
+      audioExport: this.audioExport
     }
     configurer.set(optionsToSave)
     const configProxy = optionsToSave.proxy ?? ''
@@ -305,6 +315,7 @@ export default class extends mixins(modalMixin) {
         this.proxy = config.proxy ? config.proxy : ''
         this.card = config.card ? config.card : 'default'
         this.lrcEncoding = config.lrcEncoding ? config.lrcEncoding : 'utf8'
+        this.audioExport = config.audioExport ? config.audioExport : 'wav'
         this.show = true
         this.visible = true
       })

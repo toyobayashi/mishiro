@@ -12,6 +12,7 @@ export interface MishiroConfig {
   proxy?: string
   card?: 'default' | 'kirara'
   lrcEncoding?: 'utf8' | 'Windows932' | 'Windows936'
+  audioExport?: 'wav' | 'mp3' | 'aac'
 }
 
 export type MishiroConfigKey = keyof MishiroConfig
@@ -26,7 +27,8 @@ export class Configurer {
         latestResVer: 10085200,
         language: 'zh',
         card: 'default',
-        lrcEncoding: 'utf8'
+        lrcEncoding: 'utf8',
+        audioExport: 'wav'
       }
     } else {
       this.config = fs.readJsonSync(configFile) || {}
@@ -34,6 +36,7 @@ export class Configurer {
       this.config.language = this.config.language || 'zh'
       this.config.card = this.config.card || 'default'
       this.config.lrcEncoding = this.config.lrcEncoding || 'utf8'
+      this.config.audioExport = this.config.audioExport || 'wav'
     }
     fs.writeJsonSync(configFile, this.config, { spaces: 2 })
   }
