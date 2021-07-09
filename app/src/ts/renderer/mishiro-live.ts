@@ -16,6 +16,7 @@ import type { DownloadPromise } from 'mishiro-core'
 import configurer from './config'
 import type { MishiroConfig } from '../main/config'
 import type { Live, BGM } from './back/resolve-audio-manifest'
+import { setAudioList } from './store'
 
 const fs = window.node.fs
 const path = window.node.path
@@ -64,9 +65,6 @@ export default class extends Vue {
   activeAudio: any = {}
   duration: number = 100
   currentTime: number = 0
-  allLive: boolean = true
-  liveQueryList: Live[] = []
-  bgmQueryList: BGM[] = []
   isGameRunning: boolean = false
   allLyrics: Array<{ time: number, lyrics: string, size: any}> = []
   lyrics: Array<{ time: number, lyrics: string, size: any}> = []
@@ -79,6 +77,11 @@ export default class extends Vue {
 
   currentAudioType = 'BGM'
   audioDownloading = false
+
+  selectedAudios: Array<BGM | Live> = []
+  lastClickedAudio: BGM | Live | null = null
+  controlDown = false
+  shiftDown = false
 
   // @Prop({ default: () => ({}) }) master: MasterData
 
@@ -94,6 +97,10 @@ export default class extends Vue {
 
   get wavProgress (): boolean {
     return this.core.config.getProgressCallback()
+  }
+
+  get audioListData (): BGM[] | Live[] {
+    return this.$store.state.audioListData || []
   }
 
   created (): void {
@@ -131,6 +138,40 @@ export default class extends Vue {
     }
   }
 
+  selectAudioNew (audio: BGM | Live): void {
+    this.playSe(this.enterSe)
+    const index = this.selectedAudios.indexOf(audio)
+    if (this.controlDown) {
+      if (index !== -1) {
+        this.selectedAudios.splice(index, 1)
+      } else {
+        this.selectedAudios.push(audio)
+      }
+    } else if (this.shiftDown) {
+      this.selectedAudios.length = 0
+      let lastClickedIndex: number
+      if (this.lastClickedAudio && (lastClickedIndex = this.audioListData.indexOf(this.lastClickedAudio)) !== -1) {
+        const thisIndex = this.audioListData.indexOf(audio)
+        let start: number
+        let end: number
+        if (lastClickedIndex < thisIndex) {
+          start = lastClickedIndex
+          end = thisIndex + 1
+        } else {
+          start = thisIndex
+          end = lastClickedIndex + 1
+        }
+        this.selectedAudios = this.audioListData.slice(start, end)
+      } else {
+        this.selectedAudios.push(audio)
+      }
+    } else {
+      this.selectedAudios.length = 0
+      this.selectedAudios.push(audio)
+    }
+    this.lastClickedAudio = audio
+  }
+
   async selectAudio (audio: BGM | Live): Promise<void> {
     if (this.activeAudio.hash === audio.hash) return
 
@@ -141,11 +182,13 @@ export default class extends Vue {
     this.text = ''
 
     this.audioDownloadPromise?.download.abort()
+    const type = configurer.get('audioExport') ?? 'wav'
+    const audioFileName = audio.fileName + '.' + type
     if (audio.name.split('/')[0] === 'b') {
-      if (!fs.existsSync(bgmDir(audio.fileName))) {
-        const targetPath = getPath(`../asset/bgm.asar/${audio.fileName}`)
+      if (!fs.existsSync(bgmDir(audioFileName))) {
+        const targetPath = getPath(`../asset/bgm.asar/${audioFileName}`)
         if (fs.existsSync(targetPath)) {
-          this.event.$emit('liveSelect', { src: `../../asset/bgm.asar/${audio.fileName}` })
+          this.event.$emit('liveSelect', { src: `../../asset/bgm.asar/${audioFileName}` })
           return
         }
         if (navigator.onLine) {
@@ -199,24 +242,36 @@ export default class extends Vue {
             this.total = (this.wavProgress ? 50 : 99.99)
             this.current = (this.wavProgress ? 50 : 99.99)
             this.text += this.$t('live.decoding') as string
-            await this.acb2mp3(bgmDir(path.basename(audio.name)), audio.fileName, (_c, _t, prog) => {
-              this.current = 50 + prog.loading / 2
-              this.total = 50 + prog.loading / 2
-            })
+            if (type === 'wav') {
+              await this.acb2wav(bgmDir(path.basename(audio.name)), audioFileName, (c, _t, _prog) => {
+                this.current = 50 + c / 2
+                this.total = 50 + c / 2
+              })
+            } else if (type === 'mp3') {
+              await this.acb2mp3(bgmDir(path.basename(audio.name)), audioFileName, (_c, _t, prog) => {
+                this.current = 50 + prog.loading / 2
+                this.total = 50 + prog.loading / 2
+              })
+            } else if (type === 'aac') {
+              await this.acb2aac(bgmDir(path.basename(audio.name)), audioFileName, (_c, _t, prog) => {
+                this.current = 50 + prog.loading / 2
+                this.total = 50 + prog.loading / 2
+              })
+            }
             this.total = 0
             this.current = 0
             this.text = ''
-            this.event.$emit('liveSelect', { src: `../../asset/bgm/${audio.fileName}` })
+            this.event.$emit('liveSelect', { src: `../../asset/bgm/${audioFileName}` })
           }
         } else {
           this.event.$emit('alert', this.$t('home.errorTitle'), this.$t('home.noNetwork'))
         }
       } else {
         this.activeAudio = audio
-        this.event.$emit('liveSelect', { src: `../../asset/bgm/${audio.fileName}` })
+        this.event.$emit('liveSelect', { src: `../../asset/bgm/${audioFileName}` })
       }
     } else if (audio.name.split('/')[0] === 'l') {
-      if (!fs.existsSync(liveDir(audio.fileName))) {
+      if (!fs.existsSync(liveDir(audioFileName))) {
         if (!navigator.onLine) {
           this.event.$emit('alert', this.$t('home.errorTitle'), this.$t('home.noNetwork'))
           return
@@ -274,17 +329,29 @@ export default class extends Vue {
         this.total = (this.wavProgress ? 50 : 99.99)
         this.current = (this.wavProgress ? 50 : 99.99)
         this.text += this.$t('live.decoding') as string
-        await this.acb2mp3(liveDir(path.basename(audio.name)), audio.fileName, (_c, _t, prog) => {
-          this.current = 50 + prog.loading / 2
-          this.total = 50 + prog.loading / 2
-        })
+        if (type === 'wav') {
+          await this.acb2wav(liveDir(path.basename(audio.name)), audioFileName, (c, _t, _prog) => {
+            this.current = 50 + c / 2
+            this.total = 50 + c / 2
+          })
+        } else if (type === 'mp3') {
+          await this.acb2mp3(liveDir(path.basename(audio.name)), audioFileName, (_c, _t, prog) => {
+            this.current = 50 + prog.loading / 2
+            this.total = 50 + prog.loading / 2
+          })
+        } else if (type === 'aac') {
+          await this.acb2aac(liveDir(path.basename(audio.name)), audioFileName, (_c, _t, prog) => {
+            this.current = 50 + prog.loading / 2
+            this.total = 50 + prog.loading / 2
+          })
+        }
         this.total = 0
         this.current = 0
         this.text = ''
-        this.event.$emit('liveSelect', { src: `../../asset/live/${audio.fileName}` })
+        this.event.$emit('liveSelect', { src: `../../asset/live/${audioFileName}` })
       } else {
         this.activeAudio = audio
-        this.event.$emit('liveSelect', { src: `../../asset/live/${audio.fileName}` })
+        this.event.$emit('liveSelect', { src: `../../asset/live/${audioFileName}` })
       }
 
       this.lyrics = []
@@ -359,7 +426,6 @@ export default class extends Vue {
       this.playSe(this.enterSe)
     }
     if (this.queryString) {
-      this.allLive = false
       if (this.currentAudioType === 'BGM') {
         const arr = []
         const re = new RegExp(this.queryString)
@@ -368,7 +434,7 @@ export default class extends Vue {
             arr.push(this.bgmManifest[i])
           }
         }
-        this.bgmQueryList = arr
+        setAudioList(arr)
       } else if (this.currentAudioType === 'LIVE') {
         const arr = []
         const re = new RegExp(this.queryString)
@@ -377,12 +443,10 @@ export default class extends Vue {
             arr.push(this.liveManifest[i])
           }
         }
-        this.liveQueryList = arr
+        setAudioList(arr)
       }
     } else {
-      this.allLive = true
-      this.liveQueryList = []
-      this.bgmQueryList = []
+      setAudioList(this.allAudioListData)
     }
     this.$nextTick(() => {
       if (this.$refs.audioList) {
@@ -409,7 +473,6 @@ export default class extends Vue {
   openLyrics (): void {
     const self = this
     let bodyhtml = this.allLyrics.map(line => line.lyrics).join('<br/>')
-    console.log(this.allLyrics)
     if (this.jacketSrc) {
       bodyhtml = `<div style="text-align:center" ><img src="${this.jacketSrc}" /></div>${bodyhtml}`
     }
@@ -509,6 +572,15 @@ export default class extends Vue {
   //   })
   // }
 
+  get allAudioListData (): BGM[] | Live[] {
+    if (this.currentAudioType === 'BGM') {
+      return this.bgmManifest
+    } else if (this.currentAudioType === 'LIVE') {
+      return this.liveManifest
+    }
+    return []
+  }
+
   mounted (): void {
     this.$nextTick(() => {
       this.bgm.addEventListener('timeupdate', () => {
@@ -550,6 +622,20 @@ export default class extends Vue {
       // ipcRenderer.on('lyrics', (_event: Event, lyrics: { time: number; lyrics: string; size: any }[]) => {
       //   this.allLyrics = lyrics
       // })
+      document.addEventListener('keydown', (e: KeyboardEvent) => {
+        if (e.key === 'Control') {
+          this.controlDown = true
+        } else if (e.key === 'Shift') {
+          this.shiftDown = true
+        }
+      })
+      document.addEventListener('keyup', (e: KeyboardEvent) => {
+        if (e.key === 'Control') {
+          this.controlDown = false
+        } else if (e.key === 'Shift') {
+          this.shiftDown = false
+        }
+      })
     })
   }
 }

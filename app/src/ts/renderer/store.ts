@@ -2,6 +2,7 @@ import Vue from 'vue'
 import Vuex from 'vuex'
 
 import { MasterData } from './back/on-master-read'
+import type { BGM, Live } from './back/resolve-audio-manifest'
 
 const { ipcRenderer } = window.node.electron
 
@@ -13,12 +14,14 @@ export enum Action {
   SET_MASTER = 'SET_MASTER',
   SET_BATCH_DOWNLOADING = 'SET_BATCH_DOWNLOADING',
   SET_BATCH_STATUS = 'SET_BATCH_STATUS',
+  SET_AUDIO_LIST = 'SET_AUDIO_LIST',
 }
 
 const store = new Vuex.Store<{
   resVer: number
   latestResVer: number
   master: Partial<MasterData>
+  audioListData: BGM[] | Live[]
   // batchDownloading: boolean
   batchStatus: {
     name: string
@@ -32,6 +35,7 @@ const store = new Vuex.Store<{
     resVer: -1,
     latestResVer: -1,
     master: {},
+    audioListData: [],
 
     // batchDownloading: false,
     batchStatus: {
@@ -61,6 +65,9 @@ const store = new Vuex.Store<{
       state.batchStatus.status2 = status.status2 ?? ''
       state.batchStatus.curprog = status.curprog ?? 0
       state.batchStatus.totalprog = status.totalprog ?? 0
+    },
+    [Action.SET_AUDIO_LIST] (state, list) {
+      state.audioListData = list
     }
   }
 })
@@ -83,6 +90,11 @@ export function setLatestResVer (resVer: number): void {
 
 export function setMaster (master: MasterData): void {
   store.commit(Action.SET_MASTER, master)
+  setAudioList(master.bgmManifest)
+}
+
+export function setAudioList (list: BGM[] | Live[]): void {
+  store.commit(Action.SET_AUDIO_LIST, list)
 }
 
 export default store

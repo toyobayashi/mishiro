@@ -2,6 +2,7 @@ import { Vue, Component } from 'vue-property-decorator'
 // import { MasterData } from '../main/on-master-read'
 import getPath from '../common/get-path'
 const fs = window.node.fs
+const path = window.node.path
 
 const { bgmDir } = getPath
 
@@ -142,7 +143,7 @@ export default class extends Vue {
   play (bgm?: any): void {
     if (bgm) {
       this.set(bgm)
-      this.event.$emit('playerSelect', bgm.src.split('/')[bgm.src.split('/').length - 1])
+      this.event.$emit('playerSelect', path.parse(bgm.src).name)
     }
     setTimeout(() => {
       clearInterval(this.bgmTimer as NodeJS.Timer)

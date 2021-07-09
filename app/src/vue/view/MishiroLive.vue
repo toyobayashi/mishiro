@@ -12,22 +12,12 @@
   </div>
   <div class="margin-top-10 clearfix live-middle">
     <div class="black-bg live-result absolute-left" ref="audioList">
-      <template v-if="currentAudioType === 'BGM'">
-        <ul v-if="allLive">
-          <li :class="{active:activeAudio.fileName === i.fileName}" v-for="i in bgmManifest" :key="i.hash" v-text="i.fileName" @click="selectAudio(i)"></li>
-        </ul>
-        <ul v-else>
-          <li :class="{active:activeAudio.fileName === i.fileName}" v-for="i in bgmQueryList" :key="i.hash" v-text="i.fileName" @click="selectAudio(i)"></li>
-        </ul>
-      </template>
-      <template v-else-if="currentAudioType === 'LIVE'">
-        <ul v-if="allLive">
-          <li :class="{active:activeAudio.fileName === i.fileName}" v-for="i in liveManifest" :key="i.hash" v-text="i.fileName" @click="selectAudio(i)"></li>
-        </ul>
-        <ul v-else>
-          <li :class="{active:activeAudio.fileName === i.fileName}" v-for="i in liveQueryList" :key="i.hash" v-text="i.fileName" @click="selectAudio(i)"></li>
-        </ul>
-      </template>
+      <ul>
+        <li class="audio-item" :class="{ active: selectedAudios.indexOf(i) !== -1 }" v-for="i in audioListData" :key="i.hash" @click="selectAudioNew(i)">
+          <div class="title" :title="i.fileName">{{i.fileName}}</div>
+          <div class="play" @click.stop="selectAudio(i)">PLAY</div>
+        </li>
+      </ul>
     </div>
     <div class="black-bg absolute-right audio-info">
       <img :src="jacketSrc" />
@@ -100,11 +90,43 @@
 }
 .precode {
   font-family: Consolas;
+  width: 100%;
 }
 .audio-info {
   display: flex;
   flex-direction: column;
   align-items: center;
+}
+.audio-item {
+  display: flex;
+  align-items: center;
+}
+.audio-item .title {
+  flex: 1;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+  overflow: hidden;
+}
+.audio-item .play {
+  cursor: pointer;
+  color: #333 !important;
+  font-family: 'CGSS-B';
+  box-sizing: border-box;
+  /* width: 30px; */
+  width: 50px;
+  height: 30px;
+  background: -webkit-linear-gradient(225deg, #f0f0f0, #d0d0d0, #c0c0c0);
+  border: 2px solid #000000;
+  border-bottom: 4px solid #000000;
+  border-radius: 5px;
+  display: inline-block;
+  position: relative;
+}
+.audio-item .play:active {
+  height: 28px;
+  top: 2px;
+  border-bottom: 2px solid #000000;
+  background: -webkit-linear-gradient(225deg, #f0f0f0, #d0d0d0, #c0c0c0);
 }
 .live-result>ul>li{
   cursor: pointer;
@@ -115,9 +137,6 @@
   font-size: 15px;
   padding-left: 5px;
   line-height: 30px;
-  text-overflow: ellipsis;
-  white-space: nowrap;
-  overflow: hidden;
   color: #333 !important;
   text-align: left;
 }
