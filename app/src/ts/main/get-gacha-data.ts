@@ -1,4 +1,5 @@
-import { MishiroConfig } from '../main/config'
+import type { MishiroConfig } from '../main/config'
+
 export default function (gachaAll: any[], config: MishiroConfig, now: number, timeOffset: number): {
   gachaNow: any
   gachaData: any

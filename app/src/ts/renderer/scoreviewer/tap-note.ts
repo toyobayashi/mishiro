@@ -1,7 +1,7 @@
 import { globalInstance } from './global'
-import { ScoreNote } from '../../main/on-score'
+import type { ScoreNote } from '../../main/on-score'
 import Note from './note'
-import ScoreViewer from './score-viewer'
+import type ScoreViewer from './score-viewer'
 
 class TapNote extends Note {
   constructor (note: ScoreNote, syncNote?: ScoreNote) {

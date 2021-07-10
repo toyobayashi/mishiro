@@ -104,7 +104,7 @@ import { Prop } from 'vue-property-decorator'
 
 import ProgressBar from '../component/ProgressBar.vue'
 
-import { MasterData } from '../../ts/renderer/back/on-master-read'
+import type { MasterData } from '../../ts/renderer/back/on-master-read'
 import { startBatchDownload, stopBatchDownload, getBatchErrorList, setDownloaderProxy } from '../../ts/renderer/ipc-back'
 import { updateClientProxy } from '../../ts/renderer/ipc'
 

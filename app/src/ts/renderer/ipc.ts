@@ -1,5 +1,5 @@
-import { OpenDialogOptions, OpenDialogReturnValue, RelaunchOptions, SaveDialogOptions, SaveDialogReturnValue } from 'electron'
-import { ServerResponse } from 'mishiro-core'
+import type { OpenDialogOptions, OpenDialogReturnValue, RelaunchOptions, SaveDialogOptions, SaveDialogReturnValue } from 'electron'
+import type { ServerResponse } from 'mishiro-core'
 
 const { ipcRenderer } = window.node.electron
 

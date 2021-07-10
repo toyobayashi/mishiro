@@ -7,7 +7,7 @@ import resolveAudioManifest from './resolve-audio-manifest'
 // import resolveGachaAvailable from './resolve-gacha-available'
 import resolveUserLevel from './resolve-user-level'
 // import { openSqlite } from './sqlite3'
-import DB from '../../common/db'
+import type DB from '../../common/db'
 
 // let masterData: MasterData | null = null
 

@@ -4,6 +4,10 @@
     "noImplicitReturns": true,
     "moduleResolution": "node",
     "noUnusedLocals": true,
-    "noUnusedParameters": true
+    "noUnusedParameters": true,
+    "noImplicitAny": true,
+    "importsNotUsedAsValues": "error",
+    "noEmitHelpers": true,
+    "importHelpers": true
   }
 }
