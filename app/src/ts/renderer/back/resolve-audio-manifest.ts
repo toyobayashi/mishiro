@@ -80,7 +80,7 @@ export default function (bgmManifest: BGM[], liveManifest: Live[], musicData: Mu
       fileName = 'inst_' + arr[2] + '-' + musicData.filter(row => Number(row.id) === Number(arr[2]))[0].name.replace(/\\n|\\|\/|<|>|\*|\?|:|"|\|/g, '')
     } else if (arr[0] === 'vo' && arr[1] === 'solo') {
       const charaName = charaData.filter(row => Number(row.chara_id) === Number(arr[3]))[0]
-      fileName = 'vo_solo_' + arr[2] + musicData.filter(row => Number(row.id) === Number(arr[2]))[0].name.replace(/\\n|\\|\/|<|>|\*|\?|:|"|\|/g, '') + '（' + (charaName ? charaName.name as string : arr[3]) + '）'
+      fileName = 'vo_solo_' + arr[2] + '-' + musicData.filter(row => Number(row.id) === Number(arr[2]))[0].name.replace(/\\n|\\|\/|<|>|\*|\?|:|"|\|/g, '') + '（' + (charaName ? charaName.name as string : arr[3]) + '）'
     } else {
       if (arr.length > 2) {
         if (isNaN(Number(arr[2]))) {
