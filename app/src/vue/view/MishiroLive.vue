@@ -13,7 +13,13 @@
   <div class="margin-top-10 clearfix live-middle">
     <div class="black-bg live-result absolute-left" ref="audioList">
       <ul>
-        <li class="audio-item" :class="{ active: selectedAudios.indexOf(i) !== -1 }" v-for="i in audioListData" :key="i.hash" @click="selectAudioNew(i)">
+        <li
+          class="audio-item"
+          :class="{ active: i._active }"
+          v-for="i in audioListData"
+          :key="i.hash"
+          @click="selectAudioNew(i)"
+        >
           <div class="title" :title="i.fileName">{{i.fileName}}</div>
           <div class="play" @click.stop="selectAudio(i)">PLAY</div>
         </li>
