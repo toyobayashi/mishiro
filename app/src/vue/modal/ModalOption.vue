@@ -26,9 +26,9 @@
           <div class="margin-top-10 option-line">
             <label>{{$t("menu.lrcEncoding")}}</label>
             <div class="option-input">
-              <InputRadio text="utf8" value="utf8" v-model="lrcEncoding" lable-id="utf8"/>
-              <InputRadio text="cp932" value="Windows932" v-model="lrcEncoding" lable-id="Windows932"/>
-              <InputRadio text="cp936" value="Windows936" v-model="lrcEncoding" lable-id="Windows936"/>
+              <InputRadio text="UTF-8" value="utf8" v-model="lrcEncoding" lable-id="utf8"/>
+              <InputRadio text="GB 2312" value="Windows936" v-model="lrcEncoding" lable-id="Windows936"/>
+              <InputRadio text="Shift JIS" value="Windows932" v-model="lrcEncoding" lable-id="Windows932"/>
               <!-- <InputRadio text="cp949" value="Windows949" v-model="lrcEncoding" lable-id="Windows949"/>
               <InputRadio text="cp950" value="Windows950" v-model="lrcEncoding" lable-id="Windows950"/> -->
             </div>
