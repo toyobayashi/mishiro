@@ -1,6 +1,9 @@
 import Global, { globalInstance } from './global'
-import { ScoreNote } from '../../main/on-score'
-import Note, { ScoreNoteWithNoteInstance } from './note'
+import type { ScoreNote } from '../../main/on-score'
+// eslint-disable-next-line import/no-duplicates
+import type Note from './note'
+// eslint-disable-next-line import/no-duplicates
+import type { ScoreNoteWithNoteInstance } from './note'
 import TapNote from './tap-note'
 import FlipNote from './flip-note'
 import LongNote from './long-note'

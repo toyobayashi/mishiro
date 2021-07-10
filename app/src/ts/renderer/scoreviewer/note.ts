@@ -1,5 +1,5 @@
 import { globalInstance } from './global'
-import { ScoreNote } from '../../main/on-score'
+import type { ScoreNote } from '../../main/on-score'
 import ScoreViewer from './score-viewer'
 
 export interface ScoreNoteWithNoteInstance extends ScoreNote {

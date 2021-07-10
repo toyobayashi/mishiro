@@ -1,6 +1,6 @@
 import { Vue, Component } from 'vue-property-decorator'
 import InputText from '../../vue/component/InputText.vue'
-import { ServerResponse } from 'mishiro-core'
+import type { ServerResponse } from 'mishiro-core'
 import { unpackTexture2D } from './unpack-texture-2d'
 import { getProfile } from './ipc'
 import getPath from '../common/get-path'

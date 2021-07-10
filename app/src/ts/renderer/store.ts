@@ -1,7 +1,7 @@
 import Vue from 'vue'
 import Vuex from 'vuex'
 
-import { MasterData } from './back/on-master-read'
+import type { MasterData } from './back/on-master-read'
 import type { BGM, Live } from './back/resolve-audio-manifest'
 
 const { ipcRenderer } = window.node.electron

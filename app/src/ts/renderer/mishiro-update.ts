@@ -1,5 +1,5 @@
 import { Vue, Component, Prop, Emit } from 'vue-property-decorator'
-import { ProgressInfo } from 'mishiro-core'
+import type { ProgressInfo } from 'mishiro-core'
 import ProgressBar from '../../vue/component/ProgressBar.vue'
 import check from './check'
 import { setLatestResVer, setMaster, setResVer } from './store'

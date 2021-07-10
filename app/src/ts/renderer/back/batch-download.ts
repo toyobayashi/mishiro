@@ -1,4 +1,4 @@
-import DB from '../../common/db'
+import type DB from '../../common/db'
 import { formatSize } from '../../common/util'
 import getPath from '../../common/get-path'
 import { md5File } from './hash'

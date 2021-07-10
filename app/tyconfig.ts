@@ -1,7 +1,7 @@
 import * as ty from '@tybys/ty'
 import * as path from 'path'
 import * as fs from 'fs-extra'
-import * as webpack from 'webpack'
+import type { Configuration } from 'webpack'
 import * as HtmlWebpackPlugin from 'html-webpack-plugin'
 import * as TerserWebpackPlugin from 'terser-webpack-plugin'
 
@@ -57,7 +57,7 @@ const config: ty.Configuration = {
     //     })
     //   ]
     // },
-    main (config: webpack.Configuration) {
+    main (config: Configuration) {
       config.plugins = [
         ...(config.plugins || []),
         new CopyWebpackPlugin({
@@ -78,7 +78,7 @@ const config: ty.Configuration = {
   distPath: '../dist',
   nodeExternals: {
     renderer: {
-      allowlist: [/webpack/, 'marked', /^vue/]
+      allowlist: [/webpack/, 'marked', /^vue/, 'tslib']
     }
   },
   packHook: {

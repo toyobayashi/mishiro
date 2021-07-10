@@ -1,4 +1,4 @@
-import { Event } from 'electron'
+import type { Event } from 'electron'
 import { Vue, Component } from 'vue-property-decorator'
 
 import TabSmall from '../../vue/component/TabSmall.vue'
