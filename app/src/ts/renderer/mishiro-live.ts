@@ -62,7 +62,7 @@ export default class extends Vue {
   total: number = 0
   current: number = 0
   text: string = ''
-  activeAudio: any = {}
+  activeAudio: BGM | Live = {} as any
   duration: number = 100
   currentTime: number = 0
   isGameRunning: boolean = false
@@ -144,13 +144,21 @@ export default class extends Vue {
     if (this.controlDown) {
       if (index !== -1) {
         this.selectedAudios.splice(index, 1)
+        this.$set(audio, '_active', false)
       } else {
         this.selectedAudios.push(audio)
+        this.$set(audio, '_active', true)
       }
+      this.lastClickedAudio = audio
     } else if (this.shiftDown) {
-      this.selectedAudios.length = 0
-      let lastClickedIndex: number
-      if (this.lastClickedAudio && (lastClickedIndex = this.audioListData.indexOf(this.lastClickedAudio)) !== -1) {
+      if (!this.lastClickedAudio) {
+        this.lastClickedAudio = audio
+        this.$set(audio, '_active', true)
+        return
+      }
+
+      const lastClickedIndex = this.audioListData.indexOf(this.lastClickedAudio)
+      if (lastClickedIndex !== -1) {
         const thisIndex = this.audioListData.indexOf(audio)
         let start: number
         let end: number
@@ -161,15 +169,22 @@ export default class extends Vue {
           start = thisIndex
           end = lastClickedIndex + 1
         }
+        this.selectedAudios.forEach(a => { this.$set(a, '_active', false) })
+        this.selectedAudios.length = 0
         this.selectedAudios = this.audioListData.slice(start, end)
+        this.selectedAudios.forEach(a => { this.$set(a, '_active', true) })
       } else {
         this.selectedAudios.push(audio)
+        this.lastClickedAudio = audio
+        this.$set(audio, '_active', true)
       }
     } else {
+      this.selectedAudios.forEach(a => { this.$set(a, '_active', false) })
       this.selectedAudios.length = 0
       this.selectedAudios.push(audio)
+      this.$set(audio, '_active', true)
+      this.lastClickedAudio = audio
     }
-    this.lastClickedAudio = audio
   }
 
   async selectAudio (audio: BGM | Live): Promise<void> {
@@ -358,17 +373,18 @@ export default class extends Vue {
       this.allLyrics = []
       this.jacketSrc = ''
 
-      if (this.activeAudio.score && navigator.onLine) {
+      const activeAudio = this.activeAudio as Live
+      if (activeAudio.score && navigator.onLine) {
         await (async () => {
-          if (!fs.existsSync(scoreDir(this.activeAudio.score))) {
+          if (!fs.existsSync(scoreDir(activeAudio.score!))) {
             try {
               const scoreBdb = await this.scoreDownloader.downloadDatabase(
-                this.activeAudio.scoreHash,
-                scoreDir(this.activeAudio.score.split('.')[0])
+                activeAudio.scoreHash!,
+                scoreDir(activeAudio.score!.split('.')[0])
               )
               if (scoreBdb) {
                 // this.core.util.lz4dec(scoreBdb as string, 'bdb')
-                fs.removeSync(scoreDir(this.activeAudio.score.split('.')[0]))
+                fs.removeSync(scoreDir(activeAudio.score!.split('.')[0]))
               } else {
                 this.event.$emit('alert', this.$t('home.errorTitle'), 'Error!')
                 return
@@ -380,20 +396,20 @@ export default class extends Vue {
           }
 
           // ipcRenderer.send('lyrics', scoreDir(this.activeAudio.score))
-          this.allLyrics = await getLyrics(scoreDir(this.activeAudio.score))
+          this.allLyrics = await getLyrics(scoreDir(activeAudio.score!))
         })()
       }
 
-      if (this.activeAudio.jacket && navigator.onLine) {
+      if (activeAudio.jacket && navigator.onLine) {
         await (async () => {
-          const name = path.parse(this.activeAudio.jacket).name
+          const name = path.parse(activeAudio.jacket!).name
           const jacketlz4 = jacketDir(name)
           const pngName = name + '_m.png'
           const pngPath = jacketDir(pngName)
           if (!fs.existsSync(pngPath)) {
             try {
               const jacketu3d = await this.jacketDownloader.downloadAsset(
-                this.activeAudio.jacketHash,
+                activeAudio.jacketHash!,
                 jacketlz4
               )
               if (jacketu3d) {
@@ -513,29 +529,31 @@ export default class extends Vue {
       return false
     }
 
-    if (!this.activeAudio.score) {
+    const activeAudio = this.activeAudio as Live
+    if (!activeAudio.score) {
       this.event.$emit('alert', this.$t('home.errorTitle'), this.$t('live.noScore'))
       return false
     }
 
-    if (!fs.existsSync(liveDir(this.activeAudio.fileName))) {
+    const type = configurer.get('audioExport') ?? 'wav'
+    if (!fs.existsSync(liveDir(activeAudio.fileName + '.' + type))) {
       this.event.$emit('alert', this.$t('home.errorTitle'), this.$t('live.noAudio'))
       return false
     }
 
-    if (!fs.existsSync(scoreDir(this.activeAudio.score))) {
+    if (!fs.existsSync(scoreDir(activeAudio.score))) {
       try {
         // let scoreBdb = await this.scoreDownloader.downloadOne(
-        //   this.getDbUrl(this.activeAudio.scoreHash),
-        //   scoreDir(this.activeAudio.score.split('.')[0])
+        //   this.getDbUrl(activeAudio.scoreHash),
+        //   scoreDir(activeAudio.score.split('.')[0])
         // )
         const scoreBdb = await this.scoreDownloader.downloadDatabase(
-          this.activeAudio.scoreHash,
-          scoreDir(this.activeAudio.score.split('.')[0])
+          activeAudio.scoreHash!,
+          scoreDir(activeAudio.score.split('.')[0])
         )
         if (scoreBdb) {
           // this.core.util.lz4dec(scoreBdb as string, 'bdb')
-          fs.removeSync(scoreDir(this.activeAudio.score.split('.')[0]))
+          fs.removeSync(scoreDir(activeAudio.score.split('.')[0]))
         } else {
           this.event.$emit('alert', this.$t('home.errorTitle'), 'Error!')
           return false
@@ -559,7 +577,7 @@ export default class extends Vue {
     this.playSe(this.enterSe)
     const result = await this.gameOrScore()
     if (!result) return
-    const difficulties = await getScoreDifficulties(scoreDir(this.activeAudio.score))
+    const difficulties = await getScoreDifficulties(scoreDir((this.activeAudio as Live).score!))
     this.event.$emit('score', this.activeAudio, difficulties)
   }
 
