@@ -3,7 +3,7 @@ import getEventData from './get-event-data'
 import getLimitedCard from './get-limited-card'
 import resolveCharaData from './resolve-chara-data'
 import resolveCardData from './resolve-card-data'
-import resolveAudioManifest from './resolve-audio-manifest'
+import resolveAudioManifest, { BGM, Live } from './resolve-audio-manifest'
 // import resolveGachaAvailable from './resolve-gacha-available'
 import resolveUserLevel from './resolve-user-level'
 // import { openSqlite } from './sqlite3'
@@ -109,8 +109,8 @@ export interface MasterData {
   eventAvailable: any[]
   eventHappening: any
   cardData: any[]
-  bgmManifest: any[]
-  liveManifest: any[]
+  bgmManifest: BGM[]
+  liveManifest: Live[]
   voiceManifest: any[]
   // gachaData: any[]
   // gachaAvailable: any[]

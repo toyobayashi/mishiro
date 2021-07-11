@@ -79,6 +79,7 @@ export default class extends Vue {
   audioDownloading = false
 
   selectedAudios: Array<BGM | Live> = []
+  downloadingTasks: Array<BGM | Live> = []
   lastClickedAudio: BGM | Live | null = null
   controlDown = false
   shiftDown = false
@@ -121,13 +122,181 @@ export default class extends Vue {
   }
 
   stopDownload (): void {
-    // TODO
     this.playSe(this.cancelSe)
+    this.current = 0
+    this.total = this.current
+    this.downloadingTasks = []
+    if (this.audioDownloadPromise) {
+      this.audioDownloadPromise.download.abort()
+    }
+    this.audioDownloading = false
   }
 
-  downloadSelectedItem (): void {
-    // TODO
+  async downloadSelectedItem (): Promise<void> {
     this.playSe(this.enterSe)
+    if (!navigator.onLine) {
+      this.event.$emit('alert', this.$t('home.errorTitle'), this.$t('home.noNetwork'))
+      return
+    }
+    this.downloadingTasks = this.selectedAudios.slice(0)
+
+    if (this.downloadingTasks.length <= 0) {
+      this.event.$emit('alert', this.$t('home.errorTitle'), this.$t('home.noEmptyDownload'))
+      return
+    }
+
+    this.audioDownloading = true
+
+    let completeCount = 0
+
+    for (let i = 0; i < this.downloadingTasks.length; i++) {
+      const audio = this.downloadingTasks[i]
+      const audioType = audio.name.split('/')[0]
+      const acbBase = path.posix.basename(audio.name)
+      const type = configurer.get('audioExport') ?? 'wav'
+      const audioFileName = audio.fileName + '.' + type
+      const needAwb = !!audio.awbHash
+
+      const dir = audioType === 'b' ? bgmDir : (audioType === 'l' ? liveDir : null)
+      if (!dir) {
+        this.event.$emit('alert', this.$t('home.errorTitle'), 'Bad type')
+        completeCount++
+        continue
+      }
+      const audioFilePath = dir(audioFileName)
+      if (fs.existsSync(audioFilePath)) {
+        completeCount++
+        continue
+      }
+
+      let result: string
+      const acbPath = dir(acbBase)
+      try {
+        this.audioDownloadPromise = this.dler.downloadSound(
+          audioType,
+          audio.hash,
+          acbPath,
+          (prog) => {
+            this.text = `[${completeCount}/${this.downloadingTasks.length}] ${prog.name as string}`
+            if (!needAwb) {
+              const currentPercent = prog.loading / (this.wavProgress ? 2 : 1)
+              this.$set(audio, '_percent', currentPercent)
+              this.current = (100 * completeCount / this.downloadingTasks.length) + currentPercent / this.downloadingTasks.length
+              this.total = this.current
+            }
+          }
+        )
+        result = await this.audioDownloadPromise
+        this.audioDownloadPromise = null
+        if (needAwb) {
+          this.audioDownloadPromise = this.dler.downloadSound(
+            audioType,
+            audio.awbHash!,
+            dir(path.parse(audio.name).name + '.awb'),
+            (prog) => {
+              this.text = `[${completeCount}/${this.downloadingTasks.length}] ${prog.name as string}`
+              const currentPercent = prog.loading / (this.wavProgress ? 2 : 1)
+              this.$set(audio, '_percent', currentPercent)
+              this.current = (100 * completeCount / this.downloadingTasks.length) + currentPercent / this.downloadingTasks.length
+              this.total = this.current
+            }
+          )
+          result = await this.audioDownloadPromise
+          this.audioDownloadPromise = null
+        }
+      } catch (errorPath) {
+        this.audioDownloadPromise = null
+        this.event.$emit('alert', this.$t('home.errorTitle'), (this.$t('home.downloadFailed') as string) + '<br/>' + (errorPath as string))
+        completeCount++
+        continue
+      }
+      if (result) {
+        this.current = (100 * completeCount / this.downloadingTasks.length) + (this.wavProgress ? 50 : 99.99) / this.downloadingTasks.length
+        this.total = this.current
+        if (type === 'wav') {
+          await this.acb2wav(acbPath, audioFileName, (c, _t, _prog) => {
+            const currentPercent = 50 + c * 100 / 2
+            this.$set(audio, '_percent', currentPercent)
+            this.current = (100 * completeCount / this.downloadingTasks.length) + currentPercent / this.downloadingTasks.length
+            this.total = this.current
+          })
+        } else if (type === 'mp3') {
+          await this.acb2mp3(acbPath, audioFileName, (_c, _t, prog) => {
+            const currentPercent = 50 + prog.loading / 2
+            this.$set(audio, '_percent', currentPercent)
+            this.current = (100 * completeCount / this.downloadingTasks.length) + currentPercent / this.downloadingTasks.length
+            this.total = this.current
+          })
+        } else if (type === 'aac') {
+          await this.acb2aac(acbPath, audioFileName, (_c, _t, prog) => {
+            const currentPercent = 50 + prog.loading / 2
+            this.$set(audio, '_percent', currentPercent)
+            this.current = (100 * completeCount / this.downloadingTasks.length) + currentPercent / this.downloadingTasks.length
+            this.total = this.current
+          })
+        }
+        this.$set(audio, '_canplay', true)
+        await this.ensureScoreAndJacket(audio)
+        this.text = ''
+        completeCount++
+      }
+    }
+    this.audioDownloading = false
+    this.text = ''
+    this.current = 0
+    this.total = this.current
+    this.downloadingTasks = []
+  }
+
+  async ensureScoreAndJacket (audio: BGM | Live): Promise<boolean> {
+    if ('score' in audio) {
+      if (!fs.existsSync(scoreDir(audio.score!))) {
+        try {
+          const scoreBdb = await this.scoreDownloader.downloadDatabase(
+            audio.scoreHash!,
+            scoreDir(audio.score!.split('.')[0])
+          )
+          if (scoreBdb) {
+            // this.core.util.lz4dec(scoreBdb as string, 'bdb')
+            fs.removeSync(scoreDir(audio.score!.split('.')[0]))
+          } else {
+            this.event.$emit('alert', this.$t('home.errorTitle'), 'Error!')
+            return false
+          }
+        } catch (errorPath) {
+          this.event.$emit('alert', this.$t('home.errorTitle'), (this.$t('home.downloadFailed') as string) + '<br/>' + (errorPath as string))
+          return false
+        }
+      }
+    }
+
+    if ('jacket' in audio) {
+      const name = path.parse(audio.jacket!).name
+      const jacketlz4 = jacketDir(name)
+      const pngName = name + '_m.png'
+      const pngPath = jacketDir(pngName)
+      if (!fs.existsSync(pngPath)) {
+        try {
+          const jacketu3d = await this.jacketDownloader.downloadAsset(
+            audio.jacketHash!,
+            jacketlz4
+          )
+          if (jacketu3d) {
+            // this.core.util.lz4dec(scoreBdb as string, 'bdb')
+            await fs.remove(jacketlz4)
+            await unpackTexture2D(jacketu3d)
+            await fs.remove(jacketDir(name + '_s.png'))
+          } else {
+            this.event.$emit('alert', this.$t('home.errorTitle'), 'Error!')
+            return false
+          }
+        } catch (errorPath) {
+          this.event.$emit('alert', this.$t('home.errorTitle'), (this.$t('home.downloadFailed') as string) + '<br/>' + (errorPath as string))
+          return false
+        }
+      }
+    }
+    return true
   }
 
   formatJson (obj: any): string {
@@ -188,252 +357,36 @@ export default class extends Vue {
   }
 
   async selectAudio (audio: BGM | Live): Promise<void> {
-    if (this.activeAudio.hash === audio.hash) return
-
+    // if (this.activeAudio.hash === audio.hash) return
     this.playSe(this.enterSe)
-
-    this.total = 0
-    this.current = 0
-    this.text = ''
-
-    this.audioDownloadPromise?.download.abort()
+    const r = await this.ensureScoreAndJacket(audio)
+    if (!r) return
+    this.activeAudio = audio
+    const audioType = audio.name.split('/')[0]
     const type = configurer.get('audioExport') ?? 'wav'
     const audioFileName = audio.fileName + '.' + type
-    if (audio.name.split('/')[0] === 'b') {
-      if (!fs.existsSync(bgmDir(audioFileName))) {
-        const targetPath = getPath(`../asset/bgm.asar/${audioFileName}`)
-        if (fs.existsSync(targetPath)) {
-          this.event.$emit('liveSelect', { src: `../../asset/bgm.asar/${audioFileName}` })
-          return
-        }
-        if (navigator.onLine) {
-          this.activeAudio = audio
-          const needAwb = !!audio.awbHash
-          let result: string | boolean = false
-          try {
-            // result = await this.dler.downloadOne(
-            //   this.getBgmUrl(audio.hash),
-            //   bgmDir(audio.name.split('/')[1]),
-            //   (prog) => {
-            //     this.text = prog.name as string
-            //     this.current = prog.loading
-            //     this.total = prog.loading
-            //   }
-            // )
-            this.audioDownloadPromise = this.dler.downloadSound(
-              'b',
-              audio.hash,
-              bgmDir(path.basename(audio.name)),
-              (prog) => {
-                this.text = prog.name as string
-                if (!needAwb) {
-                  this.current = prog.loading / (this.wavProgress ? 2 : 1)
-                  this.total = prog.loading / (this.wavProgress ? 2 : 1)
-                }
-              }
-            )
-            result = await this.audioDownloadPromise
-            this.audioDownloadPromise = null
-
-            if (needAwb) {
-              this.audioDownloadPromise = this.dler.downloadSound(
-                'b',
-                audio.awbHash!,
-                bgmDir(path.parse(audio.name).name + '.awb'),
-                (prog) => {
-                  this.text = prog.name as string
-                  this.current = prog.loading / (this.wavProgress ? 2 : 1)
-                  this.total = prog.loading / (this.wavProgress ? 2 : 1)
-                }
-              )
-              result = await this.audioDownloadPromise
-              this.audioDownloadPromise = null
-            }
-          } catch (errorPath) {
-            this.audioDownloadPromise = null
-            this.event.$emit('alert', this.$t('home.errorTitle'), (this.$t('home.downloadFailed') as string) + '<br/>' + (errorPath as string))
-          }
-          if (result) {
-            this.total = (this.wavProgress ? 50 : 99.99)
-            this.current = (this.wavProgress ? 50 : 99.99)
-            this.text += this.$t('live.decoding') as string
-            if (type === 'wav') {
-              await this.acb2wav(bgmDir(path.basename(audio.name)), audioFileName, (c, _t, _prog) => {
-                this.current = 50 + c / 2
-                this.total = 50 + c / 2
-              })
-            } else if (type === 'mp3') {
-              await this.acb2mp3(bgmDir(path.basename(audio.name)), audioFileName, (_c, _t, prog) => {
-                this.current = 50 + prog.loading / 2
-                this.total = 50 + prog.loading / 2
-              })
-            } else if (type === 'aac') {
-              await this.acb2aac(bgmDir(path.basename(audio.name)), audioFileName, (_c, _t, prog) => {
-                this.current = 50 + prog.loading / 2
-                this.total = 50 + prog.loading / 2
-              })
-            }
-            this.total = 0
-            this.current = 0
-            this.text = ''
-            this.event.$emit('liveSelect', { src: `../../asset/bgm/${audioFileName}` })
-          }
-        } else {
-          this.event.$emit('alert', this.$t('home.errorTitle'), this.$t('home.noNetwork'))
-        }
-      } else {
-        this.activeAudio = audio
-        this.event.$emit('liveSelect', { src: `../../asset/bgm/${audioFileName}` })
-      }
-    } else if (audio.name.split('/')[0] === 'l') {
-      if (!fs.existsSync(liveDir(audioFileName))) {
-        if (!navigator.onLine) {
-          this.event.$emit('alert', this.$t('home.errorTitle'), this.$t('home.noNetwork'))
-          return
-        }
-        this.activeAudio = audio
-        const needAwb = !!audio.awbHash
-        let result: string | boolean = false
-        try {
-          // result = await this.dler.downloadOne(
-          //   this.getLiveUrl(audio.hash),
-          //   liveDir(audio.name.split('/')[1]),
-          //   (prog) => {
-          //     this.text = prog.name as string
-          //     this.current = prog.loading
-          //     this.total = prog.loading
-          //   }
-          // )
-          this.audioDownloadPromise = this.dler.downloadSound(
-            'l',
-            audio.hash,
-            liveDir(path.basename(audio.name)),
-            (prog) => {
-              this.text = prog.name as string
-              if (!needAwb) {
-                this.current = prog.loading / (this.wavProgress ? 2 : 1)
-                this.total = prog.loading / (this.wavProgress ? 2 : 1)
-              }
-            }
-          )
-          result = await this.audioDownloadPromise
-          this.audioDownloadPromise = null
-
-          if (needAwb) {
-            this.audioDownloadPromise = this.dler.downloadSound(
-              'l',
-              audio.awbHash!,
-              liveDir(path.parse(audio.name).name + '.awb'),
-              (prog) => {
-                this.text = prog.name as string
-                this.current = prog.loading / (this.wavProgress ? 2 : 1)
-                this.total = prog.loading / (this.wavProgress ? 2 : 1)
-              }
-            )
-            result = await this.audioDownloadPromise
-            this.audioDownloadPromise = null
-          }
-        } catch (errorPath) {
-          this.audioDownloadPromise = null
-          this.event.$emit('alert', this.$t('home.errorTitle'), (this.$t('home.downloadFailed') as string) + '<br/>' + (errorPath as string))
-          return
-        }
-
-        if (!result) return
-
-        this.total = (this.wavProgress ? 50 : 99.99)
-        this.current = (this.wavProgress ? 50 : 99.99)
-        this.text += this.$t('live.decoding') as string
-        if (type === 'wav') {
-          await this.acb2wav(liveDir(path.basename(audio.name)), audioFileName, (c, _t, _prog) => {
-            this.current = 50 + c / 2
-            this.total = 50 + c / 2
-          })
-        } else if (type === 'mp3') {
-          await this.acb2mp3(liveDir(path.basename(audio.name)), audioFileName, (_c, _t, prog) => {
-            this.current = 50 + prog.loading / 2
-            this.total = 50 + prog.loading / 2
-          })
-        } else if (type === 'aac') {
-          await this.acb2aac(liveDir(path.basename(audio.name)), audioFileName, (_c, _t, prog) => {
-            this.current = 50 + prog.loading / 2
-            this.total = 50 + prog.loading / 2
-          })
-        }
-        this.total = 0
-        this.current = 0
-        this.text = ''
-        this.event.$emit('liveSelect', { src: `../../asset/live/${audioFileName}` })
-      } else {
-        this.activeAudio = audio
-        this.event.$emit('liveSelect', { src: `../../asset/live/${audioFileName}` })
-      }
-
-      this.lyrics = []
+    this.event.$emit('liveSelect', { src: `../../asset/${audioType === 'b' ? 'bgm' : (audioType === 'l' ? 'live' : '')}/${audioFileName}` })
+    const activeAudio = this.activeAudio
+    if ('score' in activeAudio) {
+      this.allLyrics = await getLyrics(scoreDir(activeAudio.score!))
+    } else {
       this.allLyrics = []
+      this.lyrics = []
+    }
+    if ('jacket' in activeAudio) {
+      const name = path.parse(activeAudio.jacket!).name
+      // const jacketlz4 = jacketDir(name)
+      const pngName = name + '_m.png'
+      const pngPath = jacketDir(pngName)
+      this.jacketSrc = path.posix.relative(getPath('renderer').replace(/\\/g, '/'), pngPath.replace(/\\/g, '/')).replace(/\\/g, '/')
+    } else {
       this.jacketSrc = ''
-
-      const activeAudio = this.activeAudio as Live
-      if (activeAudio.score && navigator.onLine) {
-        await (async () => {
-          if (!fs.existsSync(scoreDir(activeAudio.score!))) {
-            try {
-              const scoreBdb = await this.scoreDownloader.downloadDatabase(
-                activeAudio.scoreHash!,
-                scoreDir(activeAudio.score!.split('.')[0])
-              )
-              if (scoreBdb) {
-                // this.core.util.lz4dec(scoreBdb as string, 'bdb')
-                fs.removeSync(scoreDir(activeAudio.score!.split('.')[0]))
-              } else {
-                this.event.$emit('alert', this.$t('home.errorTitle'), 'Error!')
-                return
-              }
-            } catch (errorPath) {
-              this.event.$emit('alert', this.$t('home.errorTitle'), (this.$t('home.downloadFailed') as string) + '<br/>' + (errorPath as string))
-              return
-            }
-          }
-
-          // ipcRenderer.send('lyrics', scoreDir(this.activeAudio.score))
-          this.allLyrics = await getLyrics(scoreDir(activeAudio.score!))
-        })()
-      }
-
-      if (activeAudio.jacket && navigator.onLine) {
-        await (async () => {
-          const name = path.parse(activeAudio.jacket!).name
-          const jacketlz4 = jacketDir(name)
-          const pngName = name + '_m.png'
-          const pngPath = jacketDir(pngName)
-          if (!fs.existsSync(pngPath)) {
-            try {
-              const jacketu3d = await this.jacketDownloader.downloadAsset(
-                activeAudio.jacketHash!,
-                jacketlz4
-              )
-              if (jacketu3d) {
-                // this.core.util.lz4dec(scoreBdb as string, 'bdb')
-                await fs.remove(jacketlz4)
-                await unpackTexture2D(jacketu3d)
-                await fs.remove(jacketDir(name + '_s.png'))
-              } else {
-                this.event.$emit('alert', this.$t('home.errorTitle'), 'Error!')
-                return
-              }
-            } catch (errorPath) {
-              this.event.$emit('alert', this.$t('home.errorTitle'), (this.$t('home.downloadFailed') as string) + '<br/>' + (errorPath as string))
-              return
-            }
-          }
-
-          this.jacketSrc = path.posix.relative(getPath('renderer').replace(/\\/g, '/'), pngPath.replace(/\\/g, '/')).replace(/\\/g, '/')
-        })()
-      }
     }
   }
 
   onAudioTypeChange (): void {
+    this.selectedAudios.forEach(a => { this.$set(a, '_active', false) })
+    this.selectedAudios.length = 0
     this.query(true)
   }
 
@@ -618,6 +571,7 @@ export default class extends Vue {
       this.event.$on('playerSelect', (fileName: string) => {
         this.allLyrics = []
         this.lyrics = []
+        this.jacketSrc = ''
         if (this.bgmManifest.filter(bgm => bgm.fileName === fileName).length > 0) {
           this.activeAudio = this.bgmManifest.filter(bgm => bgm.fileName === fileName)[0]
         } else {

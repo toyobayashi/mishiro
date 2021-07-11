@@ -21,7 +21,7 @@
           @click="selectAudioNew(i)"
         >
           <div class="title" :title="i.fileName">{{i.fileName}}</div>
-          <div class="play" @click.stop="selectAudio(i)">PLAY</div>
+          <div class="play" v-if="i._canplay" @click.stop="selectAudio(i)">PLAY</div>
         </li>
       </ul>
     </div>
