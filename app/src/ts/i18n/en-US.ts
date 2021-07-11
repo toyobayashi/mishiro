@@ -196,7 +196,8 @@ export default {
     batchErrorMsg: 'message',
     batchErrorCode: 'code',
     proxy: 'PROXY',
-    lrcEncoding: 'LRC Charset'
+    lrcEncoding: 'LRC CHARSET',
+    audioExport: 'AUDIO TYPE'
   },
   commu: {
     id: 'Enter ID',

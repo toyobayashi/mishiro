@@ -196,7 +196,8 @@ export default {
     batchErrorMsg: '錯誤信息',
     batchErrorCode: '錯誤碼',
     proxy: '代理',
-    lrcEncoding: '歌詞字符集'
+    lrcEncoding: '歌詞字符集',
+    audioExport: '音頻格式'
   },
   commu: {
     id: '請輸入ID',

@@ -196,7 +196,8 @@ export default {
     batchErrorMsg: 'エラーメッセージ',
     batchErrorCode: 'エラーコード',
     proxy: 'プロキシ',
-    lrcEncoding: '歌詞文字セット'
+    lrcEncoding: '歌詞文字セット',
+    audioExport: '音楽ファイル形式'
   },
   commu: {
     id: 'ID入力',
