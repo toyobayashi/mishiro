@@ -1,11 +1,13 @@
 import VueI18n from 'vue-i18n'
+import type MishiroAudio from '../audio'
 
 declare module 'vue/types/vue' {
   interface Vue {
     _i18n: { _vm: VueI18n }
     event: Vue
 
-    bgm: HTMLAudioElement
+    // bgm: HTMLAudioElement
+    bgm: MishiroAudio
     enterSe: HTMLAudioElement
     cancelSe: HTMLAudioElement
 

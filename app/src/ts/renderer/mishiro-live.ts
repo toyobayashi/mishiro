@@ -365,7 +365,7 @@ export default class extends Vue {
     const audioType = audio.name.split('/')[0]
     const type = configurer.get('audioExport') ?? 'wav'
     const audioFileName = audio.fileName + '.' + type
-    this.event.$emit('liveSelect', { src: `../../asset/${audioType === 'b' ? 'bgm' : (audioType === 'l' ? 'live' : '')}/${audioFileName}` })
+    this.event.$emit('liveSelect', { src: getPath(`../asset/${audioType === 'b' ? 'bgm' : (audioType === 'l' ? 'live' : '')}/${audioFileName}`) })
     const activeAudio = this.activeAudio
     if ('score' in activeAudio) {
       this.allLyrics = await getLyrics(scoreDir(activeAudio.score!))
