@@ -1,6 +1,6 @@
 {
   "name": "mishiro",
-  "version": "2.5.0",
+  "version": "2.6.0",
   "description": "mishiro",
   "main": "./main/mishiro.main.js",
   "scripts": {
@@ -32,7 +32,7 @@
   },
   "license": "MIT",
   "devDependencies": {
-    "@tybys/ty": "~0.17.0",
+    "@tybys/ty": "~0.18.0",
     "@types/fs-extra": "^9.0.11",
     "@types/marked": "^1.1.0",
     "@types/node": "^14.14.41",
