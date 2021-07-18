@@ -17,27 +17,27 @@ interface BGMList {
 
 export const bgmList: BGMList = {
   anni: {
-    src: '../../asset/bgm.asar/bgm_event_anniversary_005.mp3',
+    src: getPath('../asset/bgm.asar/bgm_event_anniversary_005.mp3'), // '../../asset/bgm.asar/bgm_event_anniversary_005.mp3',
     start: 15,
     end: 87.65
   },
   day: {
-    src: '../../asset/bgm.asar/bgm_studio_day.mp3',
+    src: getPath('../asset/bgm.asar/bgm_studio_day.mp3'), // '../../asset/bgm.asar/bgm_studio_day.mp3',
     start: 13.704,
     end: 95.165
   },
   night: {
-    src: '../../asset/bgm.asar/bgm_studio_night.mp3',
+    src: getPath('../asset/bgm.asar/bgm_studio_night.mp3'), // '../../asset/bgm.asar/bgm_studio_night.mp3',
     start: 12.94,
     end: 98.79
   },
   sunset: {
-    src: '../../asset/bgm.asar/bgm_studio_sunset.mp3',
+    src: getPath('../asset/bgm.asar/bgm_studio_sunset.mp3'), // '../../asset/bgm.asar/bgm_studio_sunset.mp3',
     start: 13.075,
     end: 100.575
   },
   idol: {
-    src: '../../asset/bgm.asar/bgm_idol_menu.mp3',
+    src: getPath('../asset/bgm.asar/bgm_idol_menu.mp3'), // '../../asset/bgm.asar/bgm_idol_menu.mp3',
     start: 0.990,
     end: 80.900
   },
@@ -47,15 +47,15 @@ export const bgmList: BGMList = {
   //   end: 56.599
   // },
   commu: {
-    src: '../../asset/bgm.asar/bgm_commu_menu.mp3',
+    src: getPath('../asset/bgm.asar/bgm_commu_menu.mp3'), // '../../asset/bgm.asar/bgm_commu_menu.mp3',
     start: 2.6,
     end: 45.2
   },
   caravan: {
-    src: '../../asset/bgm.asar/bgm_event_typeA.mp3'
+    src: getPath('../asset/bgm.asar/bgm_event_typeA.mp3') // '../../asset/bgm.asar/bgm_event_typeA.mp3'
   },
   rail: {
-    src: '../../asset/bgm.asar/bgm_event_rail.mp3',
+    src: getPath('../asset/bgm.asar/bgm_event_rail.mp3'), // '../../asset/bgm.asar/bgm_event_rail.mp3',
     start: 14.600,
     end: 94.560
   }
@@ -63,9 +63,6 @@ export const bgmList: BGMList = {
 
 @Component
 export default class extends Vue {
-  bgmTimer: number | NodeJS.Timer = 0
-  startTime: number = 0
-  endTime: number = 0
   isPlaying: boolean = false
   isShow: boolean = false
   playing: {
@@ -86,7 +83,7 @@ export default class extends Vue {
     for (const k in bgmListCopy) {
       if (!bgmListCopy[k].hidden) {
         list[k] = { ...bgmListCopy[k] }
-        list[k].displayName = list[k].src.slice((list[k].src as string).lastIndexOf('/') + 1)
+        list[k].displayName = path.basename(list[k].src)
         list[k].id = list[k].displayName.split('.')[0]
       }
     }
@@ -94,7 +91,7 @@ export default class extends Vue {
   }
 
   get currentPlayingDisplay (): string {
-    return this.playing ? this.playing.src.slice(this.playing.src.lastIndexOf('/') + 1) : ''
+    return this.playing ? path.basename(this.playing.src) : ''
   }
 
   initSrc (): string {
@@ -122,10 +119,10 @@ export default class extends Vue {
     this.isShow = !this.isShow
   }
 
-  set (bgm: any): void {
+  private _set (bgm: any): void {
     this.bgm.src = bgm.src
-    this.startTime = bgm.start
-    this.endTime = bgm.end
+    this.bgm.loopStart = bgm.start || 0
+    this.bgm.loopEnd = bgm.end || 0
     this.playing = bgm
   }
 
@@ -142,36 +139,26 @@ export default class extends Vue {
 
   play (bgm?: any): void {
     if (bgm) {
-      this.set(bgm)
+      this._set(bgm)
       this.event.$emit('playerSelect', path.parse(bgm.src).name)
-    }
-    setTimeout(() => {
-      clearInterval(this.bgmTimer as NodeJS.Timer)
-      this.bgm.volume = 1
-      this.bgm.play().catch(err => console.log(err))
-      this.isPlaying = true
-      if (this.startTime && this.endTime) {
-        (this.bgm.onended as any) = null
-        this.bgmTimer = setInterval(() => {
-          if (this.bgm.currentTime >= this.endTime) {
-            this.bgm.currentTime = this.startTime
-            this.bgm.play().catch(err => console.log(err))
-          }
-        }, 1)
-      } else {
-        const windowbgm = this.bgm
-        this.bgm.onended = function () {
-          windowbgm.currentTime = 0
-          windowbgm.play().catch(err => console.log(err))
+      if (!this.bgm.oncanplay) {
+        this.bgm.oncanplay = () => {
+          // this.bgm.volume = 1
+          this.bgm.play().catch(err => console.log(err))
+          this.isPlaying = true
+          this.bgm.oncanplay = null
         }
       }
-    }, 0)
+    } else {
+      // this.bgm.volume = 1
+      this.bgm.play().catch(err => console.log(err))
+      this.isPlaying = true
+    }
   }
 
   pause (): void {
     this.bgm.pause()
     this.isPlaying = false
-    clearInterval(this.bgmTimer as NodeJS.Timer)
   }
 
   beforeMount (): void {
@@ -182,20 +169,21 @@ export default class extends Vue {
         try {
           o = JSON.parse(msrEvent)
         } catch (_) {
-          this.set(bgmList.anni)
+          this.play(bgmList.anni)
           return
         }
         if ((o.id.toString()).charAt(0) !== '2' && (o.id.toString()).charAt(0) !== '6') {
           if (fs.existsSync(bgmDir(`bgm_event_${o.id}.mp3`))) {
-            this.set({ src: `../../asset/bgm/bgm_event_${o.id}.mp3` })
+            // this.play({ src: `../../asset/bgm/bgm_event_${o.id}.mp3` })
+            this.play({ src: getPath(`../asset/bgm/bgm_event_${o.id}.mp3`) /* `../../asset/bgm/bgm_event_${o.id}.mp3` */ })
           } else {
-            this.set(bgmList.anni)
+            this.play(bgmList.anni)
           }
         } else {
-          this.set(bgmList.anni)
+          this.play(bgmList.anni)
         }
       } else {
-        this.set(bgmList.anni)
+        this.play(bgmList.anni)
       }
     })
   }
@@ -203,7 +191,7 @@ export default class extends Vue {
   mounted (): void {
     this.$nextTick(() => {
       // this.setStudioBgm();
-      this.play()
+      // this.play()
       const charaTitleVoiceArr = fs.readdirSync(getPath('../asset/chara_title.asar'))
       for (let i = 0; i < charaTitleVoiceArr.length; i++) {
         charaTitleVoiceArr[i] = '../../asset/chara_title.asar/' + charaTitleVoiceArr[i]
@@ -229,7 +217,7 @@ export default class extends Vue {
             break
           }
         }
-        if (this.playing.src === `../../asset/bgm/bgm_event_${this.eventInfo.id}.mp3`) {
+        if (this.playing.src === getPath(`../asset/bgm/bgm_event_${this.eventInfo.id}.mp3`)) {
           flag = true
         }
         if (flag) {
@@ -255,8 +243,9 @@ export default class extends Vue {
                     this.play(bgmList.rail)
                   }
                 } else {
-                  if (this.playing.src !== `../../asset/bgm/bgm_event_${this.eventInfo.id}.mp3`) {
-                    this.event.$emit('liveSelect', { src: `../../asset/bgm/bgm_event_${this.eventInfo.id}.mp3` })
+                  const eventBgmSrc = getPath(`../asset/bgm/bgm_event_${this.eventInfo.id}.mp3`)
+                  if (this.playing.src !== eventBgmSrc) {
+                    this.event.$emit('liveSelect', { src: eventBgmSrc })
                   }
                 }
               }

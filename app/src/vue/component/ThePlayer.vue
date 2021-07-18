@@ -11,8 +11,10 @@
         :key="bgm.src"
         :id="bgm.id"
         @click="play(bgm)">
-        <span :title="bgm.displayName" v-text="bgm.displayName"
-              :class="{ theme: bgm.src === playing.src }"></span>
+        <span
+          :title="bgm.displayName"
+          :class="{ theme: bgm.src === playing.src }"
+        >{{bgm.displayName}}</span>
     </li>
   </ul>
 </div>
@@ -47,6 +49,7 @@
   float: left;
   width: 192px;
   position: relative;
+  padding: 0 4px;
   background-position: -384px -30px;
 }
 .bgm-select-bar>button:nth-child(1) > span {
@@ -100,5 +103,8 @@
   white-space: nowrap;
   text-overflow: ellipsis;
   padding: 0 5px;
+}
+.gray-bg .theme {
+  color: #902070;
 }
 </style>

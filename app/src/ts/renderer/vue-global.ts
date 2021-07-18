@@ -1,5 +1,6 @@
 import type { PluginFunction } from 'vue'
 import getPath from '../common/get-path'
+import MishiroAudio from './audio'
 const { ipcRenderer } = window.node.electron
 const fs = window.node.fs
 const path = window.node.path
@@ -20,7 +21,8 @@ const getIconUrl = (id: string | number): string => `${imgHostBase}/icon_card/${
 const install: PluginFunction<undefined> = function (Vue) {
   // 全局属性
   Vue.prototype.event = new Vue({}) // 全局事件总站
-  Vue.prototype.bgm = new Audio() // 背景音乐
+  // Vue.prototype.bgm = new Audio() // 背景音乐
+  Vue.prototype.bgm = new MishiroAudio() // 背景音乐
   Vue.prototype.enterSe = new Audio('../../asset/se.asar/se_common_enter.mp3') // 确认音效
   Vue.prototype.cancelSe = new Audio('../../asset/se.asar/se_common_cancel.mp3') // 取消音效
   Vue.prototype.core = window.node.mishiroCore
