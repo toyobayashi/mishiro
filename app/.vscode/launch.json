@@ -17,7 +17,8 @@
       "sourceMaps": true,
       "sourceMapPathOverrides": {
         "webpack:///*": "${workspaceFolder}/*",
-        "webpack:///./*": "${workspaceFolder}/*"
+        "webpack:///./*": "${workspaceFolder}/*",
+        "ty://mishiro/*": "${workspaceFolder}/*"
       }
     },
     {
