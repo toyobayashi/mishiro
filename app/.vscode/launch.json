@@ -16,9 +16,9 @@
       "webRoot": "${workspaceFolder}/local_resources",
       "sourceMaps": true,
       "sourceMapPathOverrides": {
+        "webpack://mishiro/*": "${workspaceFolder}/*",
         "webpack:///*": "${workspaceFolder}/*",
-        "webpack:///./*": "${workspaceFolder}/*",
-        "ty://mishiro/*": "${workspaceFolder}/*"
+        "webpack:///./*": "${workspaceFolder}/*"
       }
     },
     {

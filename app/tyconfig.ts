@@ -71,7 +71,7 @@ const tyconfig = ty.defineConfiguration(() => {
       renderer (config: webpack.Configuration) {
         if (config.mode !== 'production' && config.output) {
           config.output.devtoolNamespace = 'mishiro'
-          config.output.devtoolModuleFilenameTemplate = 'ty://[namespace]/[resource-path]?[hash]'
+          // config.output.devtoolModuleFilenameTemplate = 'ty://[namespace]/[resource-path]?[hash]'
         }
         // const webpackVersion = Number(webpack.version.charAt(0))
         // if (webpackVersion > 4 && config.mode !== 'production' && config.output) {
