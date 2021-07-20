@@ -60,10 +60,8 @@ class MishiroAudio {
   }
 
   public set src (value: string) {
-    const buffer = fs.readFileSync(value)
-    const ab = buffer.buffer
     // eslint-disable-next-line @typescript-eslint/no-floating-promises
-    this.#ctx.decodeAudioData(ab, (audioBuffer) => {
+    this.#ctx.decodeAudioData(fs.readFileSync(value).buffer, (audioBuffer) => {
       this.#audioBuffer = audioBuffer
       this.#duration = audioBuffer.duration
       this.#startedAt = 0
