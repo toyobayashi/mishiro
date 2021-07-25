@@ -367,6 +367,7 @@ export default class extends Vue {
     const audioFileName = audio.fileName + '.' + type
     this.event.$emit('liveSelect', { src: getPath(`../asset/${audioType === 'b' ? 'bgm' : (audioType === 'l' ? 'live' : '')}/${audioFileName}`) })
     const activeAudio = this.activeAudio
+    console.log(activeAudio)
     if ('score' in activeAudio) {
       this.allLyrics = await getLyrics(scoreDir(activeAudio.score!))
     } else {
@@ -555,7 +556,7 @@ export default class extends Vue {
 
   mounted (): void {
     this.$nextTick(() => {
-      this.bgm.addEventListener('timeupdate', () => {
+      this.bgm.on('timeupdate', () => {
         this.currentTime = this.bgm.currentTime
         for (let i = this.allLyrics.length - 1; i >= 0; i--) {
           const line = this.allLyrics[i]
@@ -564,15 +565,15 @@ export default class extends Vue {
             break
           }
         }
-      }, false)
-      this.bgm.addEventListener('durationchange', () => {
+      })
+      this.bgm.on('durationchange', () => {
         this.duration = this.bgm.duration
-      }, false)
+      })
       this.event.$on('playerSelect', (fileName: string) => {
-        this.allLyrics = []
-        this.lyrics = []
-        this.jacketSrc = ''
         if (this.bgmManifest.filter(bgm => bgm.fileName === fileName).length > 0) {
+          this.allLyrics = []
+          this.lyrics = []
+          this.jacketSrc = ''
           this.activeAudio = this.bgmManifest.filter(bgm => bgm.fileName === fileName)[0]
         } else {
           this.activeAudio = this.liveManifest.filter(bgm => bgm.fileName === fileName)[0]

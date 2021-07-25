@@ -105,12 +105,12 @@ export default class extends Vue {
     }
   }
 
-  pauseButton (): void {
+  async pauseButton (): Promise<void> {
     this.playSe(this.cancelSe)
     if (this.isPlaying) {
       this.pause()
     } else {
-      this.play()
+      await this.play()
     }
   }
 
@@ -119,39 +119,27 @@ export default class extends Vue {
     this.isShow = !this.isShow
   }
 
-  private _set (bgm: any): void {
-    this.bgm.src = bgm.src
-    this.bgm.loopStart = bgm.start || 0
-    this.bgm.loopEnd = bgm.end || 0
-    this.playing = bgm
-  }
-
-  playStudioBgm (): void {
+  async playStudioBgm (): Promise<void> {
     const t = new Date()
     if (t.getHours() >= 5 && t.getHours() <= 16) {
-      this.play(bgmList.day)
+      await this.play(bgmList.day)
     } else if (t.getHours() < 5 || t.getHours() >= 20) {
-      this.play(bgmList.night)
+      await this.play(bgmList.night)
     } else {
-      this.play(bgmList.sunset)
+      await this.play(bgmList.sunset)
     }
   }
 
-  play (bgm?: any): void {
+  async play (bgm?: any): Promise<void> {
     if (bgm) {
-      this._set(bgm)
+      this.bgm.loopStart = bgm.start || 0
+      this.bgm.loopEnd = bgm.end || 0
+      await this.bgm.playRaw(bgm.src)
+      this.playing = bgm
+      this.isPlaying = true
       this.event.$emit('playerSelect', path.parse(bgm.src).name)
-      if (!this.bgm.oncanplay) {
-        this.bgm.oncanplay = () => {
-          // this.bgm.volume = 1
-          this.bgm.play().catch(err => console.log(err))
-          this.isPlaying = true
-          this.bgm.oncanplay = null
-        }
-      }
     } else {
-      // this.bgm.volume = 1
-      this.bgm.play().catch(err => console.log(err))
+      await this.bgm.play()
       this.isPlaying = true
     }
   }
@@ -162,28 +150,28 @@ export default class extends Vue {
   }
 
   beforeMount (): void {
-    this.$nextTick(() => {
+    this.$nextTick(async () => {
       const msrEvent = localStorage.getItem('msrEvent')
       if (msrEvent) {
         let o: any
         try {
           o = JSON.parse(msrEvent)
         } catch (_) {
-          this.play(bgmList.anni)
+          await this.play(bgmList.anni)
           return
         }
         if ((o.id.toString()).charAt(0) !== '2' && (o.id.toString()).charAt(0) !== '6') {
           if (fs.existsSync(bgmDir(`bgm_event_${o.id}.mp3`))) {
             // this.play({ src: `../../asset/bgm/bgm_event_${o.id}.mp3` })
-            this.play({ src: getPath(`../asset/bgm/bgm_event_${o.id}.mp3`) /* `../../asset/bgm/bgm_event_${o.id}.mp3` */ })
+            await this.play({ src: getPath(`../asset/bgm/bgm_event_${o.id}.mp3`) /* `../../asset/bgm/bgm_event_${o.id}.mp3` */ })
           } else {
-            this.play(bgmList.anni)
+            await this.play(bgmList.anni)
           }
         } else {
-          this.play(bgmList.anni)
+          await this.play(bgmList.anni)
         }
       } else {
-        this.play(bgmList.anni)
+        await this.play(bgmList.anni)
       }
     })
   }
@@ -205,11 +193,11 @@ export default class extends Vue {
         }
       }, false)
 
-      this.event.$on('play-studio-bgm', () => {
-        this.playStudioBgm()
+      this.event.$on('play-studio-bgm', async () => {
+        await this.playStudioBgm()
       })
 
-      this.event.$on('changeBgm', (block: string) => {
+      this.event.$on('changeBgm', async (block: string) => {
         let flag = false
         for (const b in bgmList) {
           if (bgmList[b].src === this.playing.src) {
@@ -224,23 +212,23 @@ export default class extends Vue {
           switch (block) {
             case 'home':
               if (this.playing.src !== bgmList.day.src && this.playing.src !== bgmList.sunset.src && this.playing.src !== bgmList.night.src) {
-                this.playStudioBgm()
+                await this.playStudioBgm()
               }
               break
             case 'idol':
               if (this.playing.src !== bgmList.idol.src) {
-                this.play(bgmList.idol)
+                await this.play(bgmList.idol)
               }
               break
             case 'live':
               if (this.$store.state.master.eventHappening) {
                 if (Number(this.eventInfo.type) === 2) {
                   if (this.playing.src !== bgmList.caravan.src) {
-                    this.play(bgmList.caravan)
+                    await this.play(bgmList.caravan)
                   }
                 } else if (Number(this.eventInfo.type) === 6) {
                   if (this.playing.src !== bgmList.rail.src) {
-                    this.play(bgmList.rail)
+                    await this.play(bgmList.rail)
                   }
                 } else {
                   const eventBgmSrc = getPath(`../asset/bgm/bgm_event_${this.eventInfo.id}.mp3`)
@@ -257,12 +245,12 @@ export default class extends Vue {
             //   break
             case 'commu':
               if (this.playing.src !== bgmList.commu.src) {
-                this.play(bgmList.commu)
+                await this.play(bgmList.commu)
               }
               break
             case 'menu':
               if (this.playing.src !== bgmList.day.src && this.playing.src !== bgmList.sunset.src && this.playing.src !== bgmList.night.src) {
-                this.playStudioBgm()
+                await this.playStudioBgm()
               }
               break
             default:
@@ -270,24 +258,24 @@ export default class extends Vue {
           }
         }
       })
-      this.event.$on('liveSelect', (bgm: any) => {
+      this.event.$on('liveSelect', async (bgm: any) => {
         let flag = false
         for (const b in bgmList) {
           if (bgmList[b].src === bgm.src) {
             flag = true
-            this.play(bgmList[b])
+            await this.play(bgmList[b])
             break
           }
         }
         if (!flag) {
-          this.play(bgm)
+          await this.play(bgm)
         }
       })
       this.event.$on('pauseBgm', () => {
         this.pause()
       })
-      this.event.$on('playBgm', () => {
-        this.play()
+      this.event.$on('playBgm', async () => {
+        await this.play()
       })
     })
   }
