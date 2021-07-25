@@ -1,29 +1,20 @@
 // import getPath from '../common/get-path'
+import type { BufferLike } from 'hca-decoder'
 
 const fs = window.node.fs
+const { EventEmitter } = window.node.events
+const { HCADecoder } = window.node.hcaDecoder
 // const path = window.node.path
 
-function emit (listeners: Record<string, Function[]>, event: string, thisArg: any, ...args: any[]): void {
-  if (listeners[event]) {
-    listeners[event].slice().forEach(f => {
-      f.call(thisArg, ...args)
-    })
-  }
-}
+class MishiroAudio extends EventEmitter {
+  #ctx: AudioContext = new AudioContext()
 
-class MishiroAudio {
-  #listeners: Record<string, Function[]> = Object.create(null)
-  #src: string = ''
-  #startedAt: number = 0
-  #pausedAt: number = 0
+  #startedAt: number = 0 // absolute time
+  #pausedAt: number = 0 // relative time
   #duration: number = 0
 
-  #ctx: AudioContext = new AudioContext()
   #source: AudioBufferSourceNode | null = null
   #audioBuffer: AudioBuffer | null = null
-
-  public onended: null | (() => void) = null
-  public oncanplay: null | (() => void) = null
 
   public loop: boolean = true
   #loopStart: number = 0
@@ -46,31 +37,6 @@ class MishiroAudio {
   public set loopEnd (value: number) {
     this.#loopEnd = value
     if (this.#source) this.#source.loopEnd = value
-  }
-
-  // public constructor () {
-  //   setInterval(() => {
-  //     // eslint-disable-next-line @typescript-eslint/restrict-plus-operands
-  //     console.log('currentTime: ' + this.currentTime)
-  //   }, 500)
-  // }
-
-  public get src (): string {
-    return this.#src
-  }
-
-  public set src (value: string) {
-    // eslint-disable-next-line @typescript-eslint/no-floating-promises
-    this.#ctx.decodeAudioData(fs.readFileSync(value).buffer, (audioBuffer) => {
-      this.#audioBuffer = audioBuffer
-      this.#duration = audioBuffer.duration
-      this.#startedAt = 0
-      this.#pausedAt = 0
-      emit(this.#listeners, 'durationchange', this)
-      emit(this.#listeners, 'canplay', this)
-      if (this.oncanplay) this.oncanplay()
-    })
-    this.#src = value
   }
 
   public get currentTime (): number {
@@ -109,9 +75,9 @@ class MishiroAudio {
       this.#source?.start(0, value)
 
       window.clearInterval(this.#timeupdateTimer)
-      emit(this.#listeners, 'timeupdate', this)
+      this.emit('timeupdate')
       this.#timeupdateTimer = window.setInterval(() => {
-        emit(this.#listeners, 'timeupdate', this)
+        this.emit('timeupdate')
       }, 250)
     }
   }
@@ -123,8 +89,8 @@ class MishiroAudio {
   private _initSource (audioBuffer: AudioBuffer): void {
     try {
       if (this.#source) {
-        this.#source.disconnect()
         this.#source.stop()
+        this.#source.disconnect()
         this.#source = null
       }
     } catch (_) {}
@@ -139,50 +105,111 @@ class MishiroAudio {
     this.#source.connect(this.#ctx.destination)
   }
 
-  public play (): Promise<void> {
-    return new Promise<void>((resolve, reject) => {
-      if (!this.#audioBuffer) {
-        reject(new Error('no source'))
-        return
-      }
+  public async playRawSide (src: string | BufferLike): Promise<void> {
+    const audioBuffer = await decodeAudioBuffer(this.#ctx, src)
+    let source = this.#ctx.createBufferSource()
+    source.buffer = audioBuffer
+    source.connect(this.#ctx.destination)
+    source.start(0)
+    source.onended = () => {
+      source.disconnect()
+      source = null!
+    }
+  }
 
-      this._initSource(this.#audioBuffer)
-      const offset = this.#pausedAt
-      this.#source?.start(0, offset)
-      this.#startedAt = this.#ctx.currentTime - offset
-      this.#pausedAt = 0
-      resolve()
-      window.clearInterval(this.#timeupdateTimer)
-      emit(this.#listeners, 'timeupdate', this)
-      this.#timeupdateTimer = window.setInterval(() => {
-        emit(this.#listeners, 'timeupdate', this)
-      }, 250)
-    })
+  public async playHcaSide (src: string | BufferLike): Promise<void> {
+    const wavBuffer = await hcaDecodeToMemory(src)
+    await this.playRawSide(wavBuffer)
+  }
+
+  public async playHca (src: string | BufferLike): Promise<void> {
+    const wavBuffer = await hcaDecodeToMemory(src)
+    this.#audioBuffer = await decodeAudioBuffer(this.#ctx, wavBuffer)
+    this.#duration = this.#audioBuffer.duration
+    this.#startedAt = 0
+    this.#pausedAt = 0
+    this.emit('durationchange')
+
+    const info = HCADecoder.getInfo(src)
+    if (info.loop) {
+      this.#loopStart = this.#audioBuffer.duration * (info.loop.start / info.blockCount)
+      this.#loopEnd = this.#audioBuffer.duration * (info.loop.end / info.blockCount)
+    } else {
+      this.#loopStart = 0
+      this.#loopEnd = 0
+    }
+    await this.play()
+  }
+
+  public async playRaw (src: string | BufferLike): Promise<void> {
+    this.#audioBuffer = await decodeAudioBuffer(this.#ctx, src)
+    this.#duration = this.#audioBuffer.duration
+    this.#startedAt = 0
+    this.#pausedAt = 0
+    this.emit('durationchange')
+
+    await this.play()
+  }
+
+  /**
+   * Continue playing
+   */
+  public async play (): Promise<void> {
+    if (!this.#audioBuffer) {
+      throw new Error('no source')
+    }
+
+    this._initSource(this.#audioBuffer)
+    const offset = this.#pausedAt
+    this.#source?.start(0, offset)
+    this.#startedAt = this.#ctx.currentTime - offset
+    this.#pausedAt = 0
+
+    window.clearInterval(this.#timeupdateTimer)
+    this.emit('timeupdate')
+    this.#timeupdateTimer = window.setInterval(() => {
+      this.emit('timeupdate')
+    }, 250)
   }
 
   public pause (): void {
     if (this.#source) {
-      this.#source.disconnect()
       this.#source.stop()
+      this.#source.disconnect()
       this.#source = null
       this.#pausedAt = this.#ctx.currentTime - this.#startedAt
       this.#startedAt = 0
     }
     window.clearInterval(this.#timeupdateTimer)
   }
+}
 
-  public addEventListener (event: string, listener: (...args: any[]) => any, _captureOrOptions?: boolean): void {
-    if (!this.#listeners[event]) this.#listeners[event] = []
-    this.#listeners[event].push(listener)
-  }
+function hcaDecodeToMemory (src: string | BufferLike): Promise<Buffer> {
+  return new Promise<Buffer>((resolve, reject) => {
+    const hca = new HCADecoder()
+    hca.decodeToMemory(src, 1, 16, 0, (err, buffer) => {
+      if (err) {
+        reject(err)
+        return
+      }
+      resolve(buffer!)
+    })
+  })
+}
 
-  public removeEventListener (event: string, listener: (...args: any[]) => any, _captureOrOptions?: boolean): void {
-    if (!this.#listeners[event]) return
-    const index = this.#listeners[event].indexOf(listener)
-    if (index !== -1) {
-      this.#listeners[event].splice(index, 1)
+async function decodeAudioBuffer (context: AudioContext, src: string | BufferLike): Promise<AudioBuffer> {
+  let audioBuffer: AudioBuffer
+  if (typeof src === 'string') {
+    const ab = await fs.promises.readFile(src)
+    audioBuffer = await context.decodeAudioData(ab.buffer)
+  } else {
+    if (src instanceof ArrayBuffer) {
+      audioBuffer = await context.decodeAudioData(src)
+    } else {
+      audioBuffer = await context.decodeAudioData(src.buffer)
     }
   }
+  return audioBuffer
 }
 
 export default MishiroAudio
