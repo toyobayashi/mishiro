@@ -1,6 +1,7 @@
 import { Vue, Component } from 'vue-property-decorator'
 // import { MasterData } from '../main/on-master-read'
 import getPath from '../common/get-path'
+import type { BGM } from './back/resolve-audio-manifest'
 const fs = window.node.fs
 const path = window.node.path
 
@@ -17,47 +18,31 @@ interface BGMList {
 
 export const bgmList: BGMList = {
   anni: {
-    src: getPath('../asset/bgm.asar/bgm_event_anniversary_005.mp3'), // '../../asset/bgm.asar/bgm_event_anniversary_005.mp3',
-    start: 15,
-    end: 87.65
+    src: getPath('../asset/bgm.asar/bgm_event_anniversary_005.hca')
   },
   day: {
-    src: getPath('../asset/bgm.asar/bgm_studio_day.mp3'), // '../../asset/bgm.asar/bgm_studio_day.mp3',
-    start: 13.704,
-    end: 95.165
+    src: getPath('../asset/bgm.asar/bgm_studio_day.hca')
   },
   night: {
-    src: getPath('../asset/bgm.asar/bgm_studio_night.mp3'), // '../../asset/bgm.asar/bgm_studio_night.mp3',
-    start: 12.94,
-    end: 98.79
+    src: getPath('../asset/bgm.asar/bgm_studio_night.hca')
   },
   sunset: {
-    src: getPath('../asset/bgm.asar/bgm_studio_sunset.mp3'), // '../../asset/bgm.asar/bgm_studio_sunset.mp3',
-    start: 13.075,
-    end: 100.575
+    src: getPath('../asset/bgm.asar/bgm_studio_sunset.hca')
   },
   idol: {
-    src: getPath('../asset/bgm.asar/bgm_idol_menu.mp3'), // '../../asset/bgm.asar/bgm_idol_menu.mp3',
-    start: 0.990,
-    end: 80.900
+    src: getPath('../asset/bgm.asar/bgm_idol_menu.hca')
   },
   // gacha: {
-  //   src: '../../asset/bgm.asar/bgm_gacha_menu.mp3',
-  //   start: 1.800,
-  //   end: 56.599
+  //   src: '../../asset/bgm.asar/bgm_gacha_menu.hca'
   // },
   commu: {
-    src: getPath('../asset/bgm.asar/bgm_commu_menu.mp3'), // '../../asset/bgm.asar/bgm_commu_menu.mp3',
-    start: 2.6,
-    end: 45.2
+    src: getPath('../asset/bgm.asar/bgm_commu_menu.hca')
   },
   caravan: {
-    src: getPath('../asset/bgm.asar/bgm_event_typeA.mp3') // '../../asset/bgm.asar/bgm_event_typeA.mp3'
+    src: getPath('../asset/bgm.asar/bgm_event_typeA.hca')
   },
   rail: {
-    src: getPath('../asset/bgm.asar/bgm_event_rail.mp3'), // '../../asset/bgm.asar/bgm_event_rail.mp3',
-    start: 14.600,
-    end: 94.560
+    src: getPath('../asset/bgm.asar/bgm_event_rail.hca')
   }
 }
 
@@ -165,9 +150,8 @@ export default class extends Vue {
           return
         }
         if ((o.id.toString()).charAt(0) !== '2' && (o.id.toString()).charAt(0) !== '6') {
-          if (fs.existsSync(bgmDir(`bgm_event_${o.id}.mp3`))) {
-            // this.play({ src: `../../asset/bgm/bgm_event_${o.id}.mp3` })
-            await this.play({ src: getPath(`../asset/bgm/bgm_event_${o.id}.mp3`) /* `../../asset/bgm/bgm_event_${o.id}.mp3` */ })
+          if (fs.existsSync(bgmDir(`bgm_event_${o.id}.hca`))) {
+            await this.play({ src: getPath(`../asset/bgm/bgm_event_${o.id}.hca`) })
           } else {
             await this.play(bgmList.anni)
           }
@@ -198,6 +182,12 @@ export default class extends Vue {
       }, false)
 
       this.event.$on('play-studio-bgm', async () => {
+        for (const b in bgmList) {
+          const audio = this.$store.state.master.bgmManifest.filter((bb: BGM) => bb.fileName === path.parse(bgmList[b].src).name)[0]
+          if (audio) {
+            this.$set(audio, '_canplay', true)
+          }
+        }
         await this.playStudioBgm()
       })
 
@@ -209,7 +199,7 @@ export default class extends Vue {
             break
           }
         }
-        if (this.playing.src === getPath(`../asset/bgm/bgm_event_${this.eventInfo.id}.mp3`)) {
+        if (this.playing.src === getPath(`../asset/bgm/bgm_event_${this.eventInfo.id}.hca`)) {
           flag = true
         }
         if (flag) {
