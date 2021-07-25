@@ -395,10 +395,27 @@ export default class extends Vue {
     if (!r) return
     this.activeAudio = audio
     const audioType = audio.name.split('/')[0]
-    const audioFileName = audio.fileName + '.hca'
-    this.event.$emit('liveSelect', { src: getPath(`../asset/${audioType === 'b' ? 'bgm' : (audioType === 'l' ? 'live' : '')}/${audioFileName}`) })
+    const hcaFileName = audio.fileName + '.hca'
+    const dir = audioType === 'b' ? bgmDir : (audioType === 'l' ? liveDir : null)
+    if (!dir) {
+      this.event.$emit('alert', this.$t('home.errorTitle'), 'Bad type')
+      return
+    }
+    let hcaFilePath = dir(hcaFileName)
+    // let hcaInAsar = false
+
+    let hcaFilePathExist = fs.existsSync(hcaFilePath)
+    if (audioType === 'b' && !hcaFilePathExist) {
+      const asarHcaFilePath = bgmAsarDir(hcaFileName)
+      if (fs.existsSync(asarHcaFilePath)) {
+        hcaFilePathExist = true
+        hcaFilePath = asarHcaFilePath
+        // hcaInAsar = true
+      }
+    }
+
+    this.event.$emit('liveSelect', { src: hcaFilePath })
     const activeAudio = this.activeAudio
-    console.log(activeAudio)
     if ('score' in activeAudio) {
       this.allLyrics = await getLyrics(scoreDir(activeAudio.score!))
     } else {
