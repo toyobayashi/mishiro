@@ -520,8 +520,7 @@ export default class extends Vue {
       return false
     }
 
-    const type = configurer.get('audioExport') ?? 'wav'
-    if (!fs.existsSync(liveDir(activeAudio.fileName + '.' + type))) {
+    if (!fs.existsSync(liveDir(activeAudio.fileName + '.hca'))) {
       this.event.$emit('alert', this.$t('home.errorTitle'), this.$t('live.noAudio'))
       return false
     }
