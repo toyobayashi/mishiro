@@ -153,7 +153,9 @@ export default class extends Vue {
     for (let i = 0; i < this.downloadingTasks.length; i++) {
       const audio = this.downloadingTasks[i]
       const audioType = audio.name.split('/')[0]
-      const acbBase = path.posix.basename(audio.name)
+      const acbPathObj = path.posix.parse(audio.name)
+      const acbBase = acbPathObj.base
+      const awbBase = acbPathObj.name + '.awb'
       const type = configurer.get('audioExport') ?? 'wav'
       const audioFileName = audio.fileName + '.' + type
       const hcaFileName = audio.fileName + '.hca'
@@ -191,6 +193,7 @@ export default class extends Vue {
       const acbPath = dir(acbBase)
       if (!hcaFilePathExist) {
         let result: string
+        const awbPath = dir(awbBase)
         try {
           this.audioDownloadPromise = this.dler.downloadSound(
             audioType,
@@ -212,7 +215,7 @@ export default class extends Vue {
             this.audioDownloadPromise = this.dler.downloadSound(
               audioType,
               audio.awbHash!,
-              dir(path.parse(audio.name).name + '.awb'),
+              awbPath,
               (prog) => {
                 this.text = `[${completeCount}/${this.downloadingTasks.length}] ${prog.name as string}`
                 const currentPercent = prog.loading / (this.wavProgress ? 2 : 1)
@@ -241,6 +244,7 @@ export default class extends Vue {
         }
         await fs.promises.writeFile(hcaFilePath, acbEntries[0].buffer)
         await fs.remove(acbPath)
+        if (needAwb) await fs.remove(awbPath)
       }
       this.$set(audio, '_canplay', true)
 
