@@ -202,8 +202,13 @@ function hcaDecodeToMemory (src: string | BufferLike): Promise<Buffer> {
 async function decodeAudioBuffer (context: AudioContext, src: string | BufferLike): Promise<AudioBuffer> {
   let audioBuffer: AudioBuffer
   if (typeof src === 'string') {
-    const ab = await fs.promises.readFile(src)
+    let ab = await fs.promises.readFile(src)
     audioBuffer = await context.decodeAudioData(ab.buffer)
+    ab = null!
+    // eslint-disable-next-line @typescript-eslint/no-floating-promises
+    Promise.resolve().then(() => {
+      if (typeof global.gc === 'function') global.gc()
+    })
   } else {
     if (src instanceof ArrayBuffer) {
       audioBuffer = await context.decodeAudioData(src)

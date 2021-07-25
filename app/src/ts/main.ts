@@ -9,6 +9,11 @@ import setIcon from './main/icon'
 
 app.commandLine.appendSwitch('autoplay-policy', 'no-user-gesture-required')
 
+// https://stackoverflow.com/questions/51372010/enabling-manual-garbage-collection-in-electron-app
+app.commandLine.appendSwitch('js-flags', '--expose-gc')
+// require('v8').setFlagsFromString('--expose-gc')
+// global.gc = require('vm').runInNewContext('gc')
+
 if (process.env.NODE_ENV !== 'production') {
   // https://github.com/mapbox/node-sqlite3/issues/1370
   app.allowRendererProcessReuse = false
