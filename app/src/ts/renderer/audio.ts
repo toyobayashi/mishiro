@@ -48,15 +48,19 @@ class MishiroAudio extends EventEmitter {
       return t
     } else if (this.#startedAt) {
       t = this.#ctx.currentTime - this.#startedAt
-      if (this.loopEnd > 0) {
-        while (t > this.loopEnd) {
-          this.#startedAt = this.#ctx.currentTime - (this.loopStart + (t - this.loopEnd))
+      if (this.loop) {
+        if (this.loopEnd > 0) {
+          while (t > this.loopEnd) {
+            this.#startedAt = this.#ctx.currentTime - (this.loopStart + (t - this.loopEnd))
+            t = this.#ctx.currentTime - this.#startedAt
+          }
+        }
+        while (t > this.duration) {
+          this.#startedAt += this.duration
           t = this.#ctx.currentTime - this.#startedAt
         }
-      }
-      while (t > this.duration) {
-        this.#startedAt += this.duration
-        t = this.#ctx.currentTime - this.#startedAt
+      } else {
+        if (t > this.duration) t = this.duration
       }
       return t
     } else {
@@ -71,7 +75,7 @@ class MishiroAudio extends EventEmitter {
     }
     if (this.#startedAt) {
       if (!this.#audioBuffer) return
-      this._initSource(this.#audioBuffer)
+      this._initSource(this.#audioBuffer, true)
       this.#startedAt = this.#ctx.currentTime - value
       this.#pausedAt = 0
       this.#source?.start(0, value)
@@ -88,9 +92,10 @@ class MishiroAudio extends EventEmitter {
     return this.#duration
   }
 
-  private _initSource (audioBuffer: AudioBuffer): void {
+  private _initSource (audioBuffer: AudioBuffer, clearOnEnded = false): void {
     try {
       if (this.#source) {
+        if (clearOnEnded) this.#source.onended = null
         this.#source.stop()
         this.#source.disconnect()
         this.#source = null
@@ -101,9 +106,9 @@ class MishiroAudio extends EventEmitter {
     this.#source.loop = this.loop
     this.#source.loopStart = this.loopStart
     this.#source.loopEnd = this.loopEnd
-    // this.#source.onended = () => {
-    //   console.log('source.onended')
-    // }
+    this.#source.onended = () => {
+      this.emit('ended')
+    }
     this.#source.connect(this.#ctx.destination)
   }
 
@@ -126,16 +131,12 @@ class MishiroAudio extends EventEmitter {
 
   public async playHca (src: string | BufferLike): Promise<void> {
     const wavBuffer = await hcaDecodeToMemory(src)
-    this.#audioBuffer = await decodeAudioBuffer(this.#ctx, wavBuffer)
-    this.#duration = this.#audioBuffer.duration
-    this.#startedAt = 0
-    this.#pausedAt = 0
-    this.emit('durationchange')
+    await this.setRawSrc(wavBuffer)
 
     const info = HCADecoder.getInfo(src)
     if (info.loop) {
-      this.#loopStart = this.#audioBuffer.duration * (info.loop.start / info.blockCount)
-      this.#loopEnd = this.#audioBuffer.duration * (info.loop.end / info.blockCount)
+      this.#loopStart = this.#audioBuffer!.duration * (info.loop.start / info.blockCount)
+      this.#loopEnd = this.#audioBuffer!.duration * (info.loop.end / info.blockCount)
     } else {
       this.#loopStart = 0
       this.#loopEnd = 0
@@ -143,13 +144,19 @@ class MishiroAudio extends EventEmitter {
     await this.play()
   }
 
-  public async playRaw (src: string | BufferLike): Promise<void> {
+  public async setRawSrc (src: string | BufferLike): Promise<void> {
     this.#audioBuffer = await decodeAudioBuffer(this.#ctx, src)
     this.#duration = this.#audioBuffer.duration
     this.#startedAt = 0
     this.#pausedAt = 0
     this.emit('durationchange')
+    this.emit('canplay')
 
+    await this.play()
+  }
+
+  public async playRaw (src: string | BufferLike): Promise<void> {
+    await this.setRawSrc(src)
     await this.play()
   }
 
@@ -161,11 +168,13 @@ class MishiroAudio extends EventEmitter {
       throw new Error('no source')
     }
 
-    this._initSource(this.#audioBuffer)
+    this._initSource(this.#audioBuffer, true)
     const offset = this.#pausedAt
     this.#source?.start(0, offset)
     this.#startedAt = this.#ctx.currentTime - offset
     this.#pausedAt = 0
+
+    this.emit('play')
 
     window.clearInterval(this.#timeupdateTimer)
     this.emit('timeupdate')
@@ -176,11 +185,13 @@ class MishiroAudio extends EventEmitter {
 
   public pause (): void {
     if (this.#source) {
+      this.#source.onended = null
       this.#source.stop()
       this.#source.disconnect()
       this.#source = null
       this.#pausedAt = this.#ctx.currentTime - this.#startedAt
       this.#startedAt = 0
+      this.emit('pause')
     }
     window.clearInterval(this.#timeupdateTimer)
   }
