@@ -17,13 +17,14 @@ import configurer from './config'
 import type { MishiroConfig } from '../main/config'
 import type { Live, BGM } from './back/resolve-audio-manifest'
 import { setAudioList } from './store'
+import { readAcb } from './audio'
 
 const fs = window.node.fs
 const path = window.node.path
 const os = window.node.os
 const iconvLite = window.node.iconvLite
 const { shell, ipcRenderer, clipboard } = window.node.electron
-const { scoreDir, bgmDir, liveDir, jacketDir } = getPath
+const { scoreDir, bgmDir, bgmAsarDir, liveDir, jacketDir } = getPath
 
 function filterTime (second: number, float = false): string {
   let min: string | number = Math.floor(second / 60)
@@ -155,6 +156,8 @@ export default class extends Vue {
       const acbBase = path.posix.basename(audio.name)
       const type = configurer.get('audioExport') ?? 'wav'
       const audioFileName = audio.fileName + '.' + type
+      const hcaFileName = audio.fileName + '.hca'
+      const wavFileName = audio.fileName + '.wav'
       const needAwb = !!audio.awbHash
 
       const dir = audioType === 'b' ? bgmDir : (audioType === 'l' ? liveDir : null)
@@ -163,83 +166,108 @@ export default class extends Vue {
         completeCount++
         continue
       }
+      let hcaFilePath = dir(hcaFileName)
+      const wavFilePath = dir(wavFileName)
       const audioFilePath = dir(audioFileName)
-      if (fs.existsSync(audioFilePath)) {
+      let hcaInAsar = false
+
+      let hcaFilePathExist = fs.existsSync(hcaFilePath)
+      if (audioType === 'b' && !hcaFilePathExist) {
+        const asarHcaFilePath = bgmAsarDir(hcaFileName)
+        if (fs.existsSync(asarHcaFilePath)) {
+          hcaFilePathExist = true
+          hcaFilePath = asarHcaFilePath
+          hcaInAsar = true
+        }
+      }
+      const audioFilePathExist = fs.existsSync(audioFilePath)
+
+      if (hcaFilePathExist && audioFilePathExist) {
         completeCount++
         continue
       }
 
-      let result: string
+      this.text = `[${completeCount}/${this.downloadingTasks.length}] ${path.basename(audio.name)}`
       const acbPath = dir(acbBase)
-      try {
-        this.audioDownloadPromise = this.dler.downloadSound(
-          audioType,
-          audio.hash,
-          acbPath,
-          (prog) => {
-            this.text = `[${completeCount}/${this.downloadingTasks.length}] ${prog.name as string}`
-            if (!needAwb) {
-              const currentPercent = prog.loading / (this.wavProgress ? 2 : 1)
-              this.$set(audio, '_percent', currentPercent)
-              this.current = (100 * completeCount / this.downloadingTasks.length) + currentPercent / this.downloadingTasks.length
-              this.total = this.current
-            }
-          }
-        )
-        result = await this.audioDownloadPromise
-        this.audioDownloadPromise = null
-        if (needAwb) {
+      if (!hcaFilePathExist) {
+        let result: string
+        try {
           this.audioDownloadPromise = this.dler.downloadSound(
             audioType,
-            audio.awbHash!,
-            dir(path.parse(audio.name).name + '.awb'),
+            audio.hash,
+            acbPath,
             (prog) => {
               this.text = `[${completeCount}/${this.downloadingTasks.length}] ${prog.name as string}`
-              const currentPercent = prog.loading / (this.wavProgress ? 2 : 1)
-              this.$set(audio, '_percent', currentPercent)
-              this.current = (100 * completeCount / this.downloadingTasks.length) + currentPercent / this.downloadingTasks.length
-              this.total = this.current
+              if (!needAwb) {
+                const currentPercent = prog.loading / (this.wavProgress ? 2 : 1)
+                this.$set(audio, '_percent', currentPercent)
+                this.current = (100 * completeCount / this.downloadingTasks.length) + currentPercent / this.downloadingTasks.length
+                this.total = this.current
+              }
             }
           )
           result = await this.audioDownloadPromise
           this.audioDownloadPromise = null
+          if (needAwb) {
+            this.audioDownloadPromise = this.dler.downloadSound(
+              audioType,
+              audio.awbHash!,
+              dir(path.parse(audio.name).name + '.awb'),
+              (prog) => {
+                this.text = `[${completeCount}/${this.downloadingTasks.length}] ${prog.name as string}`
+                const currentPercent = prog.loading / (this.wavProgress ? 2 : 1)
+                this.$set(audio, '_percent', currentPercent)
+                this.current = (100 * completeCount / this.downloadingTasks.length) + currentPercent / this.downloadingTasks.length
+                this.total = this.current
+              }
+            )
+            result = await this.audioDownloadPromise
+            this.audioDownloadPromise = null
+          }
+        } catch (errorPath) {
+          this.audioDownloadPromise = null
+          this.event.$emit('alert', this.$t('home.errorTitle'), (this.$t('home.downloadFailed') as string) + '<br/>' + (errorPath as string))
+          completeCount++
+          continue
         }
-      } catch (errorPath) {
-        this.audioDownloadPromise = null
-        this.event.$emit('alert', this.$t('home.errorTitle'), (this.$t('home.downloadFailed') as string) + '<br/>' + (errorPath as string))
-        completeCount++
-        continue
+        if (!result) {
+          completeCount++
+          continue
+        }
+        const acbEntries = readAcb(acbPath)
+        if (acbEntries.length === 0) {
+          completeCount++
+          continue
+        }
+        await fs.promises.writeFile(hcaFilePath, acbEntries[0].buffer)
+        await fs.remove(acbPath)
       }
-      if (result) {
+      this.$set(audio, '_canplay', true)
+
+      if (!audioFilePathExist) {
         this.current = (100 * completeCount / this.downloadingTasks.length) + (this.wavProgress ? 50 : 99.99) / this.downloadingTasks.length
         this.total = this.current
         if (type === 'wav') {
-          await this.acb2wav(acbPath, audioFileName, (c, _t, _prog) => {
-            const currentPercent = 50 + c * 100 / 2
-            this.$set(audio, '_percent', currentPercent)
-            this.current = (100 * completeCount / this.downloadingTasks.length) + currentPercent / this.downloadingTasks.length
-            this.total = this.current
-          })
+          await window.node.mishiroCore.audio.hca2wav(hcaInAsar ? fs.readFileSync(hcaFilePath) : hcaFilePath, wavFilePath)
         } else if (type === 'mp3') {
-          await this.acb2mp3(acbPath, audioFileName, (_c, _t, prog) => {
+          await window.node.mishiroCore.audio.hca2mp3(hcaInAsar ? fs.readFileSync(hcaFilePath) : hcaFilePath, audioFilePath, (prog) => {
             const currentPercent = 50 + prog.loading / 2
             this.$set(audio, '_percent', currentPercent)
             this.current = (100 * completeCount / this.downloadingTasks.length) + currentPercent / this.downloadingTasks.length
             this.total = this.current
           })
         } else if (type === 'aac') {
-          await this.acb2aac(acbPath, audioFileName, (_c, _t, prog) => {
+          await window.node.mishiroCore.audio.hca2aac(hcaInAsar ? fs.readFileSync(hcaFilePath) : hcaFilePath, audioFilePath, (prog) => {
             const currentPercent = 50 + prog.loading / 2
             this.$set(audio, '_percent', currentPercent)
             this.current = (100 * completeCount / this.downloadingTasks.length) + currentPercent / this.downloadingTasks.length
             this.total = this.current
           })
         }
-        this.$set(audio, '_canplay', true)
-        await this.ensureScoreAndJacket(audio)
-        this.text = ''
-        completeCount++
       }
+      await this.ensureScoreAndJacket(audio)
+      this.text = ''
+      completeCount++
     }
     this.audioDownloading = false
     this.text = ''
@@ -357,14 +385,13 @@ export default class extends Vue {
   }
 
   async selectAudio (audio: BGM | Live): Promise<void> {
-    // if (this.activeAudio.hash === audio.hash) return
+    if (this.activeAudio.hash === audio.hash) return
     this.playSe(this.enterSe)
     const r = await this.ensureScoreAndJacket(audio)
     if (!r) return
     this.activeAudio = audio
     const audioType = audio.name.split('/')[0]
-    const type = configurer.get('audioExport') ?? 'wav'
-    const audioFileName = audio.fileName + '.' + type
+    const audioFileName = audio.fileName + '.hca'
     this.event.$emit('liveSelect', { src: getPath(`../asset/${audioType === 'b' ? 'bgm' : (audioType === 'l' ? 'live' : '')}/${audioFileName}`) })
     const activeAudio = this.activeAudio
     console.log(activeAudio)

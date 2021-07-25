@@ -12,6 +12,8 @@ import getPath from '../common/get-path'
 import configurer from './config'
 import { getMasterHash, openManifestDatabase, readMasterData } from './ipc-back'
 import type { MishiroConfig } from '../main/config'
+import { readAcb } from './audio'
+import type { BGM } from './back/resolve-audio-manifest'
 const fs = window.node.fs
 // const path = window.node.path
 const { manifestPath, masterPath, bgmDir/* , iconDir */ } = getPath
@@ -206,7 +208,8 @@ export default class extends Vue {
     //   }
     // }
     if (masterData.eventHappening) {
-      if (Number(masterData.eventData.type) !== 2 && Number(masterData.eventData.type) !== 6 && !fs.existsSync(bgmDir(`bgm_event_${masterData.eventData.id}.mp3`))) {
+      const eventHca = bgmDir(`bgm_event_${masterData.eventData.id}.hca`)
+      if (Number(masterData.eventData.type) !== 2 && Number(masterData.eventData.type) !== 6 && !fs.existsSync(eventHca)) {
         const eventBgmHash = bgmManifest.filter(row => row.name === `b/bgm_event_${masterData.eventData.id}.acb`)[0].hash
         try {
           // let result = await downloader.download(
@@ -219,20 +222,30 @@ export default class extends Vue {
           // )
           this.text = `bgm_event_${masterData.eventData.id}.acb`
           this.loading = 0
+          const eventAcb = bgmDir(this.text)
           const result = await downloader.downloadSound(
             'b',
             eventBgmHash,
-            bgmDir(`bgm_event_${masterData.eventData.id}.acb`),
+            eventAcb,
             prog => {
               this.text = (prog.name || '') + '　' + `${Math.ceil(prog.current / 1024)}/${Math.ceil(prog.max / 1024)} KB`
-              this.loading = prog.loading / (this.wavProgress ? 2 : 1)
+              this.loading = prog.loading /* / (this.wavProgress ? 2 : 1) */
             }
           )
           if (result) {
-            await this.acb2mp3(bgmDir(`bgm_event_${masterData.eventData.id}.acb`), undefined, (_current, _total, prog) => {
-              this.text = (prog.name || '') + '　' + (this.$t('live.decoding') as string)
-              this.loading = 50 + prog.loading / 2
-            })
+            const acbEntries = readAcb(eventAcb)
+            if (!acbEntries.length) {
+              this.event.$emit('alert', this.$t('home.errorTitle'), 'Invalid acb')
+              return
+            }
+            await fs.promises.writeFile(eventHca, acbEntries[0].buffer)
+            await fs.remove(eventAcb)
+            const audio = this.$store.state.master.bgmManifest.filter((b: BGM) => b.hash === eventBgmHash)[0]
+            this.$set(audio, '_canplay', true)
+            // await this.acb2mp3(eventAcb, undefined, (_current, _total, prog) => {
+            //   this.text = (prog.name || '') + '　' + (this.$t('live.decoding') as string)
+            //   this.loading = 50 + prog.loading / 2
+            // })
           }
         } catch (errorPath) {
           this.event.$emit('alert', this.$t('home.errorTitle'), (this.$t('home.downloadFailed') as string) + '<br/>' + (errorPath as string))

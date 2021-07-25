@@ -107,7 +107,6 @@ import ProgressBar from '../component/ProgressBar.vue'
 import type { MasterData } from '../../ts/renderer/back/on-master-read'
 import { startBatchDownload, stopBatchDownload, getBatchErrorList, setDownloaderProxy } from '../../ts/renderer/ipc-back'
 import { updateClientProxy } from '../../ts/renderer/ipc'
-import { updateAudioState } from '../../ts/renderer/store'
 
 @Component({
   components: {
@@ -294,15 +293,10 @@ export default class extends mixins(modalMixin) {
       lrcEncoding: this.lrcEncoding,
       audioExport: this.audioExport
     }
-    const oldAudioExport = configurer.get('audioExport') ?? 'wav'
     configurer.set(optionsToSave)
     const configProxy = optionsToSave.proxy ?? ''
     updateClientProxy(configProxy)
     setDownloaderProxy(configProxy)
-    const newAudioExport = configurer.get('audioExport') ?? 'wav'
-    if (oldAudioExport !== newAudioExport) {
-      updateAudioState()
-    }
     this.event.$emit('optionSaved', optionsToSave)
     this.visible = false
   }

@@ -14,6 +14,7 @@ export interface GetPath {
   scoreDir: (...relative: string[]) => string
   voiceDir: (...relative: string[]) => string
   bgmDir: (...relative: string[]) => string
+  bgmAsarDir: (...relative: string[]) => string
   liveDir: (...relative: string[]) => string
   jacketDir: (...relative: string[]) => string
   batchDir: (...relative: string[]) => string
@@ -43,6 +44,7 @@ getPath.cardDir = (...relative) => getPath('../asset/card', ...relative)
 getPath.scoreDir = (...relative) => getPath('../asset/score', ...relative)
 getPath.voiceDir = (...relative) => getPath('../asset/voice', ...relative)
 getPath.bgmDir = (...relative) => getPath('../asset/bgm', ...relative)
+getPath.bgmAsarDir = (...relative) => getPath('../asset/bgm.asar', ...relative)
 getPath.liveDir = (...relative) => getPath('../asset/live', ...relative)
 getPath.jacketDir = (...relative) => getPath('../asset/jacket', ...relative)
 getPath.batchDir = (...relative) => getPath('../asset/batch', ...relative)

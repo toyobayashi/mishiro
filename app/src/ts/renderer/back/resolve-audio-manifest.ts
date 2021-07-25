@@ -1,4 +1,8 @@
-import * as path from 'path'
+import getPath from '../../common/get-path'
+
+const { bgmDir, liveDir } = getPath
+const path = window.node.path
+const fs = window.node.fs
 
 export interface Manifest {
   name: string
@@ -9,6 +13,7 @@ export interface BGM extends Manifest {
   fileName: string // without suffix
   // percent: number
   awbHash?: string
+  _canplay?: boolean
 }
 
 export interface Live extends Manifest {
@@ -20,6 +25,7 @@ export interface Live extends Manifest {
   jacketHash?: string
   bpm?: number
   awbHash?: string
+  _canplay?: boolean
 }
 
 export interface Music {
@@ -47,6 +53,7 @@ export default function (bgmManifest: BGM[], liveManifest: Live[], musicData: Mu
     const fileName = path.posix.parse(bgm.name).name
     bgmManifest[i].fileName = fileName
     // bgmManifest[i].active = false
+    bgmManifest[i]._canplay = fs.existsSync(bgmDir(fileName + '.hca'))
     // bgmManifest[i].percent = 0
   }
 
@@ -121,8 +128,8 @@ export default function (bgmManifest: BGM[], liveManifest: Live[], musicData: Mu
       }
     }
     liveManifest[i].fileName = fileName
-    // liveManifest[i].active = false
     // liveManifest[i].percent = 0
+    liveManifest[i]._canplay = fs.existsSync(liveDir(fileName + '.hca'))
   }
 
   for (let i = 0; i < liveManifest.length; i++) {

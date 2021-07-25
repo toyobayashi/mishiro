@@ -3,12 +3,7 @@ import Vuex from 'vuex'
 
 import type { MasterData } from './back/on-master-read'
 import type { BGM, Live } from './back/resolve-audio-manifest'
-import getPath from '../common/get-path'
-import configurer from './config'
 
-const { bgmDir, liveDir } = getPath
-
-const { existsSync } = window.node.fs
 const { ipcRenderer } = window.node.electron
 
 Vue.use(Vuex)
@@ -95,31 +90,11 @@ export function setLatestResVer (resVer: number): void {
 
 export function setMaster (master: MasterData): void {
   store.commit(Action.SET_MASTER, master)
-  updateAudioState()
   setAudioList(master.bgmManifest)
 }
 
 export function setAudioList (list: BGM[] | Live[]): void {
   store.commit(Action.SET_AUDIO_LIST, list)
-}
-
-export function updateAudioState (): void {
-  const bgmManifest = store.state.master.bgmManifest
-  const liveManifest = store.state.master.liveManifest
-  if (bgmManifest) {
-    bgmManifest.forEach(audio => {
-      const type = configurer.get('audioExport') ?? 'wav'
-      const audioFileName = audio.fileName + '.' + type
-      Vue.set(audio, '_canplay', existsSync(bgmDir(audioFileName)))
-    })
-  }
-  if (liveManifest) {
-    liveManifest.forEach(audio => {
-      const type = configurer.get('audioExport') ?? 'wav'
-      const audioFileName = audio.fileName + '.' + type
-      Vue.set(audio, '_canplay', existsSync(liveDir(audioFileName)))
-    })
-  }
 }
 
 export default store

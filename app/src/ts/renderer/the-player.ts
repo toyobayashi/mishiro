@@ -134,7 +134,11 @@ export default class extends Vue {
     if (bgm) {
       this.bgm.loopStart = bgm.start || 0
       this.bgm.loopEnd = bgm.end || 0
-      await this.bgm.playRaw(bgm.src)
+      if (path.extname(bgm.src) === '.hca') {
+        await this.bgm.playHca(bgm.src)
+      } else {
+        await this.bgm.playRaw(bgm.src)
+      }
       this.playing = bgm
       this.isPlaying = true
       this.event.$emit('playerSelect', path.parse(bgm.src).name)
@@ -231,7 +235,7 @@ export default class extends Vue {
                     await this.play(bgmList.rail)
                   }
                 } else {
-                  const eventBgmSrc = getPath(`../asset/bgm/bgm_event_${this.eventInfo.id}.mp3`)
+                  const eventBgmSrc = getPath(`../asset/bgm/bgm_event_${this.eventInfo.id}.hca`)
                   if (this.playing.src !== eventBgmSrc) {
                     this.event.$emit('liveSelect', { src: eventBgmSrc })
                   }
