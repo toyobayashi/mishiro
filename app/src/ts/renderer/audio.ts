@@ -130,6 +130,9 @@ class MishiroAudio extends EventEmitter {
   }
 
   public async playHca (src: string | BufferLike): Promise<void> {
+    if (typeof src === 'string' && src.includes('.asar')) {
+      src = await fs.promises.readFile(src)
+    }
     const wavBuffer = await hcaDecodeToMemory(src)
     await this.setRawSrc(wavBuffer)
 
@@ -145,6 +148,9 @@ class MishiroAudio extends EventEmitter {
   }
 
   public async setRawSrc (src: string | BufferLike): Promise<void> {
+    if (typeof src === 'string' && src.includes('.asar')) {
+      src = await fs.promises.readFile(src)
+    }
     this.#audioBuffer = await decodeAudioBuffer(this.#ctx, src)
     this.#duration = this.#audioBuffer.duration
     this.#startedAt = 0
