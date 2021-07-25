@@ -1,9 +1,11 @@
 // import getPath from '../common/get-path'
+import type { Entry } from 'acb'
 import type { BufferLike } from 'hca-decoder'
 
 const fs = window.node.fs
 const { EventEmitter } = window.node.events
 const { HCADecoder } = window.node.hcaDecoder
+const { Acb } = window.node.acb
 // const path = window.node.path
 
 class MishiroAudio extends EventEmitter {
@@ -212,4 +214,9 @@ async function decodeAudioBuffer (context: AudioContext, src: string | BufferLik
   return audioBuffer
 }
 
-export default MishiroAudio
+export function readAcb (acbFile: string): Entry[] {
+  const utf = new Acb(acbFile)
+  return utf.getFileList()
+}
+
+export { MishiroAudio }
