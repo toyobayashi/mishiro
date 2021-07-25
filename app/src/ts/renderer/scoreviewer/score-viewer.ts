@@ -10,7 +10,8 @@ import LongNote from './long-note'
 import LongMoveNote from './long-move-note'
 import { showSaveDialog } from '../ipc'
 import getPath from '../../common/get-path'
-const { relative, parse } = window.node.path
+import { MishiroAudio } from '../audio'
+const { /* relative,  */parse } = window.node.path
 const fs = window.node.fs
 const { ipcRenderer } = window.node.electron
 
@@ -75,7 +76,7 @@ class ScoreViewer {
   public backCtx: CanvasRenderingContext2D
   public saveCtx: CanvasRenderingContext2D
   public song: Song<ScoreNoteWithNoteInstance>
-  public audio: HTMLAudioElement
+  public audio: MishiroAudio
   public pauseButton: HTMLButtonElement
   public saveButton: HTMLButtonElement
   public rangeInput: HTMLInputElement
@@ -98,7 +99,9 @@ class ScoreViewer {
     if (ScoreViewer._instance) return ScoreViewer._instance
 
     if (options) this.options = Object.assign({}, this.options, options)
-    this.audio = process.env.NODE_ENV === 'production' ? Global.createAudio(song.src) : Global.createAudio(relative(getPath('public'), song.src))
+    // this.audio = process.env.NODE_ENV === 'production' ? Global.createAudio(song.src) : Global.createAudio(relative(getPath('public'), song.src))
+    this.audio = new MishiroAudio()
+    this.audio.loop = false
 
     this.song = song
     // this._preCalculation = {
@@ -110,6 +113,9 @@ class ScoreViewer {
     // console.log(this.song.score)
 
     ScoreViewer._instance = this
+    console.log('score hca: ' + song.src)
+    // eslint-disable-next-line @typescript-eslint/no-floating-promises
+    this.audio.playHca(song.src)
     return ScoreViewer._instance
   }
 
@@ -511,28 +517,28 @@ class ScoreViewer {
       this.backCtx.drawImage(liveIcon, 5, ScoreViewer.CANVAS_HEIGHT - ScoreViewer.BOTTOM - 114)
     }, false)
 
-    this.audio.addEventListener('canplay', () => {
+    this.audio.on('canplay', () => {
       this._isReady = true
       this.rangeInput.max = this.audio.duration.toString()
     })
 
-    this.audio.addEventListener('play', () => {
+    this.audio.on('play', () => {
       this._isPaused = false
       this.pauseButton.innerHTML = 'pause'
       this.pauseButton.className = 'cgss-btn cgss-btn-star'
     })
 
-    this.audio.addEventListener('pause', () => {
+    this.audio.on('pause', () => {
       this._isPaused = true
       this.pauseButton.innerHTML = 'play'
       this.pauseButton.className = 'cgss-btn cgss-btn-ok'
     })
 
-    this.audio.addEventListener('ended', () => {
+    this.audio.on('ended', () => {
       window.close()
-    }, false)
+    })
 
-    this.audio.addEventListener('timeupdate', () => {
+    this.audio.on('timeupdate', () => {
       this.rangeInput.value = this.audio.currentTime.toString()
       this.progressTime.innerHTML = `${this._formatTime(this.audio.currentTime)} / ${this._formatTime(this.audio.duration)}`
       this.rangeInput.style.backgroundSize = `${100 * (this.audio.currentTime / this.audio.duration)}% 100%`

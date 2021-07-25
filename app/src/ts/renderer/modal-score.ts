@@ -6,7 +6,7 @@ import Component, { mixins } from 'vue-class-component'
 import getPath from '../common/get-path'
 import { getScore } from './ipc'
 import type { Live } from './back/resolve-audio-manifest'
-import configurer from './config'
+// import configurer from './config'
 
 const { ipcRenderer } = window.node.electron
 
@@ -24,12 +24,11 @@ export default class extends mixins(modalMixin) {
 
   async start (): Promise<void> {
     this.playSe(this.enterSe)
-    const type = configurer.get('audioExport') ?? 'wav'
     const res = await getScore(
       scoreDir(this.live.score!), // scoreFile)
       this.difficulty, // difficulty
       this.live.bpm!, // bpm
-      liveDir(this.live.fileName + '.' + type) // audioFile
+      liveDir(this.live.fileName + '.hca') // hca file
     )
     if (!res) return
 
