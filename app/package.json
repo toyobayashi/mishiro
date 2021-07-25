@@ -60,21 +60,23 @@
     "ts-node": "^9.1.1",
     "tslib": "2.3.0",
     "typescript": "4.3.5",
-    "vue": "2.6.12",
+    "vue": "2.6.14",
     "vue-class-component": "7.2.6",
     "vue-i18n": "8.24.4",
     "vue-property-decorator": "9.1.2",
-    "vue-template-compiler": "2.6.12",
+    "vue-template-compiler": "2.6.14",
     "vuex": "3.6.2",
-    "webpack": "^5.43.0",
+    "webpack": "^5.46.0",
     "webpack-dev-server": "^3.11.2"
   },
   "dependencies": {
     "@tybys/downloader": "0.2.0",
+    "acb": "2.1.0",
     "electron-github-asar-updater": "4.0.0",
     "fs-extra": "9.1.0",
+    "hca-decoder": "1.5.0",
     "iconv-lite": "^0.6.3",
-    "mishiro-core": "6.0.0",
+    "mishiro-core": "6.1.0",
     "spdlog": "0.13.5",
     "sqlite3": "5.0.2"
   }
