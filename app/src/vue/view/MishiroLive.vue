@@ -37,7 +37,7 @@
       <div class="display-prog-wrap">
         <input class="range-input" type="range" ref="playProg" :max="duration" min="0" :value="currentTime" @input="oninput($event.target)" :style="{ 'background-size': 100 * (currentTime / duration) + '% 100%' }">
         <span class="left-time">{{Math.floor(currentTime) | time}} / {{Math.floor(duration) | time}}</span>
-        <button class="scorebtn" @click="startScore">{{$t('live.score')}}</button>
+        <button v-if="activeAudio && activeAudio.score" class="scorebtn" @click="startScore">{{$t('live.score')}}</button>
       </div>
       <div class="lyrics" v-if="allLyrics.length">
         <span @click="openLyrics" :style="{ color: lyrics.indexOf(l) === 0 ? '#902070' : '#000', 'font-size': lyrics.indexOf(l) === 0 ? '18px' : void 0 }" v-for="l in lyrics" :key="l.time">{{l.lyrics}}</span>
@@ -144,7 +144,7 @@
   flex: 1;
 }
 .display-prog-wrap .left-time {
-  width: 130px;
+  width: 120px;
   margin-left: 10px;
 }
 .display-prog-wrap .scorebtn {
