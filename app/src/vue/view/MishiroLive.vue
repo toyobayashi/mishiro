@@ -7,7 +7,7 @@
     <!-- <button class="cgss-btn cgss-btn-star pull-right margin-left-10" @click="startGame">{{$t("live.live")}}</button> -->
     <button class="cgss-btn cgss-btn-default pull-right margin-left-10" @click="stopDownload" v-if="audioDownloading">{{$t("home.stop")}}</button>
     <button class="cgss-btn cgss-btn-star pull-right margin-left-10" @click="downloadSelectedItem" v-else>{{$t("home.download")}}</button>
-    <button class="cgss-btn cgss-btn-star pull-right margin-left-10" @click="startScore">{{$t("live.score")}}</button>
+    <button class="cgss-btn cgss-btn-star pull-right margin-left-10" @click="exportSelectedItem">{{$t("live.export")}}</button>
     <button class="cgss-btn cgss-btn-ok pull-right margin-left-10" @click="query(false)">{{$t("home.search")}}</button>
   </div>
   <div class="margin-top-10 clearfix live-middle">
@@ -34,9 +34,10 @@
   <div class="margin-top-20 clearfix live-bottom">
     <TaskLoading :total-loading="total" :current-loading="current" :text="text" :single="true" class="absolute-left" :color="'live'"/>
     <div class="gray-bg absolute-right timebar">
-      <div style="width: 100%;">
-        <input type="range" ref="playProg" :max="duration" min="0" :value="currentTime" @input="oninput($event.target)" style="width: calc(100% - 130px);" :style="{ 'background-size': 100 * (currentTime / duration) + '% 100%' }">
-        <span style="display: inline-block; margin-left: 10px;">{{Math.floor(currentTime) | time}} / {{Math.floor(duration) | time}}</span>
+      <div class="display-prog-wrap">
+        <input class="range-input" type="range" ref="playProg" :max="duration" min="0" :value="currentTime" @input="oninput($event.target)" :style="{ 'background-size': 100 * (currentTime / duration) + '% 100%' }">
+        <span class="left-time">{{Math.floor(currentTime) | time}} / {{Math.floor(duration) | time}}</span>
+        <button class="scorebtn" @click="startScore">{{$t('live.score')}}</button>
       </div>
       <div class="lyrics" v-if="allLyrics.length">
         <span @click="openLyrics" :style="{ color: lyrics.indexOf(l) === 0 ? '#902070' : '#000', 'font-size': lyrics.indexOf(l) === 0 ? '18px' : void 0 }" v-for="l in lyrics" :key="l.time">{{l.lyrics}}</span>
@@ -129,6 +130,38 @@
   position: relative;
 }
 .audio-item .play:active {
+  height: 28px;
+  top: 2px;
+  border-bottom: 2px solid #000000;
+  background: -webkit-linear-gradient(225deg, #f0f0f0, #d0d0d0, #c0c0c0);
+}
+.display-prog-wrap {
+  display: flex;
+  width: 100%;
+  align-items: center;
+}
+.display-prog-wrap .range-input {
+  flex: 1;
+}
+.display-prog-wrap .left-time {
+  width: 130px;
+  margin-left: 10px;
+}
+.display-prog-wrap .scorebtn {
+  cursor: pointer;
+  font-family: 'CGSS-B';
+  box-sizing: border-box;
+  /* width: 30px; */
+  width: 60px;
+  height: 30px;
+  background: -webkit-linear-gradient(225deg, #f0f0f0, #d0d0d0, #c0c0c0);
+  border: 2px solid #000000;
+  border-bottom: 4px solid #000000;
+  border-radius: 5px;
+  display: inline-block;
+  position: relative;
+}
+.display-prog-wrap .scorebtn:active {
   height: 28px;
   top: 2px;
   border-bottom: 2px solid #000000;
