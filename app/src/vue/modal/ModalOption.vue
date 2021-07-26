@@ -42,6 +42,10 @@
             </div>
           </div>
           <div class="margin-top-10 option-line">
+            <label>{{$t("menu.loopCount")}}</label>
+            <InputText class="option-input" placeholder="≥ 0" v-model="loopCount" />
+          </div>
+          <div class="margin-top-10 option-line">
             <label>{{$t("menu.resVer")}}</label>
             <InputText class="option-input" :placeholder="latestResVer > 0 ? `10012760 ≤ ${$t('menu.resVer')} ≤ ${latestResVer}` : ''" v-model="resVer" />
           </div>
@@ -117,6 +121,7 @@ import { updateClientProxy } from '../../ts/renderer/ipc'
 })
 export default class extends mixins(modalMixin) {
   lang: 'zh' | 'ja' | 'en' = 'zh'
+  loopCount: string = ''
   resVer: string = ''
   gachaId: string = ''
   eventId: string = ''
@@ -181,6 +186,7 @@ export default class extends mixins(modalMixin) {
 
   save () {
     this.playSe(this.enterSe)
+    let loopCount: number | ''
     let resVer: number | ''
     // let gachaId: number | ''
     let eventId: number | ''
@@ -188,6 +194,18 @@ export default class extends mixins(modalMixin) {
     let account: string
     let proxy: string = ''
     const card: 'default' | 'kirara' = this.card
+    if (this.loopCount) {
+      const lc = Number(this.loopCount)
+      if (Number.isNaN(lc) || lc < 0) {
+        this.event.$emit('alert', this.$t('home.errorTitle'), 'loopCount error')
+        return
+      } else {
+        loopCount = lc
+      }
+    } else {
+      loopCount = ''
+    }
+
     if (this.resVer) {
       if (
         Number(this.resVer) < 10012760 ||
@@ -283,6 +301,7 @@ export default class extends mixins(modalMixin) {
     this._i18n._vm.locale = this.lang
     const optionsToSave = {
       language: this.lang,
+      loopCount: Number(loopCount),
       resVer: Number(resVer),
       // gacha: Number(gachaId),
       event: Number(eventId),
@@ -307,6 +326,7 @@ export default class extends mixins(modalMixin) {
         this.showBatchDownloadFeature = showBatchDownload
         const config = configurer.getAll()
         this.lang = config.language || 'zh'
+        this.loopCount = config.loopCount ? config.loopCount.toString() : ''
         this.resVer = config.resVer ? config.resVer.toString() : ''
         this.gachaId = config.gacha ? config.gacha.toString() : ''
         this.eventId = config.event ? config.event.toString() : ''

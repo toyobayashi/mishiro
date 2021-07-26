@@ -3,6 +3,7 @@ import getPath from '../common/get-path'
 
 export interface MishiroConfig {
   latestResVer?: number
+  loopCount?: number
   resVer?: number
   gacha?: number
   event?: number

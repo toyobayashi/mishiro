@@ -159,6 +159,7 @@ export default {
     about: 'ABOUT',
     save: 'SAVE',
     relaunch: 'RELAUNCH',
+    loopCount: 'AUDIO LOOP',
     resVer: 'RES VER',
     gacha: 'GACHA ID',
     event: 'EVENT ID',
