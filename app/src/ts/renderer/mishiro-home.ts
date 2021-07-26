@@ -91,7 +91,10 @@ export default class extends Vue {
     const dir = downloadDir()
     if (!fs.existsSync(dir)) fs.mkdirsSync(dir)
     if (window.node.process.platform === 'win32') {
-      shell.openExternal(dir).catch(err => console.log(err))
+      shell.openExternal(dir).catch(err => {
+        console.error(err)
+        error(`HOME openExternal: ${err.stack}`)
+      })
     } else {
       shell.showItemInFolder(dir + '/.')
     }
@@ -113,7 +116,7 @@ export default class extends Vue {
         } else {
           // this.checkFile(this.data).then((res) => {
           //   this.canDownloadRows = res
-          // }).catch(err => console.log(err))
+          // }).catch(err => console.error(err))
           this.canDownloadRows = this.checkFile(this.data)
         }
       }).catch(err => {
@@ -172,7 +175,7 @@ export default class extends Vue {
       // this.checkFile(this.data).then((res) => {
       //   this.canDownloadRows = res
       //   this.page = 0
-      // }).catch(err => console.log(err))
+      // }).catch(err => console.error(err))
       this.canDownloadRows = this.checkFile(this.data)
       this.page = 0
     }

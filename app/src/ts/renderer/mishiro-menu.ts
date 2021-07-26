@@ -4,6 +4,7 @@ import license from './license'
 import updater from './updater'
 
 import getPath from '../common/get-path'
+import { error } from './log'
 const fs = window.node.fs
 
 const { dataDir } = getPath
@@ -27,7 +28,10 @@ export default class extends Vue {
     import(/* webpackChunkName: "marked" */ 'marked').then((marked) => {
       this.event.$emit('license')
       this.event.$emit('alert', this.$t('menu.license'), (marked as any).default(license), 900)
-    }).catch(err => console.log(err))
+    }).catch(err => {
+      console.error(err)
+      error(`MENU showLicense: ${err.stack}`)
+    })
   }
 
   showVar (): void {

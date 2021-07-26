@@ -14,6 +14,7 @@ import { getMasterHash, openManifestDatabase, readMasterData } from './ipc-back'
 import type { MishiroConfig } from '../main/config'
 import { readAcb } from './audio'
 import type { BGM } from './back/resolve-audio-manifest'
+import { error } from './log'
 const fs = window.node.fs
 // const path = window.node.path
 const { manifestPath, masterPath, bgmDir/* , iconDir */ } = getPath
@@ -362,7 +363,8 @@ export default class extends Vue {
               this.loading = 0
               resVer = await this.getResVer()
             } catch (err) {
-              console.log(err)
+              console.error(err)
+              error(`UPDATE getResVer: ${err.stack}`)
               if (Number(err.message) === 203) {
                 this.event.$emit('alert', this.$t('home.errorTitle'), 'Current account has been banned. Please use another account.')
                 return

@@ -18,6 +18,7 @@ import type { MishiroConfig } from '../main/config'
 import type { Live, BGM } from './back/resolve-audio-manifest'
 import { setAudioList } from './store'
 import { readAcb } from './audio'
+import { error } from './log'
 
 const fs = window.node.fs
 const path = window.node.path
@@ -181,7 +182,7 @@ export default class extends Vue {
 
       const dir = audioType === 'b' ? bgmDir : (audioType === 'l' ? liveDir : null)
       if (!dir) {
-        this.event.$emit('alert', this.$t('home.errorTitle'), 'Bad type')
+        error('LIVE AUDIO EXPORT: Unknown audio type')
         completeCount++
         continue
       }
@@ -200,7 +201,7 @@ export default class extends Vue {
         }
       }
 
-      this.text = `[${completeCount}/${exportTasks.length}] ${path.basename(audio.name)}`
+      this.text = `[${completeCount}/${exportTasks.length}] ${audioFileName}`
       this.current = (100 * completeCount / exportTasks.length)
       this.total = this.current
       try {
@@ -228,7 +229,7 @@ export default class extends Vue {
           await fs.remove(tmpwavPath)
         }
       } catch (err) {
-        this.event.$emit('alert', this.$t('home.errorTitle'), err.toString())
+        error(`LIVE AUDIO EXPORT: ${err.stack}`)
       }
       this.text = ''
       completeCount++
@@ -267,7 +268,7 @@ export default class extends Vue {
 
       const dir = audioType === 'b' ? bgmDir : (audioType === 'l' ? liveDir : null)
       if (!dir) {
-        this.event.$emit('alert', this.$t('home.errorTitle'), 'Bad type')
+        error('LIVE AUDIO DOWNLOAD: Unknown audio type')
         completeCount++
         continue
       }
@@ -371,7 +372,7 @@ export default class extends Vue {
             // this.core.util.lz4dec(scoreBdb as string, 'bdb')
             fs.removeSync(scoreDir(audio.score!.split('.')[0]))
           } else {
-            this.event.$emit('alert', this.$t('home.errorTitle'), 'Error!')
+            this.event.$emit('alert', this.$t('home.errorTitle'), 'Score database download failed')
             return false
           }
         } catch (errorPath) {
@@ -398,7 +399,7 @@ export default class extends Vue {
             await unpackTexture2D(jacketu3d)
             await fs.remove(jacketDir(name + '_s.png'))
           } else {
-            this.event.$emit('alert', this.$t('home.errorTitle'), 'Error!')
+            this.event.$emit('alert', this.$t('home.errorTitle'), 'Jacket download failed')
             return false
           }
         } catch (errorPath) {
@@ -477,7 +478,7 @@ export default class extends Vue {
     const hcaFileName = audio.fileName + '.hca'
     const dir = audioType === 'b' ? bgmDir : (audioType === 'l' ? liveDir : null)
     if (!dir) {
-      this.event.$emit('alert', this.$t('home.errorTitle'), 'Bad type')
+      this.event.$emit('alert', this.$t('home.errorTitle'), 'Unknown audio type')
       return
     }
     let hcaFilePath = dir(hcaFileName)
@@ -559,8 +560,14 @@ export default class extends Vue {
     if (!fs.existsSync(dirb)) fs.mkdirsSync(dirb)
     if (!fs.existsSync(dirl)) fs.mkdirsSync(dirl)
     if (window.node.process.platform === 'win32') {
-      shell.openExternal(dirb).catch(err => console.log(err))
-      shell.openExternal(dirl).catch(err => console.log(err))
+      shell.openExternal(dirb).catch(err => {
+        console.error(err)
+        error(`LIVE opendir: ${err.stack}`)
+      })
+      shell.openExternal(dirl).catch(err => {
+        console.error(err)
+        error(`LIVE opendir: ${err.stack}`)
+      })
     } else {
       shell.showItemInFolder(dirb + '/.')
       shell.showItemInFolder(dirl + '/.')
@@ -597,8 +604,9 @@ export default class extends Vue {
             const data = iconvLite.encode(lrcstr, configurer.get('lrcEncoding') || 'utf8')
             fs.writeFileSync(res.filePath, data)
           }
-        }).catch((err: any) => {
-          console.log(err)
+        }).catch((err) => {
+          console.error(err)
+          error(`LIVE openLyrics: ${err.stack}`)
         })
       }
     })
@@ -635,7 +643,7 @@ export default class extends Vue {
           // this.core.util.lz4dec(scoreBdb as string, 'bdb')
           fs.removeSync(scoreDir(activeAudio.score.split('.')[0]))
         } else {
-          this.event.$emit('alert', this.$t('home.errorTitle'), 'Error!')
+          this.event.$emit('alert', this.$t('home.errorTitle'), 'Score database download failed')
           return false
         }
       } catch (errorPath) {

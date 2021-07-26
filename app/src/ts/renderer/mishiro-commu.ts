@@ -7,6 +7,7 @@ import getPath from '../common/get-path'
 import configurer from './config'
 import { getEmblemHash, getIconHash } from './ipc-back'
 import type { MishiroConfig } from '../main/config'
+import { error } from './log'
 
 // /* const template =  */require('../../res/banner.svg')
 const { existsSync, readFileSync, remove } = window.node.fs
@@ -147,7 +148,10 @@ export default class extends Vue {
   }
 
   openOrigin (): void {
-    window.node.electron.shell.openExternal('https://deresute.me/').catch(err => console.log(err))
+    window.node.electron.shell.openExternal('https://deresute.me/').catch(err => {
+      console.error(err)
+      error(`COMMU openExternal: ${err.stack}`)
+    })
   }
 
   async query (): Promise<void> {
@@ -215,7 +219,7 @@ export default class extends Vue {
         }
       }
     } catch (err) {
-      console.log(err)
+      console.error(err)
       this.event.$emit('alert', this.$t('home.errorTitle'), err.message)
     }
     if (!this.renderer) this.renderer = new BannerRenderer('can')

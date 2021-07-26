@@ -6,6 +6,7 @@ import Component, { mixins } from 'vue-class-component'
 import getPath from '../common/get-path'
 import { getScore } from './ipc'
 import type { Live } from './back/resolve-audio-manifest'
+import { error } from './log'
 // import configurer from './config'
 
 const { ipcRenderer } = window.node.electron
@@ -63,7 +64,10 @@ export default class extends mixins(modalMixin) {
       })
       this.event.$on('enterKey', (block: string) => {
         if (block === 'live' && this.visible) {
-          this.start().catch(err => console.log(err))
+          this.start().catch(err => {
+            console.error(err)
+            error(`SCORE start: ${err.stack}`)
+          })
         }
       })
     })

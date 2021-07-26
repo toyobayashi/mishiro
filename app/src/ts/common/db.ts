@@ -19,7 +19,7 @@ class DB {
   constructor (private readonly _dbPath: string) {
     this._db = new (require('sqlite3').Database)(this._dbPath, require('sqlite3').OPEN_READONLY, (err: Error | null) => {
       if (err) {
-        console.log(err)
+        console.error(err)
         this._db = null
       }
     })

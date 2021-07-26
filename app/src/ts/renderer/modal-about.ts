@@ -2,6 +2,7 @@ import modalMixin from './modal-mixin'
 import Component, { mixins } from 'vue-class-component'
 import { getAppName, getAppVersion, getPackageJson } from './ipc'
 import getPath from '../common/get-path'
+import { error } from './log'
 const pkg = getPackageJson()
 
 @Component
@@ -15,7 +16,10 @@ export default class extends mixins(modalMixin) {
   commitDate = process.env.NODE_ENV === 'production' ? pkg._commitDate : new Date((window.node.childProcess.execSync('git log -1', { cwd: getPath() }).toString().match(/Date:\s*(.*?)\n/) as RegExpMatchArray)[1]).toISOString()
 
   showRepo (): void {
-    window.node.electron.shell.openExternal('https://github.com/toyobayashi/mishiro').catch(err => console.log(err))
+    window.node.electron.shell.openExternal('https://github.com/toyobayashi/mishiro').catch(err => {
+      console.error(err)
+      error(`SCORE showRepo: ${err.stack}`)
+    })
     this.playSe(this.enterSe)
   }
 

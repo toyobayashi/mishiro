@@ -6,6 +6,7 @@ import './common/get-path'
 import './main/core'
 import ipc from './main/ipc'
 import setIcon from './main/icon'
+import { error } from './main/log'
 
 app.commandLine.appendSwitch('autoplay-policy', 'no-user-gesture-required')
 
@@ -80,10 +81,12 @@ function createWindow (): void {
 
   if (process.env.NODE_ENV !== 'production') {
     mainWindow.loadURL('http://localhost:8090/app/renderer/').catch((err) => {
-      console.log(err)
+      console.error(err)
+      app.quit()
     })
     backWindow.loadURL('http://localhost:8090/app/renderer/back.html').catch((err) => {
-      console.log(err)
+      console.error(err)
+      app.quit()
     })
   } else {
     mainWindow.loadURL(url.format({
@@ -91,7 +94,9 @@ function createWindow (): void {
       protocol: 'file:',
       slashes: true
     })).catch((err) => {
-      console.log(err)
+      error(`Main window load failed: ${err.stack}`)
+      console.error(err)
+      app.quit()
     })
 
     backWindow.loadURL(url.format({
@@ -99,7 +104,9 @@ function createWindow (): void {
       protocol: 'file:',
       slashes: true
     })).catch((err) => {
-      console.log(err)
+      error(`Back window load failed: ${err.stack}`)
+      console.error(err)
+      app.quit()
     })
   }
 }
@@ -175,7 +182,7 @@ function registerGlobalShortcut (): void {
 }
 
 // process.on('warning', (warning) => {
-//   console.log(warning.stack)
+//   console.warn(warning.stack)
 // })
 
 main().catch(err => {
