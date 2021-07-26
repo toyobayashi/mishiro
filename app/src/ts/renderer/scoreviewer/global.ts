@@ -1,3 +1,5 @@
+import { error } from '../log'
+
 export interface GlobalConstructorArgument {
   noteWidth?: number
   noteHeight?: number
@@ -99,14 +101,20 @@ class Global {
   public playSe (): void {
     if (this._se) {
       this._se.currentTime = 0
-      this._se.play().catch(err => console.log(err))
+      this._se.play().catch(err => {
+        console.error(err)
+        error(`SCOREVIEWER playSe: ${err.stack}`)
+      })
     }
   }
 
   public playSeOk (): void {
     if (this._seOk) {
       this._seOk.currentTime = 0
-      this._seOk.play().catch(err => console.log(err))
+      this._seOk.play().catch(err => {
+        console.error(err)
+        error(`SCOREVIEWER playSeOk: ${err.stack}`)
+      })
     }
   }
 }

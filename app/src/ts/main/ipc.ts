@@ -109,7 +109,9 @@ export default function ipc (): void {
       configurer.set('latestResVer', res)
       client.resVer = res.toString()
     } else {
-      console.log('/load/check failed')
+      const msg = 'checkResourceVersion /load/check failed'
+      log.error(msg)
+      console.error(msg)
     }
     return res
   })

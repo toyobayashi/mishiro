@@ -1,6 +1,7 @@
 import type { PluginFunction } from 'vue'
 import getPath from '../common/get-path'
 import { MishiroAudio } from './audio'
+import { error } from './log'
 const { ipcRenderer } = window.node.electron
 const fs = window.node.fs
 const path = window.node.path
@@ -31,7 +32,10 @@ const install: PluginFunction<undefined> = function (Vue) {
   Vue.prototype.playSe = function (se: HTMLAudioElement) { // 播放音效
     se.currentTime = 0
     setTimeout(() => {
-      se.play().catch(err => console.log(err))
+      se.play().catch(err => {
+        console.error(err)
+        error(`playSe: ${err.stack}`)
+      })
     }, 0)
   }
   // Vue.prototype.createCardBackgroundTask = function (cardIdArr: number[]) {

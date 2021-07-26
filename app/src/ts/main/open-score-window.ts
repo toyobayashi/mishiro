@@ -2,6 +2,7 @@ import { BrowserWindow } from 'electron'
 import { format } from 'url'
 import getPath from '../common/get-path'
 import setIcon from './icon'
+import { error } from './log'
 
 let win: BrowserWindow | null = null
 
@@ -35,9 +36,12 @@ export default function openScoreWindow (): void {
       pathname: getPath('./renderer/score.html'),
       protocol: 'file:',
       slashes: true
-    })).catch(err => console.log(err))
+    })).catch(err => {
+      console.error(err)
+      error(`Score window load failed: ${err.stack}`)
+    })
   } else {
-    win.loadURL('http://localhost:8090/app/renderer/score.html').catch(err => console.log(err))
+    win.loadURL('http://localhost:8090/app/renderer/score.html').catch(err => console.error(err))
   }
 
   win.on('close', () => {

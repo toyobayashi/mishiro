@@ -11,6 +11,7 @@ import LongMoveNote from './long-move-note'
 import { showSaveDialog } from '../ipc'
 import getPath from '../../common/get-path'
 import { MishiroAudio } from '../audio'
+import { error } from '../log'
 const { /* relative,  */parse } = window.node.path
 const fs = window.node.fs
 const { ipcRenderer } = window.node.electron
@@ -210,7 +211,10 @@ class ScoreViewer {
       return
     }
 
-    this.audio.play().catch(err => console.log(err))
+    this.audio.play().catch(err => {
+      console.error(err)
+      error(`SCOREVIEWER start: ${err.stack}`)
+    })
 
     const self = this
 
@@ -403,8 +407,9 @@ class ScoreViewer {
       defaultPath: getPath.scoreDir(name + '-' + this.song.difficulty + '.png')
     }).then((res) => {
       res.filePath && _drawAndSave(res.filePath)
-    }).catch((err: any) => {
-      console.log(err)
+    }).catch((err) => {
+      console.error(err)
+      error(`SCOREVIEWER _saveScore: ${err.stack}`)
     })
   }
 

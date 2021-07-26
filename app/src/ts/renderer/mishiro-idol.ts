@@ -11,6 +11,7 @@ import getPath from '../common/get-path'
 import configurer from './config'
 import { getCardHash } from './ipc-back'
 import type { MishiroConfig } from '../main/config'
+import { error } from './log'
 const { /* ipcRenderer,  */shell } = window.node.electron
 const fs = window.node.fs
 const path = window.node.path
@@ -293,7 +294,10 @@ export default class extends Vue {
 
       this.currentPractice = 'idol.before'
       if (navigator.onLine) {
-        this.changeBackground(card).catch(err => console.log(err))
+        this.changeBackground(card).catch(err => {
+          console.error(err)
+          error(`IDOL changeBackground: ${err.stack}`)
+        })
       }
     }
   }
@@ -404,7 +408,10 @@ export default class extends Vue {
 
           const localSource = voiceFiles[Math.floor(voiceFiles.length * Math.random())]
           this.voice.src = process.env.NODE_ENV === 'production' ? localSource : ('/' + path.relative(getPath('..'), localSource).replace(new RegExp('\\' + path.sep, 'g'), '/'))
-          this.voice.play().catch(err => console.log(err))
+          this.voice.play().catch(err => {
+            console.error(err)
+            error(`IDOL voice play: ${err.stack}`)
+          })
         }
       }
     } else {
@@ -428,7 +435,10 @@ export default class extends Vue {
     Promise.all([Promise.all(acbs.map(acb => fs.remove(acb))), Promise.all(hcaDirs.map(hcaDir => fs.remove(hcaDir)))]).then(() => {
       this.imgProgress = 0
       this.voiceDisable = false
-    }).catch(err => console.log(err))
+    }).catch(err => {
+      console.error(err)
+      error(`IDOL voiceDecode: ${err.stack}`)
+    })
   }
 
   async downloadCard (id: number | string, _data?: any, progressing?: (prog: ProgressInfo) => void): Promise<string> {
@@ -489,13 +499,19 @@ export default class extends Vue {
       case 'idol.before':
         this.information = this.activeCard
         if (navigator.onLine) {
-          this.changeBackground(this.activeCard).catch(err => console.log(err))
+          this.changeBackground(this.activeCard).catch(err => {
+            console.error(err)
+            error(`IDOL changeBackground: ${err.stack}`)
+          })
         }
         break
       case 'idol.after':
         this.information = this.activeCardPlus
         if (navigator.onLine) {
-          this.changeBackground(this.activeCardPlus).catch(err => console.log(err))
+          this.changeBackground(this.activeCardPlus).catch(err => {
+            console.error(err)
+            error(`IDOL changeBackground: ${err.stack}`)
+          })
         }
         break
       default:
@@ -508,7 +524,10 @@ export default class extends Vue {
     const dir = cardDir()
     if (!fs.existsSync(dir)) fs.mkdirsSync(dir)
     if (window.node.process.platform === 'win32') {
-      shell.openExternal(dir).catch(err => console.log(err))
+      shell.openExternal(dir).catch(err => {
+        console.error(err)
+        error(`IDOL openExternal: ${err.stack}`)
+      })
     } else {
       shell.showItemInFolder(dir + '/.')
     }

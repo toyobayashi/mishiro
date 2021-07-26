@@ -3,6 +3,7 @@ import ProgressBar from '../../vue/component/ProgressBar.vue'
 
 import Component, { mixins } from 'vue-class-component'
 import updater from './updater'
+import { error } from './log'
 
 const { shell } = window.node.electron
 
@@ -43,11 +44,20 @@ export default class extends mixins(modalMixin) {
         this.event.$emit('alert', this.$t('home.errorTitle'), err.message)
       }
     } else if (this.versionData.exeUrl) {
-      shell.openExternal(this.versionData.exeUrl).catch(err => console.log(err))
+      shell.openExternal(this.versionData.exeUrl).catch(err => {
+        console.error(err)
+        error(`VERSION exeUrl: ${err.stack}`)
+      })
     } else if (this.versionData.zipUrl) {
-      shell.openExternal(this.versionData.zipUrl).catch(err => console.log(err))
+      shell.openExternal(this.versionData.zipUrl).catch(err => {
+        console.error(err)
+        error(`VERSION zipUrl: ${err.stack}`)
+      })
     } else {
-      shell.openExternal('https://github.com/toyobayashi/mishiro/releases').catch(err => console.log(err))
+      shell.openExternal('https://github.com/toyobayashi/mishiro/releases').catch(err => {
+        console.error(err)
+        error(`VERSION releases: ${err.stack}`)
+      })
     }
   }
 
@@ -60,7 +70,10 @@ export default class extends mixins(modalMixin) {
           this.visible = true
           versionData.description = (marked as any).default(versionData.release.body)
           this.versionData = versionData
-        }).catch(err => console.log(err))
+        }).catch(err => {
+          console.error(err)
+          error(`MENU versionCheck: ${err.stack}`)
+        })
       })
     })
   }
