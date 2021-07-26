@@ -13,7 +13,7 @@ export default {
     errorTitle: '錯誤警告',
     hope: '敬請期待！',
     noEmptyString: '請輸入査詢関鍵字。',
-    noEmptyDownload: '請選択要下載的文件。',
+    noEmptyDownload: '請選択文件。',
     noTask: '現在没有正在下載的任務。',
     noNetwork: '網絡未連接。',
     close: '関閉',
@@ -133,7 +133,8 @@ export default {
     liveResult: 'LIVE成績',
     copy: '複製',
     noLyrics: '無歌詞',
-    export: '導出'
+    export: '導出',
+    exportDir: '選択目録'
   },
   gacha: {
     ikkai: '単抽',

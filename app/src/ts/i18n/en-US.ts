@@ -13,7 +13,7 @@ export default {
     errorTitle: 'ERROR',
     hope: 'Coming soon!',
     noEmptyString: 'Please enter the key word.',
-    noEmptyDownload: 'Please select the files that you want to download.',
+    noEmptyDownload: 'Please select the files.',
     noNetwork: 'No network.',
     noTask: 'There is nothing being downloaded now.',
     close: 'CLOSE',
@@ -133,7 +133,8 @@ export default {
     liveResult: 'LIVE RESULT',
     copy: 'COPY',
     noLyrics: 'NO LYRICS',
-    export: 'EXPORT'
+    export: 'EXPORT',
+    exportDir: 'SELECT DIRECTORY'
   },
   gacha: {
     ikkai: 'ONCE',
