@@ -320,7 +320,7 @@ input[type=range] {
   display: block;
   position: relative;
   width: 90%;
-  margin-top: 10px;
+  /* margin-top: 10px; */
   height: 5px;
   -webkit-appearance: none;
   background-color: #aaa;
