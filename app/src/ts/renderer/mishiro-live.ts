@@ -526,19 +526,35 @@ export default class extends Vue {
     if (this.queryString) {
       if (this.currentAudioType === 'BGM') {
         const arr = []
-        const re = new RegExp(this.queryString)
-        for (let i = 0; i < this.bgmManifest.length; i++) {
-          if (re.test(this.bgmManifest[i].fileName)) {
-            arr.push(this.bgmManifest[i])
+        if (this.queryString === '/ok') {
+          for (let i = 0; i < this.bgmManifest.length; i++) {
+            if (this.bgmManifest[i]._canplay) {
+              arr.push(this.bgmManifest[i])
+            }
+          }
+        } else {
+          const re = new RegExp(this.queryString)
+          for (let i = 0; i < this.bgmManifest.length; i++) {
+            if (re.test(this.bgmManifest[i].fileName)) {
+              arr.push(this.bgmManifest[i])
+            }
           }
         }
         setAudioList(arr)
       } else if (this.currentAudioType === 'LIVE') {
         const arr = []
-        const re = new RegExp(this.queryString)
-        for (let i = 0; i < this.liveManifest.length; i++) {
-          if (re.test(this.liveManifest[i].fileName)) {
-            arr.push(this.liveManifest[i])
+        if (this.queryString === '/ok') {
+          for (let i = 0; i < this.liveManifest.length; i++) {
+            if (this.liveManifest[i]._canplay) {
+              arr.push(this.liveManifest[i])
+            }
+          }
+        } else {
+          const re = new RegExp(this.queryString)
+          for (let i = 0; i < this.liveManifest.length; i++) {
+            if (re.test(this.liveManifest[i].fileName)) {
+              arr.push(this.liveManifest[i])
+            }
           }
         }
         setAudioList(arr)
