@@ -159,6 +159,7 @@ export default {
     about: 'アバウト',
     save: 'セーブ',
     relaunch: '再起動',
+    loopCount: '音楽ループ回数',
     resVer: 'バージョン',
     gacha: 'ガチャID',
     event: 'イベントID',

@@ -159,6 +159,7 @@ export default {
     about: '関於',
     save: '保存',
     relaunch: '重新啓動',
+    loopCount: '音頻循環次数',
     resVer: '資源版本',
     gacha: '転蛋ID',
     event: '活動ID',
