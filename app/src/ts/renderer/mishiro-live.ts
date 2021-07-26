@@ -133,6 +133,11 @@ export default class extends Vue {
     this.audioDownloading = false
   }
 
+  async exportSelectedItem (): Promise<void> {
+    this.playSe(this.enterSe)
+    // TODO
+  }
+
   async downloadSelectedItem (): Promise<void> {
     this.playSe(this.enterSe)
     if (!navigator.onLine) {
