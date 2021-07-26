@@ -11,7 +11,7 @@ import { unpackTexture2D } from './unpack-texture-2d'
 // import { MasterData } from '../main/on-master-read'
 
 import getPath from '../common/get-path'
-import { getLyrics, getScoreDifficulties, showSaveDialog } from './ipc'
+import { getLyrics, getScoreDifficulties, showOpenDialog, showSaveDialog } from './ipc'
 import type { DownloadPromise } from 'mishiro-core'
 import configurer from './config'
 import type { MishiroConfig } from '../main/config'
@@ -78,6 +78,7 @@ export default class extends Vue {
 
   currentAudioType = 'BGM'
   audioDownloading = false
+  audioExporting = false
 
   selectedAudios: Array<BGM | Live> = []
   downloadingTasks: Array<BGM | Live> = []
@@ -135,7 +136,107 @@ export default class extends Vue {
 
   async exportSelectedItem (): Promise<void> {
     this.playSe(this.enterSe)
-    // TODO
+
+    const exportTasks = this.selectedAudios.slice(0)
+    if (exportTasks.length <= 0) {
+      this.event.$emit('alert', this.$t('home.errorTitle'), this.$t('home.noEmptyDownload'))
+      return
+    }
+    for (let i = 0; i < exportTasks.length; i++) {
+      if (!exportTasks[i]._canplay) {
+        this.event.$emit('alert', this.$t('home.errorTitle'), `Not exists: ${exportTasks[i].fileName}`)
+        return
+      }
+    }
+
+    const result = await showOpenDialog({
+      title: this.$t('live.exportDir') as string,
+      defaultPath: bgmDir('..'),
+      properties: [
+        'openDirectory',
+        'createDirectory',
+        'promptToCreate',
+        'treatPackageAsDirectory',
+        'showHiddenFiles',
+        'dontAddToRecent'
+      ]
+    })
+
+    if (result.canceled) return
+
+    this.audioExporting = true
+    let completeCount = 0
+
+    const targetDir = result.filePaths[0]
+    fs.mkdirsSync(targetDir)
+    const loopCount = configurer.get('loopCount') || 0
+    for (let i = 0; i < exportTasks.length; i++) {
+      const audio = exportTasks[i]
+      const audioType = audio.name.split('/')[0]
+
+      const type = configurer.get('audioExport') ?? 'wav'
+      const audioFileName = audio.fileName + '.' + type
+      const hcaFileName = audio.fileName + '.hca'
+      const wavFileName = audio.fileName + '.wav'
+
+      const dir = audioType === 'b' ? bgmDir : (audioType === 'l' ? liveDir : null)
+      if (!dir) {
+        this.event.$emit('alert', this.$t('home.errorTitle'), 'Bad type')
+        completeCount++
+        continue
+      }
+      let hcaFilePath = dir(hcaFileName)
+      const wavFilePath = path.join(targetDir, wavFileName)
+      const audioFilePath = path.join(targetDir, audioFileName)
+      let hcaInAsar = false
+
+      let hcaFilePathExist = fs.existsSync(hcaFilePath)
+      if (audioType === 'b' && !hcaFilePathExist) {
+        const asarHcaFilePath = bgmAsarDir(hcaFileName)
+        if (fs.existsSync(asarHcaFilePath)) {
+          hcaFilePathExist = true
+          hcaFilePath = asarHcaFilePath
+          hcaInAsar = true
+        }
+      }
+
+      this.text = `[${completeCount}/${exportTasks.length}] ${path.basename(audio.name)}`
+      this.current = (100 * completeCount / exportTasks.length)
+      this.total = this.current
+      try {
+        if (type === 'wav') {
+          await window.node.mishiroCore.audio.hca2wav(hcaInAsar ? fs.readFileSync(hcaFilePath) : hcaFilePath, wavFilePath, loopCount)
+        } else if (type === 'mp3') {
+          const tmpwavPath = path.join(os.tmpdir(), wavFileName)
+          await window.node.mishiroCore.audio.hca2wav(hcaInAsar ? fs.readFileSync(hcaFilePath) : hcaFilePath, tmpwavPath, loopCount)
+          await window.node.mishiroCore.audio.wav2mp3(tmpwavPath, audioFilePath, (prog) => {
+            const currentPercent = prog.loading
+            this.$set(audio, '_percent', currentPercent)
+            this.current = (100 * completeCount / exportTasks.length) + currentPercent / exportTasks.length
+            this.total = this.current
+          })
+          await fs.remove(tmpwavPath)
+        } else if (type === 'aac') {
+          const tmpwavPath = path.join(os.tmpdir(), wavFileName)
+          await window.node.mishiroCore.audio.hca2wav(hcaInAsar ? fs.readFileSync(hcaFilePath) : hcaFilePath, tmpwavPath, loopCount)
+          await window.node.mishiroCore.audio.wav2aac(tmpwavPath, audioFilePath, (prog) => {
+            const currentPercent = prog.loading
+            this.$set(audio, '_percent', currentPercent)
+            this.current = (100 * completeCount / exportTasks.length) + currentPercent / exportTasks.length
+            this.total = this.current
+          })
+          await fs.remove(tmpwavPath)
+        }
+      } catch (err) {
+        this.event.$emit('alert', this.$t('home.errorTitle'), err.toString())
+      }
+      this.text = ''
+      completeCount++
+    }
+    this.text = ''
+    this.current = 0
+    this.total = this.current
+    this.audioExporting = false
   }
 
   async downloadSelectedItem (): Promise<void> {
@@ -161,10 +262,7 @@ export default class extends Vue {
       const acbPathObj = path.posix.parse(audio.name)
       const acbBase = acbPathObj.base
       const awbBase = acbPathObj.name + '.awb'
-      const type = configurer.get('audioExport') ?? 'wav'
-      const audioFileName = audio.fileName + '.' + type
       const hcaFileName = audio.fileName + '.hca'
-      const wavFileName = audio.fileName + '.wav'
       const needAwb = !!audio.awbHash
 
       const dir = audioType === 'b' ? bgmDir : (audioType === 'l' ? liveDir : null)
@@ -174,9 +272,7 @@ export default class extends Vue {
         continue
       }
       let hcaFilePath = dir(hcaFileName)
-      const wavFilePath = dir(wavFileName)
-      const audioFilePath = dir(audioFileName)
-      let hcaInAsar = false
+      // let hcaInAsar = false
 
       let hcaFilePathExist = fs.existsSync(hcaFilePath)
       if (audioType === 'b' && !hcaFilePathExist) {
@@ -184,12 +280,11 @@ export default class extends Vue {
         if (fs.existsSync(asarHcaFilePath)) {
           hcaFilePathExist = true
           hcaFilePath = asarHcaFilePath
-          hcaInAsar = true
+          // hcaInAsar = true
         }
       }
-      const audioFilePathExist = fs.existsSync(audioFilePath)
 
-      if (hcaFilePathExist && audioFilePathExist) {
+      if (hcaFilePathExist) {
         completeCount++
         continue
       }
@@ -207,7 +302,7 @@ export default class extends Vue {
             (prog) => {
               this.text = `[${completeCount}/${this.downloadingTasks.length}] ${prog.name as string}`
               if (!needAwb) {
-                const currentPercent = prog.loading / (this.wavProgress ? 2 : 1)
+                const currentPercent = prog.loading
                 this.$set(audio, '_percent', currentPercent)
                 this.current = (100 * completeCount / this.downloadingTasks.length) + currentPercent / this.downloadingTasks.length
                 this.total = this.current
@@ -223,7 +318,7 @@ export default class extends Vue {
               awbPath,
               (prog) => {
                 this.text = `[${completeCount}/${this.downloadingTasks.length}] ${prog.name as string}`
-                const currentPercent = prog.loading / (this.wavProgress ? 2 : 1)
+                const currentPercent = prog.loading
                 this.$set(audio, '_percent', currentPercent)
                 this.current = (100 * completeCount / this.downloadingTasks.length) + currentPercent / this.downloadingTasks.length
                 this.total = this.current
@@ -253,27 +348,6 @@ export default class extends Vue {
       }
       this.$set(audio, '_canplay', true)
 
-      if (!audioFilePathExist) {
-        this.current = (100 * completeCount / this.downloadingTasks.length) + (this.wavProgress ? 50 : 99.99) / this.downloadingTasks.length
-        this.total = this.current
-        if (type === 'wav') {
-          await window.node.mishiroCore.audio.hca2wav(hcaInAsar ? fs.readFileSync(hcaFilePath) : hcaFilePath, wavFilePath)
-        } else if (type === 'mp3') {
-          await window.node.mishiroCore.audio.hca2mp3(hcaInAsar ? fs.readFileSync(hcaFilePath) : hcaFilePath, audioFilePath, (prog) => {
-            const currentPercent = 50 + prog.loading / 2
-            this.$set(audio, '_percent', currentPercent)
-            this.current = (100 * completeCount / this.downloadingTasks.length) + currentPercent / this.downloadingTasks.length
-            this.total = this.current
-          })
-        } else if (type === 'aac') {
-          await window.node.mishiroCore.audio.hca2aac(hcaInAsar ? fs.readFileSync(hcaFilePath) : hcaFilePath, audioFilePath, (prog) => {
-            const currentPercent = 50 + prog.loading / 2
-            this.$set(audio, '_percent', currentPercent)
-            this.current = (100 * completeCount / this.downloadingTasks.length) + currentPercent / this.downloadingTasks.length
-            this.total = this.current
-          })
-        }
-      }
       await this.ensureScoreAndJacket(audio)
       this.text = ''
       completeCount++

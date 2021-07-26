@@ -13,7 +13,7 @@ export default {
     errorTitle: 'エラー',
     hope: 'お楽しみに！',
     noEmptyString: 'キーワードを入力してください。',
-    noEmptyDownload: 'ダウンロードしたいファイルを選択してください。',
+    noEmptyDownload: 'ファイルを選択してください。',
     noNetwork: 'ネットワーク接続していません。',
     noTask: '現在何もダウンロードしていません。',
     close: '閉じる',
@@ -133,7 +133,8 @@ export default {
     liveResult: 'ライブ成績',
     copy: 'コピー',
     noLyrics: '歌詞なし',
-    export: '書き出し'
+    export: '書き出し',
+    exportDir: 'フォルダー選択'
   },
   gacha: {
     ikkai: '1回引く',

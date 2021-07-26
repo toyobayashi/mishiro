@@ -6,8 +6,8 @@
     <button class="cgss-btn-lg cgss-btn-lg-star pull-right margin-left-10" @click="opendir">{{$t("home.opendir")}}</button>
     <!-- <button class="cgss-btn cgss-btn-star pull-right margin-left-10" @click="startGame">{{$t("live.live")}}</button> -->
     <button class="cgss-btn cgss-btn-default pull-right margin-left-10" @click="stopDownload" v-if="audioDownloading">{{$t("home.stop")}}</button>
-    <button class="cgss-btn cgss-btn-star pull-right margin-left-10" @click="downloadSelectedItem" v-else>{{$t("home.download")}}</button>
-    <button class="cgss-btn cgss-btn-star pull-right margin-left-10" @click="exportSelectedItem">{{$t("live.export")}}</button>
+    <button class="cgss-btn cgss-btn-star pull-right margin-left-10" :disabled="audioExporting" @click="downloadSelectedItem" v-else>{{$t("home.download")}}</button>
+    <button class="cgss-btn cgss-btn-star pull-right margin-left-10" :disabled="audioExporting || audioDownloading" @click="exportSelectedItem">{{$t("live.export")}}</button>
     <button class="cgss-btn cgss-btn-ok pull-right margin-left-10" @click="query(false)">{{$t("home.search")}}</button>
   </div>
   <div class="margin-top-10 clearfix live-middle">
