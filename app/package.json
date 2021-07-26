@@ -73,9 +73,9 @@
     "@tybys/downloader": "0.2.0",
     "acb": "2.1.0",
     "electron-github-asar-updater": "4.0.0",
-    "fs-extra": "9.1.0",
+    "fs-extra": "10.0.0",
     "hca-decoder": "1.5.1",
-    "iconv-lite": "^0.6.3",
+    "iconv-lite": "0.6.3",
     "mishiro-core": "6.3.0",
     "spdlog": "0.13.5",
     "sqlite3": "5.0.2"
