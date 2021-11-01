@@ -501,6 +501,10 @@ export default class extends Vue {
         // hcaInAsar = true
       }
     }
+    if (!hcaFilePathExist) {
+      this.$set(audio, '_canplay', false)
+      return
+    }
 
     this.event.$emit('liveSelect', { src: hcaFilePath })
     this.jacketSrc = ''

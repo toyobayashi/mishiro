@@ -61,7 +61,7 @@ export default async function readMaster (master: DB, manifestDB: DB): Promise<{
   const eventLimited = await master.find('event_available', ['event_id', 'reward_id'], undefined, { reward_id: 1 })
 
   let userLevel = await master.find('user_level', ['level', 'stamina', 'total_exp'])
-  const liveData = await master.find('live_data', ['id', 'music_data_id'])
+  const liveData = await master.find('live_data', ['id', 'music_data_id', 'event_type', 'difficulty_5'])
   const jacketManifest = await manifestDB.find('manifests', ['name', 'hash'], { name: { $like: 'jacket%unity3d' } })
   // master.close((err: Error) => {
   //   if (err) throw err

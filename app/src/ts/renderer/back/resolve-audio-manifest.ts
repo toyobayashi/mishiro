@@ -106,6 +106,7 @@ export default function (bgmManifest: BGM[], liveManifest: Live[], musicData: Mu
         for (let j = 0; j < liveDataArr.length; j++) {
           if (Number(liveDataArr[j].event_type) !== 0 && Number(liveDataArr[j].difficulty_5) !== 0) {
             id = liveDataArr[j].id
+            break
           }
         }
         if (id === null) {
