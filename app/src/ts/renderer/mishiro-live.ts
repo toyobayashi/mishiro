@@ -228,7 +228,7 @@ export default class extends Vue {
           })
           await fs.remove(tmpwavPath)
         }
-      } catch (err) {
+      } catch (err: any) {
         error(`LIVE AUDIO EXPORT: ${err.stack}`)
       }
       this.text = ''
@@ -360,7 +360,14 @@ export default class extends Vue {
     this.downloadingTasks = []
   }
 
-  async ensureScoreAndJacket (audio: BGM | Live): Promise<boolean> {
+  async ensureScoreAndJacket (audio: BGM | Live): Promise<{
+    score: boolean
+    jacket: boolean
+  }> {
+    const r = {
+      score: false,
+      jacket: false
+    }
     if ('score' in audio) {
       if (!fs.existsSync(scoreDir(audio.score!))) {
         try {
@@ -373,13 +380,14 @@ export default class extends Vue {
             fs.removeSync(scoreDir(audio.score!.split('.')[0]))
           } else {
             this.event.$emit('alert', this.$t('home.errorTitle'), 'Score database download failed')
-            return false
+            return r
           }
         } catch (errorPath) {
           this.event.$emit('alert', this.$t('home.errorTitle'), (this.$t('home.downloadFailed') as string) + '<br/>' + (errorPath as string))
-          return false
+          return r
         }
       }
+      r.score = true
     }
 
     if ('jacket' in audio) {
@@ -400,21 +408,23 @@ export default class extends Vue {
             await fs.remove(jacketDir(name + '_s.png'))
           } else {
             this.event.$emit('alert', this.$t('home.errorTitle'), 'Jacket download failed')
-            return false
+            return r
           }
-        } catch (errorPath) {
-          this.event.$emit('alert', this.$t('home.errorTitle'), (this.$t('home.downloadFailed') as string) + '<br/>' + (errorPath as string))
-          return false
+        } catch (errorPath: any) {
+          const err: string = typeof errorPath === 'string' ? errorPath : errorPath.message
+          this.event.$emit('alert', this.$t('home.errorTitle'), (this.$t('home.downloadFailed') as string) + '<br/>' + err)
+          return r
         }
       }
+      r.jacket = true
     }
-    return true
+    return r
   }
 
   formatJson (obj: any): string {
     try {
       return JSON.stringify(obj, null, 2)
-    } catch (err) {
+    } catch (err: any) {
       return err.message
     }
   }
@@ -471,8 +481,6 @@ export default class extends Vue {
   async selectAudio (audio: BGM | Live): Promise<void> {
     if (this.activeAudio.hash === audio.hash) return
     this.playSe(this.enterSe)
-    const r = await this.ensureScoreAndJacket(audio)
-    if (!r) return
     this.activeAudio = audio
     const audioType = audio.name.split('/')[0]
     const hcaFileName = audio.fileName + '.hca'
@@ -495,15 +503,16 @@ export default class extends Vue {
     }
 
     this.event.$emit('liveSelect', { src: hcaFilePath })
-    const activeAudio = this.activeAudio
-    if ('score' in activeAudio) {
-      this.allLyrics = await getLyrics(scoreDir(activeAudio.score!))
+    this.jacketSrc = ''
+    const r = await this.ensureScoreAndJacket(audio)
+    if (r.score) {
+      this.allLyrics = await getLyrics(scoreDir((audio as Live).score!))
     } else {
       this.allLyrics = []
       this.lyrics = []
     }
-    if ('jacket' in activeAudio) {
-      const name = path.parse(activeAudio.jacket!).name
+    if (r.jacket) {
+      const name = path.parse((audio as Live).jacket!).name
       // const jacketlz4 = jacketDir(name)
       const pngName = name + '_m.png'
       const pngPath = jacketDir(pngName)
