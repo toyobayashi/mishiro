@@ -18,7 +18,7 @@ interface BGMList {
 
 export const bgmList: BGMList = {
   anni: {
-    src: getPath('../asset/bgm.asar/bgm_event_anniversary_005.hca')
+    src: getPath('../asset/bgm.asar/bgm_event_anniversary_006.hca')
   },
   day: {
     src: getPath('../asset/bgm.asar/bgm_studio_day.hca')

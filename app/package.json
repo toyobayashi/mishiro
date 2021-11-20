@@ -1,6 +1,6 @@
 {
   "name": "mishiro",
-  "version": "2.6.1",
+  "version": "2.6.2",
   "description": "mishiro",
   "main": "./main/mishiro.main.js",
   "scripts": {
