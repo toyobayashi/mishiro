@@ -135,7 +135,7 @@ class BannerRenderer {
   }
 })
 export default class extends Vue {
-  queryString: string = ''
+  queryString: string = '646406677'
   renderer: BannerRenderer | null
   isSearching: boolean = false
   dler = new this.core.Downloader()
