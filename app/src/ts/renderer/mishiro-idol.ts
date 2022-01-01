@@ -476,8 +476,8 @@ export default class extends Vue {
           this.cardDownloadPromise = null
           return downloadResult
         }
-      } catch (_err) {
-        if (_err.message !== 'abort') {
+      } catch (err: any) {
+        if (err.message !== 'abort') {
           this.cardDownloadPromise = this.dler.downloadSpread(
             id.toString(),
             cardDir(`bg_${id}.png`),
@@ -487,7 +487,7 @@ export default class extends Vue {
           this.cardDownloadPromise = null
           return downloadResult
         } else {
-          throw _err
+          throw err
         }
       }
     }

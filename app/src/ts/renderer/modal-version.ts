@@ -38,7 +38,7 @@ export default class extends mixins(modalMixin) {
           this.btnDisabled = false
           this.updateProgress = 0
         }
-      } catch (err) {
+      } catch (err: any) {
         updater.onDownload(null)
         this.btnDisabled = false
         this.event.$emit('alert', this.$t('home.errorTitle'), err.message)

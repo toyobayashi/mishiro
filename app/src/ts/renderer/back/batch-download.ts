@@ -120,7 +120,7 @@ export async function batchDownload (manifest: DB): Promise<void> {
       })
       await currentDownloadPromise
       currentDownloadPromise = null
-    } catch (err) {
+    } catch (err: any) {
       if (stopBatch) {
         currentDownloadPromise = null
         break

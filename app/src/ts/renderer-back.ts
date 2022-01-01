@@ -16,7 +16,7 @@ ipcRenderer.on('openManifestDatabase', async (event, callbackChannel: string, pa
   try {
     manifest = await DB.open(path)
     event.sender.sendTo(mainWindowId, callbackChannel, null)
-  } catch (err) {
+  } catch (err: any) {
     event.sender.sendTo(mainWindowId, callbackChannel, err.message)
   }
 })
@@ -29,7 +29,7 @@ ipcRenderer.on('openMasterDatabase', async (event, callbackChannel: string, path
   try {
     master = await DB.open(path)
     event.sender.sendTo(mainWindowId, callbackChannel, null)
-  } catch (err) {
+  } catch (err: any) {
     event.sender.sendTo(mainWindowId, callbackChannel, err.message)
   }
 })
@@ -38,7 +38,7 @@ ipcRenderer.on('getMasterHash', async (event, callbackChannel: string) => {
   try {
     const masterHash = (await manifest!.find('manifests', ['name', 'hash'], { name: 'master.mdb' }))[0].hash as string
     event.sender.sendTo(mainWindowId, callbackChannel, null, masterHash)
-  } catch (err) {
+  } catch (err: any) {
     event.sender.sendTo(mainWindowId, callbackChannel, err.message, '')
   }
 })
@@ -50,7 +50,7 @@ ipcRenderer.on('readMasterData', async (event, callbackChannel: string, masterFi
     await master.close()
     master = null
     event.sender.sendTo(mainWindowId, callbackChannel, null, masterData)
-  } catch (err) {
+  } catch (err: any) {
     event.sender.sendTo(mainWindowId, callbackChannel, err.message, '')
   }
 })
@@ -59,7 +59,7 @@ ipcRenderer.on('getCardHash', async (event, callbackChannel: string, id: string 
   try {
     const res = await manifest!.find('manifests', ['hash'], { name: `card_bg_${id}.unity3d` })
     event.sender.sendTo(mainWindowId, callbackChannel, null, res[0].hash)
-  } catch (err) {
+  } catch (err: any) {
     event.sender.sendTo(mainWindowId, callbackChannel, err.message, '')
   }
 })
@@ -68,7 +68,7 @@ ipcRenderer.on('getIconHash', async (event, callbackChannel: string, id: string 
   try {
     const res = await manifest!.findOne('manifests', ['hash'], { name: `card_${id}_m.unity3d` })
     event.sender.sendTo(mainWindowId, callbackChannel, null, res.hash)
-  } catch (err) {
+  } catch (err: any) {
     event.sender.sendTo(mainWindowId, callbackChannel, err.message, '')
   }
 })
@@ -77,7 +77,7 @@ ipcRenderer.on('getEmblemHash', async (event, callbackChannel: string, id: strin
   try {
     const res = await manifest!.findOne('manifests', ['hash'], { name: `emblem_${id}_l.unity3d` })
     event.sender.sendTo(mainWindowId, callbackChannel, null, res.hash)
-  } catch (err) {
+  } catch (err: any) {
     event.sender.sendTo(mainWindowId, callbackChannel, err.message, '')
   }
 })
@@ -86,7 +86,7 @@ ipcRenderer.on('searchResources', async (event, callbackChannel: string, querySt
   try {
     const res = await manifest!.find<{ name: string, hash: string }>('manifests', ['name', 'hash', 'size'], { name: { $like: `%${queryString.trim()}%` } })
     event.sender.sendTo(mainWindowId, callbackChannel, null, res)
-  } catch (err) {
+  } catch (err: any) {
     event.sender.sendTo(mainWindowId, callbackChannel, err.message, '')
   }
 })
@@ -98,7 +98,7 @@ ipcRenderer.on('startBatchDownload', async (event, callbackChannel: string) => {
     batchDownloading = true
     await batchDownload(manifest!)
     event.sender.sendTo(mainWindowId, callbackChannel, null, batchDownloading)
-  } catch (err) {
+  } catch (err: any) {
     event.sender.sendTo(mainWindowId, callbackChannel, err.message, '')
   }
 })
@@ -108,7 +108,7 @@ ipcRenderer.on('stopBatchDownload', async (event, callbackChannel: string) => {
     await batchStop()
     batchDownloading = false
     event.sender.sendTo(mainWindowId, callbackChannel, null, batchDownloading)
-  } catch (err) {
+  } catch (err: any) {
     event.sender.sendTo(mainWindowId, callbackChannel, err.message, '')
   }
 })
@@ -117,7 +117,7 @@ ipcRenderer.on('getBatchErrorList', (event, callbackChannel: string) => {
   try {
     const list = getBatchErrorList()
     event.sender.sendTo(mainWindowId, callbackChannel, null, list)
-  } catch (err) {
+  } catch (err: any) {
     event.sender.sendTo(mainWindowId, callbackChannel, err.message, null)
   }
 })
@@ -126,7 +126,7 @@ ipcRenderer.on('setDownloaderProxy', (event, callbackChannel: string, proxy: str
   try {
     setDownloaderProxy(proxy)
     event.sender.sendTo(mainWindowId, callbackChannel, null)
-  } catch (err) {
+  } catch (err: any) {
     event.sender.sendTo(mainWindowId, callbackChannel, err.message)
   }
 })

@@ -288,7 +288,7 @@ export default class extends Vue {
         if (getBackgroundResult/*  && getBackgroundResult !== 'await ipc' */) {
           this.event.$emit('eventBgReady', id)
         }
-      } catch (err) {
+      } catch (err: any) {
         this.event.$emit('alert', this.$t('home.errorTitle'), (this.$t('home.downloadFailed') as string) + '<br/>' + (err.toString() as string))
       }
     }
@@ -362,7 +362,7 @@ export default class extends Vue {
               this.text = this.$t('update.check') as string
               this.loading = 0
               resVer = await this.getResVer()
-            } catch (err) {
+            } catch (err: any) {
               console.error(err)
               error(`UPDATE getResVer: ${err.stack}`)
               if (Number(err.message) === 203) {

@@ -165,7 +165,7 @@ export default class extends Vue {
     let res: ServerResponse
     try {
       res = await getProfile(/* '646406677' */this.queryString)
-    } catch (err) {
+    } catch (err: any) {
       this.isSearching = false
       this.event.$emit('alert', this.$t('home.errorTitle'), err.message)
       return
@@ -218,7 +218,7 @@ export default class extends Vue {
           emblemB64 = readFileSync(emblemCache + '.png').toString('base64')
         }
       }
-    } catch (err) {
+    } catch (err: any) {
       console.error(err)
       this.event.$emit('alert', this.$t('home.errorTitle'), err.message)
     }
@@ -236,8 +236,9 @@ export default class extends Vue {
       return
     }
     this.renderer.canvas.toBlob((blob) => {
+      if (!blob) return
       const a = document.createElement('a')
-      a.download = 'test.png'
+      a.download = `${this.queryString}.png`
       a.href = URL.createObjectURL(blob)
       const event = new MouseEvent('click', {
         view: window,

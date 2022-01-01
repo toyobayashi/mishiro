@@ -1,6 +1,6 @@
 import { get } from 'https'
 
-const repeat = (s: string, n: number) => {
+const repeat = (s: string, n: number): string => {
   if (n < 0) throw new Error('repeat(s, n < 0)')
   let str = ''
   for (let i = 0; i < n; i++) {
@@ -17,23 +17,23 @@ get({
   }
 }, (response) => {
   let body = ''
-  response.on('data',chunk => body += chunk)
+  response.on('data', (chunk: string) => { body += chunk })
   response.on('end', () => {
     console.log('Release' + repeat(' ', 40 - 7) + 'Download Count\n')
 
-    let res = JSON.parse(body)
+    const res = JSON.parse(body)
     let total = 0
     let lineCount = 0
     try {
       for (const release of res) {
         for (const asset of release.assets) {
-          total += asset.download_count
-          let line = asset.name + repeat(' ', 40 - asset.name.length) + asset.download_count
+          total += asset.download_count as number
+          const line = `${asset.name}${repeat(' ', 40 - asset.name.length)}${asset.download_count}`
           if (lineCount < 20) console.log(line)
           lineCount++
         }
       }
-      console.log('\nTotal' + repeat(' ', 40 - 5) + total)
+      console.log(`\nTotal${repeat(' ', 40 - 5)}${total}`)
     } catch (err) {
       console.log(res)
     }
