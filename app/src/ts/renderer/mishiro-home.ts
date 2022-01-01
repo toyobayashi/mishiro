@@ -160,7 +160,7 @@ export default class extends Vue {
       const usmFile = result.filePaths[i]
       try {
         await this.core.movie.demuxAsync(usmFile)
-      } catch (err) {
+      } catch (err: any) {
         error(`USM: ${err.message}`)
       }
     }
