@@ -67,7 +67,7 @@ ipcRenderer.on('getCardHash', async (event, callbackChannel: string, id: string 
 ipcRenderer.on('getIconHash', async (event, callbackChannel: string, id: string | number) => {
   try {
     const res = await manifest!.findOne('manifests', ['hash'], { name: `card_${id}_m.unity3d` })
-    event.sender.sendTo(mainWindowId, callbackChannel, null, res[0].hash)
+    event.sender.sendTo(mainWindowId, callbackChannel, null, res.hash)
   } catch (err) {
     event.sender.sendTo(mainWindowId, callbackChannel, err.message, '')
   }
@@ -76,7 +76,7 @@ ipcRenderer.on('getIconHash', async (event, callbackChannel: string, id: string 
 ipcRenderer.on('getEmblemHash', async (event, callbackChannel: string, id: string | number) => {
   try {
     const res = await manifest!.findOne('manifests', ['hash'], { name: `emblem_${id}_l.unity3d` })
-    event.sender.sendTo(mainWindowId, callbackChannel, null, res[0].hash)
+    event.sender.sendTo(mainWindowId, callbackChannel, null, res.hash)
   } catch (err) {
     event.sender.sendTo(mainWindowId, callbackChannel, err.message, '')
   }
