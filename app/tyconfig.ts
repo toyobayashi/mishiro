@@ -7,8 +7,11 @@ import * as TerserWebpackPlugin from 'terser-webpack-plugin'
 
 const CopyWebpackPlugin = ty.wrapPlugin('CopyWebpackPlugin', require('copy-webpack-plugin'))
 
+const devServerPort = 8346
+
 const tyconfig = ty.defineConfiguration(() => {
   return {
+    devServerPort: devServerPort,
     target: 'electron',
     entry: {
       main: {
@@ -47,6 +50,9 @@ const tyconfig = ty.defineConfiguration(() => {
     ],
     cssLoaderOptions: {
       url: false
+    },
+    define: {
+      MISHIRO_DEV_SERVER_PORT: JSON.stringify(devServerPort)
     },
     iconSrcDir: 'src/res/icon',
     configureWebpack: {

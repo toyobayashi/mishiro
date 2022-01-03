@@ -41,7 +41,7 @@ export default function openScoreWindow (): void {
       error(`Score window load failed: ${err.stack}`)
     })
   } else {
-    win.loadURL('http://localhost:8090/app/renderer/score.html').catch(err => console.error(err))
+    win.loadURL(`http://localhost:${MISHIRO_DEV_SERVER_PORT}/app/renderer/score.html`).catch(err => console.error(err))
   }
 
   win.on('close', () => {

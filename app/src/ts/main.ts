@@ -80,11 +80,11 @@ function createWindow (): void {
   })
 
   if (process.env.NODE_ENV !== 'production') {
-    mainWindow.loadURL('http://localhost:8090/app/renderer/').catch((err) => {
+    mainWindow.loadURL(`http://localhost:${MISHIRO_DEV_SERVER_PORT}/app/renderer/`).catch((err) => {
       console.error(err)
       app.quit()
     })
-    backWindow.loadURL('http://localhost:8090/app/renderer/back.html').catch((err) => {
+    backWindow.loadURL(`http://localhost:${MISHIRO_DEV_SERVER_PORT}/app/renderer/back.html`).catch((err) => {
       console.error(err)
       app.quit()
     })

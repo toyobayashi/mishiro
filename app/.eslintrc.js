@@ -42,6 +42,7 @@ module.exports = {
     createDefaultProgram: true
   },
   globals: {
-    __non_webpack_require__: false
+    __non_webpack_require__: false,
+    MISHIRO_DEV_SERVER_PORT: false
   }
 }
