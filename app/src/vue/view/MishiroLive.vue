@@ -35,6 +35,7 @@
     <TaskLoading :total-loading="total" :current-loading="current" :text="text" :single="true" class="absolute-left" :color="'live'"/>
     <div class="gray-bg absolute-right timebar">
       <div class="display-prog-wrap">
+        <input class="volume-input" type="range" ref="playVolume" max="100" min="0" :value="playVolume" @input="onVolumeChange" :style="{ 'background-size': playVolume + '% 100%' }">
         <input class="range-input" type="range" ref="playProg" :max="duration" min="0" :value="currentTime" @input="oninput($event.target)" :style="{ 'background-size': 100 * (currentTime / duration) + '% 100%' }">
         <span class="left-time">{{Math.floor(currentTime) | time}} / {{Math.floor(duration) | time}}</span>
         <button v-if="activeAudio && activeAudio.score" class="scorebtn" @click="startScore">{{$t('live.score')}}</button>
@@ -140,8 +141,12 @@
   width: 100%;
   align-items: center;
 }
-.display-prog-wrap .range-input {
+.display-prog-wrap .volume-input {
   flex: 1;
+  margin-right: 12px;
+}
+.display-prog-wrap .range-input {
+  flex: 3;
 }
 .display-prog-wrap .left-time {
   width: 120px;

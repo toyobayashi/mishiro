@@ -64,6 +64,7 @@ export default class extends Vue {
   total: number = 0
   current: number = 0
   text: string = ''
+  playVolume: number = this.bgm.volume * 100
   activeAudio: BGM | Live = {} as any
   duration: number = 100
   currentTime: number = 0
@@ -122,6 +123,12 @@ export default class extends Vue {
 
   oninput (target: HTMLInputElement): void {
     this.bgm.currentTime = Number(target.value)
+  }
+
+  onVolumeChange (event: Event): void {
+    const value = Number((event.target as HTMLInputElement).value)
+    if (Number.isNaN(value)) return
+    this.bgm.volume = value / 100
   }
 
   stopDownload (): void {
@@ -719,6 +726,9 @@ export default class extends Vue {
 
   mounted (): void {
     this.$nextTick(() => {
+      this.bgm.on('volumechange', () => {
+        this.playVolume = this.bgm.volume * 100
+      })
       this.bgm.on('timeupdate', () => {
         this.currentTime = this.bgm.currentTime
         for (let i = this.allLyrics.length - 1; i >= 0; i--) {

@@ -10,6 +10,7 @@ const { Acb } = window.node.acb
 
 class MishiroAudio extends EventEmitter {
   #ctx: AudioContext = new AudioContext()
+  #gainNode = this.#ctx.createGain()
 
   #startedAt: number = 0 // absolute time
   #pausedAt: number = 0 // relative time
@@ -92,6 +93,21 @@ class MishiroAudio extends EventEmitter {
     return this.#duration
   }
 
+  public get volume (): number {
+    return this.#gainNode.gain.value
+  }
+
+  public set volume (value: number) {
+    if (Number.isNaN(value)) return
+    this.#gainNode.gain.value = value > 1 ? 1 : (value < 0 ? 0 : value)
+    this.emit('volumechange')
+  }
+
+  public constructor () {
+    super()
+    this.#gainNode.connect(this.#ctx.destination)
+  }
+
   private _initSource (audioBuffer: AudioBuffer, clearOnEnded = false): void {
     try {
       if (this.#source) {
@@ -109,14 +125,14 @@ class MishiroAudio extends EventEmitter {
     this.#source.onended = () => {
       this.emit('ended')
     }
-    this.#source.connect(this.#ctx.destination)
+    this.#source.connect(this.#gainNode)
   }
 
   public async playRawSide (src: string | BufferLike): Promise<void> {
     const audioBuffer = await decodeAudioBuffer(this.#ctx, src)
     let source = this.#ctx.createBufferSource()
     source.buffer = audioBuffer
-    source.connect(this.#ctx.destination)
+    source.connect(this.#gainNode)
     source.start(0)
     source.onended = () => {
       source.disconnect()
