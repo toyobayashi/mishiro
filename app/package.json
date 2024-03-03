@@ -76,8 +76,12 @@
     "fs-extra": "10.0.0",
     "hca-decoder": "1.5.1",
     "iconv-lite": "0.6.3",
-    "mishiro-core": "6.3.1",
-    "spdlog": "0.13.5",
-    "sqlite3": "5.0.2"
+    "mishiro-core": "6.3.5",
+    "spdlog": "0.13.7",
+    "sqlite3": "5.1.7"
+  },
+  "overrides": {
+    "node-gyp": "^10",
+    "node-addon-api": "^7"
   }
 }

@@ -107,7 +107,7 @@
         $ cd mishiro/app
 
         $ npm config set registry http://registry.npm.taobao.org/
-        $ npm config set electron_mirror https://npm.taobao.org/mirrors/electron/
+        $ npm config set electron_mirror https://registry.npmmirror.com/-/binary/electron/
 
         $ npm install -g node-gyp
         $ npm config set node_gyp "`npm prefix -g`/lib/node_modules/node-gyp/bin/node-gyp.js"
