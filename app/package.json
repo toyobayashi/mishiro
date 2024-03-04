@@ -10,6 +10,7 @@
     "start": "cross-env NODE_ENV=production ty start",
     "pack:ia32": "ty pack --arch=ia32",
     "pack:x64": "ty pack --arch=x64",
+    "pack:arm64": "ty pack --arch=arm64",
     "count": "ts-node -P ./script/tsconfig.json ./script/source-count.ts",
     "dlc": "ts-node -P ./script/tsconfig.json ./script/release-download-count.ts",
     "rm": "ts-node -P ./script/tsconfig.json ./script/rm.ts",
@@ -76,12 +77,12 @@
     "fs-extra": "10.0.0",
     "hca-decoder": "1.6.0",
     "iconv-lite": "0.6.3",
-    "mishiro-core": "6.3.6",
+    "mishiro-core": "6.3.7",
+    "node-gyp": "^10",
     "spdlog": "0.13.7",
     "sqlite3": "5.1.7"
   },
   "overrides": {
-    "node-gyp": "^10",
-    "node-addon-api": "^7"
+    "node-gyp": "^10"
   }
 }

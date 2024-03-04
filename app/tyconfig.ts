@@ -98,6 +98,7 @@ const tyconfig = ty.defineConfiguration(() => {
         allowlist: [/webpack/, 'marked', /^vue/, 'tslib']
       }
     },
+    prune: false as any,
     packHook: {
       afterInstall (_self, root) {
         const nodeModulesDir = path.join(root, 'node_modules')
@@ -107,11 +108,11 @@ const tyconfig = ty.defineConfiguration(() => {
           '.cache',
           'nan',
           'node-addon-api',
+          'node-gyp',
           'sqlite3/build-tmp-napi-v3',
           'sqlite3/build-tmp-napi-v4',
           'sqlite3/build-tmp-napi-v5',
           'sqlite3/build-tmp-napi-v6',
-          'sqlite3/build',
           'sqlite3/deps',
           'sqlite3/node_modules',
           'sqlite3/src',
