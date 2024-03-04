@@ -22,7 +22,7 @@ export default function openScoreWindow (): void {
     backgroundColor: '#000000',
     webPreferences: {
       nodeIntegration: true,
-      enableRemoteModule: false,
+      // enableRemoteModule: false,
       contextIsolation: false
     }
   }))

@@ -15,10 +15,10 @@ app.commandLine.appendSwitch('js-flags', '--expose-gc')
 // require('v8').setFlagsFromString('--expose-gc')
 // global.gc = require('vm').runInNewContext('gc')
 
-if (process.env.NODE_ENV !== 'production') {
-  // https://github.com/mapbox/node-sqlite3/issues/1370
-  app.allowRendererProcessReuse = false
-}
+// if (process.env.NODE_ENV !== 'production') {
+//   // https://github.com/mapbox/node-sqlite3/issues/1370
+//   app.allowRendererProcessReuse = false
+// }
 
 let mainWindow: BrowserWindow | null = null
 let backWindow: BrowserWindow | null = null
@@ -33,7 +33,7 @@ function createWindow (): void {
     backgroundColor: '#000000',
     webPreferences: {
       nodeIntegration: true,
-      enableRemoteModule: false,
+      // enableRemoteModule: false,
       contextIsolation: false,
       // preload: join(__dirname, '../preload/preload.js'),
       defaultFontFamily: {
@@ -70,7 +70,7 @@ function createWindow (): void {
     // parent: mainWindow,
     webPreferences: {
       nodeIntegration: true,
-      enableRemoteModule: false,
+      // enableRemoteModule: false,
       contextIsolation: false
     }
   })

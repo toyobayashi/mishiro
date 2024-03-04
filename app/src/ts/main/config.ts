@@ -25,7 +25,7 @@ export class Configurer {
     this.configFile = configFile
     if (!fs.existsSync(configFile)) {
       this.config = {
-        latestResVer: 10085200,
+        latestResVer: 10088500,
         language: 'zh',
         card: 'default',
         lrcEncoding: 'utf8',
@@ -33,7 +33,7 @@ export class Configurer {
       }
     } else {
       this.config = fs.readJsonSync(configFile) || {}
-      this.config.latestResVer = this.config.latestResVer || 10085200
+      this.config.latestResVer = this.config.latestResVer || 10088500
       this.config.language = this.config.language || 'zh'
       this.config.card = this.config.card || 'default'
       this.config.lrcEncoding = this.config.lrcEncoding || 'utf8'

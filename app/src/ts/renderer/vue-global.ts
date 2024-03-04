@@ -29,6 +29,15 @@ const install: PluginFunction<undefined> = function (Vue) {
   Vue.prototype.core = window.node.mishiroCore
 
   // 全局方法
+  Vue.prototype.handleClientError = function (err: Error, ignore?: boolean) {
+    if (err.message.includes('Error: 203')) {
+      this.event.$emit('alert', this.$t('home.errorTitle'), this.$t('home.accountBannedMessage'))
+    } else {
+      if (!ignore) {
+        this.event.$emit('alert', this.$t('home.errorTitle'), err.message)
+      }
+    }
+  }
   Vue.prototype.playSe = function (se: HTMLAudioElement) { // 播放音效
     se.currentTime = 0
     setTimeout(() => {

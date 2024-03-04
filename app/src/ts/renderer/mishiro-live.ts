@@ -125,7 +125,7 @@ export default class extends Vue {
     this.bgm.currentTime = Number(target.value)
   }
 
-  onVolumeChange (event: Event): void {
+  onVolumeChange (event: InputEvent): void {
     const value = Number((event.target as HTMLInputElement).value)
     if (Number.isNaN(value)) return
     this.bgm.volume = value / 100

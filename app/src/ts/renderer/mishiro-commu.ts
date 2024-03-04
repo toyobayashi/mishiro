@@ -167,7 +167,7 @@ export default class extends Vue {
       res = await getProfile(/* '646406677' */this.queryString)
     } catch (err: any) {
       this.isSearching = false
-      this.event.$emit('alert', this.$t('home.errorTitle'), err.message)
+      this.handleClientError(err)
       return
     }
 
