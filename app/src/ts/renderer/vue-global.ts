@@ -9,7 +9,7 @@ const path = window.node.path
 const { iconDir } = getPath
 
 // const gameHostBase = 'http://storage.game.starlight-stage.jp/dl/resources'
-const imgHostBase = 'https://truecolor.kirara.ca'
+const imgHostBase = 'https://hidamarirhodonite.kirara.ca'
 // const getBgmUrl = (hash: string) => `${gameHostBase}/High/Sound/Common/b/${hash}`
 // const getLiveUrl = (hash: string) => `${gameHostBase}/High/Sound/Common/l/${hash}`
 // const getVoiceUrl = (hash: string) => `${gameHostBase}/High/Sound/Common/v/${hash}`

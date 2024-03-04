@@ -1,4 +1,6 @@
 import { ipcMain, SaveDialogOptions, dialog, app, RelaunchOptions, OpenDialogOptions } from 'electron'
+import { getProxyAgent } from 'mishiro-core/util/proxy'
+import got from 'got'
 // import onManifestQuery from './on-manifest-query'
 // import onManifestSearch from './on-manifest-search'
 // import onGame from './on-game'
@@ -98,7 +100,25 @@ export default function ipc (): void {
   })
 
   ipcMain.handle('checkResourceVersion', async () => {
-    const res = await client.check()
+    let res: number
+    try {
+      res = await client.check()
+    } catch (err1: any) {
+      interface InfoFromKirara {
+        api_major: number
+        api_revision: number
+        truth_version: string
+      }
+      try {
+        const response = await got.get<InfoFromKirara>('https://starlight.kirara.ca/api/v1/info', {
+          responseType: 'json',
+          agent: getProxyAgent(configurer.get('proxy'))
+        })
+        res = Number(response.body.truth_version)
+      } catch (err2: any) {
+        throw new Error([err1, err2].map(e => e.message).join('\n'))
+      }
+    }
     if (res !== 0) {
       const latestResVer = configurer.get('latestResVer')
       if (!latestResVer || (res > latestResVer)) {
