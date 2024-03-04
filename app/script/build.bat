@@ -9,6 +9,6 @@ call npm.cmd install -g node-gyp@10
 for /f "delims=" %%P in ('node -p "require('./app/package.json').devDependencies.electron"') do call node-gyp.cmd install --target=%%P --disturl=https://electronjs.org/headers
 
 cd .\app
-call npm.cmd install --legacy-peer-deps
+call npm.cmd install --legacy-peer-deps --verbose
 call npm.cmd run build
 cd ..

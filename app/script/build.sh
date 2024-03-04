@@ -5,6 +5,6 @@ npm install -g node-gyp@10
 node-gyp install --target=$(node -p require\(\'./app/package.json\'\).devDependencies.electron) --disturl=https://electronjs.org/headers
 
 cd ./app
-npm install --legacy-peer-deps
+npm install --legacy-peer-deps --verbose
 npm run build
 cd ..
