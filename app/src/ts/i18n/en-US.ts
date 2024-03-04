@@ -30,7 +30,7 @@ export default {
     cHash: 'hash',
     cSize: 'size',
     usmbtn: 'SELECT USM',
-    accountBannedMessage: 'The built-in account has been banned. Please open OPTION and set another account to update game database.'
+    accountBannedMessage: 'The built-in account has been banned. Please open OPTION and set another account to fetch data from game server.'
   },
   event: {
     atapon: 'ATAPOM',

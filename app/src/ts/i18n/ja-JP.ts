@@ -30,7 +30,7 @@ export default {
     cHash: 'ハッシュ',
     cSize: 'サイズ',
     usmbtn: 'USMを選択',
-    accountBannedMessage: 'クライアントの使用しているアカウントがバンされました。オプションを開いてアカウントを設置してゲームデータベースを更新できるようにします。'
+    accountBannedMessage: 'クライアントの使用しているアカウントがバンされました。オプションを開いてアカウントを設置してゲームサーバーと通信できるようにします。'
   },
   event: {
     atapon: 'アタポン',
