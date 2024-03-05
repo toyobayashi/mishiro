@@ -101,6 +101,7 @@ export default function ipc (): void {
 
   ipcMain.handle('checkResourceVersion', async () => {
     let res: number
+    let url = '/load/check'
     try {
       res = await client.check()
     } catch (err1: any) {
@@ -110,7 +111,8 @@ export default function ipc (): void {
         truth_version: string
       }
       try {
-        const response = await got.get<InfoFromKirara>('https://starlight.kirara.ca/api/v1/info', {
+        url = 'https://starlight.kirara.ca/api/v1/info'
+        const response = await got.get<InfoFromKirara>(url, {
           responseType: 'json',
           agent: getProxyAgent(configurer.get('proxy'))
         })
@@ -122,14 +124,14 @@ export default function ipc (): void {
     if (res !== 0) {
       const latestResVer = configurer.get('latestResVer')
       if (!latestResVer || (res > latestResVer)) {
-        console.log(`/load/check [New Version] ${latestResVer} => ${res}`)
+        console.log(`${url} [New Version] ${latestResVer} => ${res}`)
       } else {
-        console.log(`/load/check [Latest Version] ${res}`)
+        console.log(`${url} [Latest Version] ${res}`)
       }
       configurer.set('latestResVer', res)
       client.resVer = res.toString()
     } else {
-      const msg = 'checkResourceVersion /load/check failed'
+      const msg = `checkResourceVersion ${url} failed`
       log.error(msg)
       console.error(msg)
     }
