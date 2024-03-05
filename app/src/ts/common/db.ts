@@ -39,7 +39,7 @@ class DB {
     })
   }
 
-  findEach<T = any> (table: string, columns?: string[], query?: { [column: string]: any }, orderBy?: { [column: string]: 1 | -1 }, eachCall?: (this: import('sqlite3').Statement, err: Error | null, row: T) => void): Promise<T[]> {
+  findEach<T = any> (table: string, columns?: string[], query?: { [column: string]: any }, orderBy?: { [column: string]: 1 | -1 }, page?: number, pageSize?: number, eachCall?: (this: import('sqlite3').Statement, err: Error | null, row: T) => void): Promise<T[]> {
     return new Promise<T[]>((resolve, reject) => {
       if (!this._db) {
         reject(new Error(`Database ${this._dbPath} is not available.`))
@@ -48,7 +48,7 @@ class DB {
 
       const res: T[] = []
 
-      this._db.each(DB.toSQL(table, columns, query, orderBy), function (err: Error | null, row: T) {
+      this._db.each(DB.toSQL(table, columns, query, orderBy, page, pageSize), function (err: Error | null, row: T) {
         if (err) {
           reject(err)
           return
@@ -65,26 +65,39 @@ class DB {
     })
   }
 
-  findOne<T = any> (table: string, columns?: string[], query?: { [column: string]: any }, orderBy?: { [column: string]: 1 | -1 }): Promise<T | undefined> {
+  findOne<T = any> (table: string, columns?: string[], query?: { [column: string]: any }, orderBy?: { [column: string]: 1 | -1 }, page?: number, pageSize = 10): Promise<T | undefined> {
     return new Promise<T>((resolve, reject) => {
       if (!this._db) {
         reject(new Error(`Database ${this._dbPath} is not available.`))
         return
       }
-      this._db.get(DB.toSQL(table, columns, query, orderBy), (err: Error | null, row: T) => {
+      this._db.get(DB.toSQL(table, columns, query, orderBy, page, pageSize), (err: Error | null, row: T) => {
         if (err) reject(err)
         else resolve(row)
       })
     })
   }
 
-  find<T = any> (table: string, columns?: string[], query?: { [column: string]: any }, orderBy?: { [column: string]: 1 | -1 }): Promise<T[]> {
+  count (table: string, column?: string, query?: { [column: string]: any }): Promise<number> {
+    return new Promise<number>((resolve, reject) => {
+      if (!this._db) {
+        reject(new Error(`Database ${this._dbPath} is not available.`))
+        return
+      }
+      this._db.get(DB.toSQL(table, column ? [column] : ['COUNT(*) AS count'], query), (err: Error | null, row: { count: number }) => {
+        if (err) reject(err)
+        else resolve(row.count)
+      })
+    })
+  }
+
+  find<T = any> (table: string, columns?: string[], query?: { [column: string]: any }, orderBy?: { [column: string]: 1 | -1 }, page?: number, pageSize = 10): Promise<T[]> {
     return new Promise<T[]>((resolve, reject) => {
       if (!this._db) {
         reject(new Error(`Database ${this._dbPath} is not available.`))
         return
       }
-      this._db.all(DB.toSQL(table, columns, query, orderBy), (err: Error | null, rows: T[]) => {
+      this._db.all(DB.toSQL(table, columns, query, orderBy, page, pageSize), (err: Error | null, rows: T[]) => {
         if (err) reject(err)
         else resolve(rows)
       })
@@ -108,7 +121,7 @@ class DB {
     })
   }
 
-  public static toSQL (table: string, columns?: string[], query?: { [column: string]: any }, orderBy?: { [column: string]: 1 | -1 }): string {
+  public static toSQL (table: string, columns?: string[], query?: { [column: string]: any }, orderBy?: { [column: string]: 1 | -1 }, page?: number, pageSize = 10): string {
     let sql = `SELECT ${columns ? columns.join(', ') : '*'} FROM ${table}`
     if (query) {
       sql += ' WHERE '
@@ -158,6 +171,10 @@ class DB {
         }
       }
       sql += orderByArray.join(', ')
+    }
+
+    if (page != null) {
+      sql += ` LIMIT ${pageSize} OFFSET ${page * pageSize}`
     }
 
     return sql
