@@ -12,9 +12,9 @@ const client = new core.Client(
 client.setProxy(configurer.get('proxy') ?? '')
 
 if (!client.user) {
-  client.user = '506351535'
-  client.viewer = '141935962'
-  client.udid = 'edb05dd4-9d13-4f76-b860-95f7a79de44e'
+  client.user = '940464243'
+  client.viewer = '174481488'
+  client.udid = 'cf608be5-6d38-421a-8eb1-11a501132c0a'
 }
 
 export * from 'mishiro-core'
