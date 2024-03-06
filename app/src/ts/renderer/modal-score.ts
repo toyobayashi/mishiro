@@ -36,7 +36,7 @@ export default class extends mixins(modalMixin) {
     this.event.$emit('gameStart')
     this.event.$emit('pauseBgm')
 
-    ipcRenderer.send('openScoreWindow')
+    await ipcRenderer.invoke('openScoreWindow')
 
     this.visible = false
     // ipcRenderer.send(

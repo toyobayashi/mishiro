@@ -4,7 +4,7 @@ import Vuex from 'vuex'
 import type { MasterData } from './back/on-master-read'
 import type { BGM, Live } from './back/resolve-audio-manifest'
 
-const { ipcRenderer } = window.node.electron
+// const { ipcRenderer } = window.node.electron
 
 Vue.use(Vuex)
 
@@ -76,9 +76,9 @@ const store = new Vuex.Store<{
 //   store.commit(Action.SET_BATCH_DOWNLOADING, payload)
 // })
 
-ipcRenderer.on('setBatchStatus', (_event, status) => {
-  store.commit(Action.SET_BATCH_STATUS, status)
-})
+// ipcRenderer.on('setBatchStatus', (_event, status) => {
+//   store.commit(Action.SET_BATCH_STATUS, status)
+// })
 
 export function setResVer (resVer: number): void {
   store.commit(Action.SET_RES_VER, resVer)

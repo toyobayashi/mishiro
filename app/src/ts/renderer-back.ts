@@ -1,134 +1,109 @@
 import './renderer/preload'
-import { ipcRenderer } from 'electron'
 import DB from './common/db'
 import { batchDownload, batchStop, getBatchErrorList, setDownloaderProxy } from './renderer/back/batch-download'
-import mainWindowId from './renderer/back/main-window-id'
+// import mainWindowId from './renderer/back/main-window-id'
 import readMaster from './renderer/back/on-master-read'
 
 let manifest: DB | null = null
 let master: DB | null = null
 
-ipcRenderer.on('openManifestDatabase', async (event, callbackChannel: string, path: string) => {
-  if (manifest) {
-    event.sender.sendTo(mainWindowId, callbackChannel, null)
-    return
+window.node.electron.ipcRenderer.on('port', e => {
+  const mainWindowPort = e.ports[0]
+  const portEvent = new window.node.events.EventEmitter()
+
+  mainWindowPort.onmessage = function (event) {
+    portEvent.emit('message', event)
   }
-  try {
+
+  function defineRemoteFunction (name: string, fn: (...args: any[]) => any): void {
+    portEvent.on('message', (event) => {
+      if (event.data.type === name) {
+        Promise.resolve(fn(...event.data.payload)).then(ret => {
+          mainWindowPort.postMessage({
+            id: event.data.id,
+            err: null,
+            data: ret
+          })
+        }).catch(err => {
+          mainWindowPort.postMessage({
+            id: event.data.id,
+            err: err.message,
+            data: undefined
+          })
+        })
+      }
+    })
+  }
+
+  defineRemoteFunction('openManifestDatabase', async (path: string) => {
+    if (manifest) {
+      return
+    }
     manifest = await DB.open(path)
-    event.sender.sendTo(mainWindowId, callbackChannel, null)
-  } catch (err: any) {
-    event.sender.sendTo(mainWindowId, callbackChannel, err.message)
-  }
-})
+  })
 
-ipcRenderer.on('openMasterDatabase', async (event, callbackChannel: string, path: string) => {
-  if (master) {
-    event.sender.sendTo(mainWindowId, callbackChannel, null)
-    return
-  }
-  try {
+  defineRemoteFunction('openMasterDatabase', async (path: string) => {
+    if (master) {
+      return
+    }
     master = await DB.open(path)
-    event.sender.sendTo(mainWindowId, callbackChannel, null)
-  } catch (err: any) {
-    event.sender.sendTo(mainWindowId, callbackChannel, err.message)
-  }
-})
+  })
 
-ipcRenderer.on('getMasterHash', async (event, callbackChannel: string) => {
-  try {
+  defineRemoteFunction('getMasterHash', async () => {
     const masterHash = (await manifest!.find('manifests', ['name', 'hash'], { name: 'master.mdb' }))[0].hash as string
-    event.sender.sendTo(mainWindowId, callbackChannel, null, masterHash)
-  } catch (err: any) {
-    event.sender.sendTo(mainWindowId, callbackChannel, err.message, '')
-  }
-})
+    return masterHash
+  })
 
-ipcRenderer.on('readMasterData', async (event, callbackChannel: string, masterFile: string) => {
-  try {
+  defineRemoteFunction('readMasterData', async (masterFile: string) => {
     master = await DB.open(masterFile)
     const masterData = await readMaster(master, manifest!)
     await master.close()
     master = null
-    event.sender.sendTo(mainWindowId, callbackChannel, null, masterData)
-  } catch (err: any) {
-    event.sender.sendTo(mainWindowId, callbackChannel, err.message, '')
-  }
-})
+    return masterData
+  })
 
-ipcRenderer.on('getCardHash', async (event, callbackChannel: string, id: string | number) => {
-  try {
+  defineRemoteFunction('getCardHash', async (id: string | number) => {
     const res = await manifest!.find('manifests', ['hash'], { name: `card_bg_${id}.unity3d` })
-    event.sender.sendTo(mainWindowId, callbackChannel, null, res[0].hash)
-  } catch (err: any) {
-    event.sender.sendTo(mainWindowId, callbackChannel, err.message, '')
-  }
-})
+    return res[0].hash
+  })
 
-ipcRenderer.on('getIconHash', async (event, callbackChannel: string, id: string | number) => {
-  try {
+  defineRemoteFunction('getIconHash', async (id: string | number) => {
     const res = await manifest!.findOne('manifests', ['hash'], { name: `card_${id}_m.unity3d` })
-    event.sender.sendTo(mainWindowId, callbackChannel, null, res.hash)
-  } catch (err: any) {
-    event.sender.sendTo(mainWindowId, callbackChannel, err.message, '')
-  }
-})
+    return res.hash
+  })
 
-ipcRenderer.on('getEmblemHash', async (event, callbackChannel: string, id: string | number) => {
-  try {
+  defineRemoteFunction('getEmblemHash', async (id: string | number) => {
     const res = await manifest!.findOne('manifests', ['hash'], { name: `emblem_${id}_l.unity3d` })
-    event.sender.sendTo(mainWindowId, callbackChannel, null, res.hash)
-  } catch (err: any) {
-    event.sender.sendTo(mainWindowId, callbackChannel, err.message, '')
-  }
-})
+    return res.hash
+  })
 
-ipcRenderer.on('searchResources', async (event, callbackChannel: string, queryString: string) => {
-  try {
+  defineRemoteFunction('searchResources', async (queryString: string) => {
     const res = await manifest!.find<{ name: string, hash: string }>('manifests', ['name', 'hash', 'size'], { name: { $like: `%${queryString.trim()}%` } })
-    event.sender.sendTo(mainWindowId, callbackChannel, null, res)
-  } catch (err: any) {
-    event.sender.sendTo(mainWindowId, callbackChannel, err.message, '')
-  }
-})
+    return res
+  })
 
-let batchDownloading = false
+  let batchDownloading = false
 
-ipcRenderer.on('startBatchDownload', async (event, callbackChannel: string) => {
-  try {
+  defineRemoteFunction('startBatchDownload', async () => {
     batchDownloading = true
-    await batchDownload(manifest!)
-    event.sender.sendTo(mainWindowId, callbackChannel, null, batchDownloading)
-  } catch (err: any) {
-    event.sender.sendTo(mainWindowId, callbackChannel, err.message, '')
-  }
-})
+    await batchDownload(mainWindowPort, manifest!)
+    return batchDownloading
+  })
 
-ipcRenderer.on('stopBatchDownload', async (event, callbackChannel: string) => {
-  try {
+  defineRemoteFunction('stopBatchDownload', async () => {
     await batchStop()
     batchDownloading = false
-    event.sender.sendTo(mainWindowId, callbackChannel, null, batchDownloading)
-  } catch (err: any) {
-    event.sender.sendTo(mainWindowId, callbackChannel, err.message, '')
-  }
-})
+    return batchDownloading
+  })
 
-ipcRenderer.on('getBatchErrorList', (event, callbackChannel: string) => {
-  try {
+  defineRemoteFunction('getBatchErrorList', () => {
     const list = getBatchErrorList()
-    event.sender.sendTo(mainWindowId, callbackChannel, null, list)
-  } catch (err: any) {
-    event.sender.sendTo(mainWindowId, callbackChannel, err.message, null)
-  }
-})
+    return list
+  })
 
-ipcRenderer.on('setDownloaderProxy', (event, callbackChannel: string, proxy: string) => {
-  try {
+  defineRemoteFunction('setDownloaderProxy', (proxy: string) => {
     setDownloaderProxy(proxy)
-    event.sender.sendTo(mainWindowId, callbackChannel, null)
-  } catch (err: any) {
-    event.sender.sendTo(mainWindowId, callbackChannel, err.message)
-  }
+  })
 })
 
 window.addEventListener('beforeunload', () => {
