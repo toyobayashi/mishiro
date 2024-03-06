@@ -12,7 +12,13 @@ function createChannelName (): string {
 }
 
 let backWindowPort: MessagePort
-const backWindowPortEvent = new window.node.events.EventEmitter()
+
+interface Deferred {
+  resolve: (value: any) => void
+  reject: (reason: any) => void
+}
+
+const promiseMap = new Map<string, Deferred>()
 
 ipcRenderer.on('port', e => {
   backWindowPort = e.ports[0]
@@ -21,7 +27,18 @@ ipcRenderer.on('port', e => {
     if (ev.data.type === 'setBatchStatus') {
       store.commit(Action.SET_BATCH_STATUS, ev.data.payload[0])
     }
-    backWindowPortEvent.emit('message', ev)
+
+    const channel = ev.data.id
+    if (typeof channel === 'string') {
+      if (promiseMap.has(channel)) {
+        const deferred = promiseMap.get(channel)!
+        if (ev.data.err) {
+          deferred.reject(new Error(ev.data.err))
+        } else {
+          deferred.resolve(ev.data.data)
+        }
+      }
+    }
   }
 })
 
@@ -32,13 +49,14 @@ function invokeBackWindow<T> (name: string, args: any[] = []): Promise<T> {
       return
     }
     const callbackChannel = createChannelName()
-    backWindowPortEvent.once('message', (ev) => {
-      if (ev.data.id === callbackChannel) {
-        if (ev.data.err) {
-          reject(new Error(ev.data.err))
-        } else {
-          resolve(ev.data.data)
-        }
+    promiseMap.set(callbackChannel, {
+      resolve: (value) => {
+        promiseMap.delete(callbackChannel)
+        resolve(value)
+      },
+      reject: (reason) => {
+        promiseMap.delete(callbackChannel)
+        reject(reason)
       }
     })
     backWindowPort.postMessage({
