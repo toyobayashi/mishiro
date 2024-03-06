@@ -3,8 +3,8 @@ import { formatSize } from '../../common/util'
 import getPath from '../../common/get-path'
 import { md5File } from './hash'
 import type { DownloadPromise, ResourceType as ResourceTypeEnum } from 'mishiro-core'
-import { ipcRenderer } from 'electron'
-import mainWindowId from './main-window-id'
+// import { ipcRenderer } from 'electron'
+// import mainWindowId from './main-window-id'
 import { warn } from '../log'
 import configurer from '../config'
 
@@ -23,7 +23,7 @@ interface ManifestResouceWithPath extends ManifestResouce {
 
 let stopBatch = false
 
-async function checkFiles (manifest: DB): Promise<{
+async function checkFiles (port: MessagePort, manifest: DB): Promise<{
   list: ManifestResouceWithPath[]
   count: number
 }> {
@@ -53,12 +53,15 @@ async function checkFiles (manifest: DB): Promise<{
     const n = Date.now()
     if ((n >= (t + 100)) || (i === records.length - 1)) {
       t = n
-      ipcRenderer.sendTo(mainWindowId, 'setBatchStatus', {
-        name: 'Checking',
-        status: `${i + 1} / ${records.length}`,
-        status2: `${completeCount} / ${records.length}`,
-        curprog: 100 * (i + 1) / records.length,
-        totalprog: 0
+      port.postMessage({
+        type: 'setBatchStatus',
+        payload: [{
+          name: 'Checking',
+          status: `${i + 1} / ${records.length}`,
+          status2: `${completeCount} / ${records.length}`,
+          curprog: 100 * (i + 1) / records.length,
+          totalprog: 0
+        }]
       })
     }
   }
@@ -81,16 +84,16 @@ export function setDownloaderProxy (proxy: string): void {
   downloader.setProxy(proxy)
 }
 
-export async function batchDownload (manifest: DB): Promise<void> {
+export async function batchDownload (port: MessagePort, manifest: DB): Promise<void> {
   errorList = []
-  const info = await checkFiles(manifest)
+  const info = await checkFiles(port, manifest)
   list = info.list
   const count = info.count
   const totalCount = list.length + count
   if (stopBatch) {
     stopBatch = false
     list.length = 0
-    resetBatchStatus()
+    resetBatchStatus(port)
     return
   }
   for (let i = 0; i < list.length; i++) {
@@ -101,21 +104,27 @@ export async function batchDownload (manifest: DB): Promise<void> {
       continue
     }
     const status2 = `${i + count} / ${totalCount}`
-    ipcRenderer.sendTo(mainWindowId, 'setBatchStatus', {
-      name: resource.name,
-      status: '',
-      status2: status2,
-      curprog: 0,
-      totalprog: 100 * (i + count) / totalCount
+    port.postMessage({
+      type: 'setBatchStatus',
+      payload: [{
+        name: resource.name,
+        status: '',
+        status2: status2,
+        curprog: 0,
+        totalprog: 100 * (i + count) / totalCount
+      }]
     })
     try {
       currentDownloadPromise = downloader.downloadOneRaw(type, resource.hash, resource.path, (prog) => {
-        ipcRenderer.sendTo(mainWindowId, 'setBatchStatus', {
-          name: resource.name ?? '',
-          status: `${formatSize(prog.current)} / ${formatSize(prog.max)}`,
-          status2: status2,
-          curprog: prog.loading,
-          totalprog: 100 * (i + count) / totalCount + prog.loading / totalCount
+        port.postMessage({
+          type: 'setBatchStatus',
+          payload: [{
+            name: resource.name ?? '',
+            status: `${formatSize(prog.current)} / ${formatSize(prog.max)}`,
+            status2: status2,
+            curprog: prog.loading,
+            totalprog: 100 * (i + count) / totalCount + prog.loading / totalCount
+          }]
         })
       })
       await currentDownloadPromise
@@ -141,7 +150,7 @@ export async function batchDownload (manifest: DB): Promise<void> {
   }
   stopBatch = false
   list.length = 0
-  resetBatchStatus()
+  resetBatchStatus(port)
 }
 
 export function batchStop (): Promise<void> {
@@ -153,13 +162,16 @@ export function batchStop (): Promise<void> {
   })
 }
 
-function resetBatchStatus (): void {
-  ipcRenderer.sendTo(mainWindowId, 'setBatchStatus', {
-    name: '',
-    status: '',
-    status2: '',
-    curprog: 0,
-    totalprog: 0
+function resetBatchStatus (port: MessagePort): void {
+  port.postMessage({
+    type: 'setBatchStatus',
+    payload: [{
+      name: '',
+      status: '',
+      status2: '',
+      curprog: 0,
+      totalprog: 0
+    }]
   })
 }
 

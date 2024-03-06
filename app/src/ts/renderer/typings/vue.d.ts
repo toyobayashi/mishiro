@@ -14,6 +14,7 @@ declare module 'vue/types/vue' {
     core: typeof import('mishiro-core')
 
     createCardIconTask: (cardIdArr: number[]) => string[][]
+    handleClientError: (err: Error, ignore?: boolean) => void
     playSe: (se: HTMLAudioElement) => void
     // getBgmUrl: (hash: string) => string
     // getLiveUrl: (hash: string) => string

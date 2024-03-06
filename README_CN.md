@@ -29,23 +29,23 @@
 ### Windows 需要
 
 * __Windows 7 以上__
-* __Node.js 12+__
-* __Python 2.7__ （`node-gyp` 现在不支持 3.x ）
-* __Visual Studio 2015/2017/2019 并安装`使用 C++ 的桌面开发`工作负载或 `VC++ v140+ 构建工具集`__
-* __.NET 和 Powershell__ （Windows 10 有自带）
+* __Node.js 18+__
+* __Python 3__
+* __Visual Studio 2022 并安装`使用 C++ 的桌面开发`工作负载或 `VC++ v140+ 构建工具集`__
+* __.NET 和 Powershell__
 
 ### Linux 需要
 
-* __Node.js 12+__
-* __Python 2.7__
+* __Node.js 18+__
+* __Python 3__
 * __gcc & g++__
 * __make__
 * __zip & unzip__
 
 ### MacOS 需要  （这部分未测试）
 
-* __Node.js 12+__
-* __Python 2.7__
+* __Node.js 18+__
+* __Python 3__
 * __Xcode__ （终端运行 ```xcode-select --install``` 安装Command Line Tools）
 
 ### 快速开始
@@ -78,22 +78,13 @@
         > cd mishiro/app
 
         REM 设置国内镜像
-        > npm config set registry http://registry.npm.taobao.org/
-        > npm config set electron_mirror https://npm.taobao.org/mirrors/electron/
+        > npm config set registry https://registry.npmmirror.com/
+        > npm config set electron_mirror https://registry.npmmirror.com/-/binary/electron/
 
-        REM 特别的，如果安装的 VC++ 构建工具集版本不是 v140 (VS 2015)
-        REM 需要全局设置一下 toolset 变量让 sqlite3 能够编译通过
-        > npm config set toolset v142
-
-        REM 安装 node-gyp@5
         > npm install -g node-gyp
 
-        REM 这一步很重要，把 npm 内部使用的 node-gyp 设置成全局安装的 node-gyp
-        REM 新版 node-gyp 的头文件缓存位置和老版本不一样，没有这一步安装原生模块依赖时可能会报找不到头文件的错
-        > for /f "delims=" %P in ('npm prefix -g') do npm config set node_gyp "%P\node_modules\node-gyp\bin\node-gyp.js"
-
         REM 根据 package.json 中指定的 electron 版本下载对应的头文件
-        > for /f "delims=" %P in ('node -p "require('./package.json').devDependencies.electron"') do node-gyp install --target=%P --dist-url=https://npm.taobao.org/mirrors/atom-shell
+        > for /f "delims=" %P in ('node -p "require('./package.json').devDependencies.electron"') do node-gyp install --target=%P --dist-url=https://electronjs.org/headers
 
         REM 安装依赖
         > npm install
@@ -107,11 +98,10 @@
         $ cd mishiro/app
 
         $ npm config set registry http://registry.npm.taobao.org/
-        $ npm config set electron_mirror https://npm.taobao.org/mirrors/electron/
+        $ npm config set electron_mirror https://registry.npmmirror.com/-/binary/electron/
 
         $ npm install -g node-gyp
-        $ npm config set node_gyp "`npm prefix -g`/lib/node_modules/node-gyp/bin/node-gyp.js"
-        $ node-gyp install --target=$(node -p require\(\'./package.json\'\).devDependencies.electron) --dist-url=https://npm.taobao.org/mirrors/atom-shell
+        $ node-gyp install --target=$(node -p require\(\'./package.json\'\).devDependencies.electron) --dist-url=https://electronjs.org/headers
 
         $ npm install
         $ npm run get # 获取开发所需要的额外的资源

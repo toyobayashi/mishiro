@@ -1,5 +1,5 @@
 import './common/asar'
-import { app, BrowserWindow, ipcMain, BrowserWindowConstructorOptions, Menu, MenuItem, globalShortcut } from 'electron'
+import { app, BrowserWindow, ipcMain, BrowserWindowConstructorOptions, Menu, MenuItem, globalShortcut, MessageChannelMain } from 'electron'
 import { join } from 'path'
 import * as url from 'url'
 import './common/get-path'
@@ -15,15 +15,17 @@ app.commandLine.appendSwitch('js-flags', '--expose-gc')
 // require('v8').setFlagsFromString('--expose-gc')
 // global.gc = require('vm').runInNewContext('gc')
 
-if (process.env.NODE_ENV !== 'production') {
-  // https://github.com/mapbox/node-sqlite3/issues/1370
-  app.allowRendererProcessReuse = false
-}
+// if (process.env.NODE_ENV !== 'production') {
+//   // https://github.com/mapbox/node-sqlite3/issues/1370
+//   app.allowRendererProcessReuse = false
+// }
 
 let mainWindow: BrowserWindow | null = null
 let backWindow: BrowserWindow | null = null
 
 function createWindow (): void {
+  const { port1, port2 } = new MessageChannelMain()
+
   const browerWindowOptions: BrowserWindowConstructorOptions = {
     width: 1296,
     height: 863,
@@ -33,7 +35,7 @@ function createWindow (): void {
     backgroundColor: '#000000',
     webPreferences: {
       nodeIntegration: true,
-      enableRemoteModule: false,
+      // enableRemoteModule: false,
       contextIsolation: false,
       // preload: join(__dirname, '../preload/preload.js'),
       defaultFontFamily: {
@@ -50,6 +52,7 @@ function createWindow (): void {
     if (!mainWindow) return
     mainWindow.show()
     mainWindow.focus()
+    mainWindow.webContents.postMessage('port', null, [port1])
   })
 
   mainWindow.on('closed', function () {
@@ -70,9 +73,14 @@ function createWindow (): void {
     // parent: mainWindow,
     webPreferences: {
       nodeIntegration: true,
-      enableRemoteModule: false,
+      // enableRemoteModule: false,
       contextIsolation: false
     }
+  })
+
+  backWindow.on('ready-to-show', function () {
+    if (!backWindow) return
+    backWindow.webContents.postMessage('port', null, [port2])
   })
 
   backWindow.on('closed', function () {
@@ -127,7 +135,7 @@ async function main (): Promise<void> {
   await app.whenReady()
   registerGlobalShortcut()
   setMenu()
-  ipc()
+  ipc(() => mainWindow)
 
   ipcMain.on('flash', () => {
     mainWindow && mainWindow.flashFrame(true)

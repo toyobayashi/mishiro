@@ -9,7 +9,7 @@ const path = window.node.path
 const { iconDir } = getPath
 
 // const gameHostBase = 'http://storage.game.starlight-stage.jp/dl/resources'
-const imgHostBase = 'https://truecolor.kirara.ca'
+const imgHostBase = 'https://hidamarirhodonite.kirara.ca'
 // const getBgmUrl = (hash: string) => `${gameHostBase}/High/Sound/Common/b/${hash}`
 // const getLiveUrl = (hash: string) => `${gameHostBase}/High/Sound/Common/l/${hash}`
 // const getVoiceUrl = (hash: string) => `${gameHostBase}/High/Sound/Common/v/${hash}`
@@ -29,6 +29,15 @@ const install: PluginFunction<undefined> = function (Vue) {
   Vue.prototype.core = window.node.mishiroCore
 
   // 全局方法
+  Vue.prototype.handleClientError = function (err: Error, ignore?: boolean) {
+    if (err.message.includes('Error: 203')) {
+      this.event.$emit('alert', this.$t('home.errorTitle'), this.$t('home.accountBannedMessage'))
+    } else {
+      if (!ignore) {
+        this.event.$emit('alert', this.$t('home.errorTitle'), err.message)
+      }
+    }
+  }
   Vue.prototype.playSe = function (se: HTMLAudioElement) { // 播放音效
     se.currentTime = 0
     setTimeout(() => {

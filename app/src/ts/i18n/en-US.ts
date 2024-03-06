@@ -29,7 +29,8 @@ export default {
     cName: 'name',
     cHash: 'hash',
     cSize: 'size',
-    usmbtn: 'SELECT USM'
+    usmbtn: 'SELECT USM',
+    accountBannedMessage: 'The built-in account has been banned. Please open OPTION and set another account to fetch data from game server.'
   },
   event: {
     atapon: 'ATAPOM',

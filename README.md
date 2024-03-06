@@ -48,23 +48,23 @@ Repo: [mishiro-score-viewer](https://github.com/toyobayashi/mishiro-score-viewer
 ### Windows Require
 
 * __Windows 7+__
-* __Node.js 12+__
-* __Python 2.7__ ( 3.x is not supported by `node-gyp` yet)
-* __Visual Studio 2015/2017/2019 with C++ Desktop workload installed__
-* __.NET & Powershell__  
+* __Node.js 18+__
+* __Python 3__
+* __Visual Studio 2022 with C++ Desktop workload installed__
+* __.NET & Powershell__
 
 ### Linux Require
 
-* __Node.js 12+__
-* __Python 2.7__
+* __Node.js 18+__
+* __Python 3__
 * __gcc & g++__
 * __make__
 * __zip & unzip__
 
 ### MacOS Require (This part is not tested)
  
-* __Node.js 12+__
-* __Python 2.7__
+* __Node.js 18+__
+* __Python 3__
 * __Xcode__ (install Command Line Tools by running ```xcode-select --install``` in your terminal)
 
 ### Quick Start
@@ -94,18 +94,10 @@ Repo: [mishiro-score-viewer](https://github.com/toyobayashi/mishiro-score-viewer
         ``` bat
         > cd mishiro/app
 
-        REM set global npm config toolset variable
-        REM if your VC++ toolset is not v140 (VS 2015)
-        > npm config set toolset v142
-
-        REM install node-gyp@5
         > npm install -g node-gyp
 
-        REM it's important to set the npm_config_node_gyp environment variable to tell npm using global installed node-gyp
-        > for /f "delims=" %P in ('npm prefix -g') do npm config set node_gyp "%P\node_modules\node-gyp\bin\node-gyp.js"
-
         REM install electron's node C++ header
-        > for /f "delims=" %P in ('node -p "require('./package.json').devDependencies.electron"') do node-gyp install --target=%P --dist-url=https://atom.io/download/electron
+        > for /f "delims=" %P in ('node -p "require('./package.json').devDependencies.electron"') do node-gyp install --target=%P --dist-url=https://electronjs.org/headers
 
         REM install dependencies
         > npm install
@@ -119,8 +111,7 @@ Repo: [mishiro-score-viewer](https://github.com/toyobayashi/mishiro-score-viewer
         $ cd mishiro/app
 
         $ npm install -g node-gyp
-        $ npm config set node_gyp "`npm prefix -g`/lib/node_modules/node-gyp/bin/node-gyp.js"
-        $ node-gyp install --target=$(node -p require\(\'./package.json\'\).devDependencies.electron) --dist-url=https://atom.io/download/electron
+        $ node-gyp install --target=$(node -p require\(\'./package.json\'\).devDependencies.electron) --dist-url=https://electronjs.org/headers
 
         $ npm install
         $ npm run get # get external resources

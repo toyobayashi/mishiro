@@ -11,6 +11,7 @@
   "[vue]": {
     "editor.defaultFormatter": "octref.vetur"
   },
+  "typescript.tsdk": "./node_modules/typescript/lib",
   "eslint.validate": [
     "javascript",
     "typescript",

@@ -365,10 +365,7 @@ export default class extends Vue {
             } catch (err: any) {
               console.error(err)
               error(`UPDATE getResVer: ${err.stack}`)
-              if (Number(err.message) === 203) {
-                this.event.$emit('alert', this.$t('home.errorTitle'), 'Current account has been banned. Please use another account.')
-                return
-              }
+              this.handleClientError(err, true)
               resVer = configurer.get('latestResVer')!
             }
           }

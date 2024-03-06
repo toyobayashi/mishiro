@@ -29,7 +29,8 @@ export default {
     cName: 'ファイル名',
     cHash: 'ハッシュ',
     cSize: 'サイズ',
-    usmbtn: 'USMを選択'
+    usmbtn: 'USMを選択',
+    accountBannedMessage: 'クライアントの使用しているアカウントがバンされました。オプションを開いてアカウントを設置してゲームサーバーと通信できるようにします。'
   },
   event: {
     atapon: 'アタポン',

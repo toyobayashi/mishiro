@@ -6,7 +6,7 @@ import { error } from './log'
 
 let win: BrowserWindow | null = null
 
-export default function openScoreWindow (): void {
+export default function openScoreWindow (onClose?: () => void): void {
   if (win !== null) {
     return
   }
@@ -22,7 +22,7 @@ export default function openScoreWindow (): void {
     backgroundColor: '#000000',
     webPreferences: {
       nodeIntegration: true,
-      enableRemoteModule: false,
+      // enableRemoteModule: false,
       contextIsolation: false
     }
   }))
@@ -45,6 +45,9 @@ export default function openScoreWindow (): void {
   }
 
   win.on('close', () => {
+    if (typeof onClose === 'function') {
+      onClose()
+    }
     win = null
   })
 }

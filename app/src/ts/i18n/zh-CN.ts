@@ -29,7 +29,8 @@ export default {
     cName: '文件名',
     cHash: '哈希値',
     cSize: '文件大小',
-    usmbtn: '選択USM'
+    usmbtn: '選択USM',
+    accountBannedMessage: '客戸端内置帳号已被封禁。請打開選項並設置另一個帳号来与遊戯服務器進行通信。'
   },
   event: {
     atapon: '消耗道具型',

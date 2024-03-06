@@ -1,4 +1,6 @@
-import { ipcMain, SaveDialogOptions, dialog, app, RelaunchOptions, OpenDialogOptions } from 'electron'
+import { ipcMain, SaveDialogOptions, dialog, app, RelaunchOptions, OpenDialogOptions, type BrowserWindow } from 'electron'
+import { getProxyAgent } from 'mishiro-core/util/proxy'
+import got from 'got'
 // import onManifestQuery from './on-manifest-query'
 // import onManifestSearch from './on-manifest-search'
 // import onGame from './on-game'
@@ -38,7 +40,7 @@ function registerIpcConfig (configurer: Configurer): void {
   })
 }
 
-export default function ipc (): void {
+export default function ipc (getMainWindow: () => (BrowserWindow | null)): void {
   if (initialized) return
 
   // let manifestData: any = {}
@@ -65,8 +67,13 @@ export default function ipc (): void {
   //   event.sender.send('readManifest', masterHash, resVer)
   // })
 
-  ipcMain.on('openScoreWindow', function () {
-    openScoreWindow()
+  ipcMain.handle('openScoreWindow', function () {
+    openScoreWindow(() => {
+      const mainWindow = getMainWindow()
+      if (mainWindow) {
+        mainWindow.webContents.send('liveEnd')
+      }
+    })
   })
 
   ipcMain.handle('showSaveDialog', (_event, options: SaveDialogOptions) => {
@@ -98,18 +105,38 @@ export default function ipc (): void {
   })
 
   ipcMain.handle('checkResourceVersion', async () => {
-    const res = await client.check()
+    let res: number
+    let url = '/load/check'
+    try {
+      res = await client.check()
+    } catch (err1: any) {
+      interface InfoFromKirara {
+        api_major: number
+        api_revision: number
+        truth_version: string
+      }
+      try {
+        url = 'https://starlight.kirara.ca/api/v1/info'
+        const response = await got.get<InfoFromKirara>(url, {
+          responseType: 'json',
+          agent: getProxyAgent(configurer.get('proxy'))
+        })
+        res = Number(response.body.truth_version)
+      } catch (err2: any) {
+        throw new Error([err1, err2].map(e => e.message).join('\n'))
+      }
+    }
     if (res !== 0) {
       const latestResVer = configurer.get('latestResVer')
       if (!latestResVer || (res > latestResVer)) {
-        console.log(`/load/check [New Version] ${latestResVer} => ${res}`)
+        console.log(`${url} [New Version] ${latestResVer} => ${res}`)
       } else {
-        console.log(`/load/check [Latest Version] ${res}`)
+        console.log(`${url} [Latest Version] ${res}`)
       }
       configurer.set('latestResVer', res)
       client.resVer = res.toString()
     } else {
-      const msg = 'checkResourceVersion /load/check failed'
+      const msg = `checkResourceVersion ${url} failed`
       log.error(msg)
       console.error(msg)
     }
