@@ -9,7 +9,7 @@ jobs:
     strategy:
       fail-fast: false
       matrix:
-        os: [windows-latest, ubuntu-latest, macos-latest]
+        os: [windows-latest, ubuntu-latest, macos-13]
 
     steps:
     - uses: actions/checkout@v2
@@ -44,7 +44,7 @@ jobs:
         ./app/script/build.sh
 
     - name: macOS build
-      if: ${{ matrix.os == 'macos-latest' }}
+      if: ${{ contains(matrix.os, 'macos') }}
       shell: bash
       run: |
         chmod +x ./app/script/build.sh
