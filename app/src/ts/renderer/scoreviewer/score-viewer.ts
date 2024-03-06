@@ -30,10 +30,6 @@ interface Option {
 
 class ScoreViewer {
   public static main (): void {
-    window.addEventListener('beforeunload', () => {
-      ipcRenderer.sendTo(ipcRenderer.sendSync('mainWindowId'), 'liveEnd', null, false)
-    })
-
     const song = ipcRenderer.sendSync('getSong')
     if (!song) return
 

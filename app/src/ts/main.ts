@@ -135,7 +135,7 @@ async function main (): Promise<void> {
   await app.whenReady()
   registerGlobalShortcut()
   setMenu()
-  ipc()
+  ipc(() => mainWindow)
 
   ipcMain.on('flash', () => {
     mainWindow && mainWindow.flashFrame(true)

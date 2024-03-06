@@ -1,4 +1,4 @@
-import { ipcMain, SaveDialogOptions, dialog, app, RelaunchOptions, OpenDialogOptions } from 'electron'
+import { ipcMain, SaveDialogOptions, dialog, app, RelaunchOptions, OpenDialogOptions, type BrowserWindow } from 'electron'
 import { getProxyAgent } from 'mishiro-core/util/proxy'
 import got from 'got'
 // import onManifestQuery from './on-manifest-query'
@@ -40,7 +40,7 @@ function registerIpcConfig (configurer: Configurer): void {
   })
 }
 
-export default function ipc (): void {
+export default function ipc (getMainWindow: () => (BrowserWindow | null)): void {
   if (initialized) return
 
   // let manifestData: any = {}
@@ -67,8 +67,13 @@ export default function ipc (): void {
   //   event.sender.send('readManifest', masterHash, resVer)
   // })
 
-  ipcMain.on('openScoreWindow', function () {
-    openScoreWindow()
+  ipcMain.handle('openScoreWindow', function () {
+    openScoreWindow(() => {
+      const mainWindow = getMainWindow()
+      if (mainWindow) {
+        mainWindow.webContents.send('liveEnd')
+      }
+    })
   })
 
   ipcMain.handle('showSaveDialog', (_event, options: SaveDialogOptions) => {

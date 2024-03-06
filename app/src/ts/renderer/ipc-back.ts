@@ -26,7 +26,6 @@ ipcRenderer.on('port', e => {
 })
 
 function invokeBackWindow<T> (name: string, args: any[] = []): Promise<T> {
-  console.log('invokeBackWindow: ', name, args)
   return new Promise((resolve, reject) => {
     if (!backWindowPort) {
       reject(new Error('back window is not ready'))
