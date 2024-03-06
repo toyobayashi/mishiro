@@ -12,15 +12,17 @@ function createChannelName (): string {
 }
 
 let backWindowPort: MessagePort
+const backWindowPortEvent = new window.node.events.EventEmitter()
 
 ipcRenderer.on('port', e => {
   backWindowPort = e.ports[0]
 
-  backWindowPort.addEventListener('message', (ev) => {
+  backWindowPort.onmessage = function (ev) {
     if (ev.data.type === 'setBatchStatus') {
       store.commit(Action.SET_BATCH_STATUS, ev.data.payload[0])
     }
-  })
+    backWindowPortEvent.emit('message', ev)
+  }
 })
 
 function invokeBackWindow<T> (name: string, args: any[] = []): Promise<T> {
@@ -31,8 +33,7 @@ function invokeBackWindow<T> (name: string, args: any[] = []): Promise<T> {
       return
     }
     const callbackChannel = createChannelName()
-    backWindowPort.addEventListener('message', (ev) => {
-      console.log('recieve: ', ev.data)
+    backWindowPortEvent.once('message', (ev) => {
       if (ev.data.id === callbackChannel) {
         if (ev.data.err) {
           reject(new Error(ev.data.err))
@@ -40,7 +41,7 @@ function invokeBackWindow<T> (name: string, args: any[] = []): Promise<T> {
           resolve(ev.data.data)
         }
       }
-    }, { once: true })
+    })
     backWindowPort.postMessage({
       id: callbackChannel,
       type: name,

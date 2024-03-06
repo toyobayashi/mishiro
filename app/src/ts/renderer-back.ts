@@ -1,5 +1,4 @@
 import './renderer/preload'
-import { ipcRenderer } from 'electron'
 import DB from './common/db'
 import { batchDownload, batchStop, getBatchErrorList, setDownloaderProxy } from './renderer/back/batch-download'
 // import mainWindowId from './renderer/back/main-window-id'
@@ -8,11 +7,16 @@ import readMaster from './renderer/back/on-master-read'
 let manifest: DB | null = null
 let master: DB | null = null
 
-ipcRenderer.on('port', e => {
+window.node.electron.ipcRenderer.on('port', e => {
   const mainWindowPort = e.ports[0]
+  const portEvent = new window.node.events.EventEmitter()
+
+  mainWindowPort.onmessage = function (event) {
+    portEvent.emit('message', event)
+  }
 
   function defineRemoteFunction (name: string, fn: (...args: any[]) => any): void {
-    mainWindowPort.addEventListener('message', (event) => {
+    portEvent.on('message', (event) => {
       if (event.data.type === name) {
         Promise.resolve(fn(...event.data.payload)).then(ret => {
           mainWindowPort.postMessage({
