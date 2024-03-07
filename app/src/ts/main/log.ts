@@ -1,4 +1,4 @@
-import * as spdlog from 'spdlog'
+import * as spdlog from '@vscode/spdlog'
 import * as fs from 'fs-extra'
 import { dirname } from 'path'
 import getPath from '../common/get-path'

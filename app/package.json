@@ -33,7 +33,7 @@
   },
   "license": "MIT",
   "devDependencies": {
-    "@tybys/ty": "~0.21.0",
+    "@tybys/ty": "~0.21.1",
     "@types/fs-extra": "^9.0.11",
     "@types/marked": "^1.1.0",
     "@types/node": "^14.14.41",
@@ -72,6 +72,7 @@
   },
   "dependencies": {
     "@tybys/downloader": "0.2.0",
+    "@vscode/spdlog": "0.15.0",
     "acb": "2.1.0",
     "electron-github-asar-updater": "4.0.0",
     "fs-extra": "10.0.0",
@@ -79,7 +80,6 @@
     "iconv-lite": "0.6.3",
     "mishiro-core": "6.3.7",
     "node-gyp": "^10",
-    "spdlog": "0.13.7",
     "sqlite3": "5.1.7"
   },
   "overrides": {
