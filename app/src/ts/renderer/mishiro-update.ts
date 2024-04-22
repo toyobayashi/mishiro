@@ -14,7 +14,7 @@ import { getMasterHash, openManifestDatabase, readMasterData } from './ipc-back'
 import type { MishiroConfig } from '../main/config'
 import { readAcb } from './audio'
 import type { BGM } from './back/resolve-audio-manifest'
-import { error } from './log'
+import { error, warn } from './log'
 const fs = window.node.fs
 // const path = window.node.path
 const { manifestPath, masterPath, bgmDir/* , iconDir */ } = getPath
@@ -210,7 +210,12 @@ export default class extends Vue {
     // }
     if (masterData.eventHappening) {
       const eventHca = bgmDir(`bgm_event_${masterData.eventData.id}.hca`)
-      if (Number(masterData.eventData.type) !== 2 && Number(masterData.eventData.type) !== 6 && !fs.existsSync(eventHca)) {
+      const downloadBGMEventType = [1, 3, 4, 5, 7, 8]
+      const eventType = Number(masterData.eventData.type)
+      if (eventType > 9) {
+        warn(`Unknown event type: ${eventType}`)
+      }
+      if (downloadBGMEventType.includes(eventType) && !fs.existsSync(eventHca)) {
         const eventBgmHash = bgmManifest.filter(row => row.name === `b/bgm_event_${masterData.eventData.id}.acb`)[0].hash
         try {
           // let result = await downloader.download(
