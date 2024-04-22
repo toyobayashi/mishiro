@@ -43,6 +43,9 @@ export const bgmList: BGMList = {
   },
   rail: {
     src: getPath('../asset/bgm.asar/bgm_event_rail.hca')
+  },
+  meetup: {
+    src: getPath('../asset/bgm.asar/bgm_event_meetup.hca')
   }
 }
 
@@ -216,17 +219,22 @@ export default class extends Vue {
               break
             case 'live':
               if (this.$store.state.master.eventHappening) {
-                if (Number(this.eventInfo.type) === 2) {
+                const eventType = Number(this.eventInfo.type)
+                if (eventType === 2) {
                   if (this.playing.src !== bgmList.caravan.src) {
                     await this.play(bgmList.caravan)
                   }
-                } else if (Number(this.eventInfo.type) === 6) {
+                } else if (eventType === 6) {
                   if (this.playing.src !== bgmList.rail.src) {
                     await this.play(bgmList.rail)
                   }
+                } else if (eventType === 9) {
+                  if (this.playing.src !== bgmList.meetup.src) {
+                    await this.play(bgmList.meetup)
+                  }
                 } else {
                   const eventBgmSrc = getPath(`../asset/bgm/bgm_event_${this.eventInfo.id}.hca`)
-                  if (this.playing.src !== eventBgmSrc) {
+                  if (this.playing.src !== eventBgmSrc && fs.existsSync(eventBgmSrc)) {
                     this.event.$emit('liveSelect', { src: eventBgmSrc })
                   }
                 }
