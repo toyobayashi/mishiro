@@ -9,7 +9,7 @@ jobs:
     strategy:
       fail-fast: false
       matrix:
-        os: [windows-latest, ubuntu-latest, macos-13]
+        os: [windows-latest, ubuntu-latest, macos-13, macos-14]
 
     steps:
     - uses: actions/checkout@v2
@@ -57,12 +57,16 @@ jobs:
         MISHIRO_NO_PROGRESS: '1'
 
     - name: Pack x64
-      if: ${{ startsWith(github.event.ref, 'refs/tags') }}
+      if: ${{ startsWith(github.event.ref, 'refs/tags') && matrix.os != 'macos-14' }}
       run: cd app&&npm run pack:x64&&cd ..
 
     - name: Pack ia32
       if: ${{ startsWith(github.event.ref, 'refs/tags') && matrix.os == 'windows-latest' }}
       run: cd app&&npm run pack:ia32&&cd ..
+
+    - name: Pack arm64
+      if: ${{ startsWith(github.event.ref, 'refs/tags') && matrix.os == 'macos-14' }}
+      run: cd app&&npm run pack:arm64&&cd ..
 
     - name: Create release
       if: ${{ startsWith(github.event.ref, 'refs/tags') }}
